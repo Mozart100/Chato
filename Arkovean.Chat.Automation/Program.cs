@@ -17,7 +17,7 @@ var baseUrl = "https://localhost:7138/chat";
 //Console.WriteLine();
 //Console.WriteLine();
 
-await Task.Delay(1000 * 10);
+//await Task.Delay(1000 * 10);
 
 var pingScenario = new PingChatScenario(baseUrl);
 await pingScenario.StartRunScenario();

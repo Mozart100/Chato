@@ -1,5 +1,7 @@
-﻿using Arkovean.Chat.Automation.Responses;
+﻿using Arkovean.Chat.Automation.Infrastructure;
+using Arkovean.Chat.Automation.Responses;
 using Arkovean.Chat.Infrastracture;
+using Microsoft.Extensions.Logging;
 using System.Net.Http.Json;
 using System.Text.Json;
 
@@ -14,20 +16,25 @@ namespace Arkovean.Chat.Automation.Scenario
         //private readonly DateOnlyJsonConverter _dateOnlyConverter;
 
         protected List<Func<Task>> SetupsLogicCallback;
-        protected List<Func<Task>> BusinessLogicLogicCallbacks;
+        protected List<Func<Task>> BusinessLogicCallbacks;
         protected List<Func<Task>> SummaryLogicCallback;
 
         public ScenarioBase(string baseUrl)
         {
+
+            Logger = AutomationLoggerFactory.CreateLogger();
+
             BaseUrl = baseUrl;
             Config = new ScenarioConfig();
 
             SetupsLogicCallback = new List<Func<Task>>();
-            BusinessLogicLogicCallbacks = new List<Func<Task>>();
+            BusinessLogicCallbacks = new List<Func<Task>>();
             SummaryLogicCallback = new List<Func<Task>>();
 
             //_dateOnlyConverter = new DateOnlyJsonConverter();
         }
+
+        protected IAutomationLogger Logger { get; }
 
         public string BaseUrl { get; }
 
@@ -91,9 +98,9 @@ namespace Arkovean.Chat.Automation.Scenario
             Console.WriteLine();
 
             var steps = 0;
-            while (steps < BusinessLogicLogicCallbacks.Count)
+            while (steps < BusinessLogicCallbacks.Count)
             {
-                var callback = BusinessLogicLogicCallbacks.ElementAt(steps);
+                var callback = BusinessLogicCallbacks.ElementAt(steps);
                 if (SetupsLogicCallback.SafeAny())
                 {
                     DisplayDividerLines(4);
@@ -102,7 +109,7 @@ namespace Arkovean.Chat.Automation.Scenario
                 await callback.Invoke();
                 Console.WriteLine($"{callback.Method.Name} finished successfully.");
 
-                if (steps + 1 != BusinessLogicLogicCallbacks.Count)
+                if (steps + 1 != BusinessLogicCallbacks.Count)
                 {
                     DisplayDividerLines();
                     //Console.WriteLine();

@@ -7,7 +7,7 @@ internal class PingChatScenario : ScenarioBase
 {
     private HubConnection _connection;
 
-    public PingChatScenario(string baseUrl):base(baseUrl) 
+    public PingChatScenario(string baseUrl) : base(baseUrl)
     {
         _connection = new HubConnectionBuilder()
          .WithUrl(BaseUrl)
@@ -15,11 +15,11 @@ internal class PingChatScenario : ScenarioBase
          .Build();
 
 
-       if(_connection.State == HubConnectionState.Connected)
-{
+        if (_connection.State == HubConnectionState.Connected)
+        {
             // Hub _connection is open
         }
-else if (_connection.State == HubConnectionState.Connecting)
+        else if (_connection.State == HubConnectionState.Connecting)
         {
             // Hub _connection is in the process of connecting
         }
@@ -33,26 +33,22 @@ else if (_connection.State == HubConnectionState.Connecting)
         }
 
 
-        _connection.Reconnecting += (sender)=>
+        _connection.Reconnecting += (sender) =>
         {
-            Console.WriteLine("Connecting");
+            Logger.Info("Connection reconnecting");
             return Task.CompletedTask;
         };
 
         _connection.Reconnected += (sender) =>
         {
-            Console.WriteLine("Connected");
+           Logger.Info($"Hub Connected.");
             return Task.CompletedTask;
 
         };
 
-        BusinessLogicLogicCallbacks.Add(PingHub);        
+        BusinessLogicCallbacks.Add(PingHub);
     }
 
-    private Task _connection_Reconnecting(Exception? arg)
-    {
-        throw new NotImplementedException();
-    }
 
     public override string ScenarioName => "PingChatHub";
 
@@ -60,18 +56,14 @@ else if (_connection.State == HubConnectionState.Connecting)
 
     private async Task PingHub()
     {
-
-
-        await  _connection.StartAsync();
+        await _connection.StartAsync();
 
         _connection.On<string, string>(ChatHub.TOPIC_MESSAGE_RECEIVED, (user, message) =>
         {
-            Console.WriteLine($"{user} - {message}");
+            Logger.Info($"{user} - {message}");
         });
 
-
-
-        await Task.Delay(TimeSpan.FromMinutes(20) );
+        await Task.Delay(TimeSpan.FromMinutes(20));
     }
 
 }
