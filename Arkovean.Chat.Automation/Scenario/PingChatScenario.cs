@@ -1,50 +1,23 @@
-﻿using Arkovean.Chat.Hubs;
-using Microsoft.AspNetCore.SignalR.Client;
+﻿namespace Arkovean.Chat.Automation.Scenario;
 
-namespace Arkovean.Chat.Automation.Scenario;
-
-internal class PingChatScenario : ScenarioBase
+internal class PingChatScenario : HubScenarioBase
 {
-    private HubConnection _connection;
+    private readonly UserHubChat _user1;
+    private readonly UserHubChat _user2;
+
+    private SemaphoreSlim _signal;
 
     public PingChatScenario(string baseUrl) : base(baseUrl)
     {
-        _connection = new HubConnectionBuilder()
-         .WithUrl(BaseUrl)
-         .WithAutomaticReconnect()
-         .Build();
+        _user1 = new UserHubChat(this, "anatoliy");
+        _user2 = new UserHubChat(this, "nathan");
+
+        Users.Add(_user1.Name, _user1);
+        Users.Add(_user2.Name, _user2);
 
 
-        if (_connection.State == HubConnectionState.Connected)
-        {
-            // Hub _connection is open
-        }
-        else if (_connection.State == HubConnectionState.Connecting)
-        {
-            // Hub _connection is in the process of connecting
-        }
-        else if (_connection.State == HubConnectionState.Disconnected)
-        {
-            // Hub _connection is closed
-        }
-        else if (_connection.State == HubConnectionState.Reconnecting)
-        {
-            // Hub connection is in the process of reconnecting
-        }
 
-
-        _connection.Reconnecting += (sender) =>
-        {
-            Logger.Info("Connection reconnecting");
-            return Task.CompletedTask;
-        };
-
-        _connection.Reconnected += (sender) =>
-        {
-           Logger.Info($"Hub Connected.");
-            return Task.CompletedTask;
-
-        };
+        _signal = new SemaphoreSlim(1);
 
         BusinessLogicCallbacks.Add(PingHub);
     }
@@ -56,12 +29,14 @@ internal class PingChatScenario : ScenarioBase
 
     private async Task PingHub()
     {
-        await _connection.StartAsync();
+        await Connection.StartAsync();
 
-        _connection.On<string, string>(ChatHub.TOPIC_MESSAGE_RECEIVED, (user, message) =>
-        {
-            Logger.Info($"{user} - {message}");
-        });
+        //await Connection.SendAsync(Hub_Send_Message_Topic, "xxx", "yyyy");
+
+        //await _user1.SendAsync("yyy");
+
+
+        //await _signal.WaitAsync(TimeSpan.FromSeconds(20));
 
         await Task.Delay(TimeSpan.FromMinutes(20));
     }

@@ -8,11 +8,11 @@ public class ChatHub : Hub
 
     public override async Task OnConnectedAsync()
     {
-        await SendMessage(string.Empty, "Your are connected");
+        await SendMessageAllUsers(string.Empty, "Your are connected");
         await base.OnConnectedAsync();
     }
 
-    public Task SendMessage(string user, string nessage)
+    public Task SendMessageAllUsers(string user, string nessage)
     {
        return Clients.All.SendAsync(TOPIC_MESSAGE_RECEIVED, user, nessage);
     }
