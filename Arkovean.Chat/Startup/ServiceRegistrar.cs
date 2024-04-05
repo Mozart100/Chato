@@ -1,8 +1,10 @@
-﻿using Arkovean.Chat.DataAccess.Repository;
+﻿using Arkovean.Chat.BackgroundTasks;
+using Arkovean.Chat.DataAccess.Repository;
 using Arkovean.Chat.Errors;
 using Arkovean.Chat.Services;
 using Arkovean.Chat.Services.Validations;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using Microsoft.AspNetCore.ResponseCompression;
 
 namespace Arkovean.Chat.Startup
 {
@@ -19,13 +21,24 @@ namespace Arkovean.Chat.Startup
                                                                    AllowCredentials());
             });
 
-            services.AddSingleton<ICityRepository, CityRepository>();
-            services.AddTransient<ICityService, CityService>();
-            services.AddTransient<ICityValidationService, CityValidationService>();
-            services.AddSingleton<ICityLocaterService, CityLocaterService>();
+            //services.AddSingleton<ICityRepository, CityRepository>();
+            //services.AddSingleton<ICityLocaterService, CityLocaterService>();
+
+            services.AddSignalR();
+            services.AddResponseCompression(options =>
+            {
+                options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
+            });
+
+
+            //services.AddResponseCompression();
 
             services.AddSingleton<ICityLocaterValidationService, CityLocaterValidationService>();
             services.AddSingleton<ProblemDetailsFactory, ProblemDetailsAdvanceFeaturesFactory>();
+
+
+
+            services.AddHostedService<TestBackgroundTask>();
 
             return services;
         }

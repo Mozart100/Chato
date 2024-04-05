@@ -1,4 +1,5 @@
 ﻿using Arkovean.Chat.Automation.Responses;
+using Arkovean.Chat.Infrastracture;
 using System.Net.Http.Json;
 using System.Text.Json;
 

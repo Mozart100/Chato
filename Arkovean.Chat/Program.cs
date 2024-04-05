@@ -1,3 +1,4 @@
+using Arkovean.Chat.Hubs;
 using Arkovean.Chat.Startup;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -24,7 +25,10 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+
 app.UseExceptionHandler("/error");
+app.MapHub<ChatHub>("/chat");
 app.MapControllers();
+
 
 app.Run();
