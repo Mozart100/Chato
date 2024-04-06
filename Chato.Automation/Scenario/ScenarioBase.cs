@@ -79,7 +79,7 @@ public abstract class ScenarioBase
         if (SetupsLogicCallback.SafeAny())
         {
             Console.WriteLine($"Setup run started.");
-            foreach (var callback in SummaryLogicCallback)
+            foreach (var callback in SetupsLogicCallback)
             {
                 await callback.Invoke();
                 DisplayDividerLines();

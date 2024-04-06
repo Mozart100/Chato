@@ -1,4 +1,5 @@
-﻿using Chato.Automation.Scenario;
+﻿using AutoMapper.Internal.Mappers;
+using Chato.Automation.Scenario;
 
 namespace Chato.Automation.Infrastructure.Instruction;
 
@@ -13,12 +14,22 @@ public class UserHubInstruction
     {
         _instruction = new Queue<string>();
 
-        Initialize();
+        //Initialize();
     }
+
+    public void AddRecieveInstruction(string from ="server")
+    {
+        _instruction.Enqueue($"{Received_Instrauction};{from};");
+    }
+
+    public bool InstructionAny => _instruction.Any();
 
     private void Initialize()
     {
-        _instruction.Enqueue($"{Received_Instrauction};server;");
+        for (int i = 0; i < 10; i++)
+        {
+            _instruction.Enqueue($"{Received_Instrauction};server;");
+        }
     }
 
     public (string instruction, string from) GetInstruction()
@@ -28,6 +39,11 @@ public class UserHubInstruction
 
         return (@arguments[0], @arguments[1]);
     }
+}
+
+public class UserHubChatArgs : EventArgs
+{
+
 }
 
 public class UserHubChat
@@ -47,7 +63,17 @@ public class UserHubChat
         _actions = new Dictionary<string, Action<string, string>>();
     }
 
+    public bool IsSuccessful => _instruction.InstructionAny;
+
+    public event EventHandler<UserHubChatArgs> Finished;
+
     public string Name { get; }
+
+
+    public void AddRecieveInstruction()
+    {
+        _instruction.AddRecieveInstruction();
+    }
 
 
     public Task SendAsync(string message)
@@ -58,6 +84,18 @@ public class UserHubChat
     public void Received(string arrivedFrom, string message)
     {
         _hubConnection.Logger.Info($"{Name} - received from [{arrivedFrom}] [{message}]");
+        var (instruction,from) = _instruction.GetInstruction();
+
+
+
+        if (  Finished != null)
+        {
+            if(_instruction.InstructionAny == false)
+            {
+                Finished(this, new UserHubChatArgs { });
+            }
+        }
+
 
         //var (instruction,from) = _instruction.GetInstruction();
 
