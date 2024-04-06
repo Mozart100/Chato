@@ -47,7 +47,7 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
 
     private void Listen()
     {
-        Connection.On<string, string>(ChatHub.TOPIC_MESSAGE_RECEIVED, (user, message) =>
+        Connection.On<string, string>(ChatHub.TOPIC_MESSAGE_RECEIVED, async (user, message) =>
         {
             foreach (var keyAndValue in Users)
             {
@@ -55,6 +55,13 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
                 {
                     keyAndValue.Value.Received(user, message);
                 }
+            }
+
+            if  (Users.Values.All(x => x.IsSuccessful))
+            {
+                await Connection.StopAsync();
+                ScenarioFinished();
+
             }
         });
     }
@@ -64,5 +71,15 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
         await Connection.SendAsync(Hub_Send_Message_Topic, userNameFrom, message);
     }
 
-
+    private void ScenarioFinished()
+    {
+        Logger.Info("Fiinished");
+        Logger.Info("Fiinished");
+        Logger.Info("Fiinished");
+        Logger.Info("Fiinished");
+        Logger.Info("Fiinished");
+        Logger.Info("Fiinished");
+        Logger.Info("Fiinished");
+        Logger.Info("Fiinished");
+    }
 }

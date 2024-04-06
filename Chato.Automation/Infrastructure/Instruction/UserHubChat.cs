@@ -63,7 +63,7 @@ public class UserHubChat
         _actions = new Dictionary<string, Action<string, string>>();
     }
 
-    public bool IsSuccessful => _instruction.InstructionAny;
+    public bool IsSuccessful => !_instruction.InstructionAny;
 
     public event EventHandler<UserHubChatArgs> Finished;
 
@@ -83,18 +83,25 @@ public class UserHubChat
 
     public void Received(string arrivedFrom, string message)
     {
+        var result = true;
+
         _hubConnection.Logger.Info($"{Name} - received from [{arrivedFrom}] [{message}]");
         var (instruction,from) = _instruction.GetInstruction();
 
-
-
-        if (  Finished != null)
+        if(!from.Equals(arrivedFrom))
         {
-            if(_instruction.InstructionAny == false)
-            {
-                Finished(this, new UserHubChatArgs { });
-            }
+            //throw new Exception("xxx");
         }
+
+
+
+        //if (  Finished != null)
+        //{
+        //    if(_instruction.InstructionAny == false)
+        //    {
+        //        Finished(this, new UserHubChatArgs { });
+        //    }
+        //}
 
 
         //var (instruction,from) = _instruction.GetInstruction();

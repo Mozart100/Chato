@@ -24,8 +24,6 @@ internal class PingChatScenario : HubScenarioBase
         _user2 = new UserHubChat(this, "nathan");
 
 
-        _user1.Finished += _user1_Finished;
-
         Users.Add(_user1.Name, _user1);
         Users.Add(_user2.Name, _user2);
 
@@ -34,18 +32,6 @@ internal class PingChatScenario : HubScenarioBase
             _user1.AddRecieveInstruction();
             _user2.AddRecieveInstruction();
         }
-    }
-
-    private void _user1_Finished(object? sender, UserHubChatArgs e)
-    {
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
     }
 
     public override string ScenarioName => "PingChatHub";

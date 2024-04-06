@@ -8,7 +8,7 @@ public class ChatHub : Hub
 
     public override async Task OnConnectedAsync()
     {
-        await SendMessageAllUsers(string.Empty, "Your are connected");
+        await SendMessageAllUsers("server", "Your are connected");
         await base.OnConnectedAsync();
     }
 

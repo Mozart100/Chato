@@ -18,7 +18,7 @@ namespace Chato.Server.BackgroundTasks
 
             while (index++ < 50)
             {
-                await _hubContext.Clients.All.SendAsync(ChatHub.TOPIC_MESSAGE_RECEIVED, $"user-{index}", $"message-{index}");
+                await _hubContext.Clients.All.SendAsync(ChatHub.TOPIC_MESSAGE_RECEIVED, $"server", $"message-{index}");
                 await Task.Delay(2000);
             }
         }
