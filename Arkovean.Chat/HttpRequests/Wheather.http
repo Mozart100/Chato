@@ -1,5 +1,0 @@
-﻿@rootUrl=https://localhost:7138/cities
-
-# GET {{rootUrl}}
-
-GET {{rootUrl}}/test/level/0

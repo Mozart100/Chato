@@ -3,10 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.7.34031.279
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arkovean.Chat", "Arkovean.Chat\Arkovean.Chat.csproj", "{6A8F744F-D25D-402B-A293-D4941F6555C1}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arkovean.Chat.Automation", "Arkovean.Chat.Automation\Arkovean.Chat.Automation.csproj", "{970B38FB-04A8-48CC-BF86-297C9F2365DE}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chato.Server", "Chato.Server\Chato.Server.csproj", "{2BBBF510-2531-4129-ABF5-6A7FE3556AF3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chato.Automation", "Chato.Automation\Chato.Automation.csproj", "{ECFD29D9-911E-4FC9-8252-47B289BF2163}"
@@ -17,14 +13,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{6A8F744F-D25D-402B-A293-D4941F6555C1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{6A8F744F-D25D-402B-A293-D4941F6555C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{6A8F744F-D25D-402B-A293-D4941F6555C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{6A8F744F-D25D-402B-A293-D4941F6555C1}.Release|Any CPU.Build.0 = Release|Any CPU
-		{970B38FB-04A8-48CC-BF86-297C9F2365DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{970B38FB-04A8-48CC-BF86-297C9F2365DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{970B38FB-04A8-48CC-BF86-297C9F2365DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{970B38FB-04A8-48CC-BF86-297C9F2365DE}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2BBBF510-2531-4129-ABF5-6A7FE3556AF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2BBBF510-2531-4129-ABF5-6A7FE3556AF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BBBF510-2531-4129-ABF5-6A7FE3556AF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
