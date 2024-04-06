@@ -1,5 +1,6 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
 using Chato.Automation.Scenario;
+using System.Collections.Generic;
 
 namespace Arkovean.Chat.Automation.Scenario;
 
@@ -8,15 +9,18 @@ internal class PingChatScenario : HubScenarioBase
     private UserHubChat _user1;
     private UserHubChat _user2;
 
-    private SemaphoreSlim _signal;
 
     public PingChatScenario(string baseUrl) : base(baseUrl)
     {
-        _signal = new SemaphoreSlim(1);
 
         SetupsLogicCallback.Add(UserSetups);
-        BusinessLogicCallbacks.Add(PingHub);
+        BusinessLogicCallbacks.Add(ListenStep);
+        SummaryLogicCallback.Add(Cleannup);
     }
+
+  
+    public override string ScenarioName => "PingChatHub";
+    public override string Description => "Testing connectivity of th hub";
 
     private async Task UserSetups()
     {
@@ -27,21 +31,22 @@ internal class PingChatScenario : HubScenarioBase
         Users.Add(_user1.Name, _user1);
         Users.Add(_user2.Name, _user2);
 
+
         for (int i = 0; i < 5; i++)
         {
             _user1.AddRecieveInstruction();
             _user2.AddRecieveInstruction();
         }
+
+        await Task.Delay(5 * 1000);
+        await Connection.StartAsync();
     }
 
-    public override string ScenarioName => "PingChatHub";
 
-    public override string Description => "Testing connectivity of th hub";
-
-    private async Task PingHub()
+    private async Task ListenStep()
     {
-        await Connection.StartAsync();
 
+        await Listen();
         //await Connection.SendAsync(Hub_Send_Message_Topic, "xxx", "yyyy");
 
         //await _user1.SendAsync("yyy");
@@ -49,7 +54,22 @@ internal class PingChatScenario : HubScenarioBase
 
         //await _signal.WaitAsync(TimeSpan.FromSeconds(20));
 
-        await Task.Delay(TimeSpan.FromMinutes(20));
+        Logger.Info("Fiinished");
+        Logger.Info("Fiinished");
+        Logger.Info("Fiinished");
+        Logger.Info("Fiinished");
+        Logger.Info("Fiinished");
+        Logger.Info("Fiinished");
+        Logger.Info("Fiinished");
+        Logger.Info("Fiinished");
+    }
+
+    private async Task Cleannup()
+    {
+        if (Connection.State != Microsoft.AspNetCore.SignalR.Client.HubConnectionState.Disconnected)
+        {
+            await Connection.StopAsync();
+        }
     }
 
 }

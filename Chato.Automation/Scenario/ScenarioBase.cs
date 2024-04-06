@@ -96,49 +96,53 @@ public abstract class ScenarioBase
         Console.WriteLine($"Business Logic started with base url = {BaseUrl}.");
         Console.WriteLine();
 
-        var steps = 0;
-        while (steps < BusinessLogicCallbacks.Count)
+        try
         {
-            var callback = BusinessLogicCallbacks.ElementAt(steps);
-            if (SetupsLogicCallback.SafeAny())
+
+            var steps = 0;
+            while (steps < BusinessLogicCallbacks.Count)
+            {
+                var callback = BusinessLogicCallbacks.ElementAt(steps);
+                if (SetupsLogicCallback.SafeAny())
+                {
+                    DisplayDividerLines(4);
+                }
+                Console.WriteLine($"{callback.Method.Name} started.");
+                await callback.Invoke();
+                Console.WriteLine($"{callback.Method.Name} finished successfully.");
+
+                if (steps + 1 != BusinessLogicCallbacks.Count)
+                {
+                    DisplayDividerLines();
+                    //Console.WriteLine();
+                }
+
+                steps++;
+            }
+            Console.WriteLine();
+            Console.WriteLine($"Business Logic finished successfully.");
+
+        }
+        finally
+        {
+            Console.WriteLine();
+            if (SummaryLogicCallback.SafeAny())
             {
                 DisplayDividerLines(4);
+                Console.WriteLine($"Post run started.");
+                foreach (var callback in SummaryLogicCallback)
+                {
+                    await callback.Invoke();
+                    DisplayDividerLines();
+                }
+                Console.WriteLine($"Post run ended succeffully.");
             }
-            Console.WriteLine($"{callback.Method.Name} started.");
-            await callback.Invoke();
-            Console.WriteLine($"{callback.Method.Name} finished successfully.");
-
-            if (steps + 1 != BusinessLogicCallbacks.Count)
+            else
             {
-                DisplayDividerLines();
-                //Console.WriteLine();
+                Console.WriteLine($"No post runs.");
+
             }
-
-            steps++;
         }
-        Console.WriteLine();
-        Console.WriteLine($"Business Logic finished successfully.");
-
-
-        Console.WriteLine();
-        if (SummaryLogicCallback.SafeAny())
-        {
-            DisplayDividerLines(4);
-            Console.WriteLine($"Post run started.");
-            foreach (var callback in SummaryLogicCallback)
-            {
-                await callback.Invoke();
-                DisplayDividerLines();
-            }
-            Console.WriteLine($"Post run ended succeffully.");
-        }
-        else
-        {
-            Console.WriteLine($"No post runs.");
-
-        }
-
-        Console.WriteLine($"{ScenarioName} finished successffully");
 
     }
 

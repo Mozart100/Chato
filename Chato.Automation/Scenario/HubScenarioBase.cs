@@ -16,13 +16,17 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
     protected const string Hub_Send_Message_Topic = nameof(ChatHub.SendMessageAllUsers);
 
     protected Dictionary<string, UserHubChat> Users;
+   
     protected HubConnection Connection;
+    protected SemaphoreSlim Signal;
+
 
 
     public HubScenarioBase(string baseUrl) : base(baseUrl)
     {
-
         Users = new Dictionary<string, UserHubChat>();
+        Signal = new SemaphoreSlim(0,1);
+
 
         Connection = new HubConnectionBuilder()
          .WithUrl(BaseUrl)
@@ -42,10 +46,10 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
 
         };
 
-        Listen();
+        //Listen();
     }
 
-    private void Listen()
+    protected async Task Listen()
     {
         Connection.On<string, string>(ChatHub.TOPIC_MESSAGE_RECEIVED, async (user, message) =>
         {
@@ -53,33 +57,23 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
             {
                 if (user.Equals(keyAndValue.Key, StringComparison.OrdinalIgnoreCase) == false)
                 {
-                    keyAndValue.Value.Received(user, message);
+                    var userHub = keyAndValue.Value;
+                    userHub.Received(user, message);
                 }
             }
 
             if  (Users.Values.All(x => x.IsSuccessful))
             {
                 await Connection.StopAsync();
-                ScenarioFinished();
-
+                Signal.Release();
             }
         });
+
+        await Signal.WaitAsync();
     }
 
     public async Task SendMessageToAllUSers(string userNameFrom, string message)
     {
         await Connection.SendAsync(Hub_Send_Message_Topic, userNameFrom, message);
-    }
-
-    private void ScenarioFinished()
-    {
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
     }
 }
