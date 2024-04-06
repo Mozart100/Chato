@@ -1,4 +1,5 @@
-﻿using Chato.Automation.Scenario;
+﻿using Chato.Automation.Infrastructure.Instruction;
+using Chato.Automation.Scenario;
 
 namespace Arkovean.Chat.Automation.Scenario;
 

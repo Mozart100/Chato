@@ -1,4 +1,6 @@
-﻿namespace Chato.Automation.Scenario;
+﻿using Chato.Automation.Scenario;
+
+namespace Chato.Automation.Infrastructure.Instruction;
 
 public class UserHubInstruction
 {
@@ -30,11 +32,11 @@ public class UserHubInstruction
 
 public class UserHubChat
 {
-    private readonly HubScenarioBase _hubConnection;
+    private readonly IHubConnector _hubConnection;
     private readonly Dictionary<string, Action<string, string>> _actions;
     private readonly UserHubInstruction _instruction;
 
-    public UserHubChat(HubScenarioBase hubConnection, string name)
+    public UserHubChat(IHubConnector hubConnection, string name)
     {
         _hubConnection = hubConnection;
         Name = name;

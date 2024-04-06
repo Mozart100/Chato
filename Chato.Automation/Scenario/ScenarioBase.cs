@@ -33,7 +33,7 @@ public abstract class ScenarioBase
         //_dateOnlyConverter = new DateOnlyJsonConverter();
     }
 
-    internal IAutomationLogger Logger { get; }
+    public IAutomationLogger Logger { get; }
 
     public string BaseUrl { get; }
 

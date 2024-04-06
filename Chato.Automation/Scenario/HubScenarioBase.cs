@@ -1,14 +1,23 @@
-﻿using Chato.Server.Hubs;
+﻿using Chato.Automation.Infrastructure;
+using Chato.Automation.Infrastructure.Instruction;
+using Chato.Server.Hubs;
 using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Chato.Automation.Scenario;
 
-public abstract class HubScenarioBase : ScenarioBase
+public interface IHubConnector
+{
+    Task SendMessageToAllUSers(string userNameFrom, string message);
+    IAutomationLogger Logger { get; }
+}
+
+public abstract class HubScenarioBase : ScenarioBase, IHubConnector
 {
     protected const string Hub_Send_Message_Topic = nameof(ChatHub.SendMessageAllUsers);
 
     protected Dictionary<string, UserHubChat> Users;
     protected HubConnection Connection;
+
 
     public HubScenarioBase(string baseUrl) : base(baseUrl)
     {
