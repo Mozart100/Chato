@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Arkovean.Chat.Automation", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chato.Server", "Chato.Server\Chato.Server.csproj", "{2BBBF510-2531-4129-ABF5-6A7FE3556AF3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Chato.Automation", "Chato.Automation\Chato.Automation.csproj", "{ECFD29D9-911E-4FC9-8252-47B289BF2163}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{2BBBF510-2531-4129-ABF5-6A7FE3556AF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2BBBF510-2531-4129-ABF5-6A7FE3556AF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2BBBF510-2531-4129-ABF5-6A7FE3556AF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECFD29D9-911E-4FC9-8252-47B289BF2163}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECFD29D9-911E-4FC9-8252-47B289BF2163}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECFD29D9-911E-4FC9-8252-47B289BF2163}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECFD29D9-911E-4FC9-8252-47B289BF2163}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
