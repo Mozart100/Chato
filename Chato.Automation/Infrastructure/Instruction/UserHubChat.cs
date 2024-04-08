@@ -1,55 +1,55 @@
-﻿using AutoMapper.Internal.Mappers;
-using Chato.Automation.Scenario;
+﻿using Chato.Automation.Scenario;
 
 namespace Chato.Automation.Infrastructure.Instruction;
+
+public record InstructionDetail(string Command, string From);
+
 
 public class UserHubInstruction
 {
     private const string Received_Instrauction = "received";
     private const string Publish_Instrauction = "publish";
+    private const string Wait_Instrauction = "publish";
 
     private readonly Queue<string> _instruction;
 
     public UserHubInstruction()
     {
         _instruction = new Queue<string>();
-
-        //Initialize();
     }
 
-    public void AddRecieveInstruction(string from ="server")
+    public void AddRecieveInstruction(string from = "server")
     {
         _instruction.Enqueue($"{Received_Instrauction};{from};");
     }
 
-    public bool InstructionAny => _instruction.Any();
-
-    private void Initialize()
+    public void AddWaitInstruction(string from = "server")
     {
-        for (int i = 0; i < 10; i++)
-        {
-            _instruction.Enqueue($"{Received_Instrauction};server;");
-        }
+        _instruction.Enqueue($"{Wait_Instrauction};{from};");
     }
 
-    public (string instruction, string from) GetInstruction()
+    public void AddPublishInstruction(string from = "server")
+    {
+        _instruction.Enqueue($"{Publish_Instrauction};{from};");
+    }
+
+    public bool InstructionAny => _instruction.Any();
+
+
+
+    public InstructionDetail GetInstruction()
     {
         var command = _instruction.Dequeue();
         var @arguments = command.Split(";");
 
-        return (@arguments[0], @arguments[1]);
+        return new InstructionDetail(@arguments[0], @arguments[1]);
     }
 }
 
-public class UserHubChatArgs : EventArgs
-{
-
-}
 
 public class UserHubChat
 {
     private readonly IHubConnector _hubConnection;
-    private readonly Dictionary<string, Action<string, string>> _actions;
     private readonly UserHubInstruction _instruction;
 
     public UserHubChat(IHubConnector hubConnection, string name)
@@ -58,14 +58,9 @@ public class UserHubChat
         Name = name;
 
         _instruction = new UserHubInstruction();
-
-
-        _actions = new Dictionary<string, Action<string, string>>();
     }
 
     public bool IsSuccessful => !_instruction.InstructionAny;
-
-    public event EventHandler<UserHubChatArgs> Finished;
 
     public string Name { get; }
 
@@ -75,6 +70,15 @@ public class UserHubChat
         _instruction.AddRecieveInstruction();
     }
 
+    public void AddWaitInstruction()
+    {
+        _instruction.AddWaitInstruction();
+    }
+
+    public void AddPublishInstruction()
+    {
+        _instruction.AddPublishInstruction();
+    }
 
     public Task SendAsync(string message)
     {
@@ -83,31 +87,18 @@ public class UserHubChat
 
     public void Received(string arrivedFrom, string message)
     {
-        var result = true;
 
         _hubConnection.Logger.Info($"{Name} - received from [{arrivedFrom}] [{message}]");
-        var (instruction,from) = _instruction.GetInstruction();
+        var instruction = _instruction.GetInstruction();
 
-        if(!from.Equals(arrivedFrom))
+        if (!instruction.From.Equals(arrivedFrom))
         {
-            //throw new Exception("xxx");
+            throw new Exception("xxx");
         }
 
-
-
-        //if (  Finished != null)
+        //if(_instruction.InstructionAny == false)
         //{
-        //    if(_instruction.InstructionAny == false)
-        //    {
-        //        Finished(this, new UserHubChatArgs { });
-        //    }
+
         //}
-
-
-        //var (instruction,from) = _instruction.GetInstruction();
-
-
-        //_actions[instruction](arrivedFrom, message);
     }
-
 }

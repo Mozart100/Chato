@@ -140,10 +140,8 @@ public abstract class ScenarioBase
             else
             {
                 Console.WriteLine($"No post runs.");
-
             }
         }
-
     }
 
     protected async Task<TDto> Get<TDto>(string url)

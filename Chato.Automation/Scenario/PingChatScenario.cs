@@ -1,6 +1,5 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
 using Chato.Automation.Scenario;
-using System.Collections.Generic;
 
 namespace Arkovean.Chat.Automation.Scenario;
 
@@ -47,6 +46,10 @@ internal class PingChatScenario : HubScenarioBase
     {
 
         await Listen();
+
+
+        await Signal.WaitAsync();
+
         //await Connection.SendAsync(Hub_Send_Message_Topic, "xxx", "yyyy");
 
         //await _user1.SendAsync("yyy");
