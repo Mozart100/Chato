@@ -20,7 +20,7 @@ internal class PingChatScenario : HubScenarioBase
 
   
     public override string ScenarioName => "PingChatHub";
-    public override string Description => "Testing connectivity of th hub";
+    public override string Description => "Testing connectivity of the hub";
 
     private async Task UserSetups()
     {
