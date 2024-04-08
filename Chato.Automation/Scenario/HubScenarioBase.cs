@@ -19,7 +19,7 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
 
     protected const string Hub_Send_Message_Topic = nameof(ChatHub.SendMessageAllUsers);
 
-    protected Dictionary<string, UserHubChat> Users;
+    protected Dictionary< UserHubChat,bool> Users;
 
     protected HubConnection Connection;
     protected SemaphoreSlim Signal;
@@ -28,7 +28,7 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
 
     public HubScenarioBase(string baseUrl) : base(baseUrl)
     {
-        Users = new Dictionary<string, UserHubChat>();
+        Users = new Dictionary<UserHubChat,bool>();
         Signal = new SemaphoreSlim(0, 1);
 
         _cancellationTokenSource = new CancellationTokenSource();
@@ -59,6 +59,8 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
 
     private async Task ListeningThread(CancellationToken token)
     {
+        int amountUsers = 0;
+
         while (token.IsCancellationRequested == false)
         {
             if (_receivedMessages.TryDequeue(out var message) == false)
@@ -67,17 +69,23 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
                 continue;
             }
 
-            foreach (var keyAndValue in Users)
+            foreach (var userAndStatus in Users.ToArray())
             {
-                if (message.From.Equals(keyAndValue.Key, StringComparison.OrdinalIgnoreCase) == false)
+                if (message.From.Equals(userAndStatus.Key.Name, StringComparison.OrdinalIgnoreCase) == false)
                 {
-                    var userHub = keyAndValue.Value;
-                    userHub.Received(message.From, message.Message);
+                    var status = Users[userAndStatus.Key]  = userAndStatus.Key.ReceivedAndCheck(message.From, message.Message);
+
+                    if(status)
+                    {
+                        amountUsers++;
+                    }
                 }
             }
 
-            if (Users.Values.All(x => x.IsSuccessful))
+            //if (Users.Keys.Allk(x => x.IsSuccessful))
+            if (amountUsers == Users.Count)
             {
+
                 _cancellationTokenSource.Cancel();
                 await Connection.StopAsync();
                 Signal.Release();

@@ -50,34 +50,50 @@ public class UserHubInstruction
 public class UserHubChat
 {
     private readonly IHubConnector _hubConnection;
-    private readonly UserHubInstruction _instruction;
+    private readonly UserHubInstruction _instructions;
 
     public UserHubChat(IHubConnector hubConnection, string name)
     {
         _hubConnection = hubConnection;
         Name = name;
 
-        _instruction = new UserHubInstruction();
+        _instructions = new UserHubInstruction();
     }
 
-    public bool IsSuccessful => !_instruction.InstructionAny;
+    public override bool Equals(object? obj)
+    {
+        if ( obj != null && obj is UserHubChat user)
+        {
+            return Name.Equals(user.Name);  
+        }
+
+        return false;
+    }
+
+    public override int GetHashCode()
+    {
+        return Name.GetHashCode();
+    }
+
+
+    public bool IsSuccessful => !_instructions.InstructionAny;
 
     public string Name { get; }
 
 
     public void AddRecieveInstruction()
     {
-        _instruction.AddRecieveInstruction();
+        _instructions.AddRecieveInstruction();
     }
 
     public void AddWaitInstruction()
     {
-        _instruction.AddWaitInstruction();
+        _instructions.AddWaitInstruction();
     }
 
     public void AddPublishInstruction()
     {
-        _instruction.AddPublishInstruction();
+        _instructions.AddPublishInstruction();
     }
 
     public Task SendAsync(string message)
@@ -85,20 +101,17 @@ public class UserHubChat
         return _hubConnection.SendMessageToAllUSers(Name, message);
     }
 
-    public void Received(string arrivedFrom, string message)
+    public bool ReceivedAndCheck(string arrivedFrom, string message)
     {
 
         _hubConnection.Logger.Info($"{Name} - received from [{arrivedFrom}] [{message}]");
-        var instruction = _instruction.GetInstruction();
+        var instruction = _instructions.GetInstruction();
 
         if (!instruction.From.Equals(arrivedFrom))
         {
             throw new Exception("xxx");
         }
 
-        //if(_instruction.InstructionAny == false)
-        //{
-
-        //}
+        return _instructions.InstructionAny == false;
     }
 }

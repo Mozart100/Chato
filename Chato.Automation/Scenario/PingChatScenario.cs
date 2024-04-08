@@ -17,7 +17,7 @@ internal class PingChatScenario : HubScenarioBase
         SummaryLogicCallback.Add(Cleannup);
     }
 
-  
+
     public override string ScenarioName => "PingChatHub";
     public override string Description => "Testing connectivity of the hub";
 
@@ -27,8 +27,8 @@ internal class PingChatScenario : HubScenarioBase
         _user2 = new UserHubChat(this, "nathan");
 
 
-        Users.Add(_user1.Name, _user1);
-        Users.Add(_user2.Name, _user2);
+        Users.Add(_user1, false);
+        Users.Add(_user2, false);
 
 
         for (int i = 0; i < 5; i++)
