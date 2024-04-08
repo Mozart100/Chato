@@ -132,7 +132,10 @@ public abstract class ScenarioBase
                 Console.WriteLine($"Post run started.");
                 foreach (var callback in SummaryLogicCallback)
                 {
+                    Console.WriteLine($"{callback.Method.Name} started.");
                     await callback.Invoke();
+                    Console.WriteLine($"{callback.Method.Name} finished successfully.");
+                    //await callback.Invoke();kc
                     DisplayDividerLines();
                 }
                 Console.WriteLine($"Post run ended succeffully.");

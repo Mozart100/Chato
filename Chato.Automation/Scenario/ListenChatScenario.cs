@@ -3,13 +3,12 @@ using Chato.Automation.Scenario;
 
 namespace Arkovean.Chat.Automation.Scenario;
 
-internal class PingChatScenario : HubScenarioBase
+internal class ListenChatScenario : HubScenarioBase
 {
     private UserHubChat _user1;
     private UserHubChat _user2;
 
-
-    public PingChatScenario(string baseUrl) : base(baseUrl)
+    public ListenChatScenario(string baseUrl) : base(baseUrl)
     {
 
         SetupsLogicCallback.Add(UserSetups);
@@ -18,7 +17,7 @@ internal class PingChatScenario : HubScenarioBase
     }
 
 
-    public override string ScenarioName => "PingChatHub";
+    public override string ScenarioName => "ListenScenario";
     public override string Description => "Testing connectivity of the hub";
 
     private async Task UserSetups()
@@ -26,10 +25,7 @@ internal class PingChatScenario : HubScenarioBase
         _user1 = new UserHubChat(this, "anatoliy");
         _user2 = new UserHubChat(this, "nathan");
 
-
-        Users.Add(_user1, false);
-        Users.Add(_user2, false);
-
+        AddUsers( _user1 , _user2);
 
         for (int i = 0; i < 5; i++)
         {
@@ -37,34 +33,18 @@ internal class PingChatScenario : HubScenarioBase
             _user2.AddRecieveInstruction();
         }
 
-        await Task.Delay(5 * 1000);
+        //await Task.Delay(5 * 1000);
         await Connection.StartAsync();
     }
 
 
     private async Task ListenStep()
     {
+        StartSignal.Release();
 
         await Listen();
 
-
-        await Signal.WaitAsync();
-
-        //await Connection.SendAsync(Hub_Send_Message_Topic, "xxx", "yyyy");
-
-        //await _user1.SendAsync("yyy");
-
-
-        //await _signal.WaitAsync(TimeSpan.FromSeconds(20));
-
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
-        Logger.Info("Fiinished");
+        await FinishedSignal.WaitAsync();
     }
 
     private async Task Cleannup()
@@ -74,5 +54,4 @@ internal class PingChatScenario : HubScenarioBase
             await Connection.StopAsync();
         }
     }
-
 }

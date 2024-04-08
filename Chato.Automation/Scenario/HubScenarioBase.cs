@@ -16,20 +16,22 @@ public record HubMessageRecieved(string From, string Message);
 
 public abstract class HubScenarioBase : ScenarioBase, IHubConnector
 {
-
     protected const string Hub_Send_Message_Topic = nameof(ChatHub.SendMessageAllUsers);
 
-    protected Dictionary< UserHubChat,bool> Users;
+    protected Dictionary<UserHubChat, bool> Users;
 
     protected HubConnection Connection;
-    protected SemaphoreSlim Signal;
+    protected SemaphoreSlim FinishedSignal;
+    protected SemaphoreSlim StartSignal;
+
     private readonly CancellationTokenSource _cancellationTokenSource;
     private Queue<HubMessageRecieved> _receivedMessages;
 
     public HubScenarioBase(string baseUrl) : base(baseUrl)
     {
-        Users = new Dictionary<UserHubChat,bool>();
-        Signal = new SemaphoreSlim(0, 1);
+        Users = new Dictionary<UserHubChat, bool>();
+        FinishedSignal = new SemaphoreSlim(0, 1);
+        StartSignal = new SemaphoreSlim(0, 1);
 
         _cancellationTokenSource = new CancellationTokenSource();
 
@@ -55,11 +57,18 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
             return Task.CompletedTask;
 
         };
+
+
+        SummaryLogicCallback.Add(DisposeResources);
     }
+
+    
 
     private async Task ListeningThread(CancellationToken token)
     {
-        int amountUsers = 0;
+        await StartSignal.WaitAsync();
+
+        int amountUsers = Users.Count;
 
         while (token.IsCancellationRequested == false)
         {
@@ -71,25 +80,32 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
 
             foreach (var userAndStatus in Users.ToArray())
             {
-                if (message.From.Equals(userAndStatus.Key.Name, StringComparison.OrdinalIgnoreCase) == false)
+                if (message.From.Equals(userAndStatus.Key.Name, StringComparison.OrdinalIgnoreCase) == false || Users[userAndStatus.Key] == false)
                 {
-                    var status = Users[userAndStatus.Key]  = userAndStatus.Key.ReceivedAndCheck(message.From, message.Message);
+                    var status = Users[userAndStatus.Key] = userAndStatus.Key.ReceivedAndCheck(message.From, message.Message);
 
-                    if(status)
+                    if (status)
                     {
-                        amountUsers++;
+                        amountUsers--;
                     }
                 }
             }
 
-            //if (Users.Keys.Allk(x => x.IsSuccessful))
-            if (amountUsers == Users.Count)
+            if (amountUsers <= 0)
             {
-
                 _cancellationTokenSource.Cancel();
                 await Connection.StopAsync();
-                Signal.Release();
+                FinishedSignal.Release();
             }
+        }
+    }
+
+    protected void AddUsers(params UserHubChat[] users)
+    {
+
+        foreach (var user in users)
+        {
+            Users.Add(user, false);
         }
     }
 
@@ -104,5 +120,12 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
     public async Task SendMessageToAllUSers(string userNameFrom, string message)
     {
         await Connection.SendAsync(Hub_Send_Message_Topic, userNameFrom, message);
+    }
+
+
+    private async Task DisposeResources()
+    {
+       StartSignal?.Dispose();
+        FinishedSignal?.Dispose();
     }
 }
