@@ -4,8 +4,8 @@ var baseUrl = "https://localhost:7138/chat";
 
 
 
-var listenScenario = new ListenChatScenario(baseUrl);
-await listenScenario.StartRunScenario();
+var twoUsersListenScenario = new TwoUsersListenChatScenario(baseUrl);
+await twoUsersListenScenario.StartRunScenario();
 
 
 Console.WriteLine("All test passed successfully!!!!!");

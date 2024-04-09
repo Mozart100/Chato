@@ -3,12 +3,12 @@ using Chato.Automation.Scenario;
 
 namespace Arkovean.Chat.Automation.Scenario;
 
-internal class ListenChatScenario : HubScenarioBase
+internal class TwoUsersListenChatScenario : HubScenarioBase
 {
     private UserHubChat _user1;
     private UserHubChat _user2;
 
-    public ListenChatScenario(string baseUrl) : base(baseUrl)
+    public TwoUsersListenChatScenario(string baseUrl) : base(baseUrl)
     {
 
         SetupsLogicCallback.Add(UserSetups);
