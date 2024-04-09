@@ -1,8 +1,9 @@
 ﻿using Chato.Automation.Scenario;
+using FluentAssertions;
 
 namespace Chato.Automation.Infrastructure.Instruction;
 
-public record InstructionDetail(string Command, string From);
+public record InstructionDetail(string Command, string From,string Message);
 
 
 public class UserHubInstruction
@@ -18,9 +19,9 @@ public class UserHubInstruction
         _instruction = new Queue<string>();
     }
 
-    public void AddRecieveInstruction(string from = "server")
+    public void AddRecieveInstruction(string message , string from = "server")
     {
-        _instruction.Enqueue($"{Received_Instrauction};{from};");
+        _instruction.Enqueue($"{Received_Instrauction};{from};{message}");
     }
 
     public void AddWaitInstruction(string from = "server")
@@ -28,9 +29,9 @@ public class UserHubInstruction
         _instruction.Enqueue($"{Wait_Instrauction};{from};");
     }
 
-    public void AddPublishInstruction(string from = "server")
+    public void AddPublishInstruction(string from ,string messge)
     {
-        _instruction.Enqueue($"{Publish_Instrauction};{from};");
+        _instruction.Enqueue($"{Publish_Instrauction};{from};{messge}");
     }
 
     public bool InstructionAny => _instruction.Any();
@@ -42,7 +43,7 @@ public class UserHubInstruction
         var command = _instruction.Dequeue();
         var @arguments = command.Split(";");
 
-        return new InstructionDetail(@arguments[0], @arguments[1]);
+        return new InstructionDetail(@arguments[0], @arguments[1], arguments[2]);
     }
 }
 
@@ -81,9 +82,9 @@ public class UserHubChat
     public string Name { get; }
 
 
-    public void AddRecieveInstruction()
+    public void AddRecieveInstruction(string message)
     {
-        _instructions.AddRecieveInstruction();
+        _instructions.AddRecieveInstruction(message);
     }
 
     public void AddWaitInstruction()
@@ -91,9 +92,9 @@ public class UserHubChat
         _instructions.AddWaitInstruction();
     }
 
-    public void AddPublishInstruction()
+    public void AddPublishInstruction(string message)
     {
-        _instructions.AddPublishInstruction();
+        _instructions.AddPublishInstruction(Name,message);
     }
 
     public Task SendAsync(string message)
@@ -107,10 +108,9 @@ public class UserHubChat
         _hubConnection.Logger.Info($"{Name} - received from [{arrivedFrom}] [{message}]");
         var instruction = _instructions.GetInstruction();
 
-        if (!instruction.From.Equals(arrivedFrom))
-        {
-            throw new Exception("xxx");
-        }
+
+        instruction.From.Should().Be(arrivedFrom);
+        instruction.Message.Should().Be(message);
 
         return _instructions.InstructionAny == false;
     }

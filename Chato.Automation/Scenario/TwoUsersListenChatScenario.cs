@@ -1,5 +1,6 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
 using Chato.Automation.Scenario;
+using Chato.Server.BackgroundTasks;
 
 namespace Arkovean.Chat.Automation.Scenario;
 
@@ -29,8 +30,10 @@ internal class TwoUsersListenChatScenario : HubScenarioBase
 
         for (int i = 0; i < 5; i++)
         {
-            _user1.AddRecieveInstruction();
-            _user2.AddRecieveInstruction();
+            var message = string.Format(TestBackgroundTask.MessageTemplate, "xxx");
+
+            _user1.AddRecieveInstruction(message);
+            _user2.AddRecieveInstruction(message);
         }
 
         //await Task.Delay(5 * 1000);
