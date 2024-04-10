@@ -1,52 +1,44 @@
 ﻿using Chato.Automation.Scenario;
 using FluentAssertions;
+using FluentAssertions.Specialized;
 
 namespace Chato.Automation.Infrastructure.Instruction;
 
-public record InstructionDetail(string Command, string From,string Message);
-
-
-public class UserHubInstruction
+public abstract class UserChatBase
 {
-    private const string Received_Instrauction = "received";
-    private const string Publish_Instrauction = "publish";
-    private const string Wait_Instrauction = "publish";
+    private readonly IHubConnector _hubConnection;
+    private readonly UserHubInstruction _instructions;
 
-    private readonly Queue<string> _instruction;
-
-    public UserHubInstruction()
+    public UserChatBase(IHubConnector hubConnection, string name)
     {
-        _instruction = new Queue<string>();
+        _hubConnection = hubConnection;
+        Name = name;
+
+        _instructions = new UserHubInstruction();
     }
 
-    public void AddRecieveInstruction(string message , string from = "server")
+    public override bool Equals(object? obj)
     {
-        _instruction.Enqueue($"{Received_Instrauction};{from};{message}");
+        if (obj != null && obj is UserHubChat user)
+        {
+            return Name.Equals(user.Name);
+        }
+
+        return false;
     }
 
-    public void AddWaitInstruction(string from = "server")
+    public override int GetHashCode()
     {
-        _instruction.Enqueue($"{Wait_Instrauction};{from};");
+        return Name.GetHashCode();
     }
 
-    public void AddPublishInstruction(string from ,string messge)
-    {
-        _instruction.Enqueue($"{Publish_Instrauction};{from};{messge}");
-    }
+    public bool IsSuccessful => !_instructions.InstructionAny;
 
-    public bool InstructionAny => _instruction.Any();
+    public string Name { get; }
 
 
 
-    public InstructionDetail GetInstruction()
-    {
-        var command = _instruction.Dequeue();
-        var @arguments = command.Split(";");
-
-        return new InstructionDetail(@arguments[0], @arguments[1], arguments[2]);
-    }
 }
-
 
 public class UserHubChat
 {
@@ -58,14 +50,16 @@ public class UserHubChat
         _hubConnection = hubConnection;
         Name = name;
 
+        _actions = new Dictionary<string, Func<string, Task>>();
+        _actions.Add(UserHubInstruction.Publish_Instrauction, SendAsync);
         _instructions = new UserHubInstruction();
     }
 
     public override bool Equals(object? obj)
     {
-        if ( obj != null && obj is UserHubChat user)
+        if (obj != null && obj is UserHubChat user)
         {
-            return Name.Equals(user.Name);  
+            return Name.Equals(user.Name);
         }
 
         return false;
@@ -81,10 +75,11 @@ public class UserHubChat
 
     public string Name { get; }
 
+    private readonly Dictionary<string, Func<string, Task>> _actions;
 
     public void AddRecieveInstruction(string message, string from)
     {
-        _instructions.AddRecieveInstruction(message,from);
+        _instructions.AddRecieveInstruction(message, from);
     }
 
     public void AddWaitInstruction()
@@ -94,7 +89,17 @@ public class UserHubChat
 
     public void AddPublishInstruction(string message)
     {
-        _instructions.AddPublishInstruction(Name,message);
+        _instructions.AddPublishInstruction(Name, message);
+    }
+
+    public async Task ExecuteAsync()
+    {
+        var instruction = _instructions.GetInstruction();
+
+        if (instruction.Command.Equals(UserHubInstruction.Publish_Instrauction))
+        {
+            await SendAsync(instruction.Message);
+        }
     }
 
     public Task SendAsync(string message)

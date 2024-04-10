@@ -1,0 +1,50 @@
+﻿namespace Chato.Automation.Infrastructure.Instruction;
+
+public record InstructionDetail(string Command, string From, string Message);
+
+public class UserHubInstruction
+{
+
+    private const string Received_Instrauction = "received";
+    public const string Publish_Instrauction = "publish";
+    public const string Wait_Instrauction = "wait";
+
+    private readonly Queue<string> _instruction;
+
+    public UserHubInstruction()
+    {
+        _instruction = new Queue<string>();
+    }
+
+    public string Peek() => _instruction.Peek();    
+    public bool IsInstructionToPublish=> _instruction.Peek().Equals("xxx");
+    public bool IsInstructionToReceive=> _instruction.Peek().Equals("xxx");
+    public bool IsInstructionToWait => _instruction.Peek().Equals("xxx");
+
+    public void AddRecieveInstruction(string message , string from = "server")
+    {
+        _instruction.Enqueue($"{Received_Instrauction};{from};{message}");
+    }
+
+    public void AddWaitInstruction(string from = "server")
+    {
+        _instruction.Enqueue($"{Wait_Instrauction};{from};");
+    }
+
+    public void AddPublishInstruction(string from ,string messge)
+    {
+        _instruction.Enqueue($"{Publish_Instrauction};{from};{messge}");
+    }
+
+    public bool InstructionAny => _instruction.Any();
+
+
+
+    public InstructionDetail GetInstruction()
+    {
+        var command = _instruction.Dequeue();
+        var @arguments = command.Split(";");
+
+        return new InstructionDetail(@arguments[0], @arguments[1], arguments[2]);
+    }
+}

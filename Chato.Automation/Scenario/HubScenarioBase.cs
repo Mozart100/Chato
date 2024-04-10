@@ -62,7 +62,7 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
         SummaryLogicCallback.Add(DisposeResources);
     }
 
-    
+
 
     private async Task ListeningThread(CancellationToken token)
     {
@@ -121,13 +121,16 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
 
     public async Task SendMessageToAllUSers(string userNameFrom, string message)
     {
+        var user = Users.FirstOrDefault(x => x.Key.Name == userNameFrom).Key;
+        //user.
+
         await Connection.SendAsync(Hub_Send_Message_Topic, userNameFrom, message);
     }
 
 
     private async Task DisposeResources()
     {
-       StartListeningSignal?.Dispose();
+        StartListeningSignal?.Dispose();
         FinishedSignal?.Dispose();
     }
 }
