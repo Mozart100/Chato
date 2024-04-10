@@ -32,18 +32,17 @@ internal class TwoUsersListenChatScenario : HubScenarioBase
         {
             var message = string.Format(TestBackgroundTask.MessageTemplate, "xxx");
 
-            _user1.AddRecieveInstruction(message);
-            _user2.AddRecieveInstruction(message);
+            _user1.AddRecieveInstruction(message,"server");
+            _user2.AddRecieveInstruction(message,"server");
         }
 
-        //await Task.Delay(5 * 1000);
         await Connection.StartAsync();
     }
 
 
     private async Task ListenStep()
     {
-        StartSignal.Release();
+        StartListeningSignal.Release();
 
         await Listen();
 

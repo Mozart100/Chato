@@ -82,9 +82,9 @@ public class UserHubChat
     public string Name { get; }
 
 
-    public void AddRecieveInstruction(string message)
+    public void AddRecieveInstruction(string message, string from)
     {
-        _instructions.AddRecieveInstruction(message);
+        _instructions.AddRecieveInstruction(message,from);
     }
 
     public void AddWaitInstruction()

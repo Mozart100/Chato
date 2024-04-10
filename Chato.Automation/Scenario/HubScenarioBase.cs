@@ -22,7 +22,7 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
 
     protected HubConnection Connection;
     protected SemaphoreSlim FinishedSignal;
-    protected SemaphoreSlim StartSignal;
+    protected SemaphoreSlim StartListeningSignal;
 
     private readonly CancellationTokenSource _cancellationTokenSource;
     private Queue<HubMessageRecieved> _receivedMessages;
@@ -31,7 +31,7 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
     {
         Users = new Dictionary<UserHubChat, bool>();
         FinishedSignal = new SemaphoreSlim(0, 1);
-        StartSignal = new SemaphoreSlim(0, 1);
+        StartListeningSignal = new SemaphoreSlim(0, 1);
 
         _cancellationTokenSource = new CancellationTokenSource();
 
@@ -66,7 +66,7 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
 
     private async Task ListeningThread(CancellationToken token)
     {
-        await StartSignal.WaitAsync();
+        await StartListeningSignal.WaitAsync();
 
         int amountUsers = Users.Count;
 
@@ -98,6 +98,8 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
                 FinishedSignal.Release();
             }
         }
+
+        Logger.Info("Listening Thread finished.");
     }
 
     protected void AddUsers(params UserHubChat[] users)
@@ -125,7 +127,7 @@ public abstract class HubScenarioBase : ScenarioBase, IHubConnector
 
     private async Task DisposeResources()
     {
-       StartSignal?.Dispose();
+       StartListeningSignal?.Dispose();
         FinishedSignal?.Dispose();
     }
 }
