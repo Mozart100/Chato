@@ -1,30 +1,13 @@
-﻿using Microsoft.AspNetCore.Localization;
-
-namespace Chato.Automation.Infrastructure.Instruction;
+﻿namespace Chato.Automation.Infrastructure.Instruction;
 
 public class InstructionGraph
 {
-    public class Node
-    {
-        public Node(UserHubChat user)
-        {
-            User = user;
-            Children = new HashSet<Node>();
-        }
-
-        public string UserName => User.Name;
-
-        public UserHubChat User { get; }
-        public HashSet<Node> Children { get; }
-    }
-
-    private readonly Node _root;
-    private int _level;
-    private Queue<Node> _current;
+    private readonly InstructionNode _root;
+    private Queue<InstructionNode> _current;
 
     public InstructionGraph()
     {
-        _current = new Queue<Node>();
+        _current = new Queue<InstructionNode>();
         Initialize();
     }
 
@@ -33,21 +16,31 @@ public class InstructionGraph
         _current.Enqueue(_root);
     }
 
-    public async Task Pulse()
+    public async Task<IEnumerable<InstructionNodeInfo>> Pulse()
     {
-        var count = _current.Count;
+        var instructions = new List<InstructionNodeInfo>();
+
         var items = _current.ToArray();
-        
-        _current.Clear();   
+
+        _current.Clear();
         foreach (var item in items)
         {
-            await item.User.ExecuteAsync();
+            var instructionInfo = new InstructionNodeInfo
+            {
+               Instruction = item.Instruction,
+               Message = item.Message,
+            };
+
+            instructions.Add(instructionInfo);
             foreach (var child in item.Children)
             {
-                _current.Enqueue(child);    
+                _current.Enqueue(child);
             }
         }
+
+        return instructions;
     }
+
     //public void Pulse_Origin()
     //{
 

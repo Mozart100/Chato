@@ -11,7 +11,8 @@ public interface IHubConnector
     IAutomationLogger Logger { get; }
 }
 
-public record HubMessageRecieved(string From, string Message);
+
+ public record HubMessageRecieved(string From, string Message);
 
 
 public abstract class HubScenarioBase : ScenarioBase, IHubConnector

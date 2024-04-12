@@ -5,7 +5,7 @@ public record InstructionDetail(string Command, string From, string Message);
 public class UserHubInstruction
 {
 
-    private const string Received_Instrauction = "received";
+    public const string Received_Instrauction = "received";
     public const string Publish_Instrauction = "publish";
     public const string Wait_Instrauction = "wait";
 
