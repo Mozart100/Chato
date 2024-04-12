@@ -18,6 +18,11 @@ internal class TwoUsersSendMessageScenario : InstructionScenarioBase
 
     private async Task UserSetups()
     {
+
+        await Connection.StartAsync(); 
+
+         await Listen();
+
         var message_1 = "Shalom";
 
         var anatoliySender = InstructionNodeFluentApi.Start("anatoiiy").Send(message_1);

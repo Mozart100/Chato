@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Chato.Automation.Scenario;
 
- public record HubMessageRecieved(string From, string Message);
+public record HubMessageRecieved(string From, string Message);
 
 public abstract class InstructionScenarioBase : ScenarioBase
 {
@@ -42,6 +42,8 @@ public abstract class InstructionScenarioBase : ScenarioBase
         };
     }
 
+
+
     protected async Task InstructionExecuter(InstructionGraph graph)
     {
         var instructions = await graph.Pulse();
@@ -50,13 +52,13 @@ public abstract class InstructionScenarioBase : ScenarioBase
         {
             if (instruction.Instruction.Equals(UserHubInstruction.Publish_Instrauction))
             {
-                await SendMessageToAllUSers("xxx", instruction.Message);
+                await SendMessageToAllUSers(userNameFrom: instruction.FromArrived, message: instruction.Message);
                 continue;
             }
 
             if (instruction.Instruction.Equals(UserHubInstruction.Received_Instrauction))
             {
-                var nessageReceived  = _receivedMessages.Dequeue();
+                var nessageReceived = _receivedMessages.Dequeue();
 
                 nessageReceived.From.Should().Be(instruction.FromArrived);
                 nessageReceived.Message.Should().Be(instruction.Message);

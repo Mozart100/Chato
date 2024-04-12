@@ -22,7 +22,7 @@ namespace Chato.Server.BackgroundTasks
             while (index < 50)
             {
                 var message = string.Format(MessageTemplate, "xxx");
-                await _hubContext.Clients.All.SendAsync(ChatHub.TOPIC_MESSAGE_RECEIVED, $"server", $"{message}");
+            //    await _hubContext.Clients.All.SendAsync(ChatHub.TOPIC_MESSAGE_RECEIVED, $"server", $"{message}");
                 await Task.Delay(2000);
 
                 index++;
