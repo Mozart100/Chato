@@ -1,22 +1,16 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
 using Chato.Automation.Scenario;
-using FluentAssertions.Equivalency;
 
 namespace Arkovean.Chat.Automation.Scenario;
 
-internal class TwoUsersSendMessageScenario : HubScenarioBase
+internal class TwoUsersSendMessageScenario : InstructionScenarioBase
 {
-    private UserHubChat _anatoliy;
-    private UserHubChat _olessya;
-
     public TwoUsersSendMessageScenario(string baseUrl) : base(baseUrl)
     {
 
         SetupsLogicCallback.Add(UserSetups);
         BusinessLogicCallbacks.Add(SendingStep);
-        //SummaryLogicCallback.Add(Cleannup);
     }
-
 
     public override string ScenarioName => "Sending Message";
 
@@ -38,15 +32,17 @@ internal class TwoUsersSendMessageScenario : HubScenarioBase
 
         anatoliySender.Connect(olessyaReceive).Connect(olessyaSender).Connect(anatoliyReceiver);
 
-        await Connection.StartAsync();
+        var graph = new InstructionGraph(anatoliySender);
+
+        await InstructionExecuter(graph);
     }
 
     private async Task SendingStep()
     {
-        StartListeningSignal.Release();
+        //StartListeningSignal.Release();
 
-        await Listen();
+        //await Listen();
 
-        await FinishedSignal.WaitAsync();
+        //await FinishedSignal.WaitAsync();
     }
 }

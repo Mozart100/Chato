@@ -5,11 +5,12 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Chato.Automation.Scenario;
 
+ public record HubMessageRecieved(string From, string Message);
+
 public abstract class InstructionScenarioBase : ScenarioBase
 {
     protected const string Hub_Send_Message_Topic = nameof(ChatHub.SendMessageAllUsers);
 
-    protected Dictionary<UserHubChat, bool> Users;
 
     protected HubConnection Connection;
     //protected SemaphoreSlim FinishedSignal;
@@ -20,15 +21,6 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
     public InstructionScenarioBase(string baseUrl) : base(baseUrl)
     {
-        Users = new Dictionary<UserHubChat, bool>();
-        //FinishedSignal = new SemaphoreSlim(0, 1);
-        //StartListeningSignal = new SemaphoreSlim(0, 1);
-
-        //_cancellationTokenSource = new CancellationTokenSource();
-
-        //Task.Run(async () => await ListeningThread(_cancellationTokenSource.Token));
-
-
         _receivedMessages = new Queue<HubMessageRecieved>();
 
         Connection = new HubConnectionBuilder()
@@ -50,7 +42,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
         };
     }
 
-    public async Task InstructionExecuter(InstructionGraph graph)
+    protected async Task InstructionExecuter(InstructionGraph graph)
     {
         var instructions = await graph.Pulse();
 
@@ -74,13 +66,8 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
     public async Task SendMessageToAllUSers(string userNameFrom, string message)
     {
-        var user = Users.FirstOrDefault(x => x.Key.Name == userNameFrom).Key;
-        //user.
-
         await Connection.SendAsync(Hub_Send_Message_Topic, userNameFrom, message);
     }
-
-
 
     protected async Task Listen()
     {

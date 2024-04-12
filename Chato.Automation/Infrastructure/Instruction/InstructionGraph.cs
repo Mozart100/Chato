@@ -5,8 +5,9 @@ public class InstructionGraph
     private readonly InstructionNode _root;
     private Queue<InstructionNode> _current;
 
-    public InstructionGraph()
+    public InstructionGraph(InstructionNode root)
     {
+        _root = root;   
         _current = new Queue<InstructionNode>();
         Initialize();
     }
@@ -29,6 +30,7 @@ public class InstructionGraph
             {
                Instruction = item.Instruction,
                Message = item.Message,
+               UserName = item.UserName,
             };
 
             instructions.Add(instructionInfo);

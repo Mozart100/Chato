@@ -8,7 +8,7 @@ public class InstructionNodeInfo
     public string? FromArrived { get; set; }
 }
 
-public class InstructionNode
+public class InstructionNode : InstructionNodeInfo
 {
     public InstructionNode(string userName , string instruction, string message , string ? fromArrived)
     {
@@ -20,10 +20,6 @@ public class InstructionNode
     }
 
     public HashSet<InstructionNode> Children { get; }
-    public string UserName { get; }
-    public string Instruction { get; }
-    public string Message { get; }
-    public string? FromArrived { get; }
 }
 
 
