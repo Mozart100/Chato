@@ -48,7 +48,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
     protected async Task InstructionExecuter(InstructionGraph graph)
     {
-        var instructions = await graph.Pulse();
+        var instructions = await graph.MoveNext();
 
         while (instructions.Any())
         {
@@ -71,12 +71,14 @@ public abstract class InstructionScenarioBase : ScenarioBase
                 }
             }
 
-            instructions = await graph.Pulse();
+            instructions = await graph.MoveNext();
         }
     }
 
     public async Task SendMessageToAllUSers(string userNameFrom, string message)
     {
+        Logger.Info($"{userNameFrom} sening message [{message}].");
+
         await Connection.SendAsync(Hub_Send_Message_Topic, userNameFrom, message);
     }
 

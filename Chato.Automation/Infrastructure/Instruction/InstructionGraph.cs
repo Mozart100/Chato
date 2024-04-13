@@ -3,7 +3,7 @@
 public class InstructionGraph
 {
     private readonly InstructionNode _root;
-    private Queue<InstructionNode> _current;
+    private readonly Queue<InstructionNode> _current;
 
     public InstructionGraph(InstructionNode root)
     {
@@ -17,7 +17,7 @@ public class InstructionGraph
         _current.Enqueue(_root);
     }
 
-    public async Task<IEnumerable<InstructionNodeInfo>> Pulse()
+    public async Task<IEnumerable<InstructionNodeInfo>> MoveNext()
     {
         var instructions = new List<InstructionNodeInfo>();
 
@@ -44,25 +44,4 @@ public class InstructionGraph
         return instructions;
     }
 
-    //public void Pulse_Origin()
-    //{
-
-    //    var queue = new Queue<Node>();
-    //    queue.Enqueue(_root);
-
-
-    //    while (queue.Count > 0)
-    //    {
-    //        var item = queue.Dequeue();
-    //        if (item.Name == "xxx")
-    //        {
-    //            return;
-    //        }
-
-    //        foreach (var child in item.Children)
-    //        {
-    //            queue.Enqueue(child);
-    //        }
-    //    }
-    //}
 }
