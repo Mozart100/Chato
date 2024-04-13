@@ -3,13 +3,13 @@ using Chato.Automation.Scenario;
 
 namespace Arkovean.Chat.Automation.Scenario;
 
-internal class TwoUsersSendMessageScenario : InstructionScenarioBase
+internal class TwoUsersHandShakeScenario : InstructionScenarioBase
 {
-    public TwoUsersSendMessageScenario(string baseUrl) : base(baseUrl)
+    public TwoUsersHandShakeScenario(string baseUrl) : base(baseUrl)
     {
 
         SetupsLogicCallback.Add(UserSetups);
-        BusinessLogicCallbacks.Add(SendingStep);
+        BusinessLogicCallbacks.Add(HandShakeStep);
 
         IgnoreUsers.Add("server");
     }
@@ -26,7 +26,7 @@ internal class TwoUsersSendMessageScenario : InstructionScenarioBase
          await Listen();
     }
 
-    private async Task SendingStep()
+    private async Task HandShakeStep()
     {
         var message_1 = "Shalom";
 
