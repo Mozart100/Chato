@@ -31,6 +31,7 @@ public class InstructionGraph
                Instruction = item.Instruction,
                Message = item.Message,
                UserName = item.UserName,
+               FromArrived = item.FromArrived
             };
 
             instructions.Add(instructionInfo);

@@ -10,6 +10,8 @@ internal class TwoUsersSendMessageScenario : InstructionScenarioBase
 
         SetupsLogicCallback.Add(UserSetups);
         BusinessLogicCallbacks.Add(SendingStep);
+
+        IgnoreUsers.Add("server");
     }
 
     public override string ScenarioName => "Sending Message";
@@ -22,7 +24,10 @@ internal class TwoUsersSendMessageScenario : InstructionScenarioBase
         await Connection.StartAsync(); 
 
          await Listen();
+    }
 
+    private async Task SendingStep()
+    {
         var message_1 = "Shalom";
 
         var anatoliySender = InstructionNodeFluentApi.Start("anatoiiy").Send(message_1);
@@ -32,7 +37,7 @@ internal class TwoUsersSendMessageScenario : InstructionScenarioBase
         var message_2 = "Shalom to you too";
 
         var olessyaSender = InstructionNodeFluentApi.Start("olessya").Send(message_2);
-        var anatoliyReceiver = InstructionNodeFluentApi.Start("anatoliy").Receive( olessyaSender.UserName, message_2);
+        var anatoliyReceiver = InstructionNodeFluentApi.Start("anatoliy").Receive(olessyaSender.UserName, message_2);
 
 
         anatoliySender.Connect(olessyaReceive).Connect(olessyaSender).Connect(anatoliyReceiver);
@@ -40,14 +45,5 @@ internal class TwoUsersSendMessageScenario : InstructionScenarioBase
         var graph = new InstructionGraph(anatoliySender);
 
         await InstructionExecuter(graph);
-    }
-
-    private async Task SendingStep()
-    {
-        //StartListeningSignal.Release();
-
-        //await Listen();
-
-        //await FinishedSignal.WaitAsync();
     }
 }
