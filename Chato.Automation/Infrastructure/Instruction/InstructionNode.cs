@@ -44,9 +44,14 @@ public static class InstructionNodeFluentApi
         return new InstructionNode(info.UserName, UserHubInstruction.Received_Instrauction, message, info.FromArrived);
     }
 
-    public static InstructionNode Connect(this InstructionNode source, InstructionNode target)
+    public static InstructionNode Connect(this InstructionNode source, params InstructionNode[] targets)
     {
-        source.Children.Add(target);
-        return target;
+        InstructionNode node = null;
+        foreach (var target in targets)
+        {
+            source.Children.Add(target);
+            node = target;
+        }
+        return node;
     }
 }
