@@ -15,6 +15,8 @@ public abstract class InstructionScenarioBase : ScenarioBase
     public InstructionScenarioBase(string baseUrl) : base(baseUrl)
     {
         _users = new Dictionary<string, UserInstructionExecuter>();
+        SummaryLogicCallback.Add(UsersCleanup);
+
     }
 
     protected async Task InitializeAsync(params string[] users)
@@ -49,7 +51,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
                         await userExecuter.ListenCheck(instruction.FromArrived, instruction.Message);
                     }
                 }
-            }
+             }
 
             instructions = await graph.MoveNext();
         }

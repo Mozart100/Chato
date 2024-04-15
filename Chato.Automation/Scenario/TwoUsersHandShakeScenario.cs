@@ -12,7 +12,6 @@ internal class TwoUsersHandShakeScenario : InstructionScenarioBase
 
         SetupsLogicCallback.Add(UserSetups);
         BusinessLogicCallbacks.Add(HandShakeStep);
-        SummaryLogicCallback.Add(CleanupStep);
     }
 
 
@@ -27,13 +26,13 @@ internal class TwoUsersHandShakeScenario : InstructionScenarioBase
 
     private async Task HandShakeStep()
     {
-        var message_1 = "Shalom";
+        var message_1 = "Hello";
 
         var anatoliySender = InstructionNodeFluentApi.Start(Anatoliy_User).Send(message_1);
         var olessyaReceive = InstructionNodeFluentApi.Start(Olessya_User).Receive(anatoliySender.UserName, message_1);
 
 
-        var message_2 = "Shalom to you too";
+        var message_2 = "Hello to you too";
 
         var olessyaSender = InstructionNodeFluentApi.Start(Olessya_User).Send(message_2);
         var anatoliyReceiver = InstructionNodeFluentApi.Start(Anatoliy_User).Receive(olessyaSender.UserName, message_2);
@@ -44,10 +43,5 @@ internal class TwoUsersHandShakeScenario : InstructionScenarioBase
         var graph = new InstructionGraph(anatoliySender);
 
         await InstructionExecuter(graph);
-    }
-
-    private async Task CleanupStep()
-    {
-        await UsersCleanup();
     }
 }

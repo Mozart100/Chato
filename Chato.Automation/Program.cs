@@ -8,8 +8,8 @@ await twoUsersHandShake.StartRunScenario();
 
 
 
-//var scenario = new ThreeUsersHandShakeScenario(baseUrl);
-//await scenario.StartRunScenario();
+var scenario = new ThreeUsersHandShakeScenario(baseUrl);
+await scenario.StartRunScenario();
 
 
 Console.WriteLine("All test passed successfully!!!!!");

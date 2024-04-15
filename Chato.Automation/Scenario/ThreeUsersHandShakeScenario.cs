@@ -5,7 +5,7 @@ namespace Arkovean.Chat.Automation.Scenario;
 
 internal class ThreeUsersHandShakeScenario : InstructionScenarioBase
 {
-    private const string Anatoliy_User = "anatoiiy";
+    private const string Anatoliy_User = "anatoliy";
     private const string Olessya_User = "olessya";
     private const string Nathan_User = "nathan";
 
@@ -37,14 +37,14 @@ internal class ThreeUsersHandShakeScenario : InstructionScenarioBase
         anatoliySender.Connect(nathanReceiver1, olessyaReceive);
 
 
-        //var message_2 = "Shalom to you too";
+        var message_2 = "Shalom to you too";
 
-        //var olessyaSender = InstructionNodeFluentApi.Start("olessya").Send(message_2);
-        //var anatoliyReceiver = InstructionNodeFluentApi.Start("anatoliy").Receive(olessyaSender.UserName, message_2);
-        //var nathanReceiver2 = InstructionNodeFluentApi.Start("nathan").Receive(olessyaSender.UserName, message_2);
+        var olessyaSender = InstructionNodeFluentApi.Start("olessya").Send(message_2);
+        var anatoliyReceiver = InstructionNodeFluentApi.Start("anatoliy").Receive(olessyaSender.UserName, message_2);
+        var nathanReceiver2 = InstructionNodeFluentApi.Start("nathan").Receive(olessyaSender.UserName, message_2);
 
 
-        //anatoliySender.Connect(nathanReceiver1, olessyaReceive).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2);
+        anatoliySender.Connect(nathanReceiver1, olessyaReceive).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2);
 
         var graph = new InstructionGraph(anatoliySender);
 
