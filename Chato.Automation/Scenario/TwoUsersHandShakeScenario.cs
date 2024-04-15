@@ -5,41 +5,38 @@ namespace Arkovean.Chat.Automation.Scenario;
 
 internal class TwoUsersHandShakeScenario : InstructionScenarioBase
 {
+    private const string Anatoliy_User = "anatoliy";
+    private const string Olessya_User = "olessya";
     public TwoUsersHandShakeScenario(string baseUrl) : base(baseUrl)
     {
 
         SetupsLogicCallback.Add(UserSetups);
         BusinessLogicCallbacks.Add(HandShakeStep);
-        SummaryLogicCallback.Add(Ceanup);
-
-        IgnoreUsers.Add("server");
+        SummaryLogicCallback.Add(CleanupStep);
     }
 
-  
+
     public override string ScenarioName => "2 people sending Message";
 
     public override string Description => "Two users sending and listening.";
 
     private async Task UserSetups()
     {
-
-        await Connection.StartAsync(); 
-
-         await Listen();
+        await InitializeAsync(Anatoliy_User, Olessya_User);
     }
 
     private async Task HandShakeStep()
     {
         var message_1 = "Shalom";
 
-        var anatoliySender = InstructionNodeFluentApi.Start("anatoiiy").Send(message_1);
-        var olessyaReceive = InstructionNodeFluentApi.Start("olessya").Receive(anatoliySender.UserName, message_1);
+        var anatoliySender = InstructionNodeFluentApi.Start(Anatoliy_User).Send(message_1);
+        var olessyaReceive = InstructionNodeFluentApi.Start(Olessya_User).Receive(anatoliySender.UserName, message_1);
 
 
         var message_2 = "Shalom to you too";
 
-        var olessyaSender = InstructionNodeFluentApi.Start("olessya").Send(message_2);
-        var anatoliyReceiver = InstructionNodeFluentApi.Start("anatoliy").Receive(olessyaSender.UserName, message_2);
+        var olessyaSender = InstructionNodeFluentApi.Start(Olessya_User).Send(message_2);
+        var anatoliyReceiver = InstructionNodeFluentApi.Start(Anatoliy_User).Receive(olessyaSender.UserName, message_2);
 
 
         anatoliySender.Connect(olessyaReceive).Connect(olessyaSender).Connect(anatoliyReceiver);
@@ -49,9 +46,8 @@ internal class TwoUsersHandShakeScenario : InstructionScenarioBase
         await InstructionExecuter(graph);
     }
 
-    private async Task Ceanup()
+    private async Task CleanupStep()
     {
-        await Connection.StopAsync();
+        await UsersCleanup();
     }
-
 }

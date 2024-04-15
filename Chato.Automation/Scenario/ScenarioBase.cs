@@ -65,8 +65,6 @@ public abstract class ScenarioBase
         }
     }
 
-
-
     public async Task StartRunScenario()
     {
         Console.WriteLine($" ------------------------{ScenarioName}----------------------------");

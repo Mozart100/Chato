@@ -14,6 +14,6 @@ public class ChatHub : Hub
 
     public Task SendMessageAllUsers(string user, string nessage)
     {
-        return Clients.All.SendAsync(TOPIC_MESSAGE_RECEIVED, user, nessage);
+        return Clients.Others.SendAsync(TOPIC_MESSAGE_RECEIVED, user, nessage);
     }
 }

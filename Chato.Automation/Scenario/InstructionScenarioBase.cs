@@ -1,50 +1,34 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
 using Chato.Server.Hubs;
-using FluentAssertions;
-using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Chato.Automation.Scenario;
-
-public record HubMessageRecieved(string From, string Message);
 
 public abstract class InstructionScenarioBase : ScenarioBase
 {
     protected const string Hub_Send_Message_Topic = nameof(ChatHub.SendMessageAllUsers);
 
-
-    protected HubConnection Connection;
     //protected SemaphoreSlim FinishedSignal;
     //protected SemaphoreSlim StartListeningSignal;
-    protected HashSet<string> IgnoreUsers;
+    //protected HashSet<string> IgnoreUsers;
 
     private readonly CancellationTokenSource _cancellationTokenSource;
-    private Queue<HubMessageRecieved> _receivedMessages;
+    private Dictionary<string, UserInstructionExecuter> _users;
 
     public InstructionScenarioBase(string baseUrl) : base(baseUrl)
     {
-        _receivedMessages = new Queue<HubMessageRecieved>();
-        IgnoreUsers = new HashSet<string>();
-
-        Connection = new HubConnectionBuilder()
-         .WithUrl(BaseUrl)
-         .WithAutomaticReconnect()
-         .Build();
-
-        Connection.Reconnecting += (sender) =>
-        {
-            Logger.Info("Connection reconnecting");
-            return Task.CompletedTask;
-        };
-
-        Connection.Reconnected += (sender) =>
-        {
-            Logger.Info($"Hub Connected.");
-            return Task.CompletedTask;
-
-        };
+        _users = new Dictionary<string, UserInstructionExecuter>();
     }
 
+    protected async Task InitializeAsync(params string[] users)
+    {
+        foreach (var user in users)
+        {
+            var executer = new UserInstructionExecuter(user, BaseUrl, Logger);
+            await executer.InitializeAsync();
 
+            _users.Add(user, executer);
+        }
+    }
 
     protected async Task InstructionExecuter(InstructionGraph graph)
     {
@@ -54,20 +38,26 @@ public abstract class InstructionScenarioBase : ScenarioBase
         {
             foreach (var instruction in instructions)
             {
-                if (instruction.Instruction.Equals(UserHubInstruction.Publish_Instrauction))
+                try
                 {
-                    await SendMessageToAllUSers(userNameFrom: instruction.UserName, message: instruction.Message);
-                    await Task.Delay(3000);
-                }
-                else
-                {
-                    if (instruction.Instruction.Equals(UserHubInstruction.Received_Instrauction))
-                    {
-                        var messageReceived = _receivedMessages.Dequeue();
 
-                        messageReceived.From.Should().Be(instruction.FromArrived);
-                        messageReceived.Message.Should().Be(instruction.Message);
+                    var userExecuter = _users[instruction.UserName];
+                    if (instruction.Instruction.Equals(UserHubInstruction.Publish_Instrauction))
+                    {
+                        await userExecuter.SendMessageToAllUSers(userNameFrom: instruction.UserName, message: instruction.Message);
+                        await Task.Delay(4000);
                     }
+                    else
+                    {
+                        if (instruction.Instruction.Equals(UserHubInstruction.Received_Instrauction))
+                        {
+                            await userExecuter.ListenCheck(instruction.FromArrived, instruction.Message);
+                        }
+                    }
+                }
+                catch (Exception ex)
+                {
+
                 }
             }
 
@@ -75,27 +65,11 @@ public abstract class InstructionScenarioBase : ScenarioBase
         }
     }
 
-    public async Task SendMessageToAllUSers(string userNameFrom, string message)
+    protected async Task UsersCleanup()
     {
-        Logger.Info($"{userNameFrom} sening message [{message}].");
-
-        await Connection.SendAsync(Hub_Send_Message_Topic, userNameFrom, message);
-    }
-
-    protected async Task Listen()
-    {
-        Connection.On<string, string>(ChatHub.TOPIC_MESSAGE_RECEIVED, async (user, message) =>
+        foreach (var user in _users.Values)
         {
-            if (IgnoreUsers.Contains(user) == false)
-            {
-                Logger.Info($"Message received [{message}] from [{user}].");
-
-                _receivedMessages.Enqueue(new HubMessageRecieved(user, message));
-            }
-            else
-            {
-                Logger.Info($"Message [{message}] ignored from [{user}].");
-            }
-        });
+            await user.Close();
+        }
     }
 }
