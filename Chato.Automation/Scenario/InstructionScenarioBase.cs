@@ -8,8 +8,6 @@ public abstract class InstructionScenarioBase : ScenarioBase
     protected const string Hub_Send_Message_Topic = nameof(ChatHub.SendMessageAllUsers);
 
     //protected SemaphoreSlim FinishedSignal;
-    //protected SemaphoreSlim StartListeningSignal;
-    //protected HashSet<string> IgnoreUsers;
 
     private readonly CancellationTokenSource _cancellationTokenSource;
     private Dictionary<string, UserInstructionExecuter> _users;
@@ -38,26 +36,18 @@ public abstract class InstructionScenarioBase : ScenarioBase
         {
             foreach (var instruction in instructions)
             {
-                try
+                var userExecuter = _users[instruction.UserName];
+                if (instruction.Instruction.Equals(UserHubInstruction.Publish_Instrauction))
                 {
-
-                    var userExecuter = _users[instruction.UserName];
-                    if (instruction.Instruction.Equals(UserHubInstruction.Publish_Instrauction))
-                    {
-                        await userExecuter.SendMessageToAllUSers(userNameFrom: instruction.UserName, message: instruction.Message);
-                        await Task.Delay(4000);
-                    }
-                    else
-                    {
-                        if (instruction.Instruction.Equals(UserHubInstruction.Received_Instrauction))
-                        {
-                            await userExecuter.ListenCheck(instruction.FromArrived, instruction.Message);
-                        }
-                    }
+                    await userExecuter.SendMessageToAllUSers(userNameFrom: instruction.UserName, message: instruction.Message);
+                    await Task.Delay(4000);
                 }
-                catch (Exception ex)
+                else
                 {
-
+                    if (instruction.Instruction.Equals(UserHubInstruction.Received_Instrauction))
+                    {
+                        await userExecuter.ListenCheck(instruction.FromArrived, instruction.Message);
+                    }
                 }
             }
 
