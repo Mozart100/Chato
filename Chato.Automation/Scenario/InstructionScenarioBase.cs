@@ -7,7 +7,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
 {
     protected const string Hub_Send_Message_Topic = nameof(ChatHub.SendMessageAllUsers);
 
-    //protected SemaphoreSlim FinishedSignal;
+    private CounterSignal _counterSignal;
 
     private readonly CancellationTokenSource _cancellationTokenSource;
     private Dictionary<string, UserInstructionExecuter> _users;
@@ -16,14 +16,16 @@ public abstract class InstructionScenarioBase : ScenarioBase
     {
         _users = new Dictionary<string, UserInstructionExecuter>();
         SummaryLogicCallback.Add(UsersCleanup);
-
     }
 
     protected async Task InitializeAsync(params string[] users)
     {
+        //var allowed = (users.Length - 1) * -1;
+        _counterSignal= new CounterSignal(users.Length -1);
+
         foreach (var user in users)
         {
-            var executer = new UserInstructionExecuter(user, BaseUrl, Logger);
+            var executer = new UserInstructionExecuter(user, BaseUrl, Logger, _counterSignal);
             await executer.InitializeAsync();
 
             _users.Add(user, executer);
@@ -41,8 +43,13 @@ public abstract class InstructionScenarioBase : ScenarioBase
                 var userExecuter = _users[instruction.UserName];
                 if (instruction.Instruction.Equals(UserHubInstruction.Publish_Instrauction))
                 {
+                    await _counterSignal.ResetAsync();
                     await userExecuter.SendMessageToAllUSers(userNameFrom: instruction.UserName, message: instruction.Message);
-                    await Task.Delay(4000);
+
+                    if (await _counterSignal.WaitAsync(5) == false)
+                    {
+                        throw new Exception("Not all users receved their messages");
+                    }
                 }
                 else
                 {
@@ -51,7 +58,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
                         await userExecuter.ListenCheck(instruction.FromArrived, instruction.Message);
                     }
                 }
-             }
+            }
 
             instructions = await graph.MoveNext();
         }

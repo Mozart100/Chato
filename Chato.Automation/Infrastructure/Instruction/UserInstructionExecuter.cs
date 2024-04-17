@@ -14,16 +14,17 @@ public class UserInstructionExecuter
     private const string Hub_Send_Message_Topic = nameof(ChatHub.SendMessageAllUsers);
 
     private readonly IAutomationLogger _logger;
+    private readonly CounterSignal _signal;
     private readonly HubConnection _connection;
     private readonly Queue<HubMessageRecieved> _receivedMessages;
     private readonly HashSet<string> _ignoreUsers;
 
 
-    public UserInstructionExecuter(string userName, string url, IAutomationLogger logger)
+    public UserInstructionExecuter(string userName, string url, IAutomationLogger logger, CounterSignal signal)
     {
         UserName = userName;
         _logger = logger;
-
+        this._signal = signal;
         _ignoreUsers = new HashSet<string>();
         _ignoreUsers.Add("server");
 
@@ -80,6 +81,7 @@ public class UserInstructionExecuter
                 _logger.Info($"{UserName} received message [{message}] from [{user}].");
 
                 _receivedMessages.Enqueue(new HubMessageRecieved(user, message));
+                await _signal.ReleaseAsync();
             }
             else
             {

@@ -24,8 +24,6 @@ internal class ThreeUsersHandShakeScenario : InstructionScenarioBase
         await InitializeAsync(Anatoliy_User,Olessya_User,Nathan_User);
     }
 
-    
-
     private async Task HandShakeStep()
     {
         var message_1 = "Shalom";
