@@ -46,7 +46,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
                     await _counterSignal.ResetAsync();
                     await userExecuter.SendMessageToAllUSers(userNameFrom: instruction.UserName, message: instruction.Message);
 
-                    if (await _counterSignal.WaitAsync(5) == false)
+                    if (await _counterSignal.WaitAsync(timeoutInSecond:5) == false)
                     {
                         throw new Exception("Not all users receved their messages");
                     }
@@ -70,5 +70,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
         {
             await user.Close();
         }
+
+        _users.Clear();
     }
 }
