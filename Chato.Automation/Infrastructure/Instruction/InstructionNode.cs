@@ -3,6 +3,7 @@
 public class InstructionNodeInfo
 {
     public string UserName { get; set; }
+    public string? GroupName { get; set; }
     public string Instruction { get; set; }
     public string Message { get; set; }
     public string? FromArrived { get; set; }
@@ -10,13 +11,15 @@ public class InstructionNodeInfo
 
 public class InstructionNode : InstructionNodeInfo
 {
-    public InstructionNode(string userName , string instruction, string message , string ? fromArrived)
+    public InstructionNode(string userName , string instruction, string message , string ? fromArrived, string ? groupName =null)
     {
         Children = new HashSet<InstructionNode>();
         UserName = userName;
         Instruction = instruction;
         Message = message;
         FromArrived = fromArrived;
+
+        GroupName = groupName;
     }
 
     public HashSet<InstructionNode> Children { get; }

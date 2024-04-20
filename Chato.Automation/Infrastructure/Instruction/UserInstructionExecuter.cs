@@ -11,7 +11,14 @@ public record HubMessageRecieved(string From, string Message);
 public class UserInstructionExecuter
 {
 
-    private const string Hub_Send_Message_Topic = nameof(ChatHub.SendMessageAllUsers);
+    private const string Hub_Send_Message_To_Others_Topic = nameof(ChatHub.SendMessageToOthers);
+
+    private const string Hub_Send_Other_In_Group_Topic = nameof(ChatHub.SendMessageToOthersInGroup);
+    private const string Hub_Leave_Group_Topic = nameof(ChatHub.LeaveGroup);
+    
+    private const string Hub_Join_Group_Topic = nameof(ChatHub.JoinGroup);
+
+
 
     private readonly IAutomationLogger _logger;
     private readonly CounterSignal _signal;
@@ -55,13 +62,36 @@ public class UserInstructionExecuter
         await Listen();
     }
 
+    public async Task InitializeWithGroupAsync(string groupName)
+    {
+        await _connection.StartAsync();
+        await JoinHaifaGroup(groupName);
+
+        await Listen();
+    }
+
     public string UserName { get; }
 
     public async Task SendMessageToAllUSers(string userNameFrom, string message)
     {
         _logger.Info($"{userNameFrom} sening message [{message}].");
 
-        await _connection.SendAsync(Hub_Send_Message_Topic, userNameFrom, message);
+        await _connection.SendAsync(Hub_Send_Message_To_Others_Topic, userNameFrom, message);
+    }
+
+    public async Task SendMessageToOthersInGroup(string groupName, string userNameFrom, string message)
+    {
+        _logger.Info($"{userNameFrom} sening in group [{groupName}] message [{message}].");
+
+        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, groupName, userNameFrom, message);
+    }
+
+
+    public async Task JoinHaifaGroup(string groupName)
+    {
+        _logger.Info($"{UserName} joins group.");
+
+        await _connection.InvokeAsync(Hub_Join_Group_Topic, groupName);
     }
 
     public async Task ListenCheck(string fromArrived, string message)
@@ -92,6 +122,12 @@ public class UserInstructionExecuter
 
     public async Task Close()
     {
+        await _connection.StopAsync();
+    }
+
+    public async Task GroupClose(string groupName)
+    {
+        await _connection.InvokeAsync(Hub_Leave_Group_Topic, groupName);
         await _connection.StopAsync();
     }
 }
