@@ -8,8 +8,8 @@ await fullHandShake.StartRunScenario();
 
 
 
-var groupScenario = new GroupScenario(baseUrl);
-await groupScenario.StartRunScenario();
+var groupHandShakeScenario = new GroupHandShakeScenario(baseUrl);
+await groupHandShakeScenario.StartRunScenario();
 
 
 Console.WriteLine("All test passed successfully!!!!!");

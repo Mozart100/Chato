@@ -6,8 +6,6 @@ namespace Chato.Automation.Scenario;
 
 public abstract class InstructionScenarioBase : ScenarioBase
 {
-    //protected const string Hub_Send_Message_Topic = nameof(ChatHub.SendMessageAllUsers);
-
     private CounterSignal _counterSignal;
 
     private readonly CancellationTokenSource _cancellationTokenSource;
@@ -45,6 +43,19 @@ public abstract class InstructionScenarioBase : ScenarioBase
         }
 
     }
+
+    private async Task SendMessage(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, string message)
+    {
+        if (groupName == null)
+        {
+            await userExecuter.SendMessageToAllUSers(userNameFrom: userNameFrom, message: message);
+        }
+        else
+        {
+            await userExecuter.SendMessageToOthersInGroup(groupName: groupName, userNameFrom: userNameFrom, message: message);
+        }
+    }
+
     protected async Task InstructionExecuter(InstructionGraph graph)
     {
         var instructions = await graph.MoveNext();
@@ -56,40 +67,11 @@ public abstract class InstructionScenarioBase : ScenarioBase
                 var userExecuter = _users[instruction.UserName];
                 if (instruction.Instruction.Equals(UserHubInstruction.Publish_Instrauction))
                 {
+                    var group = instruction.GroupName;
+
+
                     await _counterSignal.ResetAsync();
-                    await userExecuter.SendMessageToAllUSers(userNameFrom: instruction.UserName, message: instruction.Message);
-
-                    if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
-                    {
-                        throw new Exception("Not all users receved their messages");
-                    }
-                }
-                else
-                {
-                    if (instruction.Instruction.Equals(UserHubInstruction.Received_Instrauction))
-                    {
-                        await userExecuter.ListenCheck(instruction.FromArrived, instruction.Message);
-                    }
-                }
-            }
-
-            instructions = await graph.MoveNext();
-        }
-    }
-
-    protected async Task InstructionExecuterInGroup(string group, InstructionGraph graph)
-    {
-        var instructions = await graph.MoveNext();
-
-        while (instructions.Any())
-        {
-            foreach (var instruction in instructions)
-            {
-                var userExecuter = _users[instruction.UserName];
-                if (instruction.Instruction.Equals(UserHubInstruction.Publish_Instrauction))
-                {
-                    await _counterSignal.ResetAsync();
-                    await userExecuter.SendMessageToOthersInGroup(groupName: group, userNameFrom: instruction.UserName, message: instruction.Message);
+                    await SendMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
 
                     if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
                     {
