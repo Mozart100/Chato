@@ -11,7 +11,7 @@ public class InstructionNodeInfo
 
 public class InstructionNode : InstructionNodeInfo
 {
-    public InstructionNode(string userName, string instruction, string message, string? fromArrived, string? groupName = null)
+    public InstructionNode(string userName, string? groupName, string instruction, string message, string? fromArrived)
     {
         Children = new HashSet<InstructionNode>();
         UserName = userName;
@@ -39,17 +39,22 @@ public static class InstructionNodeFluentApi
         return info;
     }
 
+    public static InstructionNode ReplicateNameAndGroup(this InstructionNodeInfo info)
+    {
+        return new InstructionNode(userName: info.UserName, groupName: info.GroupName, instruction: null, message: null, fromArrived: null);
+    }
+
     public static InstructionNode Send(this InstructionNodeInfo info, string message)
     {
         info.Message = message;
-        return new InstructionNode(info.UserName, UserHubInstruction.Publish_Instrauction, message, null);
+        return new InstructionNode(userName: info.UserName, groupName: null, instruction: UserHubInstruction.Publish_Instrauction, message: message, fromArrived: null);
     }
 
     public static InstructionNode Receive(this InstructionNodeInfo info, string receiveFrom, string message)
     {
         info.Message = message;
         info.FromArrived = receiveFrom;
-        return new InstructionNode(info.UserName, UserHubInstruction.Received_Instrauction, message, info.FromArrived);
+        return new InstructionNode(userName: info.UserName, groupName: null, instruction: UserHubInstruction.Received_Instrauction, message: message, fromArrived: info.FromArrived);
     }
 
     public static InstructionNode Connect(this InstructionNode source, params InstructionNode[] targets)

@@ -43,14 +43,14 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
     {
         var message_1 = "Hello";
 
-        var anatoliySender = InstructionNodeFluentApi.Start(Anatoliy_User).Send(message_1);
-        var olessyaReceive = InstructionNodeFluentApi.Start(Olessya_User).Receive(anatoliySender.UserName, message_1);
+        var anatoliySender = InstructionNodeFluentApi.Start(Anatoliy_User,Group_Name).Send(message_1);
+        var olessyaReceive = InstructionNodeFluentApi.Start(Olessya_User, Group_Name).Receive(anatoliySender.UserName, message_1);
 
 
         var message_2 = "Hello to you too";
 
-        var olessyaSender = InstructionNodeFluentApi.Start(Olessya_User).Send(message_2);
-        var anatoliyReceiver = InstructionNodeFluentApi.Start(Anatoliy_User).Receive(olessyaSender.UserName, message_2);
+        var olessyaSender = olessyaReceive.ReplicateNameAndGroup().Send(message_2);
+        var anatoliyReceiver = anatoliySender.ReplicateNameAndGroup().Receive(olessyaSender.UserName, message_2);
 
 
         anatoliySender.Connect(olessyaReceive).Connect(olessyaSender).Connect(anatoliyReceiver);
@@ -75,9 +75,9 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
 
         var message_2 = "Shalom to you too";
 
-        var olessyaSender = InstructionNodeFluentApi.Start("olessya", Group_Name).Send(message_2);
-        var anatoliyReceiver = InstructionNodeFluentApi.Start("anatoliy", Group_Name).Receive(olessyaSender.UserName, message_2);
-        var nathanReceiver2 = InstructionNodeFluentApi.Start("nathan", Group_Name).Receive(olessyaSender.UserName, message_2);
+        var olessyaSender = olessyaReceive.ReplicateNameAndGroup().Send(message_2);
+        var anatoliyReceiver = anatoliySender.ReplicateNameAndGroup().Receive(olessyaSender.UserName, message_2);
+        var nathanReceiver2 = nathanReceiver1.ReplicateNameAndGroup().Receive(olessyaSender.UserName, message_2);
 
 
         anatoliySender.Connect(nathanReceiver1, olessyaReceive).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2);
