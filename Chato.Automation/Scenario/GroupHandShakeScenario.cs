@@ -69,6 +69,9 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
         var anatoliySender = InstructionNodeFluentApi.Start(Anatoliy_User, Group_Name).Send(message_1);
         var olessyaReceive = InstructionNodeFluentApi.Start(Olessya_User, Group_Name).Receive(anatoliySender.UserName, message_1);
         var nathanReceiver1 = InstructionNodeFluentApi.Start(Nathan_User, Group_Name).Receive(anatoliySender.UserName, message_1);
+        var natliReceive = InstructionNodeFluentApi.Start(Natali_User, Group_Name).Receive(anatoliySender.UserName, message_1);
+
+
 
         anatoliySender.Connect(nathanReceiver1, olessyaReceive);
 
@@ -80,7 +83,16 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
         var nathanReceiver2 = nathanReceiver1.ReplicateNameAndGroup().Receive(olessyaSender.UserName, message_2);
 
 
+
+
+
+
+
         anatoliySender.Connect(nathanReceiver1, olessyaReceive).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2);
+
+
+
+
 
         var graph = new InstructionGraph(anatoliySender);
 
@@ -94,8 +106,6 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
 
     private async Task TreeUserSetups()
     {
-        //await GroupUsersCleanup(Group_Name);
-
         await InitializeWithGroupAsync(Group_Name, Anatoliy_User, Olessya_User, Nathan_User);
     }
 

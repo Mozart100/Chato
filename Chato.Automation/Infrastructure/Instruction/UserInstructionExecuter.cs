@@ -104,20 +104,25 @@ public class UserInstructionExecuter
 
     protected async Task Listen()
     {
-        _connection.On<string, string>(ChatHub.TOPIC_MESSAGE_RECEIVED, async (user, message) =>
+        _connection.On<string,string>(ChatHub.TOPIC_MESSAGE_RECEIVED, async (user, message) =>
         {
-            if (_ignoreUsers.Contains(user) == false)
-            {
-                _logger.Info($"{UserName} received message [{message}] from [{user}].");
-
-                _receivedMessages.Enqueue(new HubMessageRecieved(user, message));
-                await _signal.ReleaseAsync();
-            }
-            else
-            {
-                _logger.Info($"{UserName} received message [{message}] but was ignored from [{user}].");
-            }
+            await ExpectedRecieveMessageLogic(user, message);
         });
+    }
+
+    private async Task ExpectedRecieveMessageLogic(string user, string message)
+    {
+        if (_ignoreUsers.Contains(user) == false)
+        {
+            _logger.Info($"{UserName} received message [{message}] from [{user}].");
+
+            _receivedMessages.Enqueue(new HubMessageRecieved(user, message));
+            await _signal.ReleaseAsync();
+        }
+        else
+        {
+            _logger.Info($"{UserName} received message [{message}] but was ignored from [{user}].");
+        }
     }
 
     public async Task Close()

@@ -6,6 +6,7 @@ public class UserHubInstruction
 {
 
     public const string Received_Instrauction = "received";
+    public const string Not_Received_Instrauction = "not_received";
     public const string Publish_Instrauction = "publish";
     public const string Wait_Instrauction = "wait";
 
@@ -17,10 +18,7 @@ public class UserHubInstruction
     }
 
     public string Peek() => _instruction.Peek();    
-    public bool IsInstructionToPublish=> _instruction.Peek().Equals("xxx");
-    public bool IsInstructionToReceive=> _instruction.Peek().Equals("xxx");
-    public bool IsInstructionToWait => _instruction.Peek().Equals("xxx");
-
+   
     public void AddRecieveInstruction(string message , string from = "server")
     {
         _instruction.Enqueue($"{Received_Instrauction};{from};{message}");

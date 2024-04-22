@@ -28,34 +28,39 @@ public class InstructionNode : InstructionNodeInfo
 
 public static class InstructionNodeFluentApi
 {
-    public static InstructionNodeInfo Start(string name, string groupName = null)
+    public static InstructionNode Start(string name, string groupName = null)
     {
-        var info = new InstructionNodeInfo
-        {
-            UserName = name,
-            GroupName = groupName
-        };
-
+        var info = new InstructionNode(userName: name, groupName: groupName, instruction: null, message: null, fromArrived: null);
         return info;
     }
 
-    public static InstructionNode ReplicateNameAndGroup(this InstructionNodeInfo info)
+    public static InstructionNode ReplicateNameAndGroup(this InstructionNode info)
     {
         return new InstructionNode(userName: info.UserName, groupName: info.GroupName, instruction: null, message: null, fromArrived: null);
     }
 
-    public static InstructionNode Send(this InstructionNodeInfo info, string message)
+    public static InstructionNode Send(this InstructionNode info, string message)
     {
         info.Message = message;
-        return new InstructionNode(userName: info.UserName, groupName: null, instruction: UserHubInstruction.Publish_Instrauction, message: message, fromArrived: null);
+        info.Instruction = UserHubInstruction.Publish_Instrauction;
+        return info;
     }
 
-    public static InstructionNode Receive(this InstructionNodeInfo info, string receiveFrom, string message)
+    public static InstructionNode Receive(this InstructionNode info, string receiveFrom, string message)
     {
         info.Message = message;
         info.FromArrived = receiveFrom;
-        return new InstructionNode(userName: info.UserName, groupName: null, instruction: UserHubInstruction.Received_Instrauction, message: message, fromArrived: info.FromArrived);
+        info.Instruction = UserHubInstruction.Received_Instrauction;
+        return info;
+        //return new InstructionNode(userName: info.UserName, groupName: null, instruction: UserHubInstruction.Received_Instrauction, message: message, fromArrived: info.FromArrived);
     }
+
+    //public static InstructionNode Not_Receive(this InstructionNodeInfo info, string receiveFrom, string message)
+    //{
+    //    info.Message = message;
+    //    info.FromArrived = receiveFrom;
+    //    return new InstructionNode(userName: info.UserName, groupName: null, instruction: UserHubInstruction.Received_Instrauction, message: message, fromArrived: info.FromArrived);
+    //}
 
     public static InstructionNode Connect(this InstructionNode source, params InstructionNode[] targets)
     {
