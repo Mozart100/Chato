@@ -39,23 +39,25 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
     private async Task TwoPeopleHandShakeStep()
     {
         var message_1 = "Hello";
+        var groupRoot = InstructionNodeFluentApi.StartWithGroup(groupName: Group_Name, message_1);
 
-        var anatoliySender = InstructionNodeFluentApi.Start(Anatoliy_User,Group_Name).Send(message_1);
-        var olessyaReceive = InstructionNodeFluentApi.Start(Olessya_User, Group_Name).Receive(anatoliySender.UserName, message_1);
+        var anatoliySender = groupRoot.IsSender(Anatoliy_User);
+        var olessyaReceive = groupRoot.IsReciever(Olessya_User, anatoliySender.UserName);
+
+
 
 
         var message_2 = "Hello to you too";
+        var secondRoot = InstructionNodeFluentApi.StartWithGroup(groupName: Group_Name, message_2);
 
-        var olessyaSender = olessyaReceive.ReplicateNameAndGroup().Send(message_2);
-        var anatoliyReceiver = anatoliySender.ReplicateNameAndGroup().Receive(olessyaSender.UserName, message_2);
+        var olessyaSender = secondRoot.IsSender(Olessya_User);
+        var anatoliyReceiver = secondRoot.IsReciever(Anatoliy_User, olessyaSender.UserName);
 
 
         anatoliySender.Connect(olessyaReceive).Connect(olessyaSender).Connect(anatoliyReceiver);
 
         var graph = new InstructionGraph(anatoliySender);
-
         await InstructionExecuter(graph);
-
     }
 
     private async Task TreePoepleHandShakeStep()

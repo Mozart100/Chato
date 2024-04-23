@@ -10,6 +10,40 @@ public record InstructionNode(string UserName, string? GroupName, string Instruc
 
 public static class InstructionNodeFluentApi
 {
+    public static InstructionNode StartWithGroup(string groupName , string message)
+    {
+        var info = new InstructionNode(userName: null, groupName: groupName, instruction: null, message: message, fromArrived: null);
+        return info;
+    }
+
+    public static InstructionNode IsReciever(this InstructionNode info , string userName, string arrivedFrom)
+    {
+        var @new = info with
+        {
+            UserName = userName,
+            Instruction = UserHubInstruction.Received_Instrauction,
+            FromArrived = arrivedFrom,
+            Children = new()
+            
+        };
+
+        return @new;
+    }
+
+    public static InstructionNode IsSender(this InstructionNode info, string userName)
+    {
+        var @new = info with
+        {
+            UserName = userName,
+            Instruction = UserHubInstruction.Publish_Instrauction,
+            Children = new()
+
+        };
+
+        return @new;
+    }
+
+
 
     public static InstructionNode Start(string name, string groupName = null)
     {
@@ -28,6 +62,7 @@ public static class InstructionNodeFluentApi
         {
             Message = message,
             Instruction = UserHubInstruction.Publish_Instrauction,
+            Children = new()
         };
 
         return @new;
@@ -39,7 +74,8 @@ public static class InstructionNodeFluentApi
         {
             Message = message,
             Instruction = UserHubInstruction.Received_Instrauction,
-            FromArrived = receiveFrom
+            FromArrived = receiveFrom,
+            Children = new()
         };
 
         return @new;
@@ -50,7 +86,8 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             Message = null,
-            FromArrived = "none"
+            FromArrived = "none",
+            Children = new()
         };
 
         return @new;
