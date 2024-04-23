@@ -23,7 +23,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
         foreach (var user in users)
         {
-            var executer = new UserInstructionExecuter(user, BaseUrl, Logger, _counterSignal,isExpectingReciecingMessage:true);
+            var executer = new UserInstructionExecuter(user, BaseUrl, Logger, _counterSignal, isExpectingReciecingMessage: true);
             await executer.InitializeAsync();
 
             _users.Add(user, executer);
@@ -69,8 +69,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
                 {
                     var group = instruction.GroupName;
 
-
-                    await _counterSignal.ResetAsync();
+                    await _counterSignal.SetThrasholdAsync(instruction.Children.Count());
                     await SendMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
 
                     if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)

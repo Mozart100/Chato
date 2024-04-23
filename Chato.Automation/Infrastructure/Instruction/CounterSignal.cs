@@ -4,9 +4,9 @@ public class CounterSignal
 {
     public class CounterItemSignal
     {
-        private SemaphoreSlim _ensureSingleTask;
-        private readonly int _thrasholdTasks;
+        private readonly SemaphoreSlim _ensureSingleTask;
 
+        private int _thrasholdTasks;
         private int _current;
 
         public CounterItemSignal(int count)
@@ -28,6 +28,11 @@ public class CounterSignal
         public async Task Reset()
         {
             await Executer(() => _current = _thrasholdTasks);
+        }
+
+        public async Task SetthrasholdAsync(int thrashold)
+        {
+            await Executer(() => _current = _thrasholdTasks = thrashold);
         }
 
         public async Task<bool> IsReleased()
@@ -75,9 +80,9 @@ public class CounterSignal
 
     private CounterItemSignal _counterSignal;
 
-    public CounterSignal(int count)
+    public CounterSignal(int thrashold)
     {
-        _counterSignal = new CounterItemSignal(count);
+        _counterSignal = new CounterItemSignal(thrashold);
     }
 
     public async Task ReleaseAsync()
@@ -94,6 +99,12 @@ public class CounterSignal
     public async Task ResetAsync()
     {
         await _counterSignal.Reset();
+    }
+
+
+    public async Task SetThrasholdAsync(int thrashold)
+    {
+        await _counterSignal.SetthrasholdAsync(thrashold);
     }
 }
 

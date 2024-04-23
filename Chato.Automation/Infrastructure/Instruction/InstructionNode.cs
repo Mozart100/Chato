@@ -1,15 +1,15 @@
 ﻿namespace Chato.Automation.Infrastructure.Instruction;
 
-public class InstructionNodeInfo
-{
-    public string UserName { get; set; }
-    public string? GroupName { get; set; }
-    public string Instruction { get; set; }
-    public string Message { get; set; }
-    public string? FromArrived { get; set; }
-}
+//public class InstructionNodeInfo
+//{
+//    public string UserName { get; set; }
+//    public string? GroupName { get; set; }
+//    public string Instruction { get; set; }
+//    public string Message { get; set; }
+//    public string? FromArrived { get; set; }
+//}
 
-public class InstructionNode : InstructionNodeInfo
+public class InstructionNode //: InstructionNodeInfo
 {
     public InstructionNode(string userName, string? groupName, string instruction, string message, string? fromArrived)
     {
@@ -22,7 +22,13 @@ public class InstructionNode : InstructionNodeInfo
         GroupName = groupName;
     }
 
-    public HashSet<InstructionNode> Children { get; }
+    public string UserName { get; set; }
+    public string? GroupName { get; set; }
+    public string Instruction { get; set; }
+    public string Message { get; set; }
+    public string? FromArrived { get; set; }
+
+    public HashSet<InstructionNode> Children { get; set; } 
 }
 
 

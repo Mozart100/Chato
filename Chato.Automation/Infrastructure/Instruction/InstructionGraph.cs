@@ -17,22 +17,23 @@ public class InstructionGraph
         _current.Enqueue(_root);
     }
 
-    public async Task<IEnumerable<InstructionNodeInfo>> MoveNext()
+    public async Task<IEnumerable<InstructionNode>> MoveNext()
     {
-        var instructions = new List<InstructionNodeInfo>();
+        var instructions = new List<InstructionNode>();
 
         var items = _current.ToArray();
 
         _current.Clear();
         foreach (var item in items)
         {
-            var instructionInfo = new InstructionNodeInfo
-            {
-               Instruction = item.Instruction,
-               Message = item.Message,
-               UserName = item.UserName,
-               FromArrived = item.FromArrived
-            };
+            var instructionInfo = new InstructionNode(item.UserName, item.GroupName, item.Instruction, item.Message, item.FromArrived);
+            instructionInfo.Children = item.Children;
+            //{
+            //   Instruction = item.Instruction,
+            //   Message = item.Message,
+            //   UserName = item.UserName,
+            //   FromArrived = item.FromArrived
+            //};
 
             instructions.Add(instructionInfo);
             foreach (var child in item.Children)
