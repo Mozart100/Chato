@@ -63,22 +63,21 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
     private async Task TreePoepleHandShakeStep()
     {
         var message_1 = "Shalom";
-
-        var anatoliySender = InstructionNodeFluentApi.Start(Anatoliy_User, Group_Name).Send(message_1);
-        var olessyaReceive1 = InstructionNodeFluentApi.Start(Olessya_User, Group_Name).Receive(anatoliySender.UserName, message_1);
-        var nathanReceive1 = InstructionNodeFluentApi.Start(Nathan_User, Group_Name).Receive(anatoliySender.UserName, message_1);
-        var nataliReceive = InstructionNodeFluentApi.Start(Natali_User, Group_Name).Not_Receive();
+        var groupRoot = InstructionNodeFluentApi.StartWithGroup(groupName: Group_Name, message_1);
 
 
-
-        anatoliySender.Connect(nathanReceive1, olessyaReceive1);
+        var anatoliySender = groupRoot.IsSender(Anatoliy_User);
+        var olessyaReceive1 = groupRoot.IsReciever(Olessya_User, anatoliySender.UserName);
+        var nathanReceive1 = groupRoot.IsReciever(Nathan_User, anatoliySender.UserName);
 
 
         var message_2 = "Shalom to you too";
+        var secondRoot = InstructionNodeFluentApi.StartWithGroup(groupName: Group_Name, message_2);
 
-        var olessyaSender = olessyaReceive1.ReplicateNameAndGroup().Send(message_2);
-        var anatoliyReceiver = anatoliySender.ReplicateNameAndGroup().Receive(olessyaSender.UserName, message_2);
-        var nathanReceiver2 = nathanReceive1.ReplicateNameAndGroup().Receive(olessyaSender.UserName, message_2);
+
+        var olessyaSender = secondRoot.IsSender(Olessya_User);
+        var anatoliyReceiver = secondRoot.IsReciever(Anatoliy_User, olessyaSender.UserName);
+        var nathanReceiver2 = secondRoot.IsReciever(Nathan_User, olessyaSender.UserName);
 
 
         anatoliySender.Connect(nathanReceive1, olessyaReceive1).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2);
