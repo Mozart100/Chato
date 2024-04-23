@@ -1,39 +1,16 @@
 ﻿namespace Chato.Automation.Infrastructure.Instruction;
 
-//public class InstructionNodeInfo
-//{
-//    public string UserName { get; set; }
-//    public string? GroupName { get; set; }
-//    public string Instruction { get; set; }
-//    public string Message { get; set; }
-//    public string? FromArrived { get; set; }
-//}
-
-public class InstructionNode //: InstructionNodeInfo
+public record InstructionNode(string UserName, string? GroupName, string Instruction, string Message, string? FromArrived, HashSet<InstructionNode> Children)
 {
     public InstructionNode(string userName, string? groupName, string instruction, string message, string? fromArrived)
+        : this(userName, groupName, instruction, message, fromArrived, new HashSet<InstructionNode>())
     {
-        Children = new HashSet<InstructionNode>();
-        UserName = userName;
-        Instruction = instruction;
-        Message = message;
-        FromArrived = fromArrived;
-
-        GroupName = groupName;
     }
-
-    public string UserName { get; set; }
-    public string? GroupName { get; set; }
-    public string Instruction { get; set; }
-    public string Message { get; set; }
-    public string? FromArrived { get; set; }
-
-    public HashSet<InstructionNode> Children { get; set; } 
 }
-
 
 public static class InstructionNodeFluentApi
 {
+
     public static InstructionNode Start(string name, string groupName = null)
     {
         var info = new InstructionNode(userName: name, groupName: groupName, instruction: null, message: null, fromArrived: null);
@@ -47,24 +24,36 @@ public static class InstructionNodeFluentApi
 
     public static InstructionNode Send(this InstructionNode info, string message)
     {
-        info.Message = message;
-        info.Instruction = UserHubInstruction.Publish_Instrauction;
-        return info;
+        var @new = info with
+        {
+            Message = message,
+            Instruction = UserHubInstruction.Publish_Instrauction,
+        };
+
+        return @new;
     }
 
     public static InstructionNode Receive(this InstructionNode info, string receiveFrom, string message)
     {
-        info.Message = message;
-        info.FromArrived = receiveFrom;
-        info.Instruction = UserHubInstruction.Received_Instrauction;
-        return info;
+        var @new = info with
+        {
+            Message = message,
+            Instruction = UserHubInstruction.Received_Instrauction,
+            FromArrived = receiveFrom
+        };
+
+        return @new;
     }
 
-    public static InstructionNode Not_Receive(this InstructionNode info, string receiveFrom)
+    public static InstructionNode Not_Receive(this InstructionNode info)
     {
-        info.Message = null;
-        info.FromArrived = "none";
-        return info;
+        var @new = info with
+        {
+            Message = null,
+            FromArrived = "none"
+        };
+
+        return @new;
     }
 
     public static InstructionNode Connect(this InstructionNode source, params InstructionNode[] targets)

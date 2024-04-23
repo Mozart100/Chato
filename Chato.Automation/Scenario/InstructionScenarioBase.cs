@@ -67,8 +67,6 @@ public abstract class InstructionScenarioBase : ScenarioBase
                 var userExecuter = _users[instruction.UserName];
                 if (instruction.Instruction.Equals(UserHubInstruction.Publish_Instrauction))
                 {
-                    var group = instruction.GroupName;
-
                     await _counterSignal.SetThrasholdAsync(instruction.Children.Count());
                     await SendMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
 

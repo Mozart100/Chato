@@ -14,8 +14,6 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
 
     private const string Natali_User = "natali";
 
-
-
     public GroupHandShakeScenario(string baseUrl) : base(baseUrl)
     {
 
@@ -60,29 +58,28 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
 
     }
 
-
     private async Task TreePoepleHandShakeStep()
     {
         var message_1 = "Shalom";
 
         var anatoliySender = InstructionNodeFluentApi.Start(Anatoliy_User, Group_Name).Send(message_1);
-        var olessyaReceive = InstructionNodeFluentApi.Start(Olessya_User, Group_Name).Receive(anatoliySender.UserName, message_1);
-        var nathanReceiver1 = InstructionNodeFluentApi.Start(Nathan_User, Group_Name).Receive(anatoliySender.UserName, message_1);
-        var natliReceive = InstructionNodeFluentApi.Start(Natali_User, Group_Name).Receive(anatoliySender.UserName, message_1);
+        var olessyaReceive1 = InstructionNodeFluentApi.Start(Olessya_User, Group_Name).Receive(anatoliySender.UserName, message_1);
+        var nathanReceive1 = InstructionNodeFluentApi.Start(Nathan_User, Group_Name).Receive(anatoliySender.UserName, message_1);
+        var nataliReceive = InstructionNodeFluentApi.Start(Natali_User, Group_Name).Not_Receive();
 
 
 
-        anatoliySender.Connect(nathanReceiver1, olessyaReceive);
+        anatoliySender.Connect(nathanReceive1, olessyaReceive1);
 
 
         var message_2 = "Shalom to you too";
 
-        var olessyaSender = olessyaReceive.ReplicateNameAndGroup().Send(message_2);
+        var olessyaSender = olessyaReceive1.ReplicateNameAndGroup().Send(message_2);
         var anatoliyReceiver = anatoliySender.ReplicateNameAndGroup().Receive(olessyaSender.UserName, message_2);
-        var nathanReceiver2 = nathanReceiver1.ReplicateNameAndGroup().Receive(olessyaSender.UserName, message_2);
+        var nathanReceiver2 = nathanReceive1.ReplicateNameAndGroup().Receive(olessyaSender.UserName, message_2);
 
 
-        anatoliySender.Connect(nathanReceiver1, olessyaReceive).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2);
+        anatoliySender.Connect(nathanReceive1, olessyaReceive1).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2);
 
         var graph = new InstructionGraph(anatoliySender);
 
