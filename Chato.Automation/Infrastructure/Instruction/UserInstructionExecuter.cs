@@ -22,16 +22,18 @@ public class UserInstructionExecuter
 
     private readonly IAutomationLogger _logger;
     private readonly CounterSignal _signal;
+    private readonly bool _isExpectingReciecingMessage;
     private readonly HubConnection _connection;
     private readonly Queue<HubMessageRecieved> _receivedMessages;
     private readonly HashSet<string> _ignoreUsers;
 
 
-    public UserInstructionExecuter(string userName, string url, IAutomationLogger logger, CounterSignal signal)
+    public UserInstructionExecuter(string userName, string url, IAutomationLogger logger, CounterSignal signal , bool isExpectingReciecingMessage)
     {
         UserName = userName;
         _logger = logger;
         this._signal = signal;
+        this._isExpectingReciecingMessage = isExpectingReciecingMessage;
         _ignoreUsers = new HashSet<string>();
         _ignoreUsers.Add("server");
 
@@ -100,6 +102,11 @@ public class UserInstructionExecuter
 
         messageReceived.From.Should().Be(fromArrived);
         messageReceived.Message.Should().Be(message);
+    }
+
+    public async Task NotReceivedCheck()
+    {
+        _receivedMessages.Any().Should().BeFalse();
     }
 
     protected async Task Listen()

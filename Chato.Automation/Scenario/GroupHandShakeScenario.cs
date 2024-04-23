@@ -26,7 +26,6 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
         BusinessLogicCallbacks.Add(TreeUserSetups);
         BusinessLogicCallbacks.Add(TreePoepleHandShakeStep);
 
-
     }
 
 
@@ -83,16 +82,7 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
         var nathanReceiver2 = nathanReceiver1.ReplicateNameAndGroup().Receive(olessyaSender.UserName, message_2);
 
 
-
-
-
-
-
         anatoliySender.Connect(nathanReceiver1, olessyaReceive).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2);
-
-
-
-
 
         var graph = new InstructionGraph(anatoliySender);
 

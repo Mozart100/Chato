@@ -23,7 +23,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
         foreach (var user in users)
         {
-            var executer = new UserInstructionExecuter(user, BaseUrl, Logger, _counterSignal);
+            var executer = new UserInstructionExecuter(user, BaseUrl, Logger, _counterSignal,isExpectingReciecingMessage:true);
             await executer.InitializeAsync();
 
             _users.Add(user, executer);
@@ -36,7 +36,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
         foreach (var user in users)
         {
-            var executer = new UserInstructionExecuter(user, BaseUrl, Logger, _counterSignal);
+            var executer = new UserInstructionExecuter(user, BaseUrl, Logger, _counterSignal, isExpectingReciecingMessage: true);
             await executer.InitializeWithGroupAsync(groupName);
 
             _users.Add(user, executer);
@@ -83,6 +83,13 @@ public abstract class InstructionScenarioBase : ScenarioBase
                     if (instruction.Instruction.Equals(UserHubInstruction.Received_Instrauction))
                     {
                         await userExecuter.ListenCheck(instruction.FromArrived, instruction.Message);
+                    }
+                    else
+                    {
+                        if (instruction.Instruction.Equals(UserHubInstruction.Not_Received_Instrauction))
+                        {
+                            await userExecuter.NotReceivedCheck();
+                        }
                     }
                 }
             }

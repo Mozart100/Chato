@@ -17,9 +17,9 @@ public class UserHubInstruction
         _instruction = new Queue<string>();
     }
 
-    public string Peek() => _instruction.Peek();    
-   
-    public void AddRecieveInstruction(string message , string from = "server")
+    public string Peek() => _instruction.Peek();
+
+    public void AddRecieveInstruction(string message, string from = "server")
     {
         _instruction.Enqueue($"{Received_Instrauction};{from};{message}");
     }
@@ -29,7 +29,7 @@ public class UserHubInstruction
         _instruction.Enqueue($"{Wait_Instrauction};{from};");
     }
 
-    public void AddPublishInstruction(string from ,string messge)
+    public void AddPublishInstruction(string from, string messge)
     {
         _instruction.Enqueue($"{Publish_Instrauction};{from};{messge}");
     }

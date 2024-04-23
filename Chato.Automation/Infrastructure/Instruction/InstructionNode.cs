@@ -52,15 +52,14 @@ public static class InstructionNodeFluentApi
         info.FromArrived = receiveFrom;
         info.Instruction = UserHubInstruction.Received_Instrauction;
         return info;
-        //return new InstructionNode(userName: info.UserName, groupName: null, instruction: UserHubInstruction.Received_Instrauction, message: message, fromArrived: info.FromArrived);
     }
 
-    //public static InstructionNode Not_Receive(this InstructionNodeInfo info, string receiveFrom, string message)
-    //{
-    //    info.Message = message;
-    //    info.FromArrived = receiveFrom;
-    //    return new InstructionNode(userName: info.UserName, groupName: null, instruction: UserHubInstruction.Received_Instrauction, message: message, fromArrived: info.FromArrived);
-    //}
+    public static InstructionNode Not_Receive(this InstructionNode info, string receiveFrom)
+    {
+        info.Message = null;
+        info.FromArrived = "none";
+        return info;
+    }
 
     public static InstructionNode Connect(this InstructionNode source, params InstructionNode[] targets)
     {
