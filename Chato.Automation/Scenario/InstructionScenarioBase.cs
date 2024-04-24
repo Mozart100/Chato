@@ -1,6 +1,4 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
-using Chato.Server.Hubs;
-using System.Data.Common;
 
 namespace Chato.Automation.Scenario;
 
@@ -15,12 +13,12 @@ public abstract class InstructionScenarioBase : ScenarioBase
     {
         _users = new Dictionary<string, UserInstructionExecuter>();
         SummaryLogicCallback.Add(UsersCleanup);
+        _counterSignal = new CounterSignal(2);
+
     }
 
     protected async Task InitializeAsync(params string[] users)
     {
-        _counterSignal = new CounterSignal(users.Length - 1);
-
         foreach (var user in users)
         {
             var executer = new UserInstructionExecuter(user, BaseUrl, Logger, _counterSignal, isExpectingReciecingMessage: true);
@@ -32,8 +30,6 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
     public async Task InitializeWithGroupAsync(string groupName, params string[] users)
     {
-        _counterSignal = new CounterSignal(users.Length - 1);
-
         foreach (var user in users)
         {
             var executer = new UserInstructionExecuter(user, BaseUrl, Logger, _counterSignal, isExpectingReciecingMessage: true);
@@ -41,7 +37,6 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
             _users.Add(user, executer);
         }
-
     }
 
     private async Task SendMessage(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, string message)
@@ -67,7 +62,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
                 var userExecuter = _users[instruction.UserName];
                 if (instruction.Instruction.Equals(UserHubInstruction.Publish_Instrauction))
                 {
-                    await _counterSignal.SetThrasholdAsync(instruction.Children.Count());
+                    await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x=>x.Instruction != UserHubInstruction.Not_Received_Instrauction).Count());
                     await SendMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
 
                     if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
@@ -114,8 +109,4 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
         _users.Clear();
     }
-
-
-
-
 }

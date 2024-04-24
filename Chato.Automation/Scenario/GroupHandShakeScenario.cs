@@ -5,7 +5,8 @@ namespace Arkovean.Chat.Automation.Scenario;
 
 internal class GroupHandShakeScenario : InstructionScenarioBase
 {
-    private const string Group_Name = "arkove";
+    private const string First_Group = "haifa";
+    private const string Second_Group = "nesher";
 
     private const string Anatoliy_User = "anatoliy";
     private const string Olessya_User = "olessya";
@@ -13,6 +14,8 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
 
 
     private const string Natali_User = "natali";
+    private const string Max_User = "max";
+    private const string Idan_User = "itan";
 
     public GroupHandShakeScenario(string baseUrl) : base(baseUrl)
     {
@@ -33,13 +36,13 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
 
     private async Task TwoUserSetups()
     {
-        await InitializeWithGroupAsync(Group_Name, Anatoliy_User, Olessya_User);
+        await InitializeWithGroupAsync(First_Group, Anatoliy_User, Olessya_User);
     }
 
     private async Task TwoPeopleHandShakeStep()
     {
         var message_1 = "Hello";
-        var groupRoot = InstructionNodeFluentApi.StartWithGroup(groupName: Group_Name, message_1);
+        var groupRoot = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
         var anatoliySender = groupRoot.IsSender(Anatoliy_User);
         var olessyaReceive = groupRoot.IsReciever(Olessya_User, anatoliySender.UserName);
@@ -48,7 +51,7 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
 
 
         var message_2 = "Hello to you too";
-        var secondRoot = InstructionNodeFluentApi.StartWithGroup(groupName: Group_Name, message_2);
+        var secondRoot = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_2);
 
         var olessyaSender = secondRoot.IsSender(Olessya_User);
         var anatoliyReceiver = secondRoot.IsReciever(Anatoliy_User, olessyaSender.UserName);
@@ -63,16 +66,19 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
     private async Task TreePoepleHandShakeStep()
     {
         var message_1 = "Shalom";
-        var groupRoot = InstructionNodeFluentApi.StartWithGroup(groupName: Group_Name, message_1);
+        var groupRoot = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
+        var secondtGroup = InstructionNodeFluentApi.StartWithGroup(groupName: Second_Group, message_1);
+
 
 
         var anatoliySender = groupRoot.IsSender(Anatoliy_User);
         var olessyaReceive1 = groupRoot.IsReciever(Olessya_User, anatoliySender.UserName);
         var nathanReceive1 = groupRoot.IsReciever(Nathan_User, anatoliySender.UserName);
+        var nataliRecevier = secondtGroup.Is_Not_Receiver(Natali_User);
 
 
         var message_2 = "Shalom to you too";
-        var secondRoot = InstructionNodeFluentApi.StartWithGroup(groupName: Group_Name, message_2);
+        var secondRoot = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_2);
 
 
         var olessyaSender = secondRoot.IsSender(Olessya_User);
@@ -80,7 +86,7 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
         var nathanReceiver2 = secondRoot.IsReciever(Nathan_User, olessyaSender.UserName);
 
 
-        anatoliySender.Connect(nathanReceive1, olessyaReceive1).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2);
+        anatoliySender.Connect(nataliRecevier, nathanReceive1, olessyaReceive1).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2);
 
         var graph = new InstructionGraph(anatoliySender);
 
@@ -89,12 +95,16 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
 
     public async Task GroupUsersCleanup()
     {
-        await GroupUsersCleanup(Group_Name);
+        await GroupUsersCleanup(First_Group);
     }
 
     private async Task TreeUserSetups()
     {
-        await InitializeWithGroupAsync(Group_Name, Anatoliy_User, Olessya_User, Nathan_User);
+        await InitializeWithGroupAsync(First_Group, Anatoliy_User, Olessya_User, Nathan_User);
+        await InitializeWithGroupAsync(Second_Group, Natali_User);
     }
+
+
+
 
 }

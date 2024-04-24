@@ -81,10 +81,12 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode Not_Receive(this InstructionNode info)
+    public static InstructionNode Is_Not_Receiver(this InstructionNode info,string userName)
     {
         var @new = info with
         {
+            UserName = userName,
+            Instruction = UserHubInstruction.Not_Received_Instrauction,
             Message = null,
             FromArrived = "none",
             Children = new()
