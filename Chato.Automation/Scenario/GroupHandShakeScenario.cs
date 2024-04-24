@@ -66,14 +66,14 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
     private async Task TreePoepleHandShakeStep()
     {
         var message_1 = "Shalom";
-        var groupRoot = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
+        var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
         var secondtGroup = InstructionNodeFluentApi.StartWithGroup(groupName: Second_Group, message_1);
 
 
 
-        var anatoliySender = groupRoot.IsSender(Anatoliy_User);
-        var olessyaReceive1 = groupRoot.IsReciever(Olessya_User, anatoliySender.UserName);
-        var nathanReceive1 = groupRoot.IsReciever(Nathan_User, anatoliySender.UserName);
+        var anatoliySender = firstGroup.IsSender(Anatoliy_User);
+        var olessyaReceive1 = firstGroup.IsReciever(Olessya_User, anatoliySender.UserName);
+        var nathanReceive1 = firstGroup.IsReciever(Nathan_User, anatoliySender.UserName);
         var nataliRecevier = secondtGroup.Is_Not_Receiver(Natali_User);
 
 
