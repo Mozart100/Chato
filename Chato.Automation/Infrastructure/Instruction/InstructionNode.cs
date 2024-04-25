@@ -24,7 +24,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             UserName = userName,
-            Instruction = UserHubInstruction.Received_Instrauction,
+            Instruction = UserHubInstructions.Received_Instrauction,
             FromArrived = arrivedFrom,
             Children = new(),
             Operation = null
@@ -39,7 +39,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             UserName = userName,
-            Instruction = UserHubInstruction.Publish_Instrauction,
+            Instruction = UserHubInstructions.Publish_Instrauction,
             Children = new(),
             Operation = null
 
@@ -61,7 +61,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             UserName = target.UserName,
-            Instruction = UserHubInstruction.Ru_Operation_Instrauction,
+            Instruction = UserHubInstructions.Ru_Operation_Instrauction,
             FromArrived = null,
             Message = null,
             Children = new(),
@@ -78,7 +78,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             Message = message,
-            Instruction = UserHubInstruction.Publish_Instrauction,
+            Instruction = UserHubInstructions.Publish_Instrauction,
             Children = new(),
             Operation = null
         };
@@ -91,7 +91,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             Message = message,
-            Instruction = UserHubInstruction.Received_Instrauction,
+            Instruction = UserHubInstructions.Received_Instrauction,
             FromArrived = receiveFrom,
             Children = new(),
             Operation = null
@@ -105,7 +105,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             UserName = userName,
-            Instruction = UserHubInstruction.Not_Received_Instrauction,
+            Instruction = UserHubInstructions.Not_Received_Instrauction,
             Message = null,
             FromArrived = "none",
             Children = new(),

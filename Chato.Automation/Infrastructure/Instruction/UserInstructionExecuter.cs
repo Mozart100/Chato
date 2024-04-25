@@ -1,5 +1,4 @@
-﻿using Chato.Automation.Infrastructure;
-using Chato.Server.Hubs;
+﻿using Chato.Server.Hubs;
 using FluentAssertions;
 using Microsoft.AspNetCore.SignalR.Client;
 
@@ -22,18 +21,16 @@ public class UserInstructionExecuter
 
     private readonly IAutomationLogger _logger;
     private readonly CounterSignal _signal;
-    private readonly bool _isExpectingReciecingMessage;
     private readonly HubConnection _connection;
     private readonly Queue<HubMessageRecieved> _receivedMessages;
     private readonly HashSet<string> _ignoreUsers;
 
 
-    public UserInstructionExecuter(string userName, string url, IAutomationLogger logger, CounterSignal signal , bool isExpectingReciecingMessage)
+    public UserInstructionExecuter(string userName, string url, IAutomationLogger logger, CounterSignal signal )
     {
         UserName = userName;
         _logger = logger;
         this._signal = signal;
-        this._isExpectingReciecingMessage = isExpectingReciecingMessage;
         _ignoreUsers = new HashSet<string>();
         _ignoreUsers.Add("server");
 

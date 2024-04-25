@@ -27,6 +27,9 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
         BusinessLogicCallbacks.Add(TreeUserSetups);
         BusinessLogicCallbacks.Add(TreePoepleHandShakeStep);
 
+
+        SummaryLogicCallback.Add(GroupUsersCleanup);
+
     }
 
 
@@ -86,10 +89,6 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
         var nathanReceiver2 = secondRoot.IsReciever(Nathan_User, olessyaSender.UserName);
         var maxReceiver1 = secondRoot.IsReciever(Max_User, olessyaSender.UserName);
 
-
-        
-        //anatoliySender.Connect(nataliRecevier, nathanReceive1, olessyaReceive1).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2);
-      
   
         anatoliySender.Connect(nataliRecevier, nathanReceive1, olessyaReceive1).Do(maxReceiver1,  async user=> await InitializeWithGroupAsync(First_Group, Max_User)).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2, maxReceiver1);
 

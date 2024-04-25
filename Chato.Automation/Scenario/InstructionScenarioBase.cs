@@ -21,7 +21,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
     {
         foreach (var user in users)
         {
-            var executer = new UserInstructionExecuter(user, BaseUrl, Logger, _counterSignal, isExpectingReciecingMessage: true);
+            var executer = new UserInstructionExecuter(user, BaseUrl, Logger, _counterSignal);
             await executer.InitializeAsync();
 
             _users.Add(user, executer);
@@ -32,7 +32,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
     {
         foreach (var user in users)
         {
-            var executer = new UserInstructionExecuter(user, BaseUrl, Logger, _counterSignal, isExpectingReciecingMessage: true);
+            var executer = new UserInstructionExecuter(user, BaseUrl, Logger, _counterSignal);
             await executer.InitializeWithGroupAsync(groupName);
 
             _users.Add(user, executer);
@@ -59,7 +59,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
         {
             foreach (var instruction in instructions)
             {
-                if (instruction.Instruction.Equals(UserHubInstruction.Ru_Operation_Instrauction))
+                if (instruction.Instruction.Equals(UserHubInstructions.Ru_Operation_Instrauction))
                 {
                     await instruction.Operation(null);
                     continue;
@@ -67,9 +67,9 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
 
                 var userExecuter = _users[instruction.UserName];
-                if (instruction.Instruction.Equals(UserHubInstruction.Publish_Instrauction))
+                if (instruction.Instruction.Equals(UserHubInstructions.Publish_Instrauction))
                 {
-                    await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x=>x.Instruction != UserHubInstruction.Not_Received_Instrauction).Count());
+                    await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x=>x.Instruction != UserHubInstructions.Not_Received_Instrauction).Count());
                     await SendMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
 
                     if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
@@ -79,13 +79,13 @@ public abstract class InstructionScenarioBase : ScenarioBase
                 }
                 else
                 {
-                    if (instruction.Instruction.Equals(UserHubInstruction.Received_Instrauction))
+                    if (instruction.Instruction.Equals(UserHubInstructions.Received_Instrauction))
                     {
                         await userExecuter.ListenCheck(instruction.FromArrived, instruction.Message);
                     }
                     else
                     {
-                        if (instruction.Instruction.Equals(UserHubInstruction.Not_Received_Instrauction))
+                        if (instruction.Instruction.Equals(UserHubInstructions.Not_Received_Instrauction))
                         {
                             await userExecuter.NotReceivedCheck();
                         }
