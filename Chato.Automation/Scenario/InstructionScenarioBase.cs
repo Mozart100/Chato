@@ -59,6 +59,13 @@ public abstract class InstructionScenarioBase : ScenarioBase
         {
             foreach (var instruction in instructions)
             {
+                if (instruction.Instruction.Equals(UserHubInstruction.Ru_Operation_Instrauction))
+                {
+                    await instruction.Operation(null);
+                    continue;
+                }
+
+
                 var userExecuter = _users[instruction.UserName];
                 if (instruction.Instruction.Equals(UserHubInstruction.Publish_Instrauction))
                 {

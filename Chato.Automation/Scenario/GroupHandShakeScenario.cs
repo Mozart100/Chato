@@ -84,9 +84,14 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
         var olessyaSender = secondRoot.IsSender(Olessya_User);
         var anatoliyReceiver = secondRoot.IsReciever(Anatoliy_User, olessyaSender.UserName);
         var nathanReceiver2 = secondRoot.IsReciever(Nathan_User, olessyaSender.UserName);
+        var maxReceiver1 = secondRoot.IsReciever(Max_User, olessyaSender.UserName);
 
 
-        anatoliySender.Connect(nataliRecevier, nathanReceive1, olessyaReceive1).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2);
+        
+        //anatoliySender.Connect(nataliRecevier, nathanReceive1, olessyaReceive1).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2);
+      
+  
+        anatoliySender.Connect(nataliRecevier, nathanReceive1, olessyaReceive1).Do(maxReceiver1,  async user=> await InitializeWithGroupAsync(First_Group, Max_User)).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2, maxReceiver1);
 
         var graph = new InstructionGraph(anatoliySender);
 

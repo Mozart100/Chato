@@ -1,12 +1,15 @@
 ﻿namespace Chato.Automation.Infrastructure.Instruction;
 
-public record InstructionNode(string UserName, string? GroupName, string Instruction, string Message, string? FromArrived, HashSet<InstructionNode> Children)
+public record InstructionNode(string UserName, string? GroupName, string Instruction, string Message, string? FromArrived, 
+    HashSet<InstructionNode> Children, Func<InstructionNode, Task>? Operation = null)
 {
     public InstructionNode(string userName, string? groupName, string instruction, string message, string? fromArrived)
-        : this(userName, groupName, instruction, message, fromArrived, new HashSet<InstructionNode>())
+        : this(userName, groupName, instruction, message, fromArrived, new HashSet<InstructionNode>(), null)
     {
     }
 }
+
+
 
 public static class InstructionNodeFluentApi
 {
@@ -23,8 +26,9 @@ public static class InstructionNodeFluentApi
             UserName = userName,
             Instruction = UserHubInstruction.Received_Instrauction,
             FromArrived = arrivedFrom,
-            Children = new()
-            
+            Children = new(),
+            Operation = null
+
         };
 
         return @new;
@@ -36,7 +40,8 @@ public static class InstructionNodeFluentApi
         {
             UserName = userName,
             Instruction = UserHubInstruction.Publish_Instrauction,
-            Children = new()
+            Children = new(),
+            Operation = null
 
         };
 
@@ -51,9 +56,21 @@ public static class InstructionNodeFluentApi
         return info;
     }
 
-    public static InstructionNode ReplicateNameAndGroup(this InstructionNode info)
+    public static InstructionNode Do(this InstructionNode info, InstructionNode target, Func<InstructionNode,Task> operation)
     {
-        return new InstructionNode(userName: info.UserName, groupName: info.GroupName, instruction: null, message: null, fromArrived: null);
+        var @new = info with
+        {
+            UserName = target.UserName,
+            Instruction = UserHubInstruction.Ru_Operation_Instrauction,
+            FromArrived = null,
+            Message = null,
+            Children = new(),
+            Operation = operation
+
+        };
+
+        var result = Connect(info, @new);
+        return result;
     }
 
     public static InstructionNode Send(this InstructionNode info, string message)
@@ -62,7 +79,8 @@ public static class InstructionNodeFluentApi
         {
             Message = message,
             Instruction = UserHubInstruction.Publish_Instrauction,
-            Children = new()
+            Children = new(),
+            Operation = null
         };
 
         return @new;
@@ -75,7 +93,8 @@ public static class InstructionNodeFluentApi
             Message = message,
             Instruction = UserHubInstruction.Received_Instrauction,
             FromArrived = receiveFrom,
-            Children = new()
+            Children = new(),
+            Operation = null
         };
 
         return @new;
@@ -89,7 +108,8 @@ public static class InstructionNodeFluentApi
             Instruction = UserHubInstruction.Not_Received_Instrauction,
             Message = null,
             FromArrived = "none",
-            Children = new()
+            Children = new(),
+            Operation = null
         };
 
         return @new;
