@@ -1,6 +1,8 @@
 ﻿using Chato.Server.Hubs;
 using FluentAssertions;
 using Microsoft.AspNetCore.SignalR.Client;
+using System.Collections;
+using System.Text;
 
 namespace Chato.Automation.Infrastructure.Instruction;
 
@@ -108,8 +110,9 @@ public class UserInstructionExecuter
         }
     }
 
-    public async Task ListenStringCheck(string fromArrived, string message)
+    public async Task ListenStringCheck(string fromArrived, byte []  ptr)
     {
+        var message = Encoding.UTF8.GetString(ptr);
         var messageReceived = _receivedMessages.Dequeue();
 
         if (messageReceived is HubMessageStringRecieved stringMessage)

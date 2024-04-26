@@ -1,4 +1,6 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
+using System.Collections;
+using System.Text;
 
 namespace Chato.Automation.Scenario;
 
@@ -39,8 +41,9 @@ public abstract class InstructionScenarioBase : ScenarioBase
         }
     }
 
-    private async Task SendMessage(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, string message)
+    private async Task SendStringMessage(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte [] ptr)
     {
+        var message = Encoding.UTF8.GetString(ptr);
         if (groupName == null)
         {
             await userExecuter.SendMessageToAllUSers(userNameFrom: userNameFrom, message: message);
@@ -64,13 +67,13 @@ public abstract class InstructionScenarioBase : ScenarioBase
                     await instruction.Operation(null);
                     continue;
                 }
-
+                
 
                 var userExecuter = _users[instruction.UserName];
                 if (instruction.Instruction.Equals(UserHubInstructions.Publish_Instrauction))
                 {
                     await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x=>x.Instruction != UserHubInstructions.Not_Received_Instrauction).Count());
-                    await SendMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
+                    await SendStringMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, ptr: instruction.Message);
 
                     if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
                     {

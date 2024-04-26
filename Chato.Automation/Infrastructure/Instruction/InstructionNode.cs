@@ -1,9 +1,11 @@
-﻿namespace Chato.Automation.Infrastructure.Instruction;
+﻿using System.Text;
 
-public record InstructionNode(string UserName, string? GroupName, string Instruction, string Message, string? FromArrived, 
+namespace Chato.Automation.Infrastructure.Instruction;
+
+public record InstructionNode(string UserName, string? GroupName, string Instruction, byte [] Message, string? FromArrived,
     HashSet<InstructionNode> Children, Func<InstructionNode, Task>? Operation = null)
 {
-    public InstructionNode(string userName, string? groupName, string instruction, string message, string? fromArrived)
+    public InstructionNode(string userName, string? groupName, string instruction, byte [] message, string? fromArrived)
         : this(userName, groupName, instruction, message, fromArrived, new HashSet<InstructionNode>(), null)
     {
     }
@@ -13,13 +15,15 @@ public record InstructionNode(string UserName, string? GroupName, string Instruc
 
 public static class InstructionNodeFluentApi
 {
-    public static InstructionNode StartWithGroup(string groupName , string message)
+    public static InstructionNode StartWithGroup(string groupName, string message)
     {
-        var info = new InstructionNode(userName: null, groupName: groupName, instruction: null, message: message, fromArrived: null);
+        var byteArray = Encoding.UTF8.GetBytes(message);
+
+        var info = new InstructionNode(userName: null, groupName: groupName, instruction: null, message: byteArray, fromArrived: null);
         return info;
     }
 
-    public static InstructionNode IsReciever(this InstructionNode info , string userName, string arrivedFrom)
+    public static InstructionNode IsReciever(this InstructionNode info, string userName, string arrivedFrom)
     {
         var @new = info with
         {
@@ -34,7 +38,7 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode IsToDownload(this InstructionNode info, string userName)
+    public static InstructionNode IsToDownload(this InstructionNode info, string userName, byte[] data = null)
     {
         var @new = info with
         {
@@ -65,7 +69,7 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode Do(this InstructionNode info, InstructionNode target, Func<InstructionNode,Task> operation)
+    public static InstructionNode Do(this InstructionNode info, InstructionNode target, Func<InstructionNode, Task> operation)
     {
         var @new = info with
         {
@@ -82,7 +86,7 @@ public static class InstructionNodeFluentApi
         return result;
     }
 
-    public static InstructionNode Is_Not_Receiver(this InstructionNode info,string userName)
+    public static InstructionNode Is_Not_Receiver(this InstructionNode info, string userName)
     {
         var @new = info with
         {
