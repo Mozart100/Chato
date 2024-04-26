@@ -3,10 +3,6 @@
 var baseUrl = "https://localhost:7138/chat";
 
 
-var fullHandShake = new FullHandShakeScenario(baseUrl);
-await fullHandShake.StartRunScenario();
-
-
 
 var groupHandShakeScenario = new GroupHandShakeScenario(baseUrl);
 await groupHandShakeScenario.StartRunScenario();
