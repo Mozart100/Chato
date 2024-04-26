@@ -4,37 +4,41 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Chato.Automation.Infrastructure.Instruction;
 
-public record HubMessageRecieved(string From, string Message);
+public record HubMessageRecievedBase(string From);
+public record HubMessageStringRecieved(string From, string Message) : HubMessageRecievedBase(From);
+public record HubMessageByteRecieved(string From, string data) : HubMessageRecievedBase(From);
 
 
 public class UserInstructionExecuter
 {
+    public const string Hub_From_Server = "server";
 
     private const string Hub_Send_Message_To_Others_Topic = nameof(ChatHub.SendMessageToOthers);
 
     private const string Hub_Send_Other_In_Group_Topic = nameof(ChatHub.SendMessageToOthersInGroup);
     private const string Hub_Leave_Group_Topic = nameof(ChatHub.LeaveGroup);
-    
     private const string Hub_Join_Group_Topic = nameof(ChatHub.JoinGroup);
+
+    private const string Hub_Download_Topic = nameof(ChatHub.Download);
 
 
 
     private readonly IAutomationLogger _logger;
     private readonly CounterSignal _signal;
     private readonly HubConnection _connection;
-    private readonly Queue<HubMessageRecieved> _receivedMessages;
+    private readonly Queue<HubMessageRecievedBase> _receivedMessages;
     private readonly HashSet<string> _ignoreUsers;
 
 
-    public UserInstructionExecuter(string userName, string url, IAutomationLogger logger, CounterSignal signal )
+    public UserInstructionExecuter(string userName, string url, IAutomationLogger logger, CounterSignal signal)
     {
         UserName = userName;
         _logger = logger;
         this._signal = signal;
         _ignoreUsers = new HashSet<string>();
-        _ignoreUsers.Add("server");
+        _ignoreUsers.Add(Hub_From_Server);
 
-        _receivedMessages = new Queue<HubMessageRecieved>();
+        _receivedMessages = new Queue<HubMessageRecievedBase>();
 
         _connection = new HubConnectionBuilder()
        .WithUrl(url)
@@ -93,13 +97,28 @@ public class UserInstructionExecuter
         await _connection.InvokeAsync(Hub_Join_Group_Topic, groupName);
     }
 
-    public async Task ListenCheck(string fromArrived, string message)
+
+    public async Task DownloadStream()
+    {
+        _logger.Info($"{UserName} download.");
+
+        await foreach (var item in _connection.StreamAsync<string>(Hub_Download_Topic, new HubDownloadInfo(10)))
+        {
+            Console.WriteLine(item);
+        }
+    }
+
+    public async Task ListenStringCheck(string fromArrived, string message)
     {
         var messageReceived = _receivedMessages.Dequeue();
 
-        messageReceived.From.Should().Be(fromArrived);
-        messageReceived.Message.Should().Be(message);
+        if (messageReceived is HubMessageStringRecieved stringMessage)
+        {
+            stringMessage.From.Should().Be(fromArrived);
+            stringMessage.Message.Should().Be(message);
+        }
     }
+
 
     public async Task NotReceivedCheck()
     {
@@ -108,19 +127,19 @@ public class UserInstructionExecuter
 
     protected async Task Listen()
     {
-        _connection.On<string,string>(ChatHub.TOPIC_MESSAGE_RECEIVED, async (user, message) =>
+        _connection.On<string, string>(ChatHub.TOPIC_MESSAGE_STRING_RECEIVED, async (user, message) =>
         {
-            await ExpectedRecieveMessageLogic(user, message);
+            await ExpectedStringMessages(user, message);
         });
     }
 
-    private async Task ExpectedRecieveMessageLogic(string user, string message)
+    private async Task ExpectedStringMessages(string user, string message)
     {
         if (_ignoreUsers.Contains(user) == false)
         {
             _logger.Info($"{UserName} received message [{message}] from [{user}].");
 
-            _receivedMessages.Enqueue(new HubMessageRecieved(user, message));
+            _receivedMessages.Enqueue(new HubMessageStringRecieved(user, message));
             await _signal.ReleaseAsync();
         }
         else

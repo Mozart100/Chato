@@ -59,7 +59,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
         {
             foreach (var instruction in instructions)
             {
-                if (instruction.Instruction.Equals(UserHubInstructions.Ru_Operation_Instrauction))
+                if (instruction.Instruction.Equals(UserHubInstructions.Run_Operation_Instrauction))
                 {
                     await instruction.Operation(null);
                     continue;
@@ -81,13 +81,21 @@ public abstract class InstructionScenarioBase : ScenarioBase
                 {
                     if (instruction.Instruction.Equals(UserHubInstructions.Received_Instrauction))
                     {
-                        await userExecuter.ListenCheck(instruction.FromArrived, instruction.Message);
+                        await userExecuter.ListenStringCheck(instruction.FromArrived, instruction.Message);
                     }
                     else
                     {
                         if (instruction.Instruction.Equals(UserHubInstructions.Not_Received_Instrauction))
                         {
                             await userExecuter.NotReceivedCheck();
+                        }
+                        else
+                        {
+                            if (instruction.Instruction.Equals(UserHubInstructions.Run_Download_Instrauction))
+                            {
+                                await userExecuter.DownloadStream();
+                                //await userExecuter.NotReceivedCheck();k
+                            }
                         }
                     }
                 }

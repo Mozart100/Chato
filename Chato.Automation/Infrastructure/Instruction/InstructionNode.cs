@@ -34,6 +34,23 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
+    public static InstructionNode IsToDownload(this InstructionNode info, string userName)
+    {
+        var @new = info with
+        {
+            UserName = userName,
+            Instruction = UserHubInstructions.Run_Download_Instrauction,
+            FromArrived = UserInstructionExecuter.Hub_From_Server,
+            Children = new(),
+            Operation = null
+
+        };
+
+        return @new;
+    }
+
+
+
     public static InstructionNode IsSender(this InstructionNode info, string userName)
     {
         var @new = info with
@@ -53,7 +70,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             UserName = target.UserName,
-            Instruction = UserHubInstructions.Ru_Operation_Instrauction,
+            Instruction = UserHubInstructions.Run_Operation_Instrauction,
             FromArrived = null,
             Message = null,
             Children = new(),

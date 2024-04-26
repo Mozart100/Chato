@@ -2,7 +2,6 @@
 using Chato.Automation.Scenario;
 
 namespace Arkovean.Chat.Automation.Scenario;
-
 internal class GroupHandShakeScenario : InstructionScenarioBase
 {
     private const string First_Group = "haifa";
