@@ -48,14 +48,6 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-
-
-    public static InstructionNode Start(string name, string groupName = null)
-    {
-        var info = new InstructionNode(userName: name, groupName: groupName, instruction: null, message: null, fromArrived: null);
-        return info;
-    }
-
     public static InstructionNode Do(this InstructionNode info, InstructionNode target, Func<InstructionNode,Task> operation)
     {
         var @new = info with
@@ -71,33 +63,6 @@ public static class InstructionNodeFluentApi
 
         var result = Connect(info, @new);
         return result;
-    }
-
-    public static InstructionNode Send(this InstructionNode info, string message)
-    {
-        var @new = info with
-        {
-            Message = message,
-            Instruction = UserHubInstructions.Publish_Instrauction,
-            Children = new(),
-            Operation = null
-        };
-
-        return @new;
-    }
-
-    public static InstructionNode Receive(this InstructionNode info, string receiveFrom, string message)
-    {
-        var @new = info with
-        {
-            Message = message,
-            Instruction = UserHubInstructions.Received_Instrauction,
-            FromArrived = receiveFrom,
-            Children = new(),
-            Operation = null
-        };
-
-        return @new;
     }
 
     public static InstructionNode Is_Not_Receiver(this InstructionNode info,string userName)
