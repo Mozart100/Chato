@@ -8,7 +8,7 @@ namespace Chato.Automation.Infrastructure.Instruction;
 
 public record HubMessageRecievedBase(string From);
 public record HubMessageStringRecieved(string From, string Message) : HubMessageRecievedBase(From);
-public record HubMessageByteRecieved(string From, string data) : HubMessageRecievedBase(From);
+public record HubMessageByteRecieved(string From, byte [] data) : HubMessageRecievedBase(From);
 
 
 public class UserInstructionExecuter
@@ -70,7 +70,7 @@ public class UserInstructionExecuter
     public async Task InitializeWithGroupAsync(string groupName)
     {
         await _connection.StartAsync();
-        await JoinHaifaGroup(groupName);
+        await JoinGroup(groupName);
 
         await Listen();
     }
@@ -92,7 +92,7 @@ public class UserInstructionExecuter
     }
 
 
-    public async Task JoinHaifaGroup(string groupName)
+    public async Task JoinGroup(string groupName)
     {
         _logger.Info($"{UserName} joins group.");
 
@@ -100,13 +100,13 @@ public class UserInstructionExecuter
     }
 
 
-    public async Task DownloadStream()
+    public async Task DownloadStream(byte[] message)
     {
         _logger.Info($"{UserName} download.");
 
         await foreach (var item in _connection.StreamAsync<string>(Hub_Download_Topic, new HubDownloadInfo(10)))
         {
-            Console.WriteLine(item);
+            message.Count().Should().Be(message.Length);    
         }
     }
 

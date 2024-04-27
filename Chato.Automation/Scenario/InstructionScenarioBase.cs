@@ -1,15 +1,14 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
-using System.Collections;
 using System.Text;
 
 namespace Chato.Automation.Scenario;
 
 public abstract class InstructionScenarioBase : ScenarioBase
 {
-    private CounterSignal _counterSignal;
-
+    private readonly CounterSignal _counterSignal;
+    private readonly Dictionary<string, Func<UserInstructionExecuter, InstructionNode, Task>> _actionMapper;
     private readonly CancellationTokenSource _cancellationTokenSource;
-    private Dictionary<string, UserInstructionExecuter> _users;
+    private readonly Dictionary<string, UserInstructionExecuter> _users;
 
     public InstructionScenarioBase(string baseUrl) : base(baseUrl)
     {
@@ -17,7 +16,12 @@ public abstract class InstructionScenarioBase : ScenarioBase
         SummaryLogicCallback.Add(UsersCleanup);
         _counterSignal = new CounterSignal(2);
 
+        _actionMapper = new Dictionary<string, Func<UserInstructionExecuter, InstructionNode, Task>>();
+
+        Initialize();
+
     }
+
 
     protected async Task InitializeAsync(params string[] users)
     {
@@ -41,7 +45,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
         }
     }
 
-    private async Task SendStringMessage(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte [] ptr)
+    private async Task SendStringMessage(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte[] ptr)
     {
         var message = Encoding.UTF8.GetString(ptr);
         if (groupName == null)
@@ -53,6 +57,26 @@ public abstract class InstructionScenarioBase : ScenarioBase
             await userExecuter.SendMessageToOthersInGroup(groupName: groupName, userNameFrom: userNameFrom, message: message);
         }
     }
+
+    private void Initialize()
+    {
+
+        _actionMapper.Add(UserHubInstructions.Publish_Instrauction, async (userExecuter, instruction) =>
+        {
+            await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction != UserHubInstructions.Not_Received_Instrauction).Count());
+            await SendStringMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, ptr: instruction.Message);
+
+            if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
+            {
+                throw new Exception("Not all users receved their messages");
+            }
+        });
+
+        _actionMapper.Add(UserHubInstructions.Received_Instrauction, async (userExecuter, instruction) => await userExecuter.ListenStringCheck(instruction.FromArrived, instruction.Message));
+        _actionMapper.Add(UserHubInstructions.Not_Received_Instrauction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheck());
+        _actionMapper.Add(UserHubInstructions.Run_Download_Instrauction, async (userExecuter, instruction) => await userExecuter.DownloadStream(instruction.Message));
+    }
+
 
     protected async Task InstructionExecuter(InstructionGraph graph)
     {
@@ -67,41 +91,10 @@ public abstract class InstructionScenarioBase : ScenarioBase
                     await instruction.Operation(null);
                     continue;
                 }
-                
+
 
                 var userExecuter = _users[instruction.UserName];
-                if (instruction.Instruction.Equals(UserHubInstructions.Publish_Instrauction))
-                {
-                    await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x=>x.Instruction != UserHubInstructions.Not_Received_Instrauction).Count());
-                    await SendStringMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, ptr: instruction.Message);
-
-                    if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
-                    {
-                        throw new Exception("Not all users receved their messages");
-                    }
-                }
-                else
-                {
-                    if (instruction.Instruction.Equals(UserHubInstructions.Received_Instrauction))
-                    {
-                        await userExecuter.ListenStringCheck(instruction.FromArrived, instruction.Message);
-                    }
-                    else
-                    {
-                        if (instruction.Instruction.Equals(UserHubInstructions.Not_Received_Instrauction))
-                        {
-                            await userExecuter.NotReceivedCheck();
-                        }
-                        else
-                        {
-                            if (instruction.Instruction.Equals(UserHubInstructions.Run_Download_Instrauction))
-                            {
-                                await userExecuter.DownloadStream();
-                                //await userExecuter.NotReceivedCheck();k
-                            }
-                        }
-                    }
-                }
+                await _actionMapper[instruction.Instruction]?.Invoke(userExecuter, instruction);
             }
 
             instructions = await graph.MoveNext();

@@ -38,7 +38,7 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode IsToDownload(this InstructionNode info, string userName, byte[] data = null)
+    public static InstructionNode IsToDownload(this InstructionNode info, string userName, byte[] data )
     {
         var @new = info with
         {
@@ -46,7 +46,8 @@ public static class InstructionNodeFluentApi
             Instruction = UserHubInstructions.Run_Download_Instrauction,
             FromArrived = UserInstructionExecuter.Hub_From_Server,
             Children = new(),
-            Operation = null
+            Operation = null,
+            Message = data
 
         };
 

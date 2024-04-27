@@ -10,7 +10,7 @@ internal class HubStreamScenario : InstructionScenarioBase
     private const string Anatoliy_User = "anatoliy";
     private const string Olessya_User = "olessya";
     private const string Nathan_User = "nathan";
-
+    private byte[] _fileContent;
 
     public HubStreamScenario(string baseUrl) : base(baseUrl)
     {
@@ -19,7 +19,12 @@ internal class HubStreamScenario : InstructionScenarioBase
         BusinessLogicCallbacks.Add(TwoPeopleHandShakeStep);
         SummaryLogicCallback.Add(GroupUsersCleanup);
 
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "css.txt");
+        _fileContent = File.ReadAllBytes(path);
+
     }
+
+
 
 
     public override string ScenarioName => "Streaming messages";
@@ -36,8 +41,8 @@ internal class HubStreamScenario : InstructionScenarioBase
         var message_1 = "Hello";
         var groupRoot = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
-        var anatoliySender = groupRoot.IsToDownload(Anatoliy_User);
-        var olessyaReceive = groupRoot.IsToDownload(Olessya_User);
+        var anatoliySender = groupRoot.IsToDownload(Anatoliy_User,_fileContent);
+        var olessyaReceive = groupRoot.IsToDownload(Olessya_User, _fileContent);
 
 
         anatoliySender.Connect(olessyaReceive);
