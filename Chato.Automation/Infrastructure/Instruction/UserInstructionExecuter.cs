@@ -21,7 +21,7 @@ public class UserInstructionExecuter
     private const string Hub_Leave_Group_Topic = nameof(ChatHub.LeaveGroup);
     private const string Hub_Join_Group_Topic = nameof(ChatHub.JoinGroup);
 
-    private const string Hub_Download_Topic = nameof(ChatHub.Download);
+    private const string Hub_Download_Topic = nameof(ChatHub.Downloads);
 
 
 
@@ -104,9 +104,9 @@ public class UserInstructionExecuter
     {
         _logger.Info($"{UserName} download.");
 
-        await foreach (var item in _connection.StreamAsync<string>(Hub_Download_Topic, new HubDownloadInfo(10)))
+        await foreach (var item in _connection.StreamAsync<byte[]>(Hub_Download_Topic, new HubDownloadInfo(1)))
         {
-            message.Count().Should().Be(message.Length);    
+            item.Count().Should().Be(message.Length);    
         }
     }
 

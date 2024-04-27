@@ -24,9 +24,6 @@ internal class HubStreamScenario : InstructionScenarioBase
 
     }
 
-
-
-
     public override string ScenarioName => "Streaming messages";
 
     public override string Description => "Uploading and downloading messaging.";

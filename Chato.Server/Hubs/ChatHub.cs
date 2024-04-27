@@ -38,12 +38,27 @@ public class ChatHub : Hub
     }
 
 
-    public async IAsyncEnumerable<string> Download(HubDownloadInfo downloadInfo, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<byte[]> Downloads(HubDownloadInfo downloadInfo, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "css.txt");
+        var bytes = File.ReadAllBytes(path);
+
         for (var i = 0; i < downloadInfo.Amount && cancellationToken.IsCancellationRequested == false; i++)
         {
-            yield return $"Download - {i}";
+            yield return bytes;
             await Task.Delay(200);
         }
     }
+
+    //public async IAsyncEnumerable<string> Download(HubDownloadInfo downloadInfo, [EnumeratorCancellation] CancellationToken cancellationToken)
+    //{
+    //    var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "css.txt");
+    //    var bytes = File.ReadAllBytes(path);
+
+    //    for (var i = 0; i < downloadInfo.Amount && cancellationToken.IsCancellationRequested == false; i++)
+    //    {
+    //        yield return $"Download - {i}";
+    //        await Task.Delay(200);
+    //    }
+    //}
 }
