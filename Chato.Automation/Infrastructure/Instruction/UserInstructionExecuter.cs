@@ -1,14 +1,16 @@
-﻿using Chato.Server.Hubs;
+﻿using Chato.Automation.Extensions;
+using Chato.Server.Hubs;
 using FluentAssertions;
 using Microsoft.AspNetCore.SignalR.Client;
 using System.Collections;
+using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Chato.Automation.Infrastructure.Instruction;
 
 public record HubMessageRecievedBase(string From);
-public record HubMessageStringRecieved(string From, string Message) : HubMessageRecievedBase(From);
-public record HubMessageByteRecieved(string From, byte [] data) : HubMessageRecievedBase(From);
+//public record HubMessageStringRecieved(string From, string Message) : HubMessageRecievedBase(From);
+public record HubMessageByteRecieved(string From, byte[] Data) : HubMessageRecievedBase(From);
 
 
 public class UserInstructionExecuter
@@ -79,16 +81,17 @@ public class UserInstructionExecuter
 
     public async Task SendMessageToAllUSers(string userNameFrom, string message)
     {
-        _logger.Info($"{userNameFrom} sening message [{message}].");
+        _logger.Info($"{userNameFrom} sending message [{message}].");
 
         await _connection.SendAsync(Hub_Send_Message_To_Others_Topic, userNameFrom, message);
     }
 
     public async Task SendMessageToOthersInGroup(string groupName, string userNameFrom, string message)
     {
-        _logger.Info($"{userNameFrom} sening in group [{groupName}] message [{message}].");
+        _logger.Info($"{userNameFrom} sending in group [{groupName}] message [{message}].");
 
-        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, groupName, userNameFrom, message);
+        var ptr = Encoding.UTF8.GetBytes(message);
+        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, groupName, userNameFrom, ptr);
     }
 
 
@@ -106,49 +109,60 @@ public class UserInstructionExecuter
 
         await foreach (var item in _connection.StreamAsync<byte[]>(Hub_Download_Topic, new HubDownloadInfo(1)))
         {
-            item.Count().Should().Be(message.Length);    
+            item.Count().Should().Be(message.Length);
         }
     }
 
-    public async Task ListenStringCheck(string fromArrived, byte []  ptr)
+    public async Task ListenToStringCheckAsync(string fromArrived, byte[] ptr)
     {
         var message = Encoding.UTF8.GetString(ptr);
         var messageReceived = _receivedMessages.Dequeue();
 
-        if (messageReceived is HubMessageStringRecieved stringMessage)
+        if (messageReceived is HubMessageByteRecieved stringMessage)
         {
             stringMessage.From.Should().Be(fromArrived);
-            stringMessage.Message.Should().Be(message);
+
+            stringMessage.Data.IsEqualsShould(ptr);
+            //stringMessage.Data.Length.Should().Be(message.Length);
+
+            //for (int i = 0; i < message.Length; i++)
+            //{
+            //    var result = stringMessage.Data[i] == message[i];
+            //    result.Should().BeTrue();
+            //}
+            //stringMessage.Data.Should().BeEquivalentTo(message);
         }
     }
 
 
-    public async Task NotReceivedCheck()
+    public async Task NotReceivedCheckAsync()
     {
         _receivedMessages.Any().Should().BeFalse();
     }
 
     protected async Task Listen()
     {
-        _connection.On<string, string>(ChatHub.TOPIC_MESSAGE_STRING_RECEIVED, async (user, message) =>
+        _connection.On<string, byte[]>(ChatHub.TOPIC_MESSAGE_STRING_RECEIVED, async (user, ptr) =>
         {
-            await ExpectedStringMessages(user, message);
+            if (_ignoreUsers.Contains(user) == false)
+            {
+                await ExpectedStringMessages(user, ptr);
+            }
+            else
+            {
+                var message = Encoding.UTF8.GetString(ptr);
+                _logger.Info($"{UserName} received message [{message}] but was ignored from [{user}].");
+            }
         });
     }
 
-    private async Task ExpectedStringMessages(string user, string message)
+    private async Task ExpectedStringMessages(string user, byte[] ptr)
     {
-        if (_ignoreUsers.Contains(user) == false)
-        {
-            _logger.Info($"{UserName} received message [{message}] from [{user}].");
+        var message = Encoding.UTF8.GetString(ptr);
+        _logger.Info($"{UserName} received message [{message}] from [{user}].");
 
-            _receivedMessages.Enqueue(new HubMessageStringRecieved(user, message));
-            await _signal.ReleaseAsync();
-        }
-        else
-        {
-            _logger.Info($"{UserName} received message [{message}] but was ignored from [{user}].");
-        }
+        _receivedMessages.Enqueue(new HubMessageByteRecieved(user, ptr));
+        await _signal.ReleaseAsync();
     }
 
     public async Task Close()

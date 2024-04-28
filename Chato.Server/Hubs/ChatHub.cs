@@ -1,30 +1,40 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using System.Collections;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 namespace Chato.Server.Hubs;
 
 public record HubDownloadInfo(int Amount);
 
-
-public class ChatHub : Hub
+public interface ITest
+{
+    Task ReceiveMessage(string user, string message);
+}
+public class ChatHub : Hub//<ITest>
 {
     public const string TOPIC_MESSAGE_STRING_RECEIVED = "MessageStringRecieved";
     public const string TOPIC_MESSAGE_BYTE_RECEIVED = "MessageByteRecieved";
 
     public override async Task OnConnectedAsync()
     {
-        await SendMessageToOthers("server", "Your are connected");
+        var ptr = Encoding.UTF8.GetBytes("Your are connected");
+
+        await SendMessageToOthers("server",ptr);
         await base.OnConnectedAsync();
     }
 
-    public Task SendMessageToOthers(string user, string nessage)
+
+    public Task SendMessageToOthers(string user, byte []  message)
     {
-        return Clients.Others.SendAsync(TOPIC_MESSAGE_STRING_RECEIVED, user, nessage);
+        return Clients.Others.SendAsync(TOPIC_MESSAGE_STRING_RECEIVED, user, message);
     }
 
-    public Task SendMessageToOthersInGroup(string group, string user, string nessage)
+
+    public Task SendMessageToOthersInGroup(string group, string user, byte [] ptr)
     {
-        return Clients.OthersInGroup(group).SendAsync(TOPIC_MESSAGE_STRING_RECEIVED, user, nessage);
+        //var message = Encoding.UTF8.GetkckString(ptr);
+        return Clients.OthersInGroup(group).SendAsync(TOPIC_MESSAGE_STRING_RECEIVED, user, ptr);
     }
 
     public async Task JoinGroup(string groupName)

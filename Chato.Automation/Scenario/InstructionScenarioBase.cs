@@ -72,8 +72,8 @@ public abstract class InstructionScenarioBase : ScenarioBase
             }
         });
 
-        _actionMapper.Add(UserHubInstructions.Received_Instrauction, async (userExecuter, instruction) => await userExecuter.ListenStringCheck(instruction.FromArrived, instruction.Message));
-        _actionMapper.Add(UserHubInstructions.Not_Received_Instrauction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheck());
+        _actionMapper.Add(UserHubInstructions.Received_Instrauction, async (userExecuter, instruction) => await userExecuter.ListenToStringCheckAsync(instruction.FromArrived, instruction.Message));
+        _actionMapper.Add(UserHubInstructions.Not_Received_Instrauction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync());
         _actionMapper.Add(UserHubInstructions.Run_Download_Instrauction, async (userExecuter, instruction) => await userExecuter.DownloadStream(instruction.Message));
     }
 

@@ -18,8 +18,13 @@ public static class InstructionNodeFluentApi
     public static InstructionNode StartWithGroup(string groupName, string message)
     {
         var byteArray = Encoding.UTF8.GetBytes(message);
-
         var info = new InstructionNode(userName: null, groupName: groupName, instruction: null, message: byteArray, fromArrived: null);
+        return info;
+    }
+
+    public static InstructionNode StartWithGroup(string groupName, byte [] message)
+    {
+        var info = new InstructionNode(userName: null, groupName: groupName, instruction: null, message: message, fromArrived: null);
         return info;
     }
 

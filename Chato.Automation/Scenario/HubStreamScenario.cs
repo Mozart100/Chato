@@ -16,7 +16,7 @@ internal class HubStreamScenario : InstructionScenarioBase
     {
 
         SetupsLogicCallback.Add(TwoUserSetups);
-        BusinessLogicCallbacks.Add(TwoPeopleHandShakeStep);
+        //BusinessLogicCallbacks.Add(TreePoepleHandShakeStep);
         SummaryLogicCallback.Add(GroupUsersCleanup);
 
         var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "css.txt");
@@ -33,20 +33,45 @@ internal class HubStreamScenario : InstructionScenarioBase
         await InitializeWithGroupAsync(First_Group, Anatoliy_User, Olessya_User);
     }
 
-    private async Task TwoPeopleHandShakeStep()
+    //private async Task TwoPeopleHandShakeStep()
+    //{
+    //    var message_1 = "Hello";
+    //    var groupRoot = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
+
+    //    var anatoliySender = groupRoot.IsToDownload(Anatoliy_User, _fileContent);
+    //    var olessyaReceive = groupRoot.IsToDownload(Olessya_User, _fileContent);
+
+
+    //    anatoliySender.Connect(olessyaReceive);
+
+    //    var graph = new InstructionGraph(anatoliySender);
+    //    await InstructionExecuter(graph);
+    //}
+
+
+    private async Task TreeUserSetups()
     {
-        var message_1 = "Hello";
-        var groupRoot = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
+        await InitializeWithGroupAsync(First_Group, Anatoliy_User, Olessya_User, Nathan_User);
+    }
 
-        var anatoliySender = groupRoot.IsToDownload(Anatoliy_User,_fileContent);
-        var olessyaReceive = groupRoot.IsToDownload(Olessya_User, _fileContent);
+    private async Task TreePoepleHandShakeStep()
+    {
+        var message_1 = "Shalom";
+        var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
 
-        anatoliySender.Connect(olessyaReceive);
+
+        var anatoliySender = firstGroup.IsSender(Anatoliy_User);
+        var olessyaReceive1 = firstGroup.IsReciever(Olessya_User, anatoliySender.UserName);
+        var nathanReceive1 = firstGroup.IsReciever(Nathan_User, anatoliySender.UserName);
+
+        anatoliySender.Connect(nathanReceive1, olessyaReceive1);
 
         var graph = new InstructionGraph(anatoliySender);
         await InstructionExecuter(graph);
     }
+
+
 
     public async Task GroupUsersCleanup()
     {
