@@ -1,4 +1,5 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
+using Microsoft.Extensions.Logging;
 using System.Text;
 
 namespace Chato.Automation.Scenario;
@@ -10,7 +11,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
     private readonly CancellationTokenSource _cancellationTokenSource;
     private readonly Dictionary<string, UserInstructionExecuter> _users;
 
-    public InstructionScenarioBase(string baseUrl) : base(baseUrl)
+    public InstructionScenarioBase(ILogger logger , ScenarioConfig config) : base(logger, config)
     {
         _users = new Dictionary<string, UserInstructionExecuter>();
         SummaryLogicCallback.Add(UsersCleanup);

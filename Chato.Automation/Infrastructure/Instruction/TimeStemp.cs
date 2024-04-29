@@ -25,13 +25,14 @@ public struct TimeStemp
         return new TimeStemp();
     }
 
+
     public bool IsSecondOver(int seconds)
     {
         var curr = Environment.TickCount;
         var millisecondsDifference = curr - _start;
 
         double secondsDifference = millisecondsDifference / 1000.0;
-        return secondsDifference > seconds;
+        return secondsDifference >= seconds; // Use >= to include the exact second.
     }
 }
 

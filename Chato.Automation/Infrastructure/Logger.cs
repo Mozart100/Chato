@@ -6,26 +6,26 @@ using System.Threading.Tasks;
 
 namespace Chato.Automation.Infrastructure
 {
-    public interface IAutomationLogger
-    {
-        void Info(string message);
-    }
+    //public interface IAutomationLogger
+    //{
+    //    void Info(string message);
+    //}
 
-    internal class ConsoleLogger : IAutomationLogger
-    {
-        public void Info(string message)
-        {
-            Console.WriteLine(message);
-        }
-    }
+    //internal class ConsoleLogger : IAutomationLogger
+    //{
+    //    public void Info(string message)
+    //    {
+    //        Console.WriteLine(message);
+    //    }
+    //}
 
 
 
-    public class AutomationLoggerFactory
-    {
-        public static IAutomationLogger CreateLogger()
-        {
-            return new ConsoleLogger();
-        }
-    }
+    //public class AutomationLoggerFactory
+    //{
+    //    public static IAutomationLogger CreateLogger()
+    //    {
+    //        return new ConsoleLogger();
+    //    }
+    //}
 }

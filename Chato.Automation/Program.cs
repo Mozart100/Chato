@@ -1,29 +1,31 @@
-﻿using Arkovean.Chat.Automation.Scenario;
+﻿using Chato.Automation;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
-var baseUrl = "https://localhost:7138/chat";
+using IHost host = CReateHostBuilder(args).Build();
+using var scop = host.Services.CreateScope();
+var services = scop.ServiceProvider;
 
+try
+{
+    var app = services.GetRequiredService<App>();
+    await app.RunAsync(null);
 
-
-var groupHandShakeScenario = new GroupHandShakeScenario(baseUrl);
-await groupHandShakeScenario.StartRunScenario();
-
-
-
-var streamScenario = new HubStreamScenario(baseUrl);
-await streamScenario.StartRunScenario();
-
-
-
-
-
-
-Console.WriteLine("All test passed successfully!!!!!");
-Console.WriteLine("All test passed successfully!!!!!");
-Console.WriteLine("All test passed successfully!!!!!");
-Console.WriteLine("All test passed successfully!!!!!");
-Console.WriteLine("All test passed successfully!!!!!");
-Console.WriteLine("All test passed successfully!!!!!");
+}
+catch (Exception ex)
+{
+    Console.WriteLine(ex.Message);
+}
 
 
-Console.ReadLine();
+
+static IHostBuilder CReateHostBuilder(string[] args)
+{
+    return Host.CreateDefaultBuilder(args).ConfigureServices((_, services) =>
+    {
+        services.AddSingleton<App>();
+    });
+}
+
+
 

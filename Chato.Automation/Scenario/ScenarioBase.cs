@@ -3,12 +3,14 @@ using Chato.Automation.Responses;
 using System.Net.Http.Json;
 using System.Text.Json;
 using Chato.Server.Infrastracture;
+using Microsoft.Extensions.Logging;
 
 namespace Chato.Automation.Scenario;
 
 public class ScenarioConfig
 {
     public int NumberEmptyLinesBetweenMethods { get; set; } = 2;
+    public string BaseUrl { get; set; }
 }
 public abstract class ScenarioBase
 {
@@ -18,13 +20,13 @@ public abstract class ScenarioBase
     protected List<Func<Task>> BusinessLogicCallbacks;
     protected List<Func<Task>> SummaryLogicCallback;
 
-    public ScenarioBase(string baseUrl)
+    public ScenarioBase(ILogger logger ,  ScenarioConfig config)
     {
 
-        Logger = AutomationLoggerFactory.CreateLogger();
+        Logger = logger;
 
-        BaseUrl = baseUrl;
-        Config = new ScenarioConfig();
+        Config = config;
+        BaseUrl = config.BaseUrl;
 
         SetupsLogicCallback = new List<Func<Task>>();
         BusinessLogicCallbacks = new List<Func<Task>>();
@@ -33,7 +35,7 @@ public abstract class ScenarioBase
         //_dateOnlyConverter = new DateOnlyJsonConverter();
     }
 
-    public IAutomationLogger Logger { get; }
+    public ILogger Logger { get; }
 
     public string BaseUrl { get; }
 
