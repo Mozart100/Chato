@@ -143,7 +143,7 @@ public class UserInstructionExecuter
             else
             {
                 var message = Encoding.UTF8.GetString(ptr);
-                _logger.LogInformation($"{UserName} received message [{message}] but was ignored from [{user}].");
+                _logger.LogWarning($"{UserName} received message [{message}] but was ignored from [{user}].");
             }
         });
     }
