@@ -7,15 +7,13 @@ namespace Chato.Server.Hubs;
 
 public record HubDownloadInfo(int Amount);
 
-public interface ITest
+public interface IChatHub
 {
-    Task ReceiveMessage(string user, string message);
+    Task MessageStringRecieved(string user, byte [] message);
 }
-public class ChatHub : Hub//<ITest>
-{
-    public const string TOPIC_MESSAGE_STRING_RECEIVED = "MessageStringRecieved";
-    public const string TOPIC_MESSAGE_BYTE_RECEIVED = "MessageByteRecieved";
 
+public class ChatHub : Hub<IChatHub>
+{
     public override async Task OnConnectedAsync()
     {
         var ptr = Encoding.UTF8.GetBytes("Your are connected");
@@ -27,14 +25,14 @@ public class ChatHub : Hub//<ITest>
 
     public Task SendMessageToOthers(string user, byte []  message)
     {
-        return Clients.Others.SendAsync(TOPIC_MESSAGE_STRING_RECEIVED, user, message);
+        return Clients.Others.MessageStringRecieved(user, message);
     }
 
 
     public Task SendMessageToOthersInGroup(string group, string user, byte [] ptr)
     {
         //var message = Encoding.UTF8.GetkckString(ptr);
-        return Clients.OthersInGroup(group).SendAsync(TOPIC_MESSAGE_STRING_RECEIVED, user, ptr);
+        return Clients.OthersInGroup(group).MessageStringRecieved( user, ptr);
     }
 
     public async Task JoinGroup(string groupName)

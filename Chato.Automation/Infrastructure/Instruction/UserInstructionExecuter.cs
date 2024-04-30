@@ -83,7 +83,7 @@ public class UserInstructionExecuter
     public async Task SendMessageToAllUSers(string userNameFrom, string message)
     {
         _logger.LogInformation($"{userNameFrom} sending message [{message}].");
-            
+
         await _connection.SendAsync(Hub_Send_Message_To_Others_Topic, userNameFrom, message);
     }
 
@@ -98,7 +98,7 @@ public class UserInstructionExecuter
 
     public async Task JoinGroup(string groupName)
     {
-        _logger.LogInformation($"{UserName} joins group.");   
+        _logger.LogInformation($"{UserName} joins group.");
 
         await _connection.InvokeAsync(Hub_Join_Group_Topic, groupName);
     }
@@ -134,7 +134,7 @@ public class UserInstructionExecuter
 
     protected async Task Listen()
     {
-        _connection.On<string, byte[]>(ChatHub.TOPIC_MESSAGE_STRING_RECEIVED, async (user, ptr) =>
+        _connection.On<string, byte[]>(nameof(IChatHub.MessageStringRecieved), async (user, ptr) =>
         {
             if (_ignoreUsers.Contains(user) == false)
             {
