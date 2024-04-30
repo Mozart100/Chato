@@ -1,4 +1,6 @@
-﻿using Chato.Automation;
+﻿using Arkovean.Chat.Automation.Scenario;
+using Chato.Automation;
+using Chato.Automation.Scenario;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -21,9 +23,19 @@ catch (Exception ex)
 
 static IHostBuilder CReateHostBuilder(string[] args)
 {
+    var config = new ScenarioConfig
+    {
+        BaseUrl = "https://localhost:7138/chat"
+    };
+
     return Host.CreateDefaultBuilder(args).ConfigureServices((_, services) =>
     {
         services.AddSingleton<App>();
+        services.AddSingleton<ScenarioConfig>(config);
+        services.AddSingleton<GroupHandShakeScenario>();
+        services.AddSingleton<HubStreamScenario>();
+
+
     });
 }
 

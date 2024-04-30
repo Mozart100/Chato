@@ -17,7 +17,7 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
     private const string Max_User = "max";
     private const string Idan_User = "itan";
 
-    public GroupHandShakeScenario(ILogger logger , ScenarioConfig config) : base(logger, config)
+    public GroupHandShakeScenario(ILogger<GroupHandShakeScenario> logger , ScenarioConfig config) : base(logger, config)
     {
 
         SetupsLogicCallback.Add(TwoUserSetups);

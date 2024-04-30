@@ -21,7 +21,7 @@ internal class HubStreamScenario : InstructionScenarioBase
 
     private byte[] _fileContent;
 
-    public HubStreamScenario(ILogger logger, ScenarioConfig config) : base(logger, config)
+    public HubStreamScenario(ILogger<HubStreamScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
         SetupsLogicCallback.Add(TreeUserSetups);

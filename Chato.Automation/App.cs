@@ -1,5 +1,4 @@
 ﻿using Arkovean.Chat.Automation.Scenario;
-using Chato.Automation.Scenario;
 using Microsoft.Extensions.Logging;
 
 namespace Chato.Automation;
@@ -7,28 +6,25 @@ namespace Chato.Automation;
 internal class App
 {
     private readonly ILogger<App> _logger;
+    private readonly GroupHandShakeScenario _groupHandShakeScenario;
+    private readonly HubStreamScenario _hubStreamScenario;
 
-    public App(ILogger<App> logger)
+    public App(ILogger<App> logger, 
+        GroupHandShakeScenario groupHandShakeScenario,
+        HubStreamScenario hubStreamScenario
+        )
     {
         _logger = logger;
+        this._groupHandShakeScenario = groupHandShakeScenario;
+        this._hubStreamScenario = hubStreamScenario;
     }
 
 
     public async Task RunAsync(string[] args)
     {
-        var config = new ScenarioConfig
-        {
-            BaseUrl = "https://localhost:7138/chat"
-        };
-
-
-        var groupHandShakeScenario = new GroupHandShakeScenario(_logger, config);
-        await groupHandShakeScenario.StartRunScenario();
-
-
-
-        var streamScenario = new HubStreamScenario(_logger, config);
-        await streamScenario.StartRunScenario();
+       
+        await _groupHandShakeScenario.StartRunScenario();
+        await _hubStreamScenario.StartRunScenario();
 
 
         Console.WriteLine("All test passed successfully!!!!!");
