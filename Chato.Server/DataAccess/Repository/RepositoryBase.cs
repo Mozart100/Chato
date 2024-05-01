@@ -1,10 +1,11 @@
 ﻿using Chato.Server.DataAccess.Models;
 
-namespace Arkovean.Chat.DataAccess.Repository
+namespace Chato.Server.DataAccess.Repository
 {
     public interface IRepositoryBase<TModel> where TModel : class
     {
         TModel Get(Predicate<TModel> selector);
+        Task<TModel> GetAsync(Predicate<TModel> selector);
 
         TModel Insert(TModel instance);
         IEnumerable<TModel> GetAll();
@@ -46,6 +47,11 @@ namespace Arkovean.Chat.DataAccess.Repository
             }
 
             return null;
+        }
+
+        public virtual async Task<TModel> GetAsync(Predicate<TModel> selector)
+        {
+            return Get(selector);
         }
 
         public async Task<TModel> InsertAsync(TModel model)
