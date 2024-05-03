@@ -7,6 +7,7 @@ using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Chato.Server.Controllers;
 
@@ -127,10 +128,11 @@ public class AuthController : ControllerBase
             new Claim(ClaimTypes.Role, "Admin")
         };
 
-        var key = new SymmetricSecurityKey(System.Text.Encoding.UTF8.GetBytes(
-            _configuration.GetSection("AppSettings:Token").Value));
+            //var key = new SymmetricSecurityKey(GenerateHmacSha512Key());
 
-        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+            var key = new SymmetricSecurityKey(GetBytes(_configuration.GetSection("AppSettings:Token").Value));
+
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
         var token = new JwtSecurityToken(
             claims: claims,
@@ -148,12 +150,26 @@ public class AuthController : ControllerBase
         }
     }
 
+    //private byte[] GenerateHmacSha512Key()
+    //{
+    //    int keyLengthBytes = 64;
+
+    //    byte[] key = new byte[keyLengthBytes];
+
+    //    using (var rng = RandomNumberGenerator.Create())
+    //    {
+    //        rng.GetBytes(key);
+    //    }
+
+    //    return key;
+    //}
+
     private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {
         using (var hmac = new HMACSHA512())
         {
             passwordSalt = hmac.Key;
-            passwordHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            passwordHash = hmac.ComputeHash(GetBytes(password));
         }
     }
 
@@ -161,8 +177,14 @@ public class AuthController : ControllerBase
     {
         using (var hmac = new HMACSHA512(passwordSalt))
         {
-            var computedHash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(password));
+            var computedHash = hmac.ComputeHash(GetBytes(password));
             return computedHash.SequenceEqual(passwordHash);
         }
+    }
+
+
+    private  byte [] GetBytes(string secret) {
+
+        return System.Text.Encoding.UTF32.GetBytes(secret);
     }
 }

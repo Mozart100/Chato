@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chato.Server.Controllers
@@ -17,7 +18,7 @@ namespace Chato.Server.Controllers
         {
             _logger = logger;
         }
-
+        [Authorize(Roles = "Admin")]
         [HttpGet(Name = "GetWeatherForecast")]
         public string Get()
         {
