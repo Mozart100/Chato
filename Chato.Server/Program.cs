@@ -3,14 +3,16 @@ using Chato.Server.Startup;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.Configure<LoggerFilterOptions>(options =>
+{
+    options.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Trace);
+    options.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Trace);
+});
+
 // Add services to the container.
 builder.Services.NativeServiceRegistration();
-builder.Services.CustomServiceRegistration();
+builder.Services.CustomServiceRegistration(builder.Configuration);
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 

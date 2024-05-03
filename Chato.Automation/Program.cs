@@ -3,6 +3,7 @@ using Chato.Automation;
 using Chato.Automation.Scenario;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 using IHost host = CReateHostBuilder(args).Build();
 using var scop = host.Services.CreateScope();
@@ -28,7 +29,14 @@ static IHostBuilder CReateHostBuilder(string[] args)
         BaseUrl = "https://localhost:7138/chat"
     };
 
-    return Host.CreateDefaultBuilder(args).ConfigureServices((_, services) =>
+    return Host.CreateDefaultBuilder(args)
+        .ConfigureLogging(logging =>
+        {
+            logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Trace);
+            logging.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Trace);
+        })
+
+        .ConfigureServices((_, services) =>
     {
         services.AddSingleton<App>();
         services.AddSingleton<ScenarioConfig>(config);

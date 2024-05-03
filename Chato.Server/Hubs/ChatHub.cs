@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Chato.Server.DataAccess.Repository;
+using Microsoft.AspNetCore.SignalR;
 using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -14,10 +15,21 @@ public interface IChatHub
 
 public class ChatHub : Hub<IChatHub>
 {
+    private readonly IChatRoomRepository _chatRoomRepository;
+
+    public ChatHub(IChatRoomRepository chatRoomRepository)
+    {
+        this._chatRoomRepository = chatRoomRepository;
+    }
+
+    
     public override async Task OnConnectedAsync()
     {
         var ptr = Encoding.UTF8.GetBytes("Your are connected");
 
+        var comnectionId  =  Context.ConnectionId;
+        var user   = Context.User;
+        
         await SendMessageToOthers("server",ptr);
         await base.OnConnectedAsync();
     }
