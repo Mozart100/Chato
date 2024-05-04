@@ -4,7 +4,7 @@ namespace Chato.Server.DataAccess.Repository;
 
 public interface IChatRoomRepository : IRepositoryBase<ChatRoomDb>
 {
-
+    Task AddSenderInfoAsync(string chatRoomId, SenderInfo senderInfo);
 }
 
 public class ChatRoomRepository : RepositoryBase<ChatRoomDb>, IChatRoomRepository
@@ -16,5 +16,13 @@ public class ChatRoomRepository : RepositoryBase<ChatRoomDb>, IChatRoomRepositor
         _logger = logger;
     }
 
-   
+    public async Task AddSenderInfoAsync(string chatRoomId, SenderInfo senderInfo)
+    {
+        var chatRoom = await GetAsync(x => x.Id == chatRoomId);
+
+        if(chatRoom is not null)
+        {
+            chatRoom.SenderInfo.Add(senderInfo);
+        }
+    }
 }

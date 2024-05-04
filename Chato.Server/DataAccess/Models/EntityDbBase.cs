@@ -2,7 +2,7 @@
 {
     public class EntityDbBase
     {
-        public int Id { get; set; }
+        public virtual string Id { get; set; }
 
         public override int GetHashCode()
         {
@@ -11,9 +11,9 @@
 
         public override bool Equals(object? obj)
         {
-            if (obj is EntityDbBase course)
+            if (obj is EntityDbBase entity)
             {
-                return Id.Equals(course);
+                return Id.Equals(entity.Id);
             }
 
             return false;

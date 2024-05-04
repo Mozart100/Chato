@@ -70,10 +70,12 @@ namespace Chato.Server.DataAccess.Repository
         /// <returns></returns>
         public TModel Insert(TModel instance)
         {
-            var newId = Models.Count + 1;
-            instance.Id = newId;
-
-            Models.Add(instance);
+           
+            if (Models.Add(instance) == false)
+            {
+                throw new Exception("Key already present");
+            }
+            
             return instance;
         }
         public IEnumerable<TModel> GetAll()
