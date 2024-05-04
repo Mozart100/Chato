@@ -10,7 +10,7 @@ public record HubDownloadInfo(int Amount);
 
 public interface IChatHub
 {
-    Task MessageStringRecieved(string user, byte [] message);
+    Task MessageStringRecieved(string user, byte[] message);
 }
 
 public class ChatHub : Hub<IChatHub>
@@ -22,29 +22,30 @@ public class ChatHub : Hub<IChatHub>
         this._chatRoomRepository = chatRoomRepository;
     }
 
-    
+
     public override async Task OnConnectedAsync()
     {
         var ptr = Encoding.UTF8.GetBytes("Your are connected");
 
-        var comnectionId  =  Context.ConnectionId;
-        var user   = Context.User;
-        
-        await SendMessageToOthers("server",ptr);
+        var comnectionId = Context.ConnectionId;
+        var user = Context.User;
+
+        await SendMessageToOthers("server", ptr);
         await base.OnConnectedAsync();
     }
 
 
-    public Task SendMessageToOthers(string user, byte []  message)
+    public Task SendMessageToOthers(string user, byte[] message)
     {
         return Clients.Others.MessageStringRecieved(user, message);
     }
 
 
-    public Task SendMessageToOthersInGroup(string group, string user, byte [] ptr)
+    public async Task SendMessageToOthersInGroup(string group, string user, byte[] ptr)
     {
         //var message = Encoding.UTF8.GetkckString(ptr);
-        return Clients.OthersInGroup(group).MessageStringRecieved( user, ptr);
+        await _chatRoomRepository.CreateOrAndAsync(group, user, ptr);
+        await Clients.OthersInGroup(group).MessageStringRecieved(user, ptr);
     }
 
     public async Task JoinGroup(string groupName)

@@ -46,7 +46,7 @@ public class UserInstructionExecuter
         _receivedMessages = new Queue<HubMessageRecievedBase>();
 
         _connection = new HubConnectionBuilder()
-       .WithUrl(url)
+       .WithUrl(url,)
        .WithAutomaticReconnect()
        .Build();
 
