@@ -46,7 +46,7 @@ public class UserInstructionExecuter
         _receivedMessages = new Queue<HubMessageRecievedBase>();
 
         _connection = new HubConnectionBuilder()
-       .WithUrl(url,)
+       .WithUrl(url)
        .WithAutomaticReconnect()
        .Build();
 
@@ -146,6 +146,7 @@ public class UserInstructionExecuter
                 _logger.LogWarning($"{UserName} received message [{message}] but was ignored from [{user}].");
             }
         });
+
     }
 
     private async Task ExpectedMessages(string user, byte[] ptr)

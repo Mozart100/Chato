@@ -1,4 +1,5 @@
-﻿using Chato.Server.DataAccess.Repository;
+﻿using Chato.Server.DataAccess.Models;
+using Chato.Server.DataAccess.Repository;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections;
 using System.Runtime.CompilerServices;
@@ -40,7 +41,6 @@ public class ChatHub : Hub<IChatHub>
         return Clients.Others.MessageStringRecieved(user, message);
     }
 
-
     public async Task SendMessageToOthersInGroup(string group, string user, byte[] ptr)
     {
         //var message = Encoding.UTF8.GetkckString(ptr);
@@ -58,6 +58,19 @@ public class ChatHub : Hub<IChatHub>
         return Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
     }
 
+    public async IAsyncEnumerable<SenderInfo> GetGroupHistory(string groupName, [EnumeratorCancellation] CancellationToken cancellationToken)
+    {
+        var group = await _chatRoomRepository.GetAsync(x => x.Id == groupName);
+
+        if (group is not null)
+        {
+            foreach (var senderInfo in group.SenderInfo.ToArray())
+            {
+                yield return senderInfo;
+                await Task.Delay(200);
+            }
+        }
+    }
 
     public async IAsyncEnumerable<byte[]> Downloads(HubDownloadInfo downloadInfo, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
