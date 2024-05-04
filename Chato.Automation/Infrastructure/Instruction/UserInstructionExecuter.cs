@@ -1,10 +1,9 @@
 ﻿using Chato.Automation.Extensions;
+using Chato.Server.DataAccess.Models;
 using Chato.Server.Hubs;
 using FluentAssertions;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
-using System.Collections;
-using System.ComponentModel.DataAnnotations;
 using System.Text;
 
 namespace Chato.Automation.Infrastructure.Instruction;
@@ -25,6 +24,7 @@ public class UserInstructionExecuter
     private const string Hub_Join_Group_Topic = nameof(ChatHub.JoinGroup);
 
     private const string Hub_Download_Topic = nameof(ChatHub.Downloads);
+    private const string Hub_GetGroupHistory_Topic = nameof(ChatHub.GetGroupHistory);
 
 
 
@@ -76,9 +76,22 @@ public class UserInstructionExecuter
         await JoinGroup(groupName);
 
         await Listen();
+
+
+        await DownloadGroupHistory(groupName);
     }
 
     public string UserName { get; }
+
+    public async Task DownloadGroupHistory(string groupName)
+    {
+        _logger.LogInformation($"{UserName} downloading history of the group.");
+
+        await foreach (var senderInfo in _connection.StreamAsync<SenderInfo>(Hub_GetGroupHistory_Topic, groupName))
+        {
+            await ExpectedMessages(senderInfo.UserName, senderInfo.Message);
+        }
+    }
 
     public async Task SendMessageToAllUSers(string userNameFrom, string message)
     {
@@ -176,5 +189,10 @@ public class UserInstructionExecuter
     {
         await _connection.InvokeAsync(Hub_Leave_Group_Topic, groupName);
         await _connection.StopAsync();
+    }
+
+    internal async Task VerifyHistoryAsync(Queue<byte[]> queue)
+    {
+        throw new NotImplementedException();
     }
 }

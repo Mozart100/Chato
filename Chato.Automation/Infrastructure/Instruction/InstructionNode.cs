@@ -1,4 +1,5 @@
 ﻿using System.Text;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Chato.Automation.Infrastructure.Instruction;
 
@@ -9,6 +10,8 @@ public record InstructionNode(string UserName, string? GroupName, string Instruc
         : this(userName, groupName, instruction, message, fromArrived, new HashSet<InstructionNode>(), null)
     {
     }
+
+   
 }
 
 
@@ -41,6 +44,28 @@ public static class InstructionNodeFluentApi
         };
 
         return @new;
+    }
+
+    internal static InstructionNode Verificationn(this InstructionNode info, string userName,params InstructionNode[] fromInstructions)
+    {
+        var current = info;
+        foreach (var instruction in fromInstructions)
+        {
+            var @new = info with
+            {
+                UserName = userName,
+                Instruction = UserHubInstructions.Received_Instrauction,
+                FromArrived = instruction.UserName,
+                Children = new(),
+                Operation = null,
+                GroupName = instruction.GroupName,
+                Message = instruction.Message
+            };
+
+            current = current.Connect(@new);
+        }
+
+        return current;
     }
 
     public static InstructionNode IsToDownload(this InstructionNode info, string userName, byte[] data )

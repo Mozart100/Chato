@@ -9,5 +9,5 @@ public class UserHubInstructions
 
     public const string Run_Operation_Instrauction = "do_operation";
     public const string Run_Download_Instrauction = "do_download";
-    public const string Run_Verify_Instrauction = "do_Verify";
+    //public const string Run_Verify_Instrauction = "do_Verify";
 }

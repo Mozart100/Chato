@@ -11,7 +11,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
     private readonly CancellationTokenSource _cancellationTokenSource;
     private readonly Dictionary<string, UserInstructionExecuter> _users;
 
-    public InstructionScenarioBase(ILogger logger , ScenarioConfig config) : base(logger, config)
+    public InstructionScenarioBase(ILogger logger, ScenarioConfig config) : base(logger, config)
     {
         _users = new Dictionary<string, UserInstructionExecuter>();
         SummaryLogicCallback.Add(UsersCleanup);
@@ -76,8 +76,8 @@ public abstract class InstructionScenarioBase : ScenarioBase
         _actionMapper.Add(UserHubInstructions.Received_Instrauction, async (userExecuter, instruction) => await userExecuter.ListenToStringCheckAsync(instruction.FromArrived, instruction.Message));
         _actionMapper.Add(UserHubInstructions.Not_Received_Instrauction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync());
         _actionMapper.Add(UserHubInstructions.Run_Download_Instrauction, async (userExecuter, instruction) => await userExecuter.DownloadStream(instruction.Message));
-        
-        //_actionMapper.Add(UserHubInstructions.Run_Download_Instrauction, async (userExecuter, instruction) => await userExecuter.DownloadStream(instruction.Message));
+
+        //_actionMapper.Add(UserHubInstructions.Run_Verify_Instrauction, async (userExecuter, instruction) => await userExecuter.VerifyHistoryAsync(new Queue<byte[]>()));
     }
 
 
@@ -91,9 +91,17 @@ public abstract class InstructionScenarioBase : ScenarioBase
             {
                 if (instruction.Instruction.Equals(UserHubInstructions.Run_Operation_Instrauction))
                 {
-                    await instruction.Operation(null);
+                    await instruction.Operation(instruction);
                     continue;
                 }
+                //else
+                //{
+                //    if (instruction.Instruction.Equals(UserHubInstructions.Run_Verify_Instrauction))
+                //    {
+
+                //    }
+                //}
+
 
 
                 var userExecuter = _users[instruction.UserName];
