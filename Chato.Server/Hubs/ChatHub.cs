@@ -17,10 +17,12 @@ public interface IChatHub
 public class ChatHub : Hub<IChatHub>
 {
     private readonly IChatRoomRepository _chatRoomRepository;
+    private readonly IHubContext<ChatHub> _hubContext;
 
-    public ChatHub(IChatRoomRepository chatRoomRepository)
+    public ChatHub(IChatRoomRepository chatRoomRepository, IHubContext<ChatHub> hubContext)
     {
         this._chatRoomRepository = chatRoomRepository;
+        this._hubContext = hubContext;
     }
 
 
@@ -56,6 +58,15 @@ public class ChatHub : Hub<IChatHub>
     public Task LeaveGroup(string groupName)
     {
         return Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+    }
+
+    public async Task RemoveChatHistory(string groupName)
+    {
+        var group = await _chatRoomRepository.GetAsync(x => x.Id == groupName);
+        if (group is not null)
+        {
+            group.SenderInfo.Clear();
+        }
     }
 
     public async IAsyncEnumerable<SenderInfo> GetGroupHistory(string groupName, [EnumeratorCancellation] CancellationToken cancellationToken)

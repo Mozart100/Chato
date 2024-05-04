@@ -17,19 +17,16 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
     private const string Max_User = "max";
     private const string Idan_User = "itan";
 
-    public GroupHandShakeScenario(ILogger<GroupHandShakeScenario> logger , ScenarioConfig config) : base(logger, config)
+    public GroupHandShakeScenario(ILogger<GroupHandShakeScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
         SetupsLogicCallback.Add(TwoUserSetups);
         BusinessLogicCallbacks.Add(TwoPeopleHandShakeStep);
 
-        BusinessLogicCallbacks.Add(GroupUsersCleanup);
+        BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group));
         BusinessLogicCallbacks.Add(TreeUserSetups);
         BusinessLogicCallbacks.Add(TreePoepleHandShakeStep);
-        BusinessLogicCallbacks.Add(GroupUsersCleanup);
-
-
-        SummaryLogicCallback.Add(GroupUsersCleanup);
+        BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group, Second_Group));
 
     }
 
@@ -91,25 +88,21 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
         var maxReceiver1 = secondRoot.IsReciever(Max_User, olessyaSender.UserName);
 
 
-        anatoliySender.Connect(nataliRecevier, nathanReceive1, olessyaReceive1).Do(maxReceiver1, async user => await InitializeWithGroupAsync(First_Group, Max_User)).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2, maxReceiver1);
+        anatoliySender.Connect(nataliRecevier, nathanReceive1, olessyaReceive1)
+            .Do(maxReceiver1, async user => await InitializeWithGroupAsync(First_Group, Max_User))
+            .Verificationn(Max_User, anatoliySender)
+            .Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2, maxReceiver1);
 
         var graph = new InstructionGraph(anatoliySender);
 
         await InstructionExecuter(graph);
     }
 
-    public async Task GroupUsersCleanup()
-    {
-        await GroupUsersCleanup(First_Group);
-    }
+   
 
     private async Task TreeUserSetups()
     {
         await InitializeWithGroupAsync(First_Group, Anatoliy_User, Olessya_User, Nathan_User);
         await InitializeWithGroupAsync(Second_Group, Natali_User);
     }
-
-
-
-
 }

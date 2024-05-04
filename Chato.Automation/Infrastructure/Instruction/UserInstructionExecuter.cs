@@ -25,6 +25,7 @@ public class UserInstructionExecuter
 
     private const string Hub_Download_Topic = nameof(ChatHub.Downloads);
     private const string Hub_GetGroupHistory_Topic = nameof(ChatHub.GetGroupHistory);
+    private const string Hub_RemoveGroupHistory_Topic = nameof(ChatHub.RemoveChatHistory);
 
 
 
@@ -188,7 +189,14 @@ public class UserInstructionExecuter
     public async Task GroupClose(string groupName)
     {
         await _connection.InvokeAsync(Hub_Leave_Group_Topic, groupName);
+        await _connection.InvokeAsync(Hub_RemoveGroupHistory_Topic, groupName);
+        //await _connection.StopAsync();
+    }
+
+    public async Task KillConnection()
+    {
         await _connection.StopAsync();
+
     }
 
     internal async Task VerifyHistoryAsync(Queue<byte[]> queue)

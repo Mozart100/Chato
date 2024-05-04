@@ -1,4 +1,5 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
+using Chato.Server;
 using Microsoft.Extensions.Logging;
 using System.Text;
 
@@ -10,11 +11,13 @@ public abstract class InstructionScenarioBase : ScenarioBase
     private readonly Dictionary<string, Func<UserInstructionExecuter, InstructionNode, Task>> _actionMapper;
     private readonly CancellationTokenSource _cancellationTokenSource;
     private readonly Dictionary<string, UserInstructionExecuter> _users;
+    private readonly Dictionary<string, List<string>> _groupUsers;
 
     public InstructionScenarioBase(ILogger logger, ScenarioConfig config) : base(logger, config)
     {
         _users = new Dictionary<string, UserInstructionExecuter>();
-        SummaryLogicCallback.Add(UsersCleanup);
+        _groupUsers = new Dictionary<string, List<string>>();
+        //SummaryLogicCallback.Add(UsersCleanup);
         _counterSignal = new CounterSignal(2);
 
         _actionMapper = new Dictionary<string, Func<UserInstructionExecuter, InstructionNode, Task>>();
@@ -37,12 +40,23 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
     public async Task InitializeWithGroupAsync(string groupName, params string[] users)
     {
+        var stacked = new List<string>();
+        if(_groupUsers.ContainsKey(groupName))
+        {
+            stacked = _groupUsers[groupName];
+        }
+        else
+        {
+            _groupUsers.Add(groupName, stacked);
+        }
+
         foreach (var user in users)
         {
             var executer = new UserInstructionExecuter(user, BaseUrl, Logger, _counterSignal);
             await executer.InitializeWithGroupAsync(groupName);
 
             _users.Add(user, executer);
+            stacked.Add(user);
         }
     }
 
@@ -94,15 +108,6 @@ public abstract class InstructionScenarioBase : ScenarioBase
                     await instruction.Operation(instruction);
                     continue;
                 }
-                //else
-                //{
-                //    if (instruction.Instruction.Equals(UserHubInstructions.Run_Verify_Instrauction))
-                //    {
-
-                //    }
-                //}
-
-
 
                 var userExecuter = _users[instruction.UserName];
                 await _actionMapper[instruction.Instruction]?.Invoke(userExecuter, instruction);
@@ -122,13 +127,22 @@ public abstract class InstructionScenarioBase : ScenarioBase
         _users.Clear();
     }
 
-    protected async Task GroupUsersCleanup(string groupName)
+    public async Task GroupUsersCleanup(params string[] groupNames)
     {
+        foreach (var groupName in groupNames)
+        {
+            foreach (var user in _groupUsers[groupName].ToArray())
+            {
+                await _users[user].GroupClose(groupName);
+            }
+        }
+
         foreach (var user in _users.Values)
         {
-            await user.GroupClose(groupName);
+            await user.KillConnection();
         }
 
         _users.Clear();
+        _groupUsers.Clear();
     }
 }

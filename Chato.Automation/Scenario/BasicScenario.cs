@@ -23,7 +23,7 @@ internal class BasicScenario : InstructionScenarioBase
 
         BusinessLogicCallbacks.Add(TreeUserSetups);
         BusinessLogicCallbacks.Add(TreePoepleStep);
-        SummaryLogicCallback.Add(GroupUsersCleanup);
+        SummaryLogicCallback.Add(() => GroupUsersCleanup(First_Group));
 
     }
 
@@ -44,9 +44,6 @@ internal class BasicScenario : InstructionScenarioBase
         var olessyaSender = firstGroup.IsSender(Olessya_User);
         var maxReceiver1 = firstGroup.IsReciever(Max_User, olessyaSender.UserName);
 
-
-
-
         anatoliySender.Connect(olessyaSender)
             .Do(maxReceiver1, async user => await InitializeWithGroupAsync(First_Group, Max_User))
             .Verificationn(Max_User, anatoliySender, olessyaSender);
@@ -60,11 +57,6 @@ internal class BasicScenario : InstructionScenarioBase
     private async Task TreeUserSetups()
     {
         await InitializeWithGroupAsync(First_Group, Anatoliy_User, Olessya_User);
-    }
-
-    public async Task GroupUsersCleanup()
-    {
-        await GroupUsersCleanup(First_Group);
     }
 
 }

@@ -26,7 +26,7 @@ internal class App
 
     public async Task RunAsync(string[] args)
     {
-       
+
         await _basicScenario.StartRunScenario();
         await _groupHandShakeScenario.StartRunScenario();
         await _hubStreamScenario.StartRunScenario();

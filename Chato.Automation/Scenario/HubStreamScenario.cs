@@ -26,7 +26,7 @@ internal class HubStreamScenario : InstructionScenarioBase
 
         SetupsLogicCallback.Add(TreeUserSetups);
         BusinessLogicCallbacks.Add(TreePoepleHandShakeStep);
-        SummaryLogicCallback.Add(GroupUsersCleanup);
+        SummaryLogicCallback.Add(() => GroupUsersCleanup(First_Group, Second_Group));
 
         var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "css.txt");
         _fileContent = File.ReadAllBytes(path);
@@ -68,7 +68,11 @@ internal class HubStreamScenario : InstructionScenarioBase
         var maxReceiver1 = secondRoot.IsReciever(Max_User, olessyaSender.UserName);
 
 
-        anatoliySender.Connect(nataliRecevier, nathanReceive1, olessyaReceive1).Do(maxReceiver1, async user => await InitializeWithGroupAsync(First_Group, Max_User)).Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2, maxReceiver1);
+        anatoliySender.Connect(nataliRecevier, nathanReceive1, olessyaReceive1)
+            .Do(maxReceiver1, async user => await InitializeWithGroupAsync(First_Group, Max_User))
+            .Verificationn(Max_User, anatoliySender)
+            .Connect(olessyaSender)
+            .Connect(anatoliyReceiver, nathanReceiver2, maxReceiver1);
 
         var graph = new InstructionGraph(anatoliySender);
 
@@ -77,10 +81,10 @@ internal class HubStreamScenario : InstructionScenarioBase
 
 
 
-    public async Task GroupUsersCleanup()
-    {
-        await GroupUsersCleanup(First_Group);
-        await GroupUsersCleanup(Second_Group);
-    }
+    //public async Task GroupUsersCleanup()
+    //{
+    //    await GroupUsersCleanup(First_Group);
+    //    await GroupUsersCleanup(Second_Group);
+    //}
 
 }
