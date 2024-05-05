@@ -40,8 +40,8 @@ internal class HubStreamScenario : InstructionScenarioBase
     private async Task TreeUserSetups()
     {
 
-        await InitializeWithGroupAsync(First_Group, Anatoliy_User, Olessya_User, Nathan_User);
-        await InitializeWithGroupAsync(Second_Group, Natali_User);
+        await AssignUserToGroupAsync(First_Group, Anatoliy_User, Olessya_User, Nathan_User);
+        await AssignUserToGroupAsync(Second_Group, Natali_User);
     }
 
     private async Task TreePoepleHandShakeStep()
@@ -69,7 +69,7 @@ internal class HubStreamScenario : InstructionScenarioBase
 
 
         anatoliySender.Connect(nataliRecevier, nathanReceive1, olessyaReceive1)
-            .Do(maxReceiver1, async user => await InitializeWithGroupAsync(First_Group, Max_User))
+            .Do(maxReceiver1, async user => await AssignUserToGroupAsync(First_Group, Max_User))
             .Verificationn(Max_User, anatoliySender)
             .Connect(olessyaSender)
             .Connect(anatoliyReceiver, nathanReceiver2, maxReceiver1);

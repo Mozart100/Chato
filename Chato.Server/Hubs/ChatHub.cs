@@ -17,12 +17,10 @@ public interface IChatHub
 public class ChatHub : Hub<IChatHub>
 {
     private readonly IChatRoomRepository _chatRoomRepository;
-    private readonly IHubContext<ChatHub> _hubContext;
 
-    public ChatHub(IChatRoomRepository chatRoomRepository, IHubContext<ChatHub> hubContext)
+    public ChatHub(IChatRoomRepository chatRoomRepository)
     {
         this._chatRoomRepository = chatRoomRepository;
-        this._hubContext = hubContext;
     }
 
 

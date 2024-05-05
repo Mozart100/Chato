@@ -21,20 +21,20 @@ internal class BasicScenario : InstructionScenarioBase
     public BasicScenario(ILogger<BasicScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
-        BusinessLogicCallbacks.Add(TreeUserSetups);
-        BusinessLogicCallbacks.Add(TreePoepleStep);
+        BusinessLogicCallbacks.Add(VerificationSetups);
+        BusinessLogicCallbacks.Add(VerificationStep);
         SummaryLogicCallback.Add(() => GroupUsersCleanup(First_Group));
 
     }
 
 
-    public override string ScenarioName => "People sending Message";
+    public override string ScenarioName => "All sort of mini scenarios";
 
-    public override string Description => "Users sending and listening.";
+    public override string Description => "To run mini scenarios.";
 
 
 
-    private async Task TreePoepleStep()
+    private async Task VerificationStep()
     {
         var message_1 = "Shalom";
         var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
@@ -45,7 +45,7 @@ internal class BasicScenario : InstructionScenarioBase
         var maxReceiver1 = firstGroup.IsReciever(Max_User, olessyaSender.UserName);
 
         anatoliySender.Connect(olessyaSender)
-            .Do(maxReceiver1, async user => await InitializeWithGroupAsync(First_Group, Max_User))
+            .Do(maxReceiver1, async user => await AssignUserToGroupAsync(First_Group, Max_User))
             .Verificationn(Max_User, anatoliySender, olessyaSender);
 
         var graph = new InstructionGraph(anatoliySender);
@@ -54,9 +54,9 @@ internal class BasicScenario : InstructionScenarioBase
     }
 
 
-    private async Task TreeUserSetups()
+    private async Task VerificationSetups()
     {
-        await InitializeWithGroupAsync(First_Group, Anatoliy_User, Olessya_User);
+        await AssignUserToGroupAsync(First_Group, Anatoliy_User, Olessya_User);
     }
 
 }

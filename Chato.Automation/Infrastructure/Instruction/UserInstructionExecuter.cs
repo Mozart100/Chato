@@ -199,8 +199,4 @@ public class UserInstructionExecuter
 
     }
 
-    internal async Task VerifyHistoryAsync(Queue<byte[]> queue)
-    {
-        throw new NotImplementedException();
-    }
 }

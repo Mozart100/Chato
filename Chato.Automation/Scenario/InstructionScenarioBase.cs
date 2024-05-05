@@ -10,6 +10,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
     private readonly CounterSignal _counterSignal;
     private readonly Dictionary<string, Func<UserInstructionExecuter, InstructionNode, Task>> _actionMapper;
     private readonly CancellationTokenSource _cancellationTokenSource;
+
     private readonly Dictionary<string, UserInstructionExecuter> _users;
     private readonly Dictionary<string, List<string>> _groupUsers;
 
@@ -17,7 +18,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
     {
         _users = new Dictionary<string, UserInstructionExecuter>();
         _groupUsers = new Dictionary<string, List<string>>();
-        //SummaryLogicCallback.Add(UsersCleanup);
+
         _counterSignal = new CounterSignal(2);
 
         _actionMapper = new Dictionary<string, Func<UserInstructionExecuter, InstructionNode, Task>>();
@@ -26,19 +27,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
     }
 
-
-    protected async Task InitializeAsync(params string[] users)
-    {
-        foreach (var user in users)
-        {
-            var executer = new UserInstructionExecuter(user, BaseUrl, Logger, _counterSignal);
-            await executer.InitializeAsync();
-
-            _users.Add(user, executer);
-        }
-    }
-
-    public async Task InitializeWithGroupAsync(string groupName, params string[] users)
+    public async Task AssignUserToGroupAsync(string groupName, params string[] users)
     {
         var stacked = new List<string>();
         if(_groupUsers.ContainsKey(groupName))
