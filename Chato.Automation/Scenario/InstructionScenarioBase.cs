@@ -47,7 +47,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
     public async Task AssignUserToGroupAsync(string groupName, params string[] users)
     {
 
-        var ptr = await RegisterUser( RegisterAuthControllerUrl, "xxx", "xxx");
+        //var ptr = await RegisterUser( RegisterAuthControllerUrl, "xxx", "xxx");
 
         var stacked = new List<string>();
         if(_groupUsers.ContainsKey(groupName))
@@ -70,9 +70,10 @@ public abstract class InstructionScenarioBase : ScenarioBase
         }
     }
 
-    private async Task SendStringMessage(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte[] ptr)
+  
+    private async Task SendStringMessage(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte[] message)
     {
-        var message = Encoding.UTF8.GetString(ptr);
+        var message2 = Encoding.UTF8.GetString(message);
         if (groupName == null)
         {
             await userExecuter.SendMessageToAllUSers(userNameFrom: userNameFrom, message: message);
@@ -89,7 +90,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
         _actionMapper.Add(UserHubInstructions.Publish_Instrauction, async (userExecuter, instruction) =>
         {
             await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction != UserHubInstructions.Not_Received_Instrauction).Count());
-            await SendStringMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, ptr: instruction.Message);
+            await SendStringMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
             {

@@ -21,9 +21,15 @@ internal class BasicScenario : InstructionScenarioBase
     public BasicScenario(ILogger<BasicScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
+
+        BusinessLogicCallbacks.Add(VerificationSetups);
+        BusinessLogicCallbacks.Add(ImageDownloadStep);
+        BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group));
+
+
         BusinessLogicCallbacks.Add(VerificationSetups);
         BusinessLogicCallbacks.Add(VerificationStep);
-        SummaryLogicCallback.Add(() => GroupUsersCleanup(First_Group));
+        BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group));
 
     }
 
@@ -32,6 +38,30 @@ internal class BasicScenario : InstructionScenarioBase
 
     public override string Description => "To run mini scenarios.";
 
+
+
+    private async Task ImageDownloadStep()
+    {
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "test.jpeg");
+
+        var message_1 = File.ReadAllBytes(path);
+
+
+        var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
+
+        var anatoliySender = firstGroup.IsSender(Anatoliy_User);
+        var olessyaReceive1 = firstGroup.IsReciever(Olessya_User, anatoliySender.UserName);
+        var nathanReceive1 = firstGroup.IsReciever(Nathan_User, anatoliySender.UserName);
+
+        anatoliySender.Connect(olessyaReceive1, nathanReceive1);
+
+
+        var graph = new InstructionGraph(anatoliySender);
+
+        await InstructionExecuter(graph);
+
+
+    }
 
 
     private async Task VerificationStep()
@@ -56,7 +86,7 @@ internal class BasicScenario : InstructionScenarioBase
 
     private async Task VerificationSetups()
     {
-        await AssignUserToGroupAsync(First_Group, Anatoliy_User, Olessya_User);
+        await AssignUserToGroupAsync(First_Group, Anatoliy_User, Olessya_User, Nathan_User);
     }
 
 }

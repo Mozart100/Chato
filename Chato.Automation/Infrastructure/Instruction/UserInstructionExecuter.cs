@@ -1,6 +1,7 @@
 ﻿using Chato.Automation.Extensions;
 using Chato.Server.DataAccess.Models;
 using Chato.Server.Hubs;
+using Chato.Server.Infrastracture;
 using FluentAssertions;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
@@ -94,19 +95,28 @@ public class UserInstructionExecuter
         }
     }
 
-    public async Task SendMessageToAllUSers(string userNameFrom, string message)
+    public async Task SendMessageToAllUSers(string userNameFrom, byte [] message)
     {
         _logger.LogInformation($"{userNameFrom} sending message [{message}].");
 
         await _connection.SendAsync(Hub_Send_Message_To_Others_Topic, userNameFrom, message);
     }
 
-    public async Task SendMessageToOthersInGroup(string groupName, string userNameFrom, string message)
+    public async Task SendMessageToOthersInGroup(string groupName, string userNameFrom, byte [] message)
     {
-        _logger.LogInformation($"{userNameFrom} sending in group [{groupName}] message [{message}].");
+        var isStringFile = FileHelper.IsFileText(message);
+        var templateMessage = "image";
 
-        var ptr = Encoding.UTF8.GetBytes(message);
-        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, groupName, userNameFrom, ptr);
+        if(isStringFile)
+        {
+            templateMessage = Encoding.UTF8.GetString(message);
+        }
+
+        _logger.LogInformation($"{userNameFrom} sending in group [{groupName}] message [{templateMessage}].");
+
+
+        //var ptr = Encoding.UTF8.GetBytes(message);
+        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, groupName, userNameFrom, message);
     }
 
 
@@ -165,12 +175,17 @@ public class UserInstructionExecuter
 
     private async Task ExpectedMessages(string user, byte[] ptr)
     {
-        var message = Encoding.UTF8.GetString(ptr);
-        var isAscii = message.All(c => c >= 0 && c <= 127);
+        var isStringFile = FileHelper.IsFileText(ptr);
+        var templateMessage = string.Empty;
 
-        if (isAscii)
+        if (isStringFile)
         {
-            _logger.LogInformation($"{UserName} received message [{message}] from [{user}].");
+            templateMessage = Encoding.UTF8.GetString(ptr);
+        }
+
+        if (isStringFile)
+        {
+            _logger.LogInformation($"{UserName} received message [{templateMessage}] from [{user}].");
         }
         else
         {

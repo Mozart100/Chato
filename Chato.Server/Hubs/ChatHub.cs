@@ -1,5 +1,6 @@
 ﻿using Chato.Server.DataAccess.Models;
 using Chato.Server.DataAccess.Repository;
+using Chato.Server.Infrastracture;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections;
 using System.Runtime.CompilerServices;
@@ -44,6 +45,8 @@ public class ChatHub : Hub<IChatHub>
     public async Task SendMessageToOthersInGroup(string group, string user, byte[] ptr)
     {
         //var message = Encoding.UTF8.GetkckString(ptr);
+
+
         await _chatRoomRepository.CreateOrAndAsync(group, user, ptr);
         await Clients.OthersInGroup(group).MessageStringRecieved(user, ptr);
     }
@@ -83,7 +86,7 @@ public class ChatHub : Hub<IChatHub>
 
     public async IAsyncEnumerable<byte[]> Downloads(HubDownloadInfo downloadInfo, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "css.txt");
+        var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "test.jpeg");
         var bytes = File.ReadAllBytes(path);
 
         for (var i = 0; i < downloadInfo.Amount && cancellationToken.IsCancellationRequested == false; i++)
@@ -92,6 +95,9 @@ public class ChatHub : Hub<IChatHub>
             await Task.Delay(200);
         }
     }
+
+
+  
 
     //public async IAsyncEnumerable<string> Download(HubDownloadInfo downloadInfo, [EnumeratorCancellation] CancellationToken cancellationToken)
     //{
