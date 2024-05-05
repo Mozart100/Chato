@@ -1,4 +1,5 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
+using Chato.Automation.Responses;
 using Chato.Server;
 using Microsoft.Extensions.Logging;
 using System.Text;
@@ -23,12 +24,25 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
         _actionMapper = new Dictionary<string, Func<UserInstructionExecuter, InstructionNode, Task>>();
 
+        HubUrl = $"{BaseUrl}/chat";
+
         Initialize();
 
     }
 
+    protected string HubUrl { get; }
+
+    private async Task<RegisterResponse> RegisterUser (string userName, string password)
+    {
+        var registerResponse = await RunPostCommand<RegisterRequest, RegisterResponse>("xxx", new RegisterRequest { Password = "string", Username = "string" });
+        return registerResponse;
+    }
+
     public async Task AssignUserToGroupAsync(string groupName, params string[] users)
     {
+
+        //var ptr = await RegisterUser("xxx", "xxx");
+
         var stacked = new List<string>();
         if(_groupUsers.ContainsKey(groupName))
         {
@@ -41,7 +55,8 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
         foreach (var user in users)
         {
-            var executer = new UserInstructionExecuter(user, BaseUrl, Logger, _counterSignal);
+
+            var executer = new UserInstructionExecuter(user, HubUrl, Logger, _counterSignal);
             await executer.InitializeWithGroupAsync(groupName);
 
             _users.Add(user, executer);

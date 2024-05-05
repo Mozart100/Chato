@@ -26,7 +26,7 @@ static IHostBuilder CReateHostBuilder(string[] args)
 {
     var config = new ScenarioConfig
     {
-        BaseUrl = "https://localhost:7138/chat"
+        BaseUrl = "https://localhost:7138"
     };
 
     return Host.CreateDefaultBuilder(args)
