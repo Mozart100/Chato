@@ -1,6 +1,7 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
 using Chato.Automation.Responses;
 using Chato.Server;
+using Chato.Server.Controllers;
 using Microsoft.Extensions.Logging;
 using System.Text;
 
@@ -25,23 +26,28 @@ public abstract class InstructionScenarioBase : ScenarioBase
         _actionMapper = new Dictionary<string, Func<UserInstructionExecuter, InstructionNode, Task>>();
 
         HubUrl = $"{BaseUrl}/chat";
+        AuthControllerUrl = $"{BaseUrl}/api/auth";
+        RegisterAuthControllerUrl = $"{AuthControllerUrl}/register";
 
         Initialize();
 
     }
 
     protected string HubUrl { get; }
+    protected string AuthControllerUrl { get; }
+    protected string RegisterAuthControllerUrl { get; }
 
-    private async Task<RegisterResponse> RegisterUser (string userName, string password)
+
+    private async Task<RegisterResponse> RegisterUser (string url , string userName, string password)
     {
-        var registerResponse = await RunPostCommand<RegisterRequest, RegisterResponse>("xxx", new RegisterRequest { Password = "string", Username = "string" });
+        var registerResponse = await RunPostCommand<RegisterRequest, RegisterResponse>(url, new RegisterRequest { Password = "string", Username = "string" });
         return registerResponse;
     }
 
     public async Task AssignUserToGroupAsync(string groupName, params string[] users)
     {
 
-        //var ptr = await RegisterUser("xxx", "xxx");
+        var ptr = await RegisterUser( RegisterAuthControllerUrl, "xxx", "xxx");
 
         var stacked = new List<string>();
         if(_groupUsers.ContainsKey(groupName))
