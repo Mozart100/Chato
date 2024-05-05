@@ -50,15 +50,13 @@ public abstract class InstructionScenarioBase : ScenarioBase
         //var ptr = await RegisterUser( RegisterAuthControllerUrl, "xxx", "xxx");
 
         var stacked = new List<string>();
-        if(_groupUsers.ContainsKey(groupName))
+
+        if (_groupUsers.TryGetValue(groupName , out stacked) == false)
         {
-            stacked = _groupUsers[groupName];
-        }
-        else
-        {
-            _groupUsers.Add(groupName, stacked);
+            _groupUsers[groupName] = stacked ??= new List<string>();
         }
 
+      
         foreach (var user in users)
         {
 
@@ -73,7 +71,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
   
     private async Task SendStringMessage(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte[] message)
     {
-        var message2 = Encoding.UTF8.GetString(message);
+        //var message2 = Encoding.UTF8.GetString(message);
         if (groupName == null)
         {
             await userExecuter.SendMessageToAllUSers(userNameFrom: userNameFrom, message: message);
