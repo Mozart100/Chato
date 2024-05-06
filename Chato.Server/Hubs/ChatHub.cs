@@ -1,6 +1,7 @@
 ﻿using Chato.Server.DataAccess.Models;
 using Chato.Server.DataAccess.Repository;
 using Chato.Server.Infrastracture;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Collections;
 using System.Runtime.CompilerServices;
@@ -15,6 +16,7 @@ public interface IChatHub
     Task MessageStringRecieved(string user, byte[] message);
 }
 
+[Authorize]
 public class ChatHub : Hub<IChatHub>
 {
     private readonly IChatRoomRepository _chatRoomRepository;

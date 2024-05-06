@@ -9,3 +9,9 @@ public class User
     public DateTime TokenCreated { get; set; }
     public DateTime TokenExpires { get; set; }
 }
+
+
+public class LoginResponse
+{
+    public string Token { get; set; }
+}

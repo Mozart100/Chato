@@ -2,11 +2,18 @@
 
 namespace Chato.Automation.Responses;
 
-internal class RegisterRequest :UserDto
+internal class RegisterAndLoginRequest :UserDto
 {
 }
 
 public class RegisterResponse : User
+{
+
+}
+
+
+
+internal class LoginRequest : RegisterAndLoginRequest
 {
 
 }

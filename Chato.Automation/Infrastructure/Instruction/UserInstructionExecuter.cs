@@ -1,5 +1,6 @@
 ﻿using Chato.Automation.Extensions;
 using Chato.Automation.Responses;
+using Chato.Server;
 using Chato.Server.DataAccess.Models;
 using Chato.Server.Hubs;
 using Chato.Server.Infrastracture;
@@ -39,7 +40,7 @@ public class UserInstructionExecuter
     private readonly HashSet<string> _ignoreUsers;
 
 
-    public UserInstructionExecuter(RegisterResponse registerResponse,string url, ILogger logger, CounterSignal signal)
+    public UserInstructionExecuter(RegisterResponse registerResponse, LoginResponse loginResponse, string url, ILogger logger, CounterSignal signal)
     {
 
         _logger = logger;
@@ -50,7 +51,10 @@ public class UserInstructionExecuter
         _receivedMessages = new Queue<HubMessageRecievedBase>();
 
         _connection = new HubConnectionBuilder()
-       .WithUrl(url)
+       .WithUrl(url, options =>
+       {
+           options.AccessTokenProvider = async () => LoginResponse.Token;
+       })
        .WithAutomaticReconnect()
        .Build();
 
@@ -68,6 +72,7 @@ public class UserInstructionExecuter
         };
 
         RegisterResponse = registerResponse;
+        LoginResponse = loginResponse;
     }
 
     public async Task InitializeAsync()
@@ -88,6 +93,8 @@ public class UserInstructionExecuter
     }
 
     public RegisterResponse RegisterResponse { get; }
+    public LoginResponse LoginResponse { get; }
+
     public string UserName => RegisterResponse.Username;
 
     public async Task DownloadGroupHistory(string groupName)
@@ -210,13 +217,10 @@ public class UserInstructionExecuter
     {
         await _connection.InvokeAsync(Hub_Leave_Group_Topic, groupName);
         await _connection.InvokeAsync(Hub_RemoveGroupHistory_Topic, groupName);
-        //await _connection.StopAsync();
     }
 
     public async Task KillConnection()
     {
         await _connection.StopAsync();
-
     }
-
 }

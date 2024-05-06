@@ -3,6 +3,7 @@ using Chato.Automation.Responses;
 using Chato.Server;
 using Chato.Server.Controllers;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Text;
 
 namespace Chato.Automation.Scenario;
@@ -28,6 +29,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
         HubUrl = $"{BaseUrl}/chat";
         AuthControllerUrl = $"{BaseUrl}/api/auth";
         RegisterAuthControllerUrl = $"{AuthControllerUrl}/register";
+        LoginAuthControllerUrl = $"{AuthControllerUrl}/login";
 
         Initialize();
 
@@ -36,20 +38,15 @@ public abstract class InstructionScenarioBase : ScenarioBase
     protected string HubUrl { get; }
     protected string AuthControllerUrl { get; }
     protected string RegisterAuthControllerUrl { get; }
-
-
-    private async Task<RegisterResponse> RegisterUser(string url, string userName, string password)
-    {
-        var registerResponse = await RunPostCommand<RegisterRequest, RegisterResponse>(url, new RegisterRequest { Password = userName, Username = password });
-        return registerResponse;
-    }
+    protected string LoginAuthControllerUrl { get; }
 
     public async Task AssignUserToGroupAsync(string groupName, params string[] users)
     {
+        var registrationRequest = new RegisterAndLoginRequest { Password = "string", Username = "string" };
+        var registrationInfo = await RunPostCommand<RegisterAndLoginRequest, RegisterResponse>(RegisterAuthControllerUrl, registrationRequest);
+        var tokenResponse = await RunPostCommand<RegisterAndLoginRequest, LoginResponse>(LoginAuthControllerUrl, registrationRequest);
 
-        var registrationInfo = await RegisterUser(RegisterAuthControllerUrl, "string", "string");
-
-        var stacked = new List<string>();
+        var stacked = default(List<string>);
         if (_groupUsers.TryGetValue(groupName, out stacked) == false)
         {
             _groupUsers[groupName] = stacked ??= new List<string>();
@@ -58,8 +55,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
         foreach (var user in users)
         {
-
-            var executer = new UserInstructionExecuter(registrationInfo, HubUrl, Logger, _counterSignal);
+            var executer = new UserInstructionExecuter(registrationInfo, tokenResponse, HubUrl, Logger, _counterSignal);
             await executer.InitializeWithGroupAsync(groupName);
 
             _users.Add(user, executer);
@@ -68,7 +64,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
     }
 
 
-    private async Task SendStringMessage(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte[] message)
+    private async Task SendMessage(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte[] message)
     {
         //var message2 = Encoding.UTF8.GetString(message);
         if (groupName == null)
@@ -87,7 +83,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
         _actionMapper.Add(UserHubInstructions.Publish_Instrauction, async (userExecuter, instruction) =>
         {
             await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction != UserHubInstructions.Not_Received_Instrauction).Count());
-            await SendStringMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
+            await SendMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
             {

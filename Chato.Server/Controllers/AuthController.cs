@@ -48,7 +48,7 @@ public class AuthController : ControllerBase
     [HttpPost]
     [Route("login")]
 
-    public async Task<ActionResult<string>> Login(UserDto request)
+    public async Task<ActionResult<LoginResponse>> Login(UserDto request)
     {
         if (user.Username != request.Username)
         {
@@ -65,7 +65,7 @@ public class AuthController : ControllerBase
         var refreshToken = GenerateRefreshToken();
         SetRefreshToken(refreshToken);
 
-        return Ok(token);
+        return Ok(new LoginResponse { Token = token});
     }
 
     [HttpPost("refresh-token")]
