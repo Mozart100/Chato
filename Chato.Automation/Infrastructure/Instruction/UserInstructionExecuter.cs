@@ -1,8 +1,10 @@
 ﻿using Chato.Automation.Extensions;
+using Chato.Automation.Responses;
 using Chato.Server.DataAccess.Models;
 using Chato.Server.Hubs;
 using Chato.Server.Infrastracture;
 using FluentAssertions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using System.Text;
@@ -37,9 +39,9 @@ public class UserInstructionExecuter
     private readonly HashSet<string> _ignoreUsers;
 
 
-    public UserInstructionExecuter(string userName, string url, ILogger logger, CounterSignal signal)
+    public UserInstructionExecuter(RegisterResponse registerResponse,string url, ILogger logger, CounterSignal signal)
     {
-        UserName = userName;
+
         _logger = logger;
         this._signal = signal;
         _ignoreUsers = new HashSet<string>();
@@ -64,6 +66,8 @@ public class UserInstructionExecuter
             return Task.CompletedTask;
 
         };
+
+        RegisterResponse = registerResponse;
     }
 
     public async Task InitializeAsync()
@@ -83,7 +87,8 @@ public class UserInstructionExecuter
         await DownloadGroupHistory(groupName);
     }
 
-    public string UserName { get; }
+    public RegisterResponse RegisterResponse { get; }
+    public string UserName => RegisterResponse.Username;
 
     public async Task DownloadGroupHistory(string groupName)
     {
@@ -95,19 +100,19 @@ public class UserInstructionExecuter
         }
     }
 
-    public async Task SendMessageToAllUSers(string userNameFrom, byte [] message)
+    public async Task SendMessageToAllUSers(string userNameFrom, byte[] message)
     {
         _logger.LogInformation($"{userNameFrom} sending message [{message}].");
 
         await _connection.SendAsync(Hub_Send_Message_To_Others_Topic, userNameFrom, message);
     }
 
-    public async Task SendMessageToOthersInGroup(string groupName, string userNameFrom, byte [] message)
+    public async Task SendMessageToOthersInGroup(string groupName, string userNameFrom, byte[] message)
     {
         var isStringFile = FileHelper.IsFileText(message);
         var templateMessage = "image";
 
-        if(isStringFile)
+        if (isStringFile)
         {
             templateMessage = Encoding.UTF8.GetString(message);
         }

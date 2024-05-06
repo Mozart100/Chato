@@ -38,29 +38,28 @@ public abstract class InstructionScenarioBase : ScenarioBase
     protected string RegisterAuthControllerUrl { get; }
 
 
-    private async Task<RegisterResponse> RegisterUser (string url , string userName, string password)
+    private async Task<RegisterResponse> RegisterUser(string url, string userName, string password)
     {
-        var registerResponse = await RunPostCommand<RegisterRequest, RegisterResponse>(url, new RegisterRequest { Password = "string", Username = "string" });
+        var registerResponse = await RunPostCommand<RegisterRequest, RegisterResponse>(url, new RegisterRequest { Password = userName, Username = password });
         return registerResponse;
     }
 
     public async Task AssignUserToGroupAsync(string groupName, params string[] users)
     {
 
-        //var ptr = await RegisterUser( RegisterAuthControllerUrl, "xxx", "xxx");
+        var registrationInfo = await RegisterUser(RegisterAuthControllerUrl, "string", "string");
 
         var stacked = new List<string>();
-
-        if (_groupUsers.TryGetValue(groupName , out stacked) == false)
+        if (_groupUsers.TryGetValue(groupName, out stacked) == false)
         {
             _groupUsers[groupName] = stacked ??= new List<string>();
         }
 
-      
+
         foreach (var user in users)
         {
 
-            var executer = new UserInstructionExecuter(user, HubUrl, Logger, _counterSignal);
+            var executer = new UserInstructionExecuter(registrationInfo, HubUrl, Logger, _counterSignal);
             await executer.InitializeWithGroupAsync(groupName);
 
             _users.Add(user, executer);
@@ -68,7 +67,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
         }
     }
 
-  
+
     private async Task SendStringMessage(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte[] message)
     {
         //var message2 = Encoding.UTF8.GetString(message);
