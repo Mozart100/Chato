@@ -22,12 +22,12 @@ internal class BasicScenario : InstructionScenarioBase
     {
 
 
-        BusinessLogicCallbacks.Add(VerificationSetups);
-        BusinessLogicCallbacks.Add(ImageDownloadStep);
+        BusinessLogicCallbacks.Add(SetupGroup);
+        BusinessLogicCallbacks.Add(ImageSendingStep);
         BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group));
 
 
-        BusinessLogicCallbacks.Add(VerificationSetups);
+        BusinessLogicCallbacks.Add(SetupGroup);
         BusinessLogicCallbacks.Add(VerificationStep);
         BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group));
 
@@ -40,7 +40,7 @@ internal class BasicScenario : InstructionScenarioBase
 
 
 
-    private async Task ImageDownloadStep()
+    private async Task ImageSendingStep()
     {
         var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "test.jpeg");
 
@@ -84,7 +84,7 @@ internal class BasicScenario : InstructionScenarioBase
     }
 
 
-    private async Task VerificationSetups()
+    private async Task SetupGroup()
     {
         await AssignUserToGroupAsync(First_Group, Anatoliy_User, Olessya_User, Nathan_User);
     }
