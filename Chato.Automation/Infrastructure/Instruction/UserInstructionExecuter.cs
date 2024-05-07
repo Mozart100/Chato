@@ -170,7 +170,7 @@ public class UserInstructionExecuter
 
     protected async Task Listen()
     {
-        _connection.On<string, byte[]>(nameof(IChatHub.MessageStringRecieved), async (user, ptr) =>
+        _connection.On<string, byte[]>(nameof(IChatHub.MessageRecieved), async (user, ptr) =>
         {
             if (_ignoreUsers.Contains(user) == false)
             {

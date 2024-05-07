@@ -13,7 +13,7 @@ public record HubDownloadInfo(int Amount);
 
 public interface IChatHub
 {
-    Task MessageStringRecieved(string user, byte[] message);
+    Task MessageRecieved(string user, byte[] message);
 }
 
 [Authorize]
@@ -41,7 +41,7 @@ public class ChatHub : Hub<IChatHub>
 
     public Task SendMessageToOthers(string user, byte[] message)
     {
-        return Clients.Others.MessageStringRecieved(user, message);
+        return Clients.Others.MessageRecieved(user, message);
     }
 
     public async Task SendMessageToOthersInGroup(string group, string user, byte[] ptr)
@@ -50,7 +50,7 @@ public class ChatHub : Hub<IChatHub>
 
 
         await _chatRoomRepository.CreateOrAndAsync(group, user, ptr);
-        await Clients.OthersInGroup(group).MessageStringRecieved(user, ptr);
+        await Clients.OthersInGroup(group).MessageRecieved(user, ptr);
     }
 
     public async Task JoinGroup(string groupName)

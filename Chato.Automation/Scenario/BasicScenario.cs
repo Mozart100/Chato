@@ -21,6 +21,10 @@ internal class BasicScenario : InstructionScenarioBase
     public BasicScenario(ILogger<BasicScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
+        //BusinessLogicCallbacks.Add(SetupGroup);
+        //BusinessLogicCallbacks.Add(SendingToSpecificPerson);
+        //BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group));
+
 
         BusinessLogicCallbacks.Add(SetupGroup);
         BusinessLogicCallbacks.Add(ImageSendingStep);
@@ -38,7 +42,18 @@ internal class BasicScenario : InstructionScenarioBase
 
     public override string Description => "To run mini scenarios.";
 
+    private async Task SendingToSpecificPerson()
+    {
+        var message_1 = "Shalom";
+        var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
+        var anatoliySender = firstGroup.SendingBroadcast(Anatoliy_User);
+        var olessyaReceive1 = firstGroup.RecievingFrom(Olessya_User, anatoliySender.UserName);
+        var nathanReceive1 = firstGroup.Is_Not_Receiver(Nathan_User);
+    
+
+        
+    }
 
     private async Task ImageSendingStep()
     {
@@ -49,9 +64,9 @@ internal class BasicScenario : InstructionScenarioBase
 
         var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
-        var anatoliySender = firstGroup.IsSender(Anatoliy_User);
-        var olessyaReceive1 = firstGroup.IsReciever(Olessya_User, anatoliySender.UserName);
-        var nathanReceive1 = firstGroup.IsReciever(Nathan_User, anatoliySender.UserName);
+        var anatoliySender = firstGroup.SendingBroadcast(Anatoliy_User);
+        var olessyaReceive1 = firstGroup.RecievingFrom(Olessya_User, anatoliySender.UserName);
+        var nathanReceive1 = firstGroup.RecievingFrom(Nathan_User, anatoliySender.UserName);
 
         anatoliySender.Connect(olessyaReceive1, nathanReceive1);
 
@@ -70,9 +85,9 @@ internal class BasicScenario : InstructionScenarioBase
         var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
 
-        var anatoliySender = firstGroup.IsSender(Anatoliy_User);
-        var olessyaSender = firstGroup.IsSender(Olessya_User);
-        var maxReceiver1 = firstGroup.IsReciever(Max_User, olessyaSender.UserName);
+        var anatoliySender = firstGroup.SendingBroadcast(Anatoliy_User);
+        var olessyaSender = firstGroup.SendingBroadcast(Olessya_User);
+        var maxReceiver1 = firstGroup.RecievingFrom(Max_User, olessyaSender.UserName);
 
         anatoliySender.Connect(olessyaSender)
             .Do(maxReceiver1, async user => await AssignUserToGroupAsync(First_Group, Max_User))

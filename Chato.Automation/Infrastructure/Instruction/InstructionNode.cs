@@ -31,7 +31,7 @@ public static class InstructionNodeFluentApi
         return info;
     }
 
-    public static InstructionNode IsReciever(this InstructionNode info, string userName, string arrivedFrom)
+    public static InstructionNode RecievingFrom(this InstructionNode info, string userName, string arrivedFrom)
     {
         var @new = info with
         {
@@ -86,7 +86,7 @@ public static class InstructionNodeFluentApi
 
 
 
-    public static InstructionNode IsSender(this InstructionNode info, string userName)
+    public static InstructionNode SendingBroadcast(this InstructionNode info, string userName)
     {
         var @new = info with
         {
