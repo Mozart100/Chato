@@ -3,15 +3,15 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Chato.Automation.Infrastructure.Instruction;
 
-public record InstructionNode(string UserName, string? GroupName, string Instruction, byte [] Message, string? FromArrived,
+public record InstructionNode(string UserName, string? GroupName, string Instruction, byte[] Message, string? FromArrived,
     HashSet<InstructionNode> Children, Func<InstructionNode, Task>? Operation = null)
 {
-    public InstructionNode(string userName, string? groupName, string instruction, byte [] message, string? fromArrived)
+    public InstructionNode(string userName, string? groupName, string instruction, byte[] message, string? fromArrived)
         : this(userName, groupName, instruction, message, fromArrived, new HashSet<InstructionNode>(), null)
     {
     }
 
-   
+
 }
 
 
@@ -25,10 +25,16 @@ public static class InstructionNodeFluentApi
         return info;
     }
 
-    public static InstructionNode StartWithGroup(string groupName, byte [] message)
+    public static InstructionNode StartWithGroup(string groupName, byte[] message)
     {
         var info = new InstructionNode(userName: null, groupName: groupName, instruction: null, message: message, fromArrived: null);
         return info;
+    }
+
+    public static InstructionNode SendingTo(this InstructionNode info, string userName, string toPerson)
+    {
+
+        return null;
     }
 
     public static InstructionNode RecievingFrom(this InstructionNode info, string userName, string arrivedFrom)
@@ -46,7 +52,7 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    internal static InstructionNode Verificationn(this InstructionNode info, string userName,params InstructionNode[] fromInstructions)
+    internal static InstructionNode Verificationn(this InstructionNode info, string userName, params InstructionNode[] fromInstructions)
     {
         var current = info;
         foreach (var instruction in fromInstructions)
@@ -68,7 +74,7 @@ public static class InstructionNodeFluentApi
         return current;
     }
 
-    public static InstructionNode IsToDownload(this InstructionNode info, string userName, byte[] data )
+    public static InstructionNode IsToDownload(this InstructionNode info, string userName, byte[] data)
     {
         var @new = info with
         {
@@ -91,7 +97,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             UserName = userName,
-            Instruction = UserHubInstructions.Publish_Instrauction,
+            Instruction = UserHubInstructions.Publish_Broadcasting_Instrauction,
             Children = new(),
             Operation = null
 

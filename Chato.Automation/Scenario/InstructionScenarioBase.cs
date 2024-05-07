@@ -64,7 +64,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
     }
 
 
-    private async Task SendMessage(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte[] message)
+    private async Task SendBroadcastingMessage(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte[] message)
     {
         //var message2 = Encoding.UTF8.GetString(message);
         if (groupName == null)
@@ -80,10 +80,10 @@ public abstract class InstructionScenarioBase : ScenarioBase
     private void Initialize()
     {
 
-        _actionMapper.Add(UserHubInstructions.Publish_Instrauction, async (userExecuter, instruction) =>
+        _actionMapper.Add(UserHubInstructions.Publish_Broadcasting_Instrauction, async (userExecuter, instruction) =>
         {
             await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction != UserHubInstructions.Not_Received_Instrauction).Count());
-            await SendMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
+            await SendBroadcastingMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
             {
