@@ -36,7 +36,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             UserName = userName,
-            Instruction = new UserPeerToPeerInstruction(),
+            Instruction = new UserPeerToPeerInstruction() { Tag = toPerson },
             FromArrived = null,
             Children = new(),
             Operation = null
@@ -51,7 +51,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             UserName = userName,
-            Instruction =new UserReceivedInstruction(),
+            Instruction = new UserReceivedInstruction(),
             FromArrived = arrivedFrom,
             Children = new(),
             Operation = null

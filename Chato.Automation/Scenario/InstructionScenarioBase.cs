@@ -70,12 +70,19 @@ public abstract class InstructionScenarioBase : ScenarioBase
         //var message2 = Encoding.UTF8.GetString(message);
         if (groupName == null)
         {
-            await userExecuter.SendMessageToAllUSers(userNameFrom: userNameFrom, message: message);
+            await userExecuter.SendMessageToAllUsers(userNameFrom: userNameFrom, message: message);
         }
         else
         {
             await userExecuter.SendMessageToOthersInGroup(groupName: groupName, userNameFrom: userNameFrom, message: message);
         }
+    }
+
+
+    private async Task SendPeerToPeerMessage(UserInstructionExecuter userExecuter, string userNameFrom, string toUser, byte[] message)
+    {
+        //var message2 = Encoding.UTF8.GetString(message);
+        await userExecuter.SendMessageFromUserToUserUsers(userNameFrom: userNameFrom, toUser: toUser, message: message);
     }
 
     private void Initialize()
@@ -91,6 +98,21 @@ public abstract class InstructionScenarioBase : ScenarioBase
                 throw new Exception("Not all users receved their messages");
             }
         });
+
+
+        _actionMapper.Add(UserHubInstructions.Publish_PeerToPeer_Instrauction, async (userExecuter, instruction) =>
+        {
+            var toUser = instruction.Instruction.Tag as string ?? throw new ArgumentNullException("Should be user name");
+
+            await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstractionName != UserHubInstructions.Not_Received_Instrauction).Count());
+            await SendPeerToPeerMessage(userExecuter: userExecuter, userNameFrom: instruction.UserName, toUser:toUser, message: instruction.Message);
+
+            if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
+            {
+                throw new Exception("Not all users receved their messages");
+            }
+        });
+
 
         _actionMapper.Add(UserHubInstructions.Received_Instrauction, async (userExecuter, instruction) => await userExecuter.ListenToStringCheckAsync(instruction.FromArrived, instruction.Message));
         _actionMapper.Add(UserHubInstructions.Not_Received_Instrauction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync());

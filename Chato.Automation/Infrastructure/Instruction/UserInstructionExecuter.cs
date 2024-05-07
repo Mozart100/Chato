@@ -107,12 +107,20 @@ public class UserInstructionExecuter
         }
     }
 
-    public async Task SendMessageToAllUSers(string userNameFrom, byte[] message)
+    public async Task SendMessageToAllUsers(string userNameFrom, byte[] message)
     {
         _logger.LogInformation($"{userNameFrom} sending message [{message}].");
 
         await _connection.SendAsync(Hub_Send_Message_To_Others_Topic, userNameFrom, message);
     }
+
+    public async Task SendMessageFromUserToUserUsers(string userNameFrom, string toUser, byte[] message)
+    {
+        _logger.LogInformation($"{userNameFrom} sending message to user [{toUser}] this message [{message}].");
+
+        await _connection.SendAsync(Hub_Send_Message_To_Others_Topic, userNameFrom, message);
+    }
+
 
     public async Task SendMessageToOthersInGroup(string groupName, string userNameFrom, byte[] message)
     {
