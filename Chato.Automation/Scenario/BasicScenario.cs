@@ -48,8 +48,8 @@ internal class BasicScenario : InstructionScenarioBase
         var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
         var anatoliySender = firstGroup.SendingTo(Anatoliy_User,Natali_User);
-        var olessyaReceive1 = firstGroup.RecievingFrom(Olessya_User, anatoliySender.UserName);
-        var nathanReceive1 = firstGroup.Is_Not_Receiver(Nathan_User);
+        var olessyaReceive1 = firstGroup.Is_Not_Receiver(Olessya_User);
+        var nathanReceive1 = firstGroup.RecievingFrom(Nathan_User, anatoliySender.UserName);
     
 
         

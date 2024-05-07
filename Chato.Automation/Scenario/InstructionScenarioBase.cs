@@ -3,6 +3,7 @@ using Chato.Automation.Responses;
 using Chato.Server;
 using Chato.Server.Controllers;
 using Microsoft.Extensions.Logging;
+using Swashbuckle.AspNetCore.SwaggerGen;
 using System;
 using System.Text;
 
@@ -82,7 +83,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
         _actionMapper.Add(UserHubInstructions.Publish_Broadcasting_Instrauction, async (userExecuter, instruction) =>
         {
-            await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction != UserHubInstructions.Not_Received_Instrauction).Count());
+            await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstractionName != UserHubInstructions.Not_Received_Instrauction).Count());
             await SendBroadcastingMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
@@ -107,14 +108,14 @@ public abstract class InstructionScenarioBase : ScenarioBase
         {
             foreach (var instruction in instructions)
             {
-                if (instruction.Instruction.Equals(UserHubInstructions.Run_Operation_Instrauction))
+                if (instruction.Instruction.InstractionName.Equals(UserHubInstructions.Run_Operation_Instrauction))
                 {
                     await instruction.Operation(instruction);
                     continue;
                 }
 
                 var userExecuter = _users[instruction.UserName];
-                await _actionMapper[instruction.Instruction]?.Invoke(userExecuter, instruction);
+                await _actionMapper[instruction.Instruction.InstractionName]?.Invoke(userExecuter, instruction);
             }
 
             instructions = await graph.MoveNext();

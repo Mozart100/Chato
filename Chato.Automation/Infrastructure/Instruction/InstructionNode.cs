@@ -3,10 +3,10 @@ using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Chato.Automation.Infrastructure.Instruction;
 
-public record InstructionNode(string UserName, string? GroupName, string Instruction, byte[] Message, string? FromArrived,
+public record InstructionNode(string UserName, string? GroupName, UserInstractionBase Instruction, byte[] Message, string? FromArrived,
     HashSet<InstructionNode> Children, Func<InstructionNode, Task>? Operation = null)
 {
-    public InstructionNode(string userName, string? groupName, string instruction, byte[] message, string? fromArrived)
+    public InstructionNode(string userName, string? groupName, UserInstractionBase instruction, byte[] message, string? fromArrived)
         : this(userName, groupName, instruction, message, fromArrived, new HashSet<InstructionNode>(), null)
     {
     }
@@ -33,8 +33,17 @@ public static class InstructionNodeFluentApi
 
     public static InstructionNode SendingTo(this InstructionNode info, string userName, string toPerson)
     {
+        var @new = info with
+        {
+            UserName = userName,
+            Instruction = new UserPeerToPeerInstruction(),
+            FromArrived = null,
+            Children = new(),
+            Operation = null
 
-        return null;
+        };
+
+        return @new;
     }
 
     public static InstructionNode RecievingFrom(this InstructionNode info, string userName, string arrivedFrom)
@@ -42,7 +51,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             UserName = userName,
-            Instruction = UserHubInstructions.Received_Instrauction,
+            Instruction =new UserReceivedInstruction(),
             FromArrived = arrivedFrom,
             Children = new(),
             Operation = null
@@ -60,7 +69,7 @@ public static class InstructionNodeFluentApi
             var @new = info with
             {
                 UserName = userName,
-                Instruction = UserHubInstructions.Received_Instrauction,
+                Instruction = new UserReceivedInstruction(),
                 FromArrived = instruction.UserName,
                 Children = new(),
                 Operation = null,
@@ -79,7 +88,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             UserName = userName,
-            Instruction = UserHubInstructions.Run_Download_Instrauction,
+            Instruction = new UserDownloadInstruction(),
             FromArrived = UserInstructionExecuter.Hub_From_Server,
             Children = new(),
             Operation = null,
@@ -97,7 +106,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             UserName = userName,
-            Instruction = UserHubInstructions.Publish_Broadcasting_Instrauction,
+            Instruction = new UserBroadcastInstruction(),
             Children = new(),
             Operation = null
 
@@ -111,7 +120,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             UserName = target.UserName,
-            Instruction = UserHubInstructions.Run_Operation_Instrauction,
+            Instruction = new UserRunOperationInstruction(),
             FromArrived = null,
             Message = null,
             Children = new(),
@@ -128,7 +137,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             UserName = userName,
-            Instruction = UserHubInstructions.Not_Received_Instrauction,
+            Instruction = new UserNotReceivedInstruction(),
             Message = null,
             FromArrived = "none",
             Children = new(),
