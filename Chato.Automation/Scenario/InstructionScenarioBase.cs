@@ -41,11 +41,27 @@ public abstract class InstructionScenarioBase : ScenarioBase
     protected string RegisterAuthControllerUrl { get; }
     protected string LoginAuthControllerUrl { get; }
 
-    public async Task AssignUserToGroupAsync(string groupName, params string[] users)
+    public async Task RegisterUsers( params string[] users)
     {
         var registrationRequest = new RegisterAndLoginRequest { Password = "string", Username = "string" };
         var registrationInfo = await RunPostCommand<RegisterAndLoginRequest, RegisterResponse>(RegisterAuthControllerUrl, registrationRequest);
         var tokenResponse = await RunPostCommand<RegisterAndLoginRequest, LoginResponse>(LoginAuthControllerUrl, registrationRequest);
+
+
+        foreach (var user in users)
+        {
+            var executer = new UserInstructionExecuter(registrationInfo, tokenResponse, HubUrl, Logger, _counterSignal);
+            await executer.RegisterAsync();
+
+            _users.Add(user, executer);
+        }
+    }
+
+    public async Task AssignUserToGroupAsync(string groupName, params string[] users)
+    {
+        //var registrationRequest = new RegisterAndLoginRequest { Password = "string", Username = "string" };
+        //var registrationInfo = await RunPostCommand<RegisterAndLoginRequest, RegisterResponse>(RegisterAuthControllerUrl, registrationRequest);
+        //var tokenResponse = await RunPostCommand<RegisterAndLoginRequest, LoginResponse>(LoginAuthControllerUrl, registrationRequest);
 
         var stacked = default(List<string>);
         if (_groupUsers.TryGetValue(groupName, out stacked) == false)
@@ -56,10 +72,9 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
         foreach (var user in users)
         {
-            var executer = new UserInstructionExecuter(registrationInfo, tokenResponse, HubUrl, Logger, _counterSignal);
+            var executer = _users[user]; ;// new UserInstructionExecuter(registrationInfo, tokenResponse, HubUrl, Logger, _counterSignal);
             await executer.InitializeWithGroupAsync(groupName);
 
-            _users.Add(user, executer);
             stacked.Add(user);
         }
     }

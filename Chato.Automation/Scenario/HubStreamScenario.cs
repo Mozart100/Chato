@@ -39,7 +39,7 @@ internal class HubStreamScenario : InstructionScenarioBase
 
     private async Task TreeUserSetups()
     {
-
+        await RegisterUsers(Anatoliy_User, Olessya_User, Nathan_User, Natali_User);
         await AssignUserToGroupAsync(First_Group, Anatoliy_User, Olessya_User, Nathan_User);
         await AssignUserToGroupAsync(Second_Group, Natali_User);
     }
@@ -55,7 +55,7 @@ internal class HubStreamScenario : InstructionScenarioBase
         var anatoliySender = firstGroup.SendingBroadcast(Anatoliy_User);
         var olessyaReceive1 = firstGroup.RecievingFrom(Olessya_User, anatoliySender.UserName);
         var nathanReceive1 = firstGroup.RecievingFrom(Nathan_User, anatoliySender.UserName);
-        var nataliRecevier = secondtGroup.Is_Not_Receiver(Natali_User);
+        var nataliRecevier = secondtGroup.Is_Not_Received(Natali_User);
 
 
         var message_2 = "Shalom to you too";
@@ -69,7 +69,11 @@ internal class HubStreamScenario : InstructionScenarioBase
 
 
         anatoliySender.Connect(nataliRecevier, nathanReceive1, olessyaReceive1)
-            .Do(maxReceiver1, async user => await AssignUserToGroupAsync(First_Group, Max_User))
+            .Do(maxReceiver1, async user =>
+            {
+                await RegisterUsers(Max_User);
+                await AssignUserToGroupAsync(First_Group, Max_User);
+            })
             .Verificationn(Max_User, anatoliySender)
             .Connect(olessyaSender)
             .Connect(anatoliyReceiver, nathanReceiver2, maxReceiver1);

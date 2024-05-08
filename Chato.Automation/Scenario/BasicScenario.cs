@@ -48,11 +48,14 @@ internal class BasicScenario : InstructionScenarioBase
         var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
         var anatoliySender = firstGroup.SendingTo(Anatoliy_User,Natali_User);
-        var olessyaReceive1 = firstGroup.Is_Not_Receiver(Olessya_User);
         var nathanReceive1 = firstGroup.RecievingFrom(Nathan_User, anatoliySender.UserName);
-    
+        var olessyaReceive1 = firstGroup.Is_Not_Received(Olessya_User);
 
         
+        anatoliySender.Connect(olessyaReceive1, nathanReceive1);
+
+        var graph = new InstructionGraph(anatoliySender);
+        await InstructionExecuter(graph);
     }
 
     private async Task ImageSendingStep()
@@ -72,10 +75,7 @@ internal class BasicScenario : InstructionScenarioBase
 
 
         var graph = new InstructionGraph(anatoliySender);
-
         await InstructionExecuter(graph);
-
-
     }
 
 
@@ -90,7 +90,11 @@ internal class BasicScenario : InstructionScenarioBase
         var maxReceiver1 = firstGroup.RecievingFrom(Max_User, olessyaSender.UserName);
 
         anatoliySender.Connect(olessyaSender)
-            .Do(maxReceiver1, async user => await AssignUserToGroupAsync(First_Group, Max_User))
+            .Do(maxReceiver1, async user =>
+            {
+                await RegisterUsers(Max_User);
+                await AssignUserToGroupAsync(First_Group, Max_User);
+            })
             .Verificationn(Max_User, anatoliySender, olessyaSender);
 
         var graph = new InstructionGraph(anatoliySender);
@@ -101,6 +105,7 @@ internal class BasicScenario : InstructionScenarioBase
 
     private async Task SetupGroup()
     {
+        await RegisterUsers(Anatoliy_User, Olessya_User, Nathan_User);
         await AssignUserToGroupAsync(First_Group, Anatoliy_User, Olessya_User, Nathan_User);
     }
 

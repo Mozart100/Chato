@@ -119,7 +119,7 @@ public static class InstructionNodeFluentApi
         return result;
     }
 
-    public static InstructionNode Is_Not_Receiver(this InstructionNode info, string userName)
+    public static InstructionNode Is_Not_Received(this InstructionNode info, string userName)
     {
         var @new = info with
         {

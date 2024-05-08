@@ -32,8 +32,8 @@ static IHostBuilder CReateHostBuilder(string[] args)
     return Host.CreateDefaultBuilder(args)
         .ConfigureLogging(logging =>
         {
-            logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Trace);
-            logging.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Trace);
+            //logging.AddFilter("Microsoft.AspNetCore.SignalR", LogLevel.Trace);
+            //logging.AddFilter("Microsoft.AspNetCore.Http.Connections", LogLevel.Trace);
         })
 
         .ConfigureServices((_, services) =>
