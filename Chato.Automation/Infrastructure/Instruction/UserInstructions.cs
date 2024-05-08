@@ -1,6 +1,6 @@
 ﻿namespace Chato.Automation.Infrastructure.Instruction;
 
-public static class UserHubInstructions
+public static class UserInstructions
 {
 
     public const string Received_Instrauction = "received";//done
@@ -26,33 +26,33 @@ public abstract class UserInstractionBase
 
 public class UserBroadcastInstruction : UserInstractionBase
 {
-    public override string InstractionName => UserHubInstructions.Publish_Broadcasting_Instrauction;
+    public override string InstractionName => UserInstructions.Publish_Broadcasting_Instrauction;
 }
 
 public class UserPeerToPeerInstruction : UserInstractionBase
 {
-    public override string InstractionName => UserHubInstructions.Publish_PeerToPeer_Instrauction;
+    public override string InstractionName => UserInstructions.Publish_PeerToPeer_Instrauction;
 }
 
 public class UserReceivedInstruction : UserInstractionBase
 {
-    public override string InstractionName => UserHubInstructions.Received_Instrauction;
+    public override string InstractionName => UserInstructions.Received_Instrauction;
 }
 
 public class UserNotReceivedInstruction : UserInstractionBase
 {
-    public override string InstractionName => UserHubInstructions.Not_Received_Instrauction;
+    public override string InstractionName => UserInstructions.Not_Received_Instrauction;
 }
 
 
 public class UserRunOperationInstruction : UserInstractionBase
 {
-    public override string InstractionName => UserHubInstructions.Run_Operation_Instrauction;
+    public override string InstractionName => UserInstructions.Run_Operation_Instrauction;
 }
 
 public class UserDownloadInstruction : UserInstractionBase
 {
-    public override string InstractionName => UserHubInstructions.Run_Download_Instrauction;
+    public override string InstractionName => UserInstructions.Run_Download_Instrauction;
 }
 
 

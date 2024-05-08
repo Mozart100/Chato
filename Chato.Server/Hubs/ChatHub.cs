@@ -1,9 +1,7 @@
 ﻿using Chato.Server.DataAccess.Models;
 using Chato.Server.DataAccess.Repository;
-using Chato.Server.Infrastracture;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using System.Collections;
 using System.Runtime.CompilerServices;
 using System.Text;
 
@@ -13,17 +11,20 @@ public record HubDownloadInfo(int Amount);
 
 public interface IChatHub
 {
-    Task MessageRecieved(string user, byte[] message);
+    Task MessageRecieved(string fromUser, byte[] message);
+    Task SendToUser(string fromUser, byte[] message);
 }
 
 [Authorize]
 public class ChatHub : Hub<IChatHub>
 {
     private readonly IChatRoomRepository _chatRoomRepository;
+    private readonly IUserRepository _userRepository;
 
-    public ChatHub(IChatRoomRepository chatRoomRepository)
+    public ChatHub(IChatRoomRepository chatRoomRepository, IUserRepository userRepository)
     {
         this._chatRoomRepository = chatRoomRepository;
+        this._userRepository = userRepository;
     }
 
 
@@ -33,6 +34,8 @@ public class ChatHub : Hub<IChatHub>
 
         var comnectionId = Context.ConnectionId;
         var user = Context.User;
+
+        //await _userRepository.InsertAsync(new UserDb { UserName = user.Identity.Name , ConnectionId = comnectionId });
 
         await SendMessageToOthers("server", ptr);
         await base.OnConnectedAsync();
@@ -48,9 +51,14 @@ public class ChatHub : Hub<IChatHub>
     {
         //var message = Encoding.UTF8.GetkckString(ptr);
 
-
         await _chatRoomRepository.CreateOrAndAsync(group, user, ptr);
         await Clients.OthersInGroup(group).MessageRecieved(user, ptr);
+    }
+
+    public async Task SendMessageToOtherUser(string fromUser, string toUser, byte[] ptr)
+    {
+        var user = await _userRepository.GetAsync(x => x.UserName == toUser);
+        await Clients.Client(user.ConnectionId).SendToUser(fromUser, ptr);
     }
 
     public async Task JoinGroup(string groupName)

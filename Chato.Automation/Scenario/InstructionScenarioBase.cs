@@ -88,9 +88,9 @@ public abstract class InstructionScenarioBase : ScenarioBase
     private void Initialize()
     {
 
-        _actionMapper.Add(UserHubInstructions.Publish_Broadcasting_Instrauction, async (userExecuter, instruction) =>
+        _actionMapper.Add(UserInstructions.Publish_Broadcasting_Instrauction, async (userExecuter, instruction) =>
         {
-            await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstractionName != UserHubInstructions.Not_Received_Instrauction).Count());
+            await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstractionName != UserInstructions.Not_Received_Instrauction).Count());
             await SendBroadcastingMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
@@ -100,11 +100,11 @@ public abstract class InstructionScenarioBase : ScenarioBase
         });
 
 
-        _actionMapper.Add(UserHubInstructions.Publish_PeerToPeer_Instrauction, async (userExecuter, instruction) =>
+        _actionMapper.Add(UserInstructions.Publish_PeerToPeer_Instrauction, async (userExecuter, instruction) =>
         {
             var toUser = instruction.Instruction.Tag as string ?? throw new ArgumentNullException("Should be user name");
 
-            await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstractionName != UserHubInstructions.Not_Received_Instrauction).Count());
+            await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstractionName != UserInstructions.Not_Received_Instrauction).Count());
             await SendPeerToPeerMessage(userExecuter: userExecuter, userNameFrom: instruction.UserName, toUser:toUser, message: instruction.Message);
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
@@ -114,9 +114,9 @@ public abstract class InstructionScenarioBase : ScenarioBase
         });
 
 
-        _actionMapper.Add(UserHubInstructions.Received_Instrauction, async (userExecuter, instruction) => await userExecuter.ListenToStringCheckAsync(instruction.FromArrived, instruction.Message));
-        _actionMapper.Add(UserHubInstructions.Not_Received_Instrauction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync());
-        _actionMapper.Add(UserHubInstructions.Run_Download_Instrauction, async (userExecuter, instruction) => await userExecuter.DownloadStream(instruction.Message));
+        _actionMapper.Add(UserInstructions.Received_Instrauction, async (userExecuter, instruction) => await userExecuter.ListenToStringCheckAsync(instruction.FromArrived, instruction.Message));
+        _actionMapper.Add(UserInstructions.Not_Received_Instrauction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync());
+        _actionMapper.Add(UserInstructions.Run_Download_Instrauction, async (userExecuter, instruction) => await userExecuter.DownloadStream(instruction.Message));
 
         //_actionMapper.Add(UserHubInstructions.Run_Verify_Instrauction, async (userExecuter, instruction) => await userExecuter.VerifyHistoryAsync(new Queue<byte[]>()));
     }
@@ -130,7 +130,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
         {
             foreach (var instruction in instructions)
             {
-                if (instruction.Instruction.InstractionName.Equals(UserHubInstructions.Run_Operation_Instrauction))
+                if (instruction.Instruction.InstractionName.Equals(UserInstructions.Run_Operation_Instrauction))
                 {
                     await instruction.Operation(instruction);
                     continue;

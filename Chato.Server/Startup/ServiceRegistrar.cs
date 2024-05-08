@@ -25,7 +25,11 @@ public static class ServiceRegistrar
                                                                AllowCredentials());
         });
 
-        services.AddSingleton<IChatRoomRepository, ChatRoomRepository>(); 
+        services.AddSingleton<IChatRoomRepository, ChatRoomRepository>();
+        services.AddSingleton<IUserRepository, UserRepository>();
+
+
+        
 
         services.AddSignalR();
         services.AddResponseCompression(options =>
