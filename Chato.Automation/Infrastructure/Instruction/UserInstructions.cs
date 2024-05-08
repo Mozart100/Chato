@@ -54,10 +54,3 @@ public class UserDownloadInstruction : UserInstractionBase
 {
     public override string InstractionName => UserInstructions.Run_Download_Instrauction;
 }
-
-
-
-
-
-
-

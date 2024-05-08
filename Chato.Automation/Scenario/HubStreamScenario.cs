@@ -82,13 +82,4 @@ internal class HubStreamScenario : InstructionScenarioBase
 
         await InstructionExecuter(graph);
     }
-
-
-
-    //public async Task GroupUsersCleanup()
-    //{
-    //    await GroupUsersCleanup(First_Group);
-    //    await GroupUsersCleanup(Second_Group);
-    //}
-
 }

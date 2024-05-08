@@ -89,12 +89,7 @@ public class UserInstructionExecuter
 
     public async Task InitializeWithGroupAsync(string groupName)
     {
-        //await _connection.StartAsync();
         await JoinGroup(groupName);
-
-        //await Listen();
-
-
         await DownloadGroupHistory(groupName);
     }
 
