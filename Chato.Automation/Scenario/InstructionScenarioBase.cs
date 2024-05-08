@@ -43,13 +43,13 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
     public async Task RegisterUsers( params string[] users)
     {
-        var registrationRequest = new RegisterAndLoginRequest { Password = "string", Username = "string" };
-        var registrationInfo = await RunPostCommand<RegisterAndLoginRequest, RegisterResponse>(RegisterAuthControllerUrl, registrationRequest);
-        var tokenResponse = await RunPostCommand<RegisterAndLoginRequest, LoginResponse>(LoginAuthControllerUrl, registrationRequest);
-
-
+       
         foreach (var user in users)
         {
+            var registrationRequest = new RegisterAndLoginRequest { Password = "string", Username = user };
+            var registrationInfo = await RunPostCommand<RegisterAndLoginRequest, RegisterResponse>(RegisterAuthControllerUrl, registrationRequest);
+            var tokenResponse = await RunPostCommand<RegisterAndLoginRequest, LoginResponse>(LoginAuthControllerUrl, registrationRequest);
+
             var executer = new UserInstructionExecuter(registrationInfo, tokenResponse, HubUrl, Logger, _counterSignal);
             await executer.RegisterAsync();
 

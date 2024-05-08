@@ -11,8 +11,8 @@ public record HubDownloadInfo(int Amount);
 
 public interface IChatHub
 {
-    Task MessageRecieved(string fromUser, byte[] message);
-    Task SendToUser(string fromUser, byte[] message);
+    Task SendMessage(string fromUser, byte[] message);
+    //Task SendToUser(string fromUser, byte[] message);
 }
 
 [Authorize]
@@ -35,7 +35,7 @@ public class ChatHub : Hub<IChatHub>
         var comnectionId = Context.ConnectionId;
         var user = Context.User;
 
-        //await _userRepository.InsertAsync(new UserDb { UserName = user.Identity.Name , ConnectionId = comnectionId });
+        await _userRepository.InsertAsync(new UserDb { UserName = user.Identity.Name, ConnectionId = comnectionId });
 
         await SendMessageToOthers("server", ptr);
         await base.OnConnectedAsync();
@@ -44,7 +44,7 @@ public class ChatHub : Hub<IChatHub>
 
     public Task SendMessageToOthers(string user, byte[] message)
     {
-        return Clients.Others.MessageRecieved(user, message);
+        return Clients.Others.SendMessage(user, message);
     }
 
     public async Task SendMessageToOthersInGroup(string group, string user, byte[] ptr)
@@ -52,13 +52,13 @@ public class ChatHub : Hub<IChatHub>
         //var message = Encoding.UTF8.GetkckString(ptr);
 
         await _chatRoomRepository.CreateOrAndAsync(group, user, ptr);
-        await Clients.OthersInGroup(group).MessageRecieved(user, ptr);
+        await Clients.OthersInGroup(group).SendMessage(user, ptr);
     }
 
     public async Task SendMessageToOtherUser(string fromUser, string toUser, byte[] ptr)
     {
         var user = await _userRepository.GetAsync(x => x.UserName == toUser);
-        await Clients.Client(user.ConnectionId).SendToUser(fromUser, ptr);
+        await Clients.Client(user.ConnectionId).SendMessage(fromUser, ptr);
     }
 
     public async Task JoinGroup(string groupName)

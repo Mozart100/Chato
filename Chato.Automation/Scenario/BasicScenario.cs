@@ -21,9 +21,9 @@ internal class BasicScenario : InstructionScenarioBase
     public BasicScenario(ILogger<BasicScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
-        //BusinessLogicCallbacks.Add(SetupGroup);
-        //BusinessLogicCallbacks.Add(SendingToSpecificPerson);
-        //BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group));
+        BusinessLogicCallbacks.Add(SetupGroup);
+        BusinessLogicCallbacks.Add(SendingToSpecificPerson);
+        BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group));
 
 
         BusinessLogicCallbacks.Add(SetupGroup);
@@ -47,12 +47,12 @@ internal class BasicScenario : InstructionScenarioBase
         var message_1 = "Shalom";
         var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
-        var anatoliySender = firstGroup.SendingTo(Anatoliy_User,Natali_User);
+        var anatoliySender = firstGroup.SendingTo(Anatoliy_User, Nathan_User);
         var nathanReceive1 = firstGroup.RecievingFrom(Nathan_User, anatoliySender.UserName);
-        var olessyaReceive1 = firstGroup.Is_Not_Received(Olessya_User);
+        //var olessyaReceive1 = firstGroup.Is_Not_Received(Olessya_User);
 
         
-        anatoliySender.Connect(olessyaReceive1, nathanReceive1);
+        anatoliySender.Connect(nathanReceive1);
 
         var graph = new InstructionGraph(anatoliySender);
         await InstructionExecuter(graph);

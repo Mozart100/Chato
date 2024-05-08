@@ -30,6 +30,7 @@ public class UserInstructionExecuter
     private const string Hub_Download_Topic = nameof(ChatHub.Downloads);
     private const string Hub_GetGroupHistory_Topic = nameof(ChatHub.GetGroupHistory);
     private const string Hub_RemoveGroupHistory_Topic = nameof(ChatHub.RemoveChatHistory);
+    private const string Hub_SendMessageToOtherUser_Topic = nameof(ChatHub.SendMessageToOtherUser);
 
 
 
@@ -119,7 +120,7 @@ public class UserInstructionExecuter
     {
         _logger.LogInformation($"{userNameFrom} sending message to user [{toUser}] this message [{message}].");
 
-        await _connection.SendAsync(Hub_Send_Message_To_Others_Topic, userNameFrom, message);
+        await _connection.SendAsync(Hub_SendMessageToOtherUser_Topic, userNameFrom, toUser,message);
     }
 
 
@@ -179,7 +180,7 @@ public class UserInstructionExecuter
 
     protected async Task Listen()
     {
-        _connection.On<string, byte[]>(nameof(IChatHub.MessageRecieved), async (user, ptr) =>
+        _connection.On<string, byte[]>(nameof(IChatHub.SendMessage), async (user, ptr) =>
         {
             if (_ignoreUsers.Contains(user) == false)
             {
