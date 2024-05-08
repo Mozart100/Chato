@@ -26,7 +26,7 @@ public class InstructionGraph
         _current.Clear();
         foreach (var item in items)
         {
-            var instructionInfo = new InstructionNode(item.UserName, item.GroupName, item.Instruction, item.Message, item.FromArrived, item.Children,item.Operation);
+            var instructionInfo = new InstructionNode(item.UserName, item.GroupName, item.Instruction, item.Message, item.FromArrived, item.Children);
 
 
             instructions.Add(instructionInfo);

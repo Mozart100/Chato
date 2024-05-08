@@ -132,7 +132,11 @@ public abstract class InstructionScenarioBase : ScenarioBase
             {
                 if (instruction.Instruction.InstractionName.Equals(UserInstructions.Run_Operation_Instrauction))
                 {
-                    await instruction.Operation(instruction);
+                    if (instruction.Instruction.Tag is Func<InstructionNode, Task> callback)
+                    {
+                        await callback(instruction);
+                    }
+
                     continue;
                 }
 

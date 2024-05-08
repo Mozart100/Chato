@@ -1,20 +1,15 @@
 ﻿using System.Text;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Chato.Automation.Infrastructure.Instruction;
 
 public record InstructionNode(string UserName, string? GroupName, UserInstractionBase Instruction, byte[] Message, string? FromArrived,
-    HashSet<InstructionNode> Children, Func<InstructionNode, Task>? Operation = null)
+    HashSet<InstructionNode> Children)
 {
     public InstructionNode(string userName, string? groupName, UserInstractionBase instruction, byte[] message, string? fromArrived)
-        : this(userName, groupName, instruction, message, fromArrived, new HashSet<InstructionNode>(), null)
+        : this(userName, groupName, instruction, message, fromArrived, new HashSet<InstructionNode>())
     {
     }
-
-
 }
-
-
 
 public static class InstructionNodeFluentApi
 {
@@ -39,8 +34,6 @@ public static class InstructionNodeFluentApi
             Instruction = new UserPeerToPeerInstruction() { Tag = toPerson },
             FromArrived = null,
             Children = new(),
-            Operation = null
-
         };
 
         return @new;
@@ -54,7 +47,6 @@ public static class InstructionNodeFluentApi
             Instruction = new UserReceivedInstruction(),
             FromArrived = arrivedFrom,
             Children = new(),
-            Operation = null
 
         };
 
@@ -72,7 +64,6 @@ public static class InstructionNodeFluentApi
                 Instruction = new UserReceivedInstruction(),
                 FromArrived = instruction.UserName,
                 Children = new(),
-                Operation = null,
                 GroupName = instruction.GroupName,
                 Message = instruction.Message
             };
@@ -91,7 +82,6 @@ public static class InstructionNodeFluentApi
             Instruction = new UserDownloadInstruction(),
             FromArrived = UserInstructionExecuter.Hub_From_Server,
             Children = new(),
-            Operation = null,
             Message = data
 
         };
@@ -108,7 +98,6 @@ public static class InstructionNodeFluentApi
             UserName = userName,
             Instruction = new UserBroadcastInstruction(),
             Children = new(),
-            Operation = null
 
         };
 
@@ -120,12 +109,10 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             UserName = target.UserName,
-            Instruction = new UserRunOperationInstruction(),
+            Instruction = new UserRunOperationInstruction() { Tag = operation },
             FromArrived = null,
             Message = null,
             Children = new(),
-            Operation = operation
-
         };
 
         var result = Connect(info, @new);
@@ -141,7 +128,6 @@ public static class InstructionNodeFluentApi
             Message = null,
             FromArrived = "none",
             Children = new(),
-            Operation = null
         };
 
         return @new;
