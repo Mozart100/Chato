@@ -16,12 +16,12 @@ public abstract class InstructionScenarioBase : ScenarioBase
     private readonly CancellationTokenSource _cancellationTokenSource;
 
     private readonly Dictionary<string, UserInstructionExecuter> _users;
-    private readonly Dictionary<string, List<string>> _groupUsers;
+    private readonly Dictionary<string, HashSet<string>> _groupUsers;
 
     public InstructionScenarioBase(ILogger logger, ScenarioConfig config) : base(logger, config)
     {
         _users = new Dictionary<string, UserInstructionExecuter>();
-        _groupUsers = new Dictionary<string, List<string>>();
+        _groupUsers = new Dictionary<string, HashSet<string>>();
 
         _counterSignal = new CounterSignal(2);
 
@@ -41,9 +41,9 @@ public abstract class InstructionScenarioBase : ScenarioBase
     protected string RegisterAuthControllerUrl { get; }
     protected string LoginAuthControllerUrl { get; }
 
-    public async Task RegisterUsers( params string[] users)
+    public async Task RegisterUsers(params string[] users)
     {
-       
+
         foreach (var user in users)
         {
             var registrationRequest = new RegisterAndLoginRequest { Password = "string", Username = user };
@@ -63,10 +63,10 @@ public abstract class InstructionScenarioBase : ScenarioBase
         //var registrationInfo = await RunPostCommand<RegisterAndLoginRequest, RegisterResponse>(RegisterAuthControllerUrl, registrationRequest);
         //var tokenResponse = await RunPostCommand<RegisterAndLoginRequest, LoginResponse>(LoginAuthControllerUrl, registrationRequest);
 
-        var stacked = default(List<string>);
+        var stacked = default(HashSet<string>);
         if (_groupUsers.TryGetValue(groupName, out stacked) == false)
         {
-            _groupUsers[groupName] = stacked ??= new List<string>();
+            _groupUsers[groupName] = stacked ??= new HashSet<string>();
         }
 
 
@@ -120,7 +120,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
             var toUser = instruction.Instruction.Tag as string ?? throw new ArgumentNullException("Should be user name");
 
             await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstractionName != UserInstructions.Not_Received_Instrauction).Count());
-            await SendPeerToPeerMessage(userExecuter: userExecuter, userNameFrom: instruction.UserName, toUser:toUser, message: instruction.Message);
+            await SendPeerToPeerMessage(userExecuter: userExecuter, userNameFrom: instruction.UserName, toUser: toUser, message: instruction.Message);
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
             {
@@ -173,6 +173,29 @@ public abstract class InstructionScenarioBase : ScenarioBase
         _users.Clear();
     }
 
+    public async Task UsersCleanup(params string[] users)
+    {
+        foreach (var user in users)
+        {
+            foreach (var group in _groupUsers.Keys.ToArray())
+            {
+                if (_groupUsers[group].Contains(user))
+                {
+                    _groupUsers[group].Remove(user);
+                    if (_groupUsers[group].Any() == false)
+                    {
+                        _groupUsers[group] = null;
+                        _groupUsers.Remove(group);
+                    }
+                }
+            }
+
+            await _users[user].UserDisconnectingAsync();
+            await _users[user].KillConnectionAsync();
+            _users.Remove(user);
+        }
+    }
+
     public async Task GroupUsersCleanup(params string[] groupNames)
     {
         foreach (var groupName in groupNames)
@@ -185,7 +208,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
         foreach (var user in _users.Values)
         {
-            await user.KillConnection();
+            await user.KillConnectionAsync();
         }
 
         _users.Clear();

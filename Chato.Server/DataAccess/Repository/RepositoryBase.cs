@@ -17,6 +17,8 @@ namespace Chato.Server.DataAccess.Repository
         Task<TModel> InsertAsync(TModel instance);
         Task<IEnumerable<TModel>> GetAllAsync();
 
+        Task<bool> RemoveAsync(Predicate<TModel> selector);
+
 
     }
 
@@ -29,6 +31,20 @@ namespace Chato.Server.DataAccess.Repository
         public RepositoryBase()
         {
             Models = new HashSet<TModel>();
+        }
+
+        public async Task<bool> RemoveAsync(Predicate<TModel> selector)
+        {
+            var result = false;
+            foreach (var model in Models)
+            {
+                if(selector(model))
+                {
+                    result = Models.Remove(model);
+                }
+            }
+
+            return result;
         }
 
         public async Task<TModel> GetFirstAsync(Predicate<TModel> selector)
@@ -87,6 +103,7 @@ namespace Chato.Server.DataAccess.Repository
         {
             return Models.Where(x => selector(x)).ToArray();
         }
+
 
     }
 }

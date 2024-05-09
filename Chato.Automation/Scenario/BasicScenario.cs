@@ -23,7 +23,7 @@ internal class BasicScenario : InstructionScenarioBase
 
         BusinessLogicCallbacks.Add(SetupGroup);
         BusinessLogicCallbacks.Add(SendingToSpecificPerson);
-        BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group));
+        BusinessLogicCallbacks.Add(() => UsersCleanup(Anatoliy_User,Olessya_User,Nathan_User));
 
 
         BusinessLogicCallbacks.Add(SetupGroup);
@@ -49,10 +49,10 @@ internal class BasicScenario : InstructionScenarioBase
 
         var anatoliySender = firstGroup.SendingTo(Anatoliy_User, Nathan_User);
         var nathanReceive1 = firstGroup.RecievingFrom(Nathan_User, anatoliySender.UserName);
-        //var olessyaReceive1 = firstGroup.Is_Not_Received(Olessya_User);
+        var olessyaReceive1 = firstGroup.Is_Not_Received(Olessya_User);
 
         
-        anatoliySender.Connect(nathanReceive1);
+        anatoliySender.Connect(nathanReceive1,olessyaReceive1);
 
         var graph = new InstructionGraph(anatoliySender);
         await InstructionExecuter(graph);
@@ -98,7 +98,6 @@ internal class BasicScenario : InstructionScenarioBase
             .Verificationn(Max_User, anatoliySender, olessyaSender);
 
         var graph = new InstructionGraph(anatoliySender);
-
         await InstructionExecuter(graph);
     }
 

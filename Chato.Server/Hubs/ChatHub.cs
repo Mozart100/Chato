@@ -71,6 +71,23 @@ public class ChatHub : Hub<IChatHub>
         return Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
     }
 
+
+    public async Task UserDisconnectAsync(string user)
+    {
+        await _userRepository.RemoveAsync(x => x.UserName == user);
+        await OnDisconnectedAsync(null);
+    }
+
+    public override async Task OnDisconnectedAsync(Exception? exception)
+    {
+        var user = Context.User;
+        var userName = user.Identity.Name;
+
+        await _userRepository.RemoveAsync(x => x.UserName == userName);
+        await base.OnDisconnectedAsync(exception);
+    }
+
+
     public async Task RemoveChatHistory(string groupName)
     {
         var group = await _chatRoomRepository.GetAsync(x => x.Id == groupName);

@@ -31,8 +31,9 @@ public class UserInstructionExecuter
     private const string Hub_GetGroupHistory_Topic = nameof(ChatHub.GetGroupHistory);
     private const string Hub_RemoveGroupHistory_Topic = nameof(ChatHub.RemoveChatHistory);
     private const string Hub_SendMessageToOtherUser_Topic = nameof(ChatHub.SendMessageToOtherUser);
+    private const string Hub_OnDisconnectedAsync_Topic = nameof(ChatHub.UserDisconnectAsync);
 
-
+    
 
     private readonly ILogger _logger;
     private readonly CounterSignal _signal;
@@ -229,7 +230,13 @@ public class UserInstructionExecuter
         await _connection.InvokeAsync(Hub_RemoveGroupHistory_Topic, groupName);
     }
 
-    public async Task KillConnection()
+
+    public async Task UserDisconnectingAsync()
+    {
+        await _connection.InvokeAsync(Hub_OnDisconnectedAsync_Topic,"xxx");
+    }
+
+    public async Task KillConnectionAsync()
     {
         await _connection.StopAsync();
     }
