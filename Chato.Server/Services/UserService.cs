@@ -2,6 +2,7 @@
 
 namespace Chato.Server.Services;
 
+
 public interface IUserService
 {
     string GetMyName();

@@ -70,6 +70,7 @@ public static class ServiceRegistrar
             options.OperationFilter<SecurityRequirementsOperationFilter>();
         });
         services.AddScoped<IUserService, UserService>();
+        services.AddScoped<IRoomService, RoomService>();
         services.AddHttpContextAccessor();
 
 
