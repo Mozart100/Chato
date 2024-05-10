@@ -1,9 +1,9 @@
 ﻿using Chato.Automation.Extensions;
 using Chato.Automation.Responses;
-using Chato.Server;
 using Chato.Server.DataAccess.Models;
 using Chato.Server.Hubs;
 using Chato.Server.Infrastracture;
+using Chato.Server.Models.Dtos;
 using FluentAssertions;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR.Client;

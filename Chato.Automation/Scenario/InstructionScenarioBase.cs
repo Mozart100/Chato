@@ -1,7 +1,7 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
 using Chato.Automation.Responses;
-using Chato.Server;
 using Chato.Server.Controllers;
+using Chato.Server.Models.Dtos;
 using Microsoft.Extensions.Logging;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using System;

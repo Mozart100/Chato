@@ -1,12 +1,12 @@
-﻿using Chato.Server;
+﻿using Chato.Server.Models.Dtos;
 
 namespace Chato.Automation.Responses;
 
-internal class RegisterAndLoginRequest :UserDto
+internal class RegisterAndLoginRequest :UserRequest
 {
 }
 
-public class RegisterResponse : User
+public class RegisterResponse : UserResponse
 {
 
 }

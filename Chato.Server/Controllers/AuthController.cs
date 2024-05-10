@@ -1,4 +1,4 @@
-﻿using Chato.Server;
+﻿using Chato.Server.Models.Dtos;
 using Chato.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
@@ -15,7 +15,7 @@ namespace Chato.Server.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
-    public static  User user = new User();
+    public static  UserResponse user = new UserResponse();
     private readonly IConfiguration _configuration;
     private readonly IUserService _userService;
 
@@ -34,7 +34,7 @@ public class AuthController : ControllerBase
 
     [Route("register")]
     [HttpPost]
-    public async Task<ActionResult<User>> Register(UserDto request)
+    public async Task<ActionResult<UserResponse>> Register(UserRequest request)
     {
         CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
 
@@ -48,7 +48,7 @@ public class AuthController : ControllerBase
     [HttpPost]
     [Route("login")]
 
-    public async Task<ActionResult<LoginResponse>> Login(UserDto request)
+    public async Task<ActionResult<LoginResponse>> Login(UserRequest request)
     {
         if (user.Username != request.Username)
         {
@@ -115,7 +115,7 @@ public class AuthController : ControllerBase
         user.TokenExpires = newRefreshToken.Expires;
     }
 
-    private string CreateToken(User user)
+    private string CreateToken(UserResponse user)
     {
         try
         {
