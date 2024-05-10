@@ -47,12 +47,12 @@ public class ChatHub : Hub<IChatHub>
         return Clients.Others.SendMessage(user, message);
     }
 
-    public async Task SendMessageToOthersInGroup(string group, string user, byte[] ptr)
+    public async Task SendMessageToOthersInGroup(string group, string fromUser, byte[] ptr)
     {
         //var message = Encoding.UTF8.GetkckString(ptr);
 
-        await _chatRoomRepository.CreateOrAndAsync(group, user, ptr);
-        await Clients.OthersInGroup(group).SendMessage(user, ptr);
+        await _chatRoomRepository.CreateOrAndAsync(group, fromUser, ptr);
+        await Clients.OthersInGroup(group).SendMessage(fromUser, ptr);
     }
 
     public async Task SendMessageToOtherUser(string fromUser, string toUser, byte[] ptr)
