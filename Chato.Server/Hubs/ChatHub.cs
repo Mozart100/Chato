@@ -35,7 +35,8 @@ public class ChatHub : Hub<IChatHub>
         var comnectionId = Context.ConnectionId;
         var user = Context.User;
 
-        await _userRepository.InsertAsync(new UserDb { UserName = user.Identity.Name, ConnectionId = comnectionId });
+        //await _userRepository.InsertAsync(new UserDb { UserName = user.Identity.Name, ConnectionId = comnectionId });
+        await _userRepository.AssignConectionnId(user.Identity.Name, comnectionId);
 
         await SendMessageToOthers("server", ptr);
         await base.OnConnectedAsync();
@@ -90,7 +91,7 @@ public class ChatHub : Hub<IChatHub>
 
     public async Task RemoveChatHistory(string groupName)
     {
-        var group = await _chatRoomRepository.GetAsync(x => x.Id == groupName);
+        var group = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == groupName);
         if (group is not null)
         {
             group.SenderInfo.Clear();
@@ -99,7 +100,7 @@ public class ChatHub : Hub<IChatHub>
 
     public async IAsyncEnumerable<SenderInfo> GetGroupHistory(string groupName, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var group = await _chatRoomRepository.GetAsync(x => x.Id == groupName);
+        var group = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == groupName);
 
         if (group is not null)
         {

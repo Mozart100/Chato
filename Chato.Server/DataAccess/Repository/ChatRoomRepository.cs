@@ -18,7 +18,7 @@ public class ChatRoomRepository : RepositoryBase<ChatRoomDb>, IChatRoomRepositor
 
     public async Task CreateOrAndAsync(string groupName, string user, byte[] ptr)
     {
-        var chatRoom = await GetAsync(x => x.Id == groupName);
+        var chatRoom = await GetOrDefaultAsync(x => x.Id == groupName);
 
         if (chatRoom is null)
         {

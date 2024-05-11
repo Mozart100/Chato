@@ -65,6 +65,8 @@ public class AuthController : ControllerBase
         var refreshToken = GenerateRefreshToken();
         SetRefreshToken(refreshToken);
 
+        await _userService.LoginAsync(request.Username);
+
         return Ok(new LoginResponse { Token = token});
     }
 

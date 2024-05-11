@@ -1,4 +1,6 @@
 ﻿using Chato.Server.DataAccess.Models;
+using Chato.Server.Infrastracture.Exceptions;
+using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Chato.Server.DataAccess.Repository
 {
@@ -9,6 +11,10 @@ namespace Chato.Server.DataAccess.Repository
 
         TModel Insert(TModel instance);
         IEnumerable<TModel> GetAll();
+
+        Task<TModel> GetOrDefaultAsync(Predicate<TModel> selector);
+
+
 
 
         Task<TModel> GetFirstAsync(Predicate<TModel> selector);
@@ -26,6 +32,7 @@ namespace Chato.Server.DataAccess.Repository
 
     public abstract class RepositoryBase<TModel> where TModel : EntityDbBase
     {
+        
         protected HashSet<TModel> Models;
 
         public RepositoryBase()
@@ -52,17 +59,35 @@ namespace Chato.Server.DataAccess.Repository
             return Get(selector);
         }
 
-        public virtual TModel Get(Predicate<TModel> selector)
+        public async Task<TModel> GetOrDefaultAsync(Predicate<TModel> selector)
         {
+            return CoreGet(selector);
+        }
+
+
+        protected virtual TModel CoreGet(Predicate<TModel> selector )
+        {
+            var result = default(TModel);
             foreach (var model in Models)
             {
                 if (selector(model))
                 {
-                    return model;
+                    result = model;
                 }
             }
 
-            return null;
+            return result;
+        }
+        public virtual TModel Get(Predicate<TModel> selector)
+        {
+            var result = CoreGet(selector);
+
+            if(result is null)
+            {
+                throw new NoUserFoundException("no such user");
+            }
+
+            return result;
         }
 
         public virtual async Task<TModel> GetAsync(Predicate<TModel> selector)
@@ -89,7 +114,7 @@ namespace Chato.Server.DataAccess.Repository
            
             if (Models.Add(instance) == false)
             {
-                throw new Exception("Key already present");
+                throw new Exception("Key already present.");
             }
             
             return instance;

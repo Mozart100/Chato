@@ -5,6 +5,7 @@ namespace Chato.Server.DataAccess.Repository;
 
 public interface IUserRepository : IRepositoryBase<UserDb>
 {
+    Task AssignConectionnId( string userName ,  string conectionnId);
 }
 
 
@@ -17,4 +18,9 @@ public class UserRepository : RepositoryBase<UserDb>, IUserRepository
         _logger = logger;
     }
 
+    public async Task AssignConectionnId(string userName, string conectionnId)
+    {
+        var user  = await GetAsync(x => x.UserName == userName);
+        user.ConnectionId = conectionnId;
+    }
 }
