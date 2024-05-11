@@ -1,4 +1,6 @@
-﻿using Chato.Automation.Scenario;
+﻿using Chato.Automation.Responses;
+using Chato.Automation.Scenario;
+using Chato.Server.Models.Dtos;
 using Microsoft.Extensions.Logging;
 
 namespace Arkovean.Chat.Automation.Scenario;
@@ -10,7 +12,9 @@ internal class PopulateDataScenario : InstructionScenarioBase
     private const string haifa_user1 = $"{Haifa_Room}_user1";
     private const string haifa_user2 = $"{Haifa_Room}_user2";
     private const string haifa_user3 = $"{Haifa_Room}_user3";
-    
+
+    private readonly List<string> _localUsers;
+
     public PopulateDataScenario(ILogger<PopulateDataScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
@@ -18,9 +22,12 @@ internal class PopulateDataScenario : InstructionScenarioBase
         //BusinessLogicCallbacks.Add(TwoPeopleHandShakeStep);
 
         //BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group));
-        //BusinessLogicCallbacks.Add(TreeUserSetups);
+        BusinessLogicCallbacks.Add(PopulateUsers);
         //BusinessLogicCallbacks.Add(TreePoepleHandShakeStep);
         //BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group, Second_Group));
+
+
+        _localUsers = new List<string> { haifa_user1, haifa_user2, haifa_user3 };
 
     }
 
@@ -33,6 +40,13 @@ internal class PopulateDataScenario : InstructionScenarioBase
     public async Task PopulateUsers()
     {
 
+        foreach (var user in _localUsers)
+        {
+            var registrationRequest = new RegisterAndLoginRequest { Password = "string", Username = user };
+            var registrationInfo = await RunPostCommand<RegisterAndLoginRequest, RegisterResponse>(RegisterAuthControllerUrl, registrationRequest);
+            var tokenResponse = await RunPostCommand<RegisterAndLoginRequest, LoginResponse>(LoginAuthControllerUrl, registrationRequest);
+        }
     }
+
 
 }

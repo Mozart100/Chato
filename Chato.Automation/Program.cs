@@ -43,6 +43,7 @@ static IHostBuilder CReateHostBuilder(string[] args)
         services.AddSingleton<GroupHandShakeScenario>();
         services.AddSingleton<HubStreamScenario>();
         services.AddSingleton<BasicScenario>();
+        services.AddSingleton<PopulateDataScenario>();
 
 
     });
