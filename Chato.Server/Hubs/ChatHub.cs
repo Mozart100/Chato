@@ -1,5 +1,6 @@
 ﻿using Chato.Server.DataAccess.Models;
 using Chato.Server.DataAccess.Repository;
+using Chato.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Runtime.CompilerServices;
@@ -18,13 +19,22 @@ public interface IChatHub
 [Authorize]
 public class ChatHub : Hub<IChatHub>
 {
-    private readonly IChatRoomRepository _chatRoomRepository;
-    private readonly IUserRepository _userRepository;
+    //private readonly IChatRoomRepository _chatRoomRepository;
+    //private readonly IUserRepository _userRepository;
+    private readonly IUserService _userService;
+    private readonly IRoomService _roomService;
+    private readonly IUserRoomService _userRoomService;
 
-    public ChatHub(IChatRoomRepository chatRoomRepository, IUserRepository userRepository)
+    public ChatHub(IChatRoomRepository chatRoomRepository, IUserRepository userRepository,
+        IUserService userService,
+        IRoomService roomService,
+        IUserRoomService userRoomService)
     {
-        this._chatRoomRepository = chatRoomRepository;
-        this._userRepository = userRepository;
+        //this._chatRoomRepository = chatRoomRepository;
+        //this._userRepository = userRepository;
+        this._userService = userService;
+        this._roomService = roomService;
+        this._userRoomService = userRoomService;
     }
 
 
@@ -36,7 +46,7 @@ public class ChatHub : Hub<IChatHub>
         var user = Context.User;
 
         //await _userRepository.InsertAsync(new UserDb { UserName = user.Identity.Name, ConnectionId = comnectionId });
-        await _userRepository.AssignConectionnId(user.Identity.Name, comnectionId);
+        await _userService.AssignConectionnId(user.Identity.Name, comnectionId);
 
         await SendMessageToOthers("server", ptr);
         await base.OnConnectedAsync();
@@ -52,63 +62,61 @@ public class ChatHub : Hub<IChatHub>
     {
         //var message = Encoding.UTF8.GetkckString(ptr);
 
-        await _chatRoomRepository.CreateOrAndAsync(group, fromUser, ptr);
+        await _roomService.SendMessageAsync(group, fromUser, ptr);
         await Clients.OthersInGroup(group).SendMessage(fromUser, ptr);
     }
 
     public async Task SendMessageToOtherUser(string fromUser, string toUser, byte[] ptr)
     {
-        var user = await _userRepository.GetAsync(x => x.UserName == toUser);
-        await Clients.Client(user.ConnectionId).SendMessage(fromUser, ptr);
+        //var user = await _userRepository.GetAsync(x => x.UserName == toUser);
+        var user = await _userService.GetUserByNameOrIdAsync(toUser);
+        if (user is not null)
+        {
+            await Clients.Client(user.ConnectionId).SendMessage(fromUser, ptr);
+        }
     }
 
-    public async Task JoinGroup(string groupName)
+    public async Task JoinGroup(string roomName)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
+        await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
+        await _userRoomService.JoinGroupByConnectionId(Context.User.Identity.Name, roomName);
     }
 
-    public Task LeaveGroup(string groupName)
+    public async Task LeaveGroup(string groupName)
     {
-        return Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+        await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
+
+        await _userRoomService.RemoveUserByUserNameOrIdAsync(Context.User.Identity.Name);
     }
 
 
-    public async Task UserDisconnectAsync(string user)
+    public async Task UserDisconnectAsync()
     {
-        await _userRepository.RemoveAsync(x => x.UserName == user);
         await OnDisconnectedAsync(null);
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
-        var user = Context.User;
-        var userName = user.Identity.Name;
-
-        await _userRepository.RemoveAsync(x => x.UserName == userName);
         await base.OnDisconnectedAsync(exception);
+        await _userRoomService.RemoveUserByUserNameOrIdAsync(Context.User.Identity.Name);
     }
 
 
     public async Task RemoveChatHistory(string groupName)
     {
-        var group = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == groupName);
-        if (group is not null)
-        {
-            group.SenderInfo.Clear();
-        }
+        await _roomService.RmoveHistoryByRoomNameAsync(groupName);
+
     }
 
-    public async IAsyncEnumerable<SenderInfo> GetGroupHistory(string groupName, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<SenderInfo> GetGroupHistory(string roomName, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var group = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == groupName);
+        var list = await _roomService.GetGroupHistoryAsync(roomName);
 
-        if (group is not null)
+
+        foreach (var senderInfo in list)
         {
-            foreach (var senderInfo in group.SenderInfo.ToArray())
-            {
-                yield return senderInfo;
-                await Task.Delay(200);
-            }
+            yield return senderInfo;
+            await Task.Delay(200);
         }
     }
 
@@ -125,7 +133,7 @@ public class ChatHub : Hub<IChatHub>
     }
 
 
-  
+
 
     //public async IAsyncEnumerable<string> Download(HubDownloadInfo downloadInfo, [EnumeratorCancellation] CancellationToken cancellationToken)
     //{

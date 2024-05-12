@@ -233,7 +233,7 @@ public class UserInstructionExecuter
 
     public async Task UserDisconnectingAsync()
     {
-        await _connection.InvokeAsync(Hub_OnDisconnectedAsync_Topic,"xxx");
+        await _connection.InvokeAsync(Hub_OnDisconnectedAsync_Topic);
     }
 
     public async Task KillConnectionAsync()

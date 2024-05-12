@@ -4,7 +4,7 @@ namespace Chato.Server.DataAccess.Repository;
 
 public interface IChatRoomRepository : IRepositoryBase<ChatRoomDb>
 {
-    Task CreateOrAndAsync(string group, string user, byte[] ptr);
+    Task SendMessageAsync(string group, string user, byte[] ptr);
 }
 
 public class ChatRoomRepository : RepositoryBase<ChatRoomDb>, IChatRoomRepository
@@ -16,7 +16,7 @@ public class ChatRoomRepository : RepositoryBase<ChatRoomDb>, IChatRoomRepositor
         _logger = logger;
     }
 
-    public async Task CreateOrAndAsync(string groupName, string user, byte[] ptr)
+    public async Task SendMessageAsync(string groupName, string user, byte[] ptr)
     {
         var chatRoom = await GetOrDefaultAsync(x => x.Id == groupName);
 

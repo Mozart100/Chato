@@ -15,7 +15,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
     private readonly Dictionary<string, Func<UserInstructionExecuter, InstructionNode, Task>> _actionMapper;
     private readonly CancellationTokenSource _cancellationTokenSource;
 
-    private readonly Dictionary<string, UserInstructionExecuter> _users;
+    protected readonly Dictionary<string, UserInstructionExecuter> _users;
     private readonly Dictionary<string, HashSet<string>> _groupUsers;
 
     public InstructionScenarioBase(ILogger logger, ScenarioConfig config) : base(logger, config)
@@ -32,6 +32,10 @@ public abstract class InstructionScenarioBase : ScenarioBase
         RegisterAuthControllerUrl = $"{AuthControllerUrl}/register";
         LoginAuthControllerUrl = $"{AuthControllerUrl}/login";
 
+
+        RoomsControllerUrl = $"{BaseUrl}/api/room";
+        GetAllRoomsUrl = $"{RoomsControllerUrl}";
+
         Initialize();
 
     }
@@ -40,6 +44,11 @@ public abstract class InstructionScenarioBase : ScenarioBase
     protected string AuthControllerUrl { get; }
     protected string RegisterAuthControllerUrl { get; }
     protected string LoginAuthControllerUrl { get; }
+
+
+    protected string RoomsControllerUrl { get; }
+    protected string GetAllRoomsUrl { get; }
+
 
     public async Task RegisterUsers(params string[] users)
     {

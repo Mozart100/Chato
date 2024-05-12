@@ -1,6 +1,7 @@
 ﻿using Chato.Automation.Responses;
 using Chato.Automation.Scenario;
 using Chato.Server.Models.Dtos;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 
 namespace Arkovean.Chat.Automation.Scenario;
@@ -40,12 +41,20 @@ internal class PopulateDataScenario : InstructionScenarioBase
     public async Task PopulateUsers()
     {
 
+        var roomInfo = await Get<GetAllRoomResponse>(RoomsControllerUrl);
+        roomInfo.Rooms.Should().HaveCount(0);
+
         foreach (var user in _localUsers)
         {
             var registrationRequest = new RegisterAndLoginRequest { Password = "string", Username = user };
             var registrationInfo = await RunPostCommand<RegisterAndLoginRequest, RegisterResponse>(RegisterAuthControllerUrl, registrationRequest);
             var tokenResponse = await RunPostCommand<RegisterAndLoginRequest, LoginResponse>(LoginAuthControllerUrl, registrationRequest);
         }
+
+
+
+        roomInfo = await Get<GetAllRoomResponse>(RoomsControllerUrl);
+        roomInfo.Rooms.Should().HaveCount(0);
     }
 
 

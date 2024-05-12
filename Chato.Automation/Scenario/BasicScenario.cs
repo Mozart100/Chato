@@ -1,5 +1,6 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
 using Chato.Automation.Scenario;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 
 namespace Arkovean.Chat.Automation.Scenario;
@@ -7,7 +8,6 @@ namespace Arkovean.Chat.Automation.Scenario;
 internal class BasicScenario : InstructionScenarioBase
 {
     private const string First_Group = "haifa";
-    private const string Second_Group = "nesher";
 
     private const string Anatoliy_User = "anatoliy";
     private const string Olessya_User = "olessya";
@@ -23,20 +23,28 @@ internal class BasicScenario : InstructionScenarioBase
 
         BusinessLogicCallbacks.Add(SetupGroup);
         BusinessLogicCallbacks.Add(SendingToSpecificPerson);
-        BusinessLogicCallbacks.Add(() => UsersCleanup(Anatoliy_User,Olessya_User,Nathan_User));
+        BusinessLogicCallbacks.Add(async () => await UsersCleanup(_users.Keys.ToArray()));
 
 
         BusinessLogicCallbacks.Add(SetupGroup);
         BusinessLogicCallbacks.Add(ImageSendingStep);
-        BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group));
+        BusinessLogicCallbacks.Add(async () => await UsersCleanup(_users.Keys.ToArray()));
 
 
         BusinessLogicCallbacks.Add(SetupGroup);
         BusinessLogicCallbacks.Add(VerificationStep);
-        BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group));
+        BusinessLogicCallbacks.Add(async () =>  await UsersCleanup(_users.Keys.ToArray()));
+
+
+        SummaryLogicCallback.Add(CheckAllCleaned);
 
     }
 
+    private async Task CheckAllCleaned()
+    {
+        var roomInfo = await Get<GetAllRoomResponse>(RoomsControllerUrl);
+        roomInfo.Rooms.Should().HaveCount(0);
+    }
 
     public override string ScenarioName => "All sort of mini scenarios";
 
@@ -56,6 +64,9 @@ internal class BasicScenario : InstructionScenarioBase
 
         var graph = new InstructionGraph(anatoliySender);
         await InstructionExecuter(graph);
+
+        //var roomInfo = await Get<GetAllRoomResponse>(RoomsControllerUrl);
+        //roomInfo.Rooms.Should().HaveCount(0);
     }
 
     private async Task ImageSendingStep()
@@ -76,11 +87,17 @@ internal class BasicScenario : InstructionScenarioBase
 
         var graph = new InstructionGraph(anatoliySender);
         await InstructionExecuter(graph);
+
     }
 
 
     private async Task VerificationStep()
     {
+
+        //var roomInfo = await Get<GetAllRoomResponse>(RoomsControllerUrl);
+        //roomInfo.Rooms.Should().HaveCount(0);
+
+
         var message_1 = "Shalom";
         var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 

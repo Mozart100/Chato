@@ -1,5 +1,6 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
 using Chato.Automation.Scenario;
+using FluentAssertions;
 using Microsoft.Extensions.Logging;
 
 namespace Arkovean.Chat.Automation.Scenario;
@@ -26,13 +27,23 @@ internal class HubStreamScenario : InstructionScenarioBase
 
         SetupsLogicCallback.Add(TreeUserSetups);
         BusinessLogicCallbacks.Add(TreePoepleHandShakeStep);
-        SummaryLogicCallback.Add(() => GroupUsersCleanup(First_Group, Second_Group));
+        //SummaryLogicCallback.Add(() => GroupUsersCleanup(First_Group, Second_Group));
+        BusinessLogicCallbacks.Add(async () => await UsersCleanup(_users.Keys.ToArray()));
+
 
         var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "css.txt");
         _fileContent = File.ReadAllBytes(path);
 
+
+        SummaryLogicCallback.Add(CheckAllCleaned);
+
     }
 
+    private async Task CheckAllCleaned()
+    {
+        var roomInfo = await Get<GetAllRoomResponse>(RoomsControllerUrl);
+        roomInfo.Rooms.Should().HaveCount(0);
+    }
     public override string ScenarioName => "Streaming messages";
 
     public override string Description => "Uploading and downloading messaging.";
@@ -81,5 +92,7 @@ internal class HubStreamScenario : InstructionScenarioBase
         var graph = new InstructionGraph(anatoliySender);
 
         await InstructionExecuter(graph);
+
+
     }
 }

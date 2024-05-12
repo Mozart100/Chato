@@ -17,8 +17,8 @@ public class RoomController : ControllerBase
 
 
     [HttpGet]
-    [Route("rooms")]
-    public async Task<ActionResult<GetAllRoomResponse>> GetAllRooms(GetAllRoomRequest request)
+    [Route("")]
+    public async Task<ActionResult<GetAllRoomResponse>> GetAllRooms()
     {
        var result  = await roomService.GetAllRoomAsync();
         return Ok(new GetAllRoomResponse { Rooms = result });

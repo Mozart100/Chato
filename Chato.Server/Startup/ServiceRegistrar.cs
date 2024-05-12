@@ -71,6 +71,9 @@ public static class ServiceRegistrar
         });
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRoomService, RoomService>();
+        services.AddScoped<IUserRoomService, UserRoomService>();
+
+        
         services.AddHttpContextAccessor();
 
 

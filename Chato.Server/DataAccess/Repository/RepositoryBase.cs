@@ -24,8 +24,6 @@ namespace Chato.Server.DataAccess.Repository
         Task<IEnumerable<TModel>> GetAllAsync();
 
         Task<bool> RemoveAsync(Predicate<TModel> selector);
-
-
     }
 
 

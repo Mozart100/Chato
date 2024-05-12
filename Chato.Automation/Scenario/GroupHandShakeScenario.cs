@@ -22,11 +22,11 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
 
         SetupsLogicCallback.Add(TwoUserSetups);
         BusinessLogicCallbacks.Add(TwoPeopleHandShakeStep);
+        BusinessLogicCallbacks.Add(async () => await UsersCleanup(_users.Keys.ToArray()));
 
-        BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group));
         BusinessLogicCallbacks.Add(TreeUserSetups);
         BusinessLogicCallbacks.Add(TreePoepleHandShakeStep);
-        BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group, Second_Group));
+        BusinessLogicCallbacks.Add(async () => await UsersCleanup(_users.Keys.ToArray()));
 
     }
 

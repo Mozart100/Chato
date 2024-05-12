@@ -23,4 +23,6 @@ public class UserRepository : RepositoryBase<UserDb>, IUserRepository
         var user  = await GetAsync(x => x.UserName == userName);
         user.ConnectionId = conectionnId;
     }
+
+  
 }
