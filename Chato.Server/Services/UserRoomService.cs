@@ -43,35 +43,36 @@ public class UserRoomService : IUserRoomService
         {
             foreach (var roomName in user.Rooms.ToArray())
             {
-                var room = await _roomService.GetRoomByNameOrIdAsync( roomName);
+                var room = await _roomService.GetRoomByNameOrIdAsync(roomName);
                 if (room is not null)
                 {
                     room.Users.Remove(user.UserName);
 
                     if (room.Users.Any() == false)
                     {
-                        await  _roomService.RemoveRoomByNameOrIdAsync(roomName);
+                        await _roomService.RemoveRoomByNameOrIdAsync(roomName);
                     }
                 }
             }
         }
     }
 
-    public async Task JoinGroupByConnectionId(string nameOrId , string roomName)
+    public async Task JoinGroupByConnectionId(string nameOrId, string roomName)
     {
         var user = await _userService.GetUserByNameOrIdAsync(nameOrId);
         if (user is not null)
         {
             user.Rooms.Add(roomName);
             var room = await _roomService.GetRoomByNameOrIdAsync(roomName);
-            if(room is not null)
+            if (room is not null)
             {
-                room.Users.Add(user.UserName); 
+                room.Users.Add(user.UserName);
             }
             else
             {
-               var ptr =   await _roomService.CreateRoomAsync(roomName);
-                ptr.Users.Add(user.UserName); 
+                var ptr = await _roomService.CreateRoomAsync(roomName);
+                await _roomService.AddUserAsync(roomName, user.UserName);
+                //ptr.Users.Add(user.UserName); 
             }
         }
     }

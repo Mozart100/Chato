@@ -1,4 +1,5 @@
-﻿namespace Chato.Server.DataAccess.Models;
+﻿
+namespace Chato.Server.DataAccess.Models;
 
 public record SenderInfo(string UserName,byte[] Message);
 
@@ -13,5 +14,6 @@ public class ChatRoomDb : EntityDbBase
 
     public List<SenderInfo> SenderInfo { get; set; } = new List<SenderInfo>();
     public HashSet<string> Users { get;  } = new HashSet<string>();
+
 }
 

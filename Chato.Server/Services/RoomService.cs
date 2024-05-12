@@ -6,6 +6,7 @@ namespace Chato.Server.Services;
 
 public interface IRoomService
 {
+    Task AddUserAsync(string roomName , string userName);
     Task<ChatRoomDb> CreateRoomAsync(string roomName);
     Task<ChatRoomDb[]> GetAllRoomAsync();
     Task<IEnumerable<SenderInfo>> GetGroupHistoryAsync(string roomName);
@@ -22,6 +23,16 @@ public class RoomService : IRoomService
     public RoomService(IRoomRepository chatRoomRepository)
     {
         this._chatRoomRepository = chatRoomRepository;
+    }
+
+    public async Task AddUserAsync(string roomName, string userName)
+    {
+        var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
+
+        if (room is not null)
+        {
+            room.Users.Add(userName);
+        }
     }
 
     public async Task<ChatRoomDb> CreateRoomAsync(string roomName)
