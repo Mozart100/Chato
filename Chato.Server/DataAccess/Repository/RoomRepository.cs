@@ -2,16 +2,16 @@
 
 namespace Chato.Server.DataAccess.Repository;
 
-public interface IChatRoomRepository : IRepositoryBase<ChatRoomDb>
+public interface IRoomRepository : IRepositoryBase<ChatRoomDb>
 {
     Task SendMessageAsync(string group, string user, byte[] ptr);
 }
 
-public class ChatRoomRepository : RepositoryBase<ChatRoomDb>, IChatRoomRepository
+public class RoomRepository : RepositoryBase<ChatRoomDb>, IRoomRepository
 {
-    private readonly ILogger<ChatRoomRepository> _logger;
+    private readonly ILogger<RoomRepository> _logger;
 
-    public ChatRoomRepository(ILogger<ChatRoomRepository> logger)
+    public RoomRepository(ILogger<RoomRepository> logger)
     {
         _logger = logger;
     }

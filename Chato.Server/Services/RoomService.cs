@@ -17,9 +17,9 @@ public interface IRoomService
 
 public class RoomService : IRoomService
 {
-    private readonly IChatRoomRepository _chatRoomRepository;
+    private readonly IRoomRepository _chatRoomRepository;
 
-    public RoomService(IChatRoomRepository chatRoomRepository)
+    public RoomService(IRoomRepository chatRoomRepository)
     {
         this._chatRoomRepository = chatRoomRepository;
     }
