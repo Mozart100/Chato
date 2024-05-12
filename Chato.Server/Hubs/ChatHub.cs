@@ -19,19 +19,15 @@ public interface IChatHub
 [Authorize]
 public class ChatHub : Hub<IChatHub>
 {
-    //private readonly IChatRoomRepository _chatRoomRepository;
-    //private readonly IUserRepository _userRepository;
     private readonly IUserService _userService;
     private readonly IRoomService _roomService;
     private readonly IUserRoomService _userRoomService;
 
-    public ChatHub(IChatRoomRepository chatRoomRepository, IUserRepository userRepository,
+    public ChatHub(
         IUserService userService,
         IRoomService roomService,
         IUserRoomService userRoomService)
     {
-        //this._chatRoomRepository = chatRoomRepository;
-        //this._userRepository = userRepository;
         this._userService = userService;
         this._roomService = roomService;
         this._userRoomService = userRoomService;
@@ -111,7 +107,6 @@ public class ChatHub : Hub<IChatHub>
     public async IAsyncEnumerable<SenderInfo> GetGroupHistory(string roomName, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
         var list = await _roomService.GetGroupHistoryAsync(roomName);
-
 
         foreach (var senderInfo in list)
         {

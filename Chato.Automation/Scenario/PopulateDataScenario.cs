@@ -10,9 +10,9 @@ internal class PopulateDataScenario : InstructionScenarioBase
 {
     private const string Haifa_Room = "haifa";
 
-    private const string haifa_user1 = $"{Haifa_Room}_user1";
-    private const string haifa_user2 = $"{Haifa_Room}_user2";
-    private const string haifa_user3 = $"{Haifa_Room}_user3";
+    private const string Haifa_user1 = $"{Haifa_Room}_user1";
+    private const string Haifa_user2 = $"{Haifa_Room}_user2";
+    private const string Haifa_user3 = $"{Haifa_Room}_user3";
 
     private readonly List<string> _localUsers;
 
@@ -28,7 +28,7 @@ internal class PopulateDataScenario : InstructionScenarioBase
         //BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group, Second_Group));
 
 
-        _localUsers = new List<string> { haifa_user1, haifa_user2, haifa_user3 };
+        _localUsers = new List<string> { Haifa_user1, Haifa_user2, Haifa_user3 };
 
     }
 
