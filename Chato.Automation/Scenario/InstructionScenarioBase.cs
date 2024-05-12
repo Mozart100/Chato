@@ -1,11 +1,7 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
 using Chato.Automation.Responses;
-using Chato.Server.Controllers;
 using Chato.Server.Models.Dtos;
 using Microsoft.Extensions.Logging;
-using Swashbuckle.AspNetCore.SwaggerGen;
-using System;
-using System.Text;
 
 namespace Chato.Automation.Scenario;
 
@@ -68,10 +64,6 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
     public async Task AssignUserToGroupAsync(string groupName, params string[] users)
     {
-        //var registrationRequest = new RegisterAndLoginRequest { Password = "string", Username = "string" };
-        //var registrationInfo = await RunPostCommand<RegisterAndLoginRequest, RegisterResponse>(RegisterAuthControllerUrl, registrationRequest);
-        //var tokenResponse = await RunPostCommand<RegisterAndLoginRequest, LoginResponse>(LoginAuthControllerUrl, registrationRequest);
-
         var stacked = default(HashSet<string>);
         if (_groupUsers.TryGetValue(groupName, out stacked) == false)
         {
@@ -141,8 +133,6 @@ public abstract class InstructionScenarioBase : ScenarioBase
         _actionMapper.Add(UserInstructions.Received_Instrauction, async (userExecuter, instruction) => await userExecuter.ListenToStringCheckAsync(instruction.FromArrived, instruction.Message));
         _actionMapper.Add(UserInstructions.Not_Received_Instrauction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync());
         _actionMapper.Add(UserInstructions.Run_Download_Instrauction, async (userExecuter, instruction) => await userExecuter.DownloadStream(instruction.Message));
-
-        //_actionMapper.Add(UserHubInstructions.Run_Verify_Instrauction, async (userExecuter, instruction) => await userExecuter.VerifyHistoryAsync(new Queue<byte[]>()));
     }
 
 
@@ -172,16 +162,6 @@ public abstract class InstructionScenarioBase : ScenarioBase
         }
     }
 
-    protected async Task UsersCleanup()
-    {
-        foreach (var user in _users.Values)
-        {
-            await user.Close();
-        }
-
-        _users.Clear();
-    }
-
     public async Task UsersCleanup(params string[] users)
     {
         foreach (var user in users)
@@ -205,22 +185,4 @@ public abstract class InstructionScenarioBase : ScenarioBase
         }
     }
 
-    public async Task GroupUsersCleanup(params string[] groupNames)
-    {
-        foreach (var groupName in groupNames)
-        {
-            foreach (var user in _groupUsers[groupName].ToArray())
-            {
-                await _users[user].GroupClose(groupName);
-            }
-        }
-
-        foreach (var user in _users.Values)
-        {
-            await user.KillConnectionAsync();
-        }
-
-        _users.Clear();
-        _groupUsers.Clear();
-    }
 }

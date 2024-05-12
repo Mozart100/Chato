@@ -1,5 +1,4 @@
 ﻿using Chato.Server.DataAccess.Models;
-using Chato.Server.DataAccess.Repository;
 
 namespace Chato.Server.Services;
 
@@ -72,7 +71,6 @@ public class UserRoomService : IUserRoomService
             {
                 var ptr = await _roomService.CreateRoomAsync(roomName);
                 await _roomService.AddUserAsync(roomName, user.UserName);
-                //ptr.Users.Add(user.UserName); 
             }
         }
     }
