@@ -41,7 +41,6 @@ public class ChatHub : Hub<IChatHub>
         var comnectionId = Context.ConnectionId;
         var user = Context.User;
 
-        //await _userRepository.InsertAsync(new UserDb { UserName = user.Identity.Name, ConnectionId = comnectionId });
         await _userService.AssignConectionnId(user.Identity.Name, comnectionId);
 
         await SendMessageToOthers("server", ptr);

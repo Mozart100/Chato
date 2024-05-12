@@ -11,6 +11,12 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Chato.Server.Controllers;
 
+public class AuthorizeRoles
+{
+    public const string User = "User";
+}
+
+
 [Route("api/[controller]")]
 [ApiController]
 public class AuthController : ControllerBase
@@ -127,7 +133,7 @@ public class AuthController : ControllerBase
         List <Claim> claims = new List<Claim>
         {
             new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, "Admin")
+            new Claim(ClaimTypes.Role, AuthorizeRoles.User)
         };
 
             //var key = new SymmetricSecurityKey(GenerateHmacSha512Key());

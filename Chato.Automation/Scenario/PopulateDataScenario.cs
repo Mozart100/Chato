@@ -19,13 +19,7 @@ internal class PopulateDataScenario : InstructionScenarioBase
     public PopulateDataScenario(ILogger<PopulateDataScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
-        //SetupsLogicCallback.Add(TwoUserSetups);
-        //BusinessLogicCallbacks.Add(TwoPeopleHandShakeStep);
-
-        //BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group));
         BusinessLogicCallbacks.Add(PopulateUsers);
-        //BusinessLogicCallbacks.Add(TreePoepleHandShakeStep);
-        //BusinessLogicCallbacks.Add(() => GroupUsersCleanup(First_Group, Second_Group));
 
 
         _localUsers = new List<string> { Haifa_user1, Haifa_user2, Haifa_user3 };

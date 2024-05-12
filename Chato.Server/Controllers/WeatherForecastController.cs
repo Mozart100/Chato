@@ -18,7 +18,7 @@ namespace Chato.Server.Controllers
         {
             _logger = logger;
         }
-        [Authorize(Roles = "Admin")]
+        [Authorize(Roles = AuthorizeRoles.User)]
         [HttpGet(Name = "GetWeatherForecast")]
         public string Get()
         {
