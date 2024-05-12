@@ -19,7 +19,7 @@ internal class PopulateDataScenario : InstructionScenarioBase
     public PopulateDataScenario(ILogger<PopulateDataScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
-        BusinessLogicCallbacks.Add(PopulateUsers);
+        //BusinessLogicCallbacks.Add(PopulateUsers);
 
 
         _localUsers = new List<string> { Haifa_user1, Haifa_user2, Haifa_user3 };

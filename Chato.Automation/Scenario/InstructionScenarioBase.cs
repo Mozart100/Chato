@@ -31,6 +31,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
         RoomsControllerUrl = $"{BaseUrl}/api/room";
         GetAllRoomsUrl = $"{RoomsControllerUrl}";
+        GetAllUsersUrl = $"{RoomsControllerUrl}/users";
 
         Initialize();
 
@@ -44,6 +45,7 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
     protected string RoomsControllerUrl { get; }
     protected string GetAllRoomsUrl { get; }
+    protected string GetAllUsersUrl { get; }
 
 
     public async Task RegisterUsers(params string[] users)

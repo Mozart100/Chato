@@ -8,11 +8,13 @@ namespace Chato.Server.Controllers;
 [ApiController]
 public class RoomController : ControllerBase
 {
-    private readonly IRoomService roomService;
+    private readonly IRoomService _roomService;
+    private readonly IUserService _userService;
 
-    public RoomController(IRoomService roomService)
+    public RoomController(IRoomService roomService, IUserService userService)
     {
-        this.roomService = roomService;
+        this._roomService = roomService;
+        this._userService = userService;
     }
 
 
@@ -20,7 +22,19 @@ public class RoomController : ControllerBase
     [Route("")]
     public async Task<ActionResult<GetAllRoomResponse>> GetAllRooms()
     {
-       var result  = await roomService.GetAllRoomAsync();
+       var result  = await _roomService.GetAllRoomAsync();
         return Ok(new GetAllRoomResponse { Rooms = result });
     }
+
+
+    [HttpGet]
+    [Route("users")]
+    public async Task<ActionResult<GetAllRoomResponse>> GetAllUsers()
+    {
+        var result = await _userService.GetAllUsersAsync();
+        return Ok(new GetAllUserResponse { Users = result.ToArray() });
+    }
+
+
+
 }

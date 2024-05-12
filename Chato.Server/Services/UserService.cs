@@ -8,6 +8,7 @@ namespace Chato.Server.Services;
 public interface IUserService
 {
     Task AssignConectionnId(string userName, string connectionId);
+    Task<IEnumerable<UserDb>> GetAllUsersAsync();
     string GetMyName();
     Task<UserDb> GetUserByConnectionId(string connectionId);
     Task<UserDb> GetUserByNameOrIdAsync(string nameOrId);
@@ -63,5 +64,10 @@ public class UserService : IUserService
     public async Task<UserDb> GetUserByNameOrIdAsync(string nameOrId)
     {
         return await _userRepository.GetOrDefaultAsync(x => x.UserName == nameOrId);
+    }
+
+    public async Task<IEnumerable<UserDb>> GetAllUsersAsync()
+    {
+        return await _userRepository.GetAllAsync();
     }
 }
