@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Chato.Automation.Scenario;
 
-public abstract class InstructionScenarioBase : ScenarioBase
+public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 {
     private readonly CounterSignal _counterSignal;
     private readonly Dictionary<string, Func<UserInstructionExecuter, InstructionNode, Task>> _actionMapper;
@@ -23,30 +23,11 @@ public abstract class InstructionScenarioBase : ScenarioBase
 
         _actionMapper = new Dictionary<string, Func<UserInstructionExecuter, InstructionNode, Task>>();
 
-        HubUrl = $"{BaseUrl}/chat";
-        AuthControllerUrl = $"{BaseUrl}/api/auth";
-        RegisterAuthControllerUrl = $"{AuthControllerUrl}/register";
-        LoginAuthControllerUrl = $"{AuthControllerUrl}/login";
-
-
-        RoomsControllerUrl = $"{BaseUrl}/api/room";
-        GetAllRoomsUrl = $"{RoomsControllerUrl}";
-        GetAllUsersUrl = $"{RoomsControllerUrl}/users";
+       
 
         Initialize();
 
     }
-
-    protected string HubUrl { get; }
-    protected string AuthControllerUrl { get; }
-    protected string RegisterAuthControllerUrl { get; }
-    protected string LoginAuthControllerUrl { get; }
-
-
-    protected string RoomsControllerUrl { get; }
-    protected string GetAllRoomsUrl { get; }
-    protected string GetAllUsersUrl { get; }
-
 
     public async Task RegisterUsers(params string[] users)
     {
