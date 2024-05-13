@@ -1,46 +1,61 @@
-﻿using Chato.Server.Infrastracture;
+﻿using Chato.Server.Controllers;
+using Chato.Server.Infrastracture;
 using Chato.Server.Models.Dtos;
 using Microsoft.Extensions.Options;
-using System.Security.Cryptography;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace Chato.Server.Services;
 
-public class AuthenticationService
+public interface IAuthenticationService
 {
-    private readonly AppSettingConfig _config;
+    string CreateToken(string user);
+}
+public class AuthenticationService : IAuthenticationService
+{
+    private readonly AuthenticationConfig _config;
 
-    public AuthenticationService(IOptions<AppSettingConfig> config)
+    public AuthenticationService(IOptions<AuthenticationConfig> config)
     {
         _config = config.Value;
     }
 
 
-    public RefreshToken GenerateRefreshToken()
+    public string CreateToken(string  userName)
     {
-        var refreshToken = new RefreshToken
+        try
         {
-            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            Expires = DateTime.Now.AddDays(7),
-            Created = DateTime.Now
-        };
 
-        return refreshToken;
+            var claims = new List<Claim>
+            {
+                new Claim(ClaimTypes.Name, userName),
+                new Claim(ClaimTypes.Role, AuthorizeRoles.User)
+            };
+
+            var key = new SymmetricSecurityKey(GetBytes(_config.Token));
+            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
+
+            var token = new JwtSecurityToken(
+                claims: claims,
+                expires: DateTime.Now.AddDays(1),
+                signingCredentials: creds);
+
+            var jwt = new JwtSecurityTokenHandler().WriteToken(token);
+
+            return jwt;
+        }
+
+        catch (Exception ex)
+        {
+            return null;
+        }
     }
 
-
-    public void SetRefreshToken(RefreshToken newRefreshToken, HttpResponse response)
+    private byte[] GetBytes(string secret)
     {
-        var cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,
-            Expires = newRefreshToken.Expires
-        };
 
-        response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
-
-        //user.RefreshToken = newRefreshToken.Token;
-        //user.TokenCreated = newRefreshToken.Created;
-        //user.TokenExpires = newRefreshToken.Expires;
+        return System.Text.Encoding.UTF32.GetBytes(secret);
     }
 
 

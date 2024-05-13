@@ -13,6 +13,7 @@ public interface IUserService
     Task<UserDb> GetUserByConnectionId(string connectionId);
     Task<UserDb> GetUserByNameOrIdAsync(string nameOrId);
     Task LoginAsync(string username, string passwordHash);
+    Task RegisterAsync(string username, byte[] passwordHash, byte[] passwordSalt);
     Task<bool> RemoveUserByUserNameOrIdAsync(string userNameOrId);
 }
 
@@ -37,9 +38,15 @@ public class UserService : IUserService
         return result;
     }
 
-    public async Task LoginAsync(string username, string passwordHash)
+    public async Task LoginAsync(string username, string password)
     {
-        await _userRepository.InsertAsync(new UserDb { Id = username , PasswordHash = passwordHash });
+        await _userRepository.InsertAsync(new UserDb { Id = username , Password = password });
+    }
+
+    public async Task RegisterAsync(string username, byte[] passwordHash, byte[] passwordSalt)
+    {
+        await _userRepository.InsertAsync(new UserDb { Id = username, PasswordHash = passwordHash , PasswordSalt = passwordSalt });
+
     }
 
 
@@ -70,4 +77,6 @@ public class UserService : IUserService
     {
         return await _userRepository.GetAllAsync();
     }
+
+  
 }

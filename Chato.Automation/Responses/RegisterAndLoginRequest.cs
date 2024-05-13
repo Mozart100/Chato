@@ -6,10 +6,10 @@ internal class RegisterAndLoginRequest :UserRequest
 {
 }
 
-public class RegisterResponse : UserResponse
-{
+//public class RegisterResponse : UserResponse
+//{
 
-}
+//}
 
 
 

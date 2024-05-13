@@ -1,10 +1,12 @@
 ﻿using Chato.Server.BackgroundTasks;
 using Chato.Server.DataAccess.Repository;
 using Chato.Server.Errors;
+using Chato.Server.Infrastracture;
 using Chato.Server.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -42,9 +44,8 @@ public static class ServiceRegistrar
         services.AddHostedService<TestBackgroundTask>();
 
 
-       
 
-        
+
 
 
         return services;
@@ -69,9 +70,11 @@ public static class ServiceRegistrar
 
             options.OperationFilter<SecurityRequirementsOperationFilter>();
         });
+
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRoomService, RoomService>();
         services.AddScoped<IUserRoomService, UserRoomService>();
+        services.AddScoped<IAuthenticationService, AuthenticationService>();
 
         
         services.AddHttpContextAccessor();

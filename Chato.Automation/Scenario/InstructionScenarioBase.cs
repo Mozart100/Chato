@@ -36,9 +36,9 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         {
             var registrationRequest = new RegisterAndLoginRequest { PasswordHash = "string", Username = user };
             var registrationInfo = await RunPostCommand<RegisterAndLoginRequest, RegisterResponse>(RegisterAuthControllerUrl, registrationRequest);
-            var tokenResponse = await RunPostCommand<RegisterAndLoginRequest, LoginResponse>(LoginAuthControllerUrl, registrationRequest);
+            //var tokenResponse = await RunPostCommand<RegisterAndLoginRequest, LoginResponse>(LoginAuthControllerUrl, registrationRequest);
 
-            var executer = new UserInstructionExecuter(registrationInfo, tokenResponse, HubUrl, Logger, _counterSignal);
+            var executer = new UserInstructionExecuter(registrationInfo, null, HubUrl, Logger, _counterSignal);
             await executer.RegisterAsync();
 
             _users.Add(user, executer);

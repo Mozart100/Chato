@@ -55,7 +55,7 @@ public class UserInstructionExecuter
         _connection = new HubConnectionBuilder()
        .WithUrl(url, options =>
        {
-           options.AccessTokenProvider = async () => LoginResponse.Token;
+           options.AccessTokenProvider = async () => RegisterResponse.Token;
        })
        .WithAutomaticReconnect()
        .Build();
@@ -74,7 +74,7 @@ public class UserInstructionExecuter
         };
 
         RegisterResponse = registerResponse;
-        LoginResponse = loginResponse;
+        //LoginResponse = loginResponse;
     }
 
     public async Task InitializeAsync()
@@ -96,9 +96,9 @@ public class UserInstructionExecuter
     }
 
     public RegisterResponse RegisterResponse { get; }
-    public LoginResponse LoginResponse { get; }
+    //public LoginResponse LoginResponse { get; }
 
-    public string UserName => RegisterResponse.Username;
+    public string UserName => RegisterResponse.UserName;
 
     public async Task DownloadGroupHistory(string groupName)
     {

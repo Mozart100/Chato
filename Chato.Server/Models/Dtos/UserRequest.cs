@@ -17,6 +17,14 @@ public class UserResponse
     public DateTime TokenExpires { get; set; }
 }
 
+public class RegisterResponse
+{
+    public string UserName { get; set; } = string.Empty;
+    public string Token { get; set; } = string.Empty;
+    public DateTime TokenCreated { get; set; }
+    public DateTime TokenExpires { get; set; }
+}
+
 public class RefreshToken
 {
     public string Token { get; set; } = string.Empty;

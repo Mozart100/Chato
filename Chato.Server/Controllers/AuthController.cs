@@ -24,11 +24,13 @@ public class AuthController : ControllerBase
     public static UserResponse LastUser = new UserResponse();
     private readonly IConfiguration _configuration;
     private readonly IUserService _userService;
+    private readonly IAuthenticationService authenticationService;
 
-    public AuthController(IConfiguration configuration, IUserService userService)
+    public AuthController(IConfiguration configuration, IUserService userService, IAuthenticationService authenticationService)
     {
         _configuration = configuration;
         _userService = userService;
+        this.authenticationService = authenticationService;
     }
 
     [HttpGet, Authorize]
@@ -38,18 +40,41 @@ public class AuthController : ControllerBase
         return Ok(userName);
     }
 
+    //[Route("register")]
+    //[HttpPost]
+    //public async Task<ActionResult<UserResponse>> Register(UserRequest request)
+    //{
+    //    CreatePasswordHash(request.PasswordHash, out byte[] passwordHash, out byte[] passwordSalt);
+
+    //    LastUser.Username = request.Username;
+    //    LastUser.PasswordHash = passwordHash;
+    //    LastUser.PasswordSalt = passwordSalt;
+
+    //    await _userService.RegisterAsync(request.Username, passwordHash, passwordSalt);
+
+
+    //    return Ok(LastUser);
+    //}
+
+
     [Route("register")]
     [HttpPost]
-    public async Task<ActionResult<UserResponse>> Register(UserRequest request)
+    public async Task<ActionResult<RegisterResponse>> Register(UserRequest request)
     {
+        var token = authenticationService.CreateToken(request.Username);
+
         CreatePasswordHash(request.PasswordHash, out byte[] passwordHash, out byte[] passwordSalt);
 
-        LastUser.Username = request.Username;
-        LastUser.PasswordHash = passwordHash;
-        LastUser.PasswordSalt = passwordSalt;
+        //LastUser.Username = request.Username;
+        //LastUser.PasswordHash = passwordHash;
+        //LastUser.PasswordSalt = passwordSalt;
 
-        return Ok(LastUser);
+        await _userService.RegisterAsync(request.Username, passwordHash, passwordSalt);
+
+
+        return Ok(new RegisterResponse { Token = token , UserName = request.Username });
     }
+
 
     [HttpPost]
     [Route("login")]
