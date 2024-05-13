@@ -42,7 +42,7 @@ internal class PopulateDataScenario : InstructionScenarioBase
         {
             var registrationRequest = new RegisterAndLoginRequest { PasswordHash = "string", Username = user };
             var registrationInfo = await RunPostCommand<RegisterAndLoginRequest, RegisterResponse>(RegisterAuthControllerUrl, registrationRequest);
-            var tokenResponse = await RunPostCommand<RegisterAndLoginRequest, LoginResponse>(LoginAuthControllerUrl, registrationRequest);
+            //var tokenResponse = await RunPostCommand<RegisterAndLoginRequest, LoginResponse>(LoginAuthControllerUrl, registrationRequest);
         }
 
 

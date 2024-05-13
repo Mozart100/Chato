@@ -21,16 +21,13 @@ public class AuthorizeRoles
 [ApiController]
 public class AuthController : ControllerBase
 {
-    public static UserResponse LastUser = new UserResponse();
-    private readonly IConfiguration _configuration;
     private readonly IUserService _userService;
-    private readonly IAuthenticationService authenticationService;
+    private readonly IAuthenticationService _authenticationService;
 
-    public AuthController(IConfiguration configuration, IUserService userService, IAuthenticationService authenticationService)
+    public AuthController(IUserService userService, IAuthenticationService authenticationService)
     {
-        _configuration = configuration;
         _userService = userService;
-        this.authenticationService = authenticationService;
+        this._authenticationService = authenticationService;
     }
 
     [HttpGet, Authorize]
@@ -40,6 +37,20 @@ public class AuthController : ControllerBase
         return Ok(userName);
     }
 
+    [Route("register")]
+    [HttpPost]
+    public async Task<ActionResult<RegisterResponse>> Register(UserRequest request)
+    {
+        var token = _authenticationService.CreateToken(request.Username);
+
+        _authenticationService.CreatePasswordHash(request.PasswordHash, out byte[] passwordHash, out byte[] passwordSalt);
+        await _userService.RegisterAsync(request.Username, passwordHash, passwordSalt);
+
+
+        return Ok(new RegisterResponse { Token = token, UserName = request.Username });
+    }
+
+    #region Feature  development
     //[Route("register")]
     //[HttpPost]
     //public async Task<ActionResult<UserResponse>> Register(UserRequest request)
@@ -56,154 +67,136 @@ public class AuthController : ControllerBase
     //    return Ok(LastUser);
     //}
 
+    //[HttpPost]
+    //[Route("login")]
 
-    [Route("register")]
-    [HttpPost]
-    public async Task<ActionResult<RegisterResponse>> Register(UserRequest request)
-    {
-        var token = authenticationService.CreateToken(request.Username);
+    //public async Task<ActionResult<LoginResponse>> Login(UserRequest request)
+    //{
+    //    if (LastUser.Username != request.Username)
+    //    {
+    //        return BadRequest("User not found.");
+    //    }
 
-        CreatePasswordHash(request.PasswordHash, out byte[] passwordHash, out byte[] passwordSalt);
+    //    if (!VerifyPasswordHash(request.PasswordHash, LastUser.PasswordHash, LastUser.PasswordSalt))
+    //    {
+    //        return BadRequest("Wrong password.");
+    //    }
 
-        //LastUser.Username = request.Username;
-        //LastUser.PasswordHash = passwordHash;
-        //LastUser.PasswordSalt = passwordSalt;
+    //    string token = CreateToken(LastUser);
 
-        await _userService.RegisterAsync(request.Username, passwordHash, passwordSalt);
+    //    var refreshToken = GenerateRefreshToken();
+    //    SetRefreshToken(refreshToken);
 
+    //    await _userService.LoginAsync(request.Username, request.PasswordHash);
 
-        return Ok(new RegisterResponse { Token = token , UserName = request.Username });
-    }
+    //    return Ok(new LoginResponse { Token = token});
+    //}
 
+    //[HttpPost("refresh-token")]
+    //public async Task<ActionResult<string>> RefreshToken()
+    //{
+    //    var refreshToken = Request.Cookies["refreshToken"];
 
-    [HttpPost]
-    [Route("login")]
+    //    if (!LastUser.RefreshToken.Equals(refreshToken))
+    //    {
+    //        return Unauthorized("Invalid Refresh Token.");
+    //    }
+    //    else if (LastUser.TokenExpires < DateTime.Now)
+    //    {
+    //        return Unauthorized("Token expired.");
+    //    }
 
-    public async Task<ActionResult<LoginResponse>> Login(UserRequest request)
-    {
-        if (LastUser.Username != request.Username)
-        {
-            return BadRequest("User not found.");
-        }
+    //    string token = CreateToken(LastUser);
+    //    var newRefreshToken = GenerateRefreshToken();
+    //    SetRefreshToken(newRefreshToken);
 
-        if (!VerifyPasswordHash(request.PasswordHash, LastUser.PasswordHash, LastUser.PasswordSalt))
-        {
-            return BadRequest("Wrong password.");
-        }
+    //    return Ok(token);
+    //}
 
-        string token = CreateToken(LastUser);
+    //private RefreshToken GenerateRefreshToken()
+    //{
+    //    var refreshToken = new RefreshToken
+    //    {
+    //        Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
+    //        Expires = DateTime.Now.AddDays(7),
+    //        Created = DateTime.Now
+    //    };
 
-        var refreshToken = GenerateRefreshToken();
-        SetRefreshToken(refreshToken);
+    //    return refreshToken;
+    //}
 
-        await _userService.LoginAsync(request.Username, request.PasswordHash);
+    //private void SetRefreshToken(RefreshToken newRefreshToken)
+    //{
+    //    var cookieOptions = new CookieOptions
+    //    {
+    //        HttpOnly = true,
+    //        Expires = newRefreshToken.Expires
+    //    };
+    //    Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
 
-        return Ok(new LoginResponse { Token = token});
-    }
+    //    LastUser.RefreshToken = newRefreshToken.Token;
+    //    LastUser.TokenCreated = newRefreshToken.Created;
+    //    LastUser.TokenExpires = newRefreshToken.Expires;
+    //}
 
-    [HttpPost("refresh-token")]
-    public async Task<ActionResult<string>> RefreshToken()
-    {
-        var refreshToken = Request.Cookies["refreshToken"];
+    //private string CreateToken(UserResponse user)
+    //{
+    //    try
+    //    {
 
-        if (!LastUser.RefreshToken.Equals(refreshToken))
-        {
-            return Unauthorized("Invalid Refresh Token.");
-        }
-        else if (LastUser.TokenExpires < DateTime.Now)
-        {
-            return Unauthorized("Token expired.");
-        }
+    //    var dbValue = _configuration.GetSection("AppSettings:Token").Value;
 
-        string token = CreateToken(LastUser);
-        var newRefreshToken = GenerateRefreshToken();
-        SetRefreshToken(newRefreshToken);
+    //    List <Claim> claims = new List<Claim>
+    //    {
+    //        new Claim(ClaimTypes.Name, user.Username),
+    //        new Claim(ClaimTypes.Role, AuthorizeRoles.User)
+    //    };
 
-        return Ok(token);
-    }
+    //        //var key = new SymmetricSecurityKey(GenerateHmacSha512Key());
 
-    private RefreshToken GenerateRefreshToken()
-    {
-        var refreshToken = new RefreshToken
-        {
-            Token = Convert.ToBase64String(RandomNumberGenerator.GetBytes(64)),
-            Expires = DateTime.Now.AddDays(7),
-            Created = DateTime.Now
-        };
+    //        var key = new SymmetricSecurityKey(GetBytes(_configuration.GetSection("AppSettings:Token").Value));
 
-        return refreshToken;
-    }
+    //        var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 
-    private void SetRefreshToken(RefreshToken newRefreshToken)
-    {
-        var cookieOptions = new CookieOptions
-        {
-            HttpOnly = true,
-            Expires = newRefreshToken.Expires
-        };
-        Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
+    //    var token = new JwtSecurityToken(
+    //        claims: claims,
+    //        expires: DateTime.Now.AddDays(1),
+    //        signingCredentials: creds);
 
-        LastUser.RefreshToken = newRefreshToken.Token;
-        LastUser.TokenCreated = newRefreshToken.Created;
-        LastUser.TokenExpires = newRefreshToken.Expires;
-    }
+    //    var jwt = new JwtSecurityTokenHandler().WriteToken(token);
 
-    private string CreateToken(UserResponse user)
-    {
-        try
-        {
+    //    return jwt;
+    //    }
 
-        var dbValue = _configuration.GetSection("AppSettings:Token").Value;
-        
-        List <Claim> claims = new List<Claim>
-        {
-            new Claim(ClaimTypes.Name, user.Username),
-            new Claim(ClaimTypes.Role, AuthorizeRoles.User)
-        };
+    //    catch (Exception ex)
+    //    {
+    //        return null;
+    //    }
+    //}
 
-            //var key = new SymmetricSecurityKey(GenerateHmacSha512Key());
+    //private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+    //{
+    //    using (var hmac = new HMACSHA512())
+    //    {
+    //        passwordSalt = hmac.Key;
+    //        passwordHash = hmac.ComputeHash(GetBytes(password));
+    //    }
+    //}
 
-            var key = new SymmetricSecurityKey(GetBytes(_configuration.GetSection("AppSettings:Token").Value));
-
-            var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
-
-        var token = new JwtSecurityToken(
-            claims: claims,
-            expires: DateTime.Now.AddDays(1),
-            signingCredentials: creds);
-
-        var jwt = new JwtSecurityTokenHandler().WriteToken(token);
-
-        return jwt;
-        }
-
-        catch (Exception ex)
-        {
-            return null;
-        }
-    }
-
-    private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
-    {
-        using (var hmac = new HMACSHA512())
-        {
-            passwordSalt = hmac.Key;
-            passwordHash = hmac.ComputeHash(GetBytes(password));
-        }
-    }
-
-    private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
-    {
-        using (var hmac = new HMACSHA512(passwordSalt))
-        {
-            var computedHash = hmac.ComputeHash(GetBytes(password));
-            return computedHash.SequenceEqual(passwordHash);
-        }
-    }
+    //private bool VerifyPasswordHash(string password, byte[] passwordHash, byte[] passwordSalt)
+    //{
+    //    using (var hmac = new HMACSHA512(passwordSalt))
+    //    {
+    //        var computedHash = hmac.ComputeHash(GetBytes(password));
+    //        return computedHash.SequenceEqual(passwordHash);
+    //    }
+    //}
 
 
-    private  byte [] GetBytes(string secret) {
+    //private byte[] GetBytes(string secret)
+    //{
 
-        return System.Text.Encoding.UTF32.GetBytes(secret);
-    }
+    //    return System.Text.Encoding.UTF32.GetBytes(secret);
+    //} 
+    #endregion
 }

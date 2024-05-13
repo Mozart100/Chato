@@ -33,7 +33,7 @@ public class UserInstructionExecuter
     private const string Hub_SendMessageToOtherUser_Topic = nameof(ChatHub.SendMessageToOtherUser);
     private const string Hub_OnDisconnectedAsync_Topic = nameof(ChatHub.UserDisconnectAsync);
 
-    
+
 
     private readonly ILogger _logger;
     private readonly CounterSignal _signal;
@@ -42,7 +42,7 @@ public class UserInstructionExecuter
     private readonly HashSet<string> _ignoreUsers;
 
 
-    public UserInstructionExecuter(RegisterResponse registerResponse, LoginResponse loginResponse, string url, ILogger logger, CounterSignal signal)
+    public UserInstructionExecuter(RegisterResponse registerResponse, string url, ILogger logger, CounterSignal signal)
     {
 
         _logger = logger;
@@ -96,7 +96,6 @@ public class UserInstructionExecuter
     }
 
     public RegisterResponse RegisterResponse { get; }
-    //public LoginResponse LoginResponse { get; }
 
     public string UserName => RegisterResponse.UserName;
 
@@ -121,7 +120,7 @@ public class UserInstructionExecuter
     {
         _logger.LogInformation($"{userNameFrom} sending message to user [{toUser}] this message [{message}].");
 
-        await _connection.SendAsync(Hub_SendMessageToOtherUser_Topic, userNameFrom, toUser,message);
+        await _connection.SendAsync(Hub_SendMessageToOtherUser_Topic, userNameFrom, toUser, message);
     }
 
 

@@ -9,7 +9,7 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
         HubUrl = $"{BaseUrl}/chat";
         AuthControllerUrl = $"{BaseUrl}/api/auth";
         RegisterAuthControllerUrl = $"{AuthControllerUrl}/register";
-        LoginAuthControllerUrl = $"{AuthControllerUrl}/login";
+        //LoginAuthControllerUrl = $"{AuthControllerUrl}/login";
 
 
         RoomsControllerUrl = $"{BaseUrl}/api/room";
@@ -20,7 +20,7 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
     protected string HubUrl { get; }
     protected string AuthControllerUrl { get; }
     protected string RegisterAuthControllerUrl { get; }
-    protected string LoginAuthControllerUrl { get; }
+    //protected string LoginAuthControllerUrl { get; }
 
 
     protected string RoomsControllerUrl { get; }
