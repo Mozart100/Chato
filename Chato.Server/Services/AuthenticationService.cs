@@ -1,6 +1,5 @@
 ﻿using Chato.Server.Controllers;
 using Chato.Server.Infrastracture;
-using Chato.Server.Models.Dtos;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
@@ -14,6 +13,7 @@ public interface IAuthenticationService
     void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
     string CreateToken(string user);
 }
+
 public class AuthenticationService : IAuthenticationService
 {
     private readonly AuthenticationConfig _config;

@@ -19,8 +19,8 @@ builder.Services.Configure<LoggerFilterOptions>(options =>
 builder.Services.NativeServiceRegistration();
 builder.Services.CustomServiceRegistration(builder.Configuration);
 
-
-builder.Services.Configure<AuthenticationConfig>(builder.Configuration.GetSection(AuthenticationConfig.ApiName));
+builder.Services.AddConfig<AuthenticationConfig>(builder.Configuration);
+//builder.Services.Configure<AuthenticationConfig>(builder.Configuration.GetSection(AuthenticationConfig.ApiName));
 
 
 
