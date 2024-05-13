@@ -39,7 +39,7 @@ public class AuthController : ControllerBase
 
     [Route("register")]
     [HttpPost]
-    public async Task<ActionResult<RegisterResponse>> Register(UserRequest request)
+    public async Task<ActionResult<RegistrationResponse>> Register(RegistrationRequest request)
     {
         var token = _authenticationService.CreateToken(request.Username);
 
@@ -47,7 +47,7 @@ public class AuthController : ControllerBase
         await _userService.RegisterAsync(request.Username, passwordHash, passwordSalt);
 
 
-        return Ok(new RegisterResponse { Token = token, UserName = request.Username });
+        return Ok(new RegistrationResponse { Token = token, UserName = request.Username });
     }
 
     #region Feature  development

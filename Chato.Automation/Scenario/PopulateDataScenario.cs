@@ -40,8 +40,8 @@ internal class PopulateDataScenario : InstructionScenarioBase
 
         foreach (var user in _localUsers)
         {
-            var registrationRequest = new RegisterAndLoginRequest { PasswordHash = "string", Username = user };
-            var registrationInfo = await RunPostCommand<RegisterAndLoginRequest, RegisterResponse>(RegisterAuthControllerUrl, registrationRequest);
+            var registrationRequest = new RegistrationRequest { PasswordHash = "string", Username = user };
+            var registrationInfo = await RunPostCommand<RegistrationRequest, RegistrationResponse>(RegisterAuthControllerUrl, registrationRequest);
             //var tokenResponse = await RunPostCommand<RegisterAndLoginRequest, LoginResponse>(LoginAuthControllerUrl, registrationRequest);
         }
 

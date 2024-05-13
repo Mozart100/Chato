@@ -1,7 +1,7 @@
 ﻿namespace Chato.Server.Models.Dtos;
 
 
-public class UserRequest
+public class RegistrationRequest
 {
     public string Username { get; set; } = string.Empty;
     public string PasswordHash { get; set; } = string.Empty;
@@ -17,7 +17,7 @@ public class UserResponse
     public DateTime TokenExpires { get; set; }
 }
 
-public class RegisterResponse
+public class RegistrationResponse
 {
     public string UserName { get; set; } = string.Empty;
     public string Token { get; set; } = string.Empty;

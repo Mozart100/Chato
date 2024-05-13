@@ -42,7 +42,7 @@ public class UserInstructionExecuter
     private readonly HashSet<string> _ignoreUsers;
 
 
-    public UserInstructionExecuter(RegisterResponse registerResponse, string url, ILogger logger, CounterSignal signal)
+    public UserInstructionExecuter(RegistrationResponse registerResponse, string url, ILogger logger, CounterSignal signal)
     {
 
         _logger = logger;
@@ -95,7 +95,7 @@ public class UserInstructionExecuter
         await DownloadGroupHistory(groupName);
     }
 
-    public RegisterResponse RegisterResponse { get; }
+    public RegistrationResponse RegisterResponse { get; }
 
     public string UserName => RegisterResponse.UserName;
 
