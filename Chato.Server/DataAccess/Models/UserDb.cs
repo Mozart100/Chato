@@ -9,6 +9,7 @@ public class UserDb : EntityDbBase
     }
 
     public string UserName { get; private set; }
+    public string PasswordHash { get; init; }
     public string ConnectionId { get; set; }
 
 

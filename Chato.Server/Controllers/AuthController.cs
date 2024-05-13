@@ -21,7 +21,7 @@ public class AuthorizeRoles
 [ApiController]
 public class AuthController : ControllerBase
 {
-    public static  UserResponse user = new UserResponse();
+    public static UserResponse LastUser = new UserResponse();
     private readonly IConfiguration _configuration;
     private readonly IUserService _userService;
 
@@ -42,13 +42,13 @@ public class AuthController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<UserResponse>> Register(UserRequest request)
     {
-        CreatePasswordHash(request.Password, out byte[] passwordHash, out byte[] passwordSalt);
+        CreatePasswordHash(request.PasswordHash, out byte[] passwordHash, out byte[] passwordSalt);
 
-        user.Username = request.Username;
-        user.PasswordHash = passwordHash;
-        user.PasswordSalt = passwordSalt;
+        LastUser.Username = request.Username;
+        LastUser.PasswordHash = passwordHash;
+        LastUser.PasswordSalt = passwordSalt;
 
-        return Ok(user);
+        return Ok(LastUser);
     }
 
     [HttpPost]
@@ -56,22 +56,22 @@ public class AuthController : ControllerBase
 
     public async Task<ActionResult<LoginResponse>> Login(UserRequest request)
     {
-        if (user.Username != request.Username)
+        if (LastUser.Username != request.Username)
         {
             return BadRequest("User not found.");
         }
 
-        if (!VerifyPasswordHash(request.Password, user.PasswordHash, user.PasswordSalt))
+        if (!VerifyPasswordHash(request.PasswordHash, LastUser.PasswordHash, LastUser.PasswordSalt))
         {
             return BadRequest("Wrong password.");
         }
 
-        string token = CreateToken(user);
+        string token = CreateToken(LastUser);
 
         var refreshToken = GenerateRefreshToken();
         SetRefreshToken(refreshToken);
 
-        await _userService.LoginAsync(request.Username);
+        await _userService.LoginAsync(request.Username, request.PasswordHash);
 
         return Ok(new LoginResponse { Token = token});
     }
@@ -81,16 +81,16 @@ public class AuthController : ControllerBase
     {
         var refreshToken = Request.Cookies["refreshToken"];
 
-        if (!user.RefreshToken.Equals(refreshToken))
+        if (!LastUser.RefreshToken.Equals(refreshToken))
         {
             return Unauthorized("Invalid Refresh Token.");
         }
-        else if (user.TokenExpires < DateTime.Now)
+        else if (LastUser.TokenExpires < DateTime.Now)
         {
             return Unauthorized("Token expired.");
         }
 
-        string token = CreateToken(user);
+        string token = CreateToken(LastUser);
         var newRefreshToken = GenerateRefreshToken();
         SetRefreshToken(newRefreshToken);
 
@@ -118,9 +118,9 @@ public class AuthController : ControllerBase
         };
         Response.Cookies.Append("refreshToken", newRefreshToken.Token, cookieOptions);
 
-        user.RefreshToken = newRefreshToken.Token;
-        user.TokenCreated = newRefreshToken.Created;
-        user.TokenExpires = newRefreshToken.Expires;
+        LastUser.RefreshToken = newRefreshToken.Token;
+        LastUser.TokenCreated = newRefreshToken.Created;
+        LastUser.TokenExpires = newRefreshToken.Expires;
     }
 
     private string CreateToken(UserResponse user)
@@ -157,20 +157,6 @@ public class AuthController : ControllerBase
             return null;
         }
     }
-
-    //private byte[] GenerateHmacSha512Key()
-    //{
-    //    int keyLengthBytes = 64;
-
-    //    byte[] key = new byte[keyLengthBytes];
-
-    //    using (var rng = RandomNumberGenerator.Create())
-    //    {
-    //        rng.GetBytes(key);
-    //    }
-
-    //    return key;
-    //}
 
     private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {
