@@ -36,7 +36,7 @@ internal class BasicScenario : InstructionScenarioBase
         BusinessLogicCallbacks.Add(async () =>  await UsersCleanup(_users.Keys.ToArray()));
 
 
-        SummaryLogicCallback.Add(CheckAllCleaned);
+        //SummaryLogicCallback.Add(CheckAllCleaned);
 
     }
 

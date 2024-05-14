@@ -1,38 +1,32 @@
-﻿using Chato.Server.DataAccess.Models;
+﻿namespace Chato.Server.Services;
 
-namespace Chato.Server.Services
+public interface IPreloadDataLoader
 {
+    public const string DefaultRoom = "xxx_room";
 
-    public interface IPreloadDataLoader
+    Task ExecuteAsync();
+}
+
+public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
+{
+    private readonly IAssignmentService _assignmentService;
+    private readonly IAuthenticationService _authenticationService;
+
+    public GenerateDefaultRoomAndUsersService(IAuthenticationService authenticationService,
+        IAssignmentService assignmentService)
     {
-        public const string DefaultRoom = "xxx_room";
-
-        Task ExecuteAsync();
-
+        _assignmentService = assignmentService;
+        this._authenticationService = authenticationService;
     }
 
-    public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
+    public async Task ExecuteAsync()
     {
-        private readonly IAssignmentService assignmentService;
-        private readonly IAuthenticationService _authenticationService;
-        private readonly IUserService _userService;
-
-        public GenerateDefaultRoomAndUsersService(IAuthenticationService authenticationService, IUserService userService, IAssignmentService _assignmentService)
+        for (int j = 0; j < 3; j++)
         {
-            _assignmentService = _assignmentService;
-            this._authenticationService = authenticationService;
-            this._userService = userService;
-        }
+            var userName = $"{IPreloadDataLoader.DefaultRoom}__User{j + 1}";
+            var password = userName;
 
-        public async Task ExecuteAsync()
-        {
-            for (int j = 0; j < 3; j++)
-            {
-                var userName = $"{IPreloadDataLoader.DefaultRoom}__User{j + 1}";
-                var password = userName;
-
-                var token = await _authenticationService.RegisterAsync(userName, password);
-            }
+            var token = await _assignmentService.RegisterUserAndAssignToRoom(userName, password, IPreloadDataLoader.DefaultRoom);
         }
     }
 }

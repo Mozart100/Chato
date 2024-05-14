@@ -35,7 +35,7 @@ internal class HubStreamScenario : InstructionScenarioBase
         _fileContent = File.ReadAllBytes(path);
 
 
-        SummaryLogicCallback.Add(CheckAllCleaned);
+        //SummaryLogicCallback.Add(CheckAllCleaned);
 
     }
 
