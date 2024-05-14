@@ -9,21 +9,17 @@ internal class App
     private readonly GroupHandShakeScenario _groupHandShakeScenario;
     private readonly HubStreamScenario _hubStreamScenario;
     private readonly BasicScenario _basicScenario;
-    private readonly PopulateDataScenario _populateDataScenario;
 
     public App(ILogger<App> logger, 
         GroupHandShakeScenario groupHandShakeScenario,
         HubStreamScenario hubStreamScenario,
-        BasicScenario basicScenario,
-        PopulateDataScenario  populateDataScenario
-
+        BasicScenario basicScenario
         )
     {
         _logger = logger;
         this._groupHandShakeScenario = groupHandShakeScenario;
         this._hubStreamScenario = hubStreamScenario;
         this._basicScenario = basicScenario;
-        this._populateDataScenario = populateDataScenario;
     }
 
 
@@ -33,7 +29,6 @@ internal class App
         await _basicScenario.StartRunScenario();
         await _groupHandShakeScenario.StartRunScenario();
         await _hubStreamScenario.StartRunScenario();
-        await _populateDataScenario.StartRunScenario();
 
         Console.WriteLine("All test passed successfully!!!!!");
         Console.WriteLine("All test passed successfully!!!!!");

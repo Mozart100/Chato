@@ -1,29 +1,27 @@
 ﻿using Chato.Server.Services;
-using Microsoft.Extensions.DependencyInjection;
 
-namespace Chato.Server.BackgroundTasks
+namespace Chato.Server.BackgroundTasks;
+
+public class PreloadBackgroundTask : BackgroundService
 {
-    public class PreloadBackgroundTask : BackgroundService
+    private readonly IPreloadDataLoader _preloadDataLoader;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+
+    public PreloadBackgroundTask(IServiceScopeFactory serviceScopeFactory)
     {
-        private readonly IPreloadDataLoader _preloadDataLoader;
-        private readonly IServiceScopeFactory serviceScopeFactory;
+        this._serviceScopeFactory = serviceScopeFactory;
+    }
 
-        public PreloadBackgroundTask(IServiceScopeFactory serviceScopeFactory)
+
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        using (IServiceScope scope = _serviceScopeFactory.CreateScope())
         {
-            this.serviceScopeFactory = serviceScopeFactory;
-        }
+            var preloader=
+                scope.ServiceProvider.GetRequiredService<IPreloadDataLoader>();
 
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            using (IServiceScope scope = serviceScopeFactory.CreateScope())
-            {
-                var preloader=
-                    scope.ServiceProvider.GetRequiredService<IPreloadDataLoader>();
-
-
-                await preloader.ExecuteAsync();
-            }
+            await preloader.ExecuteAsync();
         }
     }
 }
