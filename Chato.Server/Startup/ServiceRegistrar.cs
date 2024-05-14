@@ -73,8 +73,10 @@ public static class ServiceRegistrar
 
         services.AddScoped<IUserService, UserService>();
         services.AddScoped<IRoomService, RoomService>();
-        services.AddScoped<IUserRoomService, UserRoomService>();
+        services.AddScoped<IAssignmentService, AssignmentService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
+
+        
 
         
         services.AddHttpContextAccessor();

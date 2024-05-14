@@ -21,12 +21,12 @@ public class ChatHub : Hub<IChatHub>
 {
     private readonly IUserService _userService;
     private readonly IRoomService _roomService;
-    private readonly IUserRoomService _userRoomService;
+    private readonly IAssignmentService _userRoomService;
 
     public ChatHub(
         IUserService userService,
         IRoomService roomService,
-        IUserRoomService userRoomService)
+        IAssignmentService userRoomService)
     {
         this._userService = userService;
         this._roomService = roomService;

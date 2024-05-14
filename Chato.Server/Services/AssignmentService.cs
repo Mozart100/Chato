@@ -2,19 +2,19 @@
 
 namespace Chato.Server.Services;
 
-public interface IUserRoomService
+public interface IAssignmentService
 {
     Task JoinGroupByConnectionId(string nameOrId, string roomName);
     Task RemoveUserByConnectionIdAsync(string connectionId);
     Task RemoveUserByUserNameOrIdAsync(string userNameOrId);
 }
 
-public class UserRoomService : IUserRoomService
+public class AssignmentService : IAssignmentService
 {
     private readonly IUserService _userService;
     private readonly IRoomService _roomService;
 
-    public UserRoomService(IUserService userService, IRoomService roomService)
+    public AssignmentService(IUserService userService, IRoomService roomService)
     {
         this._userService = userService;
         this._roomService = roomService;
