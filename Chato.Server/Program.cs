@@ -1,8 +1,10 @@
+using Chato.Server.Errors;
 using Chato.Server.Hubs;
 using Chato.Server.Infrastracture;
 using Chato.Server.Services;
 using Chato.Server.Startup;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
@@ -31,13 +33,19 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             options.TokenValidationParameters = new TokenValidationParameters
             {
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(  AuthenticationService.GetBytes(jsonVal)),
+                IssuerSigningKey = new SymmetricSecurityKey(AuthenticationService.GetBytes(jsonVal)),
                 //IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF32.GetBytes(jsonVal)),
                 ValidateIssuer = false,
                 ValidateAudience = false
             };
         });
 
+builder.Services.AddTransient<IPreloadDataLoader, GenerateDefaultRoomAndUsersService>();
+
+
+//var serviceProvider = builder.Services.BuildServiceProvider();
+//var preload = serviceProvider.GetRequiredService<IPreloadDataLoader>();
+//await preload.ExecuteAsync();
 
 
 

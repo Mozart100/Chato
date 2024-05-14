@@ -31,7 +31,12 @@ public static class ServiceRegistrar
         services.AddSingleton<IUserRepository, UserRepository>();
 
 
-        
+        //services.AddSingleton<IPreloadDataLoader, GenerateDefaultRoomAndUsersService>();
+
+
+
+
+
 
         services.AddSignalR();
         services.AddResponseCompression(options =>
@@ -39,9 +44,9 @@ public static class ServiceRegistrar
             options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
         });
 
-        services.AddSingleton<ProblemDetailsFactory, ProblemDetailsAdvanceFeaturesFactory>();
+        services.AddTransient<ProblemDetailsFactory, ProblemDetailsAdvanceFeaturesFactory>();
 
-        services.AddHostedService<TestBackgroundTask>();
+        services.AddHostedService<PreloadBackgroundTask>();
 
 
 
