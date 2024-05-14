@@ -2,7 +2,7 @@
 
 public interface IPreloadDataLoader
 {
-    public const string DefaultRoom = "xxx_room";
+    public const string DefaultRoom = "Adults";
 
     Task ExecuteAsync();
 }

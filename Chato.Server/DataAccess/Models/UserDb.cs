@@ -10,7 +10,7 @@ public class UserDb : EntityDbBase
 
     public string UserName { get; private set; }
     
-    public string Password { get; init; }
+    //public string Password { get; init; }
     public byte [] PasswordHash { get; init; }
     
     public string ConnectionId { get; set; }

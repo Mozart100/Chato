@@ -4,7 +4,6 @@ namespace Chato.Server.BackgroundTasks;
 
 public class PreloadBackgroundTask : BackgroundService
 {
-    private readonly IPreloadDataLoader _preloadDataLoader;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
     public PreloadBackgroundTask(IServiceScopeFactory serviceScopeFactory)
@@ -17,11 +16,13 @@ public class PreloadBackgroundTask : BackgroundService
     {
         using (IServiceScope scope = _serviceScopeFactory.CreateScope())
         {
-            var preloader=
-                scope.ServiceProvider.GetRequiredService<IPreloadDataLoader>();
+            var preloaders = scope.ServiceProvider.GetRequiredService<IEnumerable<IPreloadDataLoader>>();
 
+            foreach (var preloader in preloaders)
+            {
+                await preloader.ExecuteAsync();
 
-            await preloader.ExecuteAsync();
+            }
         }
     }
 }
