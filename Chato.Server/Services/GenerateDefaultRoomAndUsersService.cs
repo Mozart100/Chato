@@ -2,31 +2,32 @@
 
 public interface IPreloadDataLoader
 {
-    public const string DefaultRoom = "Adults";
-
     Task ExecuteAsync();
 }
+
+public interface IUsersPreload : IPreloadDataLoader
+{
+    public const string DefaultRoom = "Adults";
+}
+
 
 public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
 {
     private readonly IAssignmentService _assignmentService;
-    private readonly IAuthenticationService _authenticationService;
 
-    public GenerateDefaultRoomAndUsersService(IAuthenticationService authenticationService,
-        IAssignmentService assignmentService)
+    public GenerateDefaultRoomAndUsersService(IAssignmentService assignmentService)
     {
         _assignmentService = assignmentService;
-        this._authenticationService = authenticationService;
     }
 
     public async Task ExecuteAsync()
     {
         for (int j = 0; j < 3; j++)
         {
-            var userName = $"{IPreloadDataLoader.DefaultRoom}__User{j + 1}";
+            var userName = $"{IUsersPreload.DefaultRoom}__User{j + 1}";
             var password = userName;
 
-            var token = await _assignmentService.RegisterUserAndAssignToRoom(userName, password, IPreloadDataLoader.DefaultRoom);
+            var token = await _assignmentService.RegisterUserAndAssignToRoom(userName, password, IUsersPreload.DefaultRoom);
         }
     }
 }
