@@ -24,7 +24,7 @@ public class AuthController : ControllerBase
     private readonly IUserService _userService;
     private readonly IAuthenticationService _authenticationService;
 
-    public AuthController(IUserService userService, IAuthenticationService authenticationService)
+    public AuthController(IUserService userService, IAuthenticationService authenticationService )
     {
         _userService = userService;
         this._authenticationService = authenticationService;
@@ -41,13 +41,8 @@ public class AuthController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<RegistrationResponse>> Register(RegistrationRequest request)
     {
-        var token = _authenticationService.CreateToken(request.Username);
-
-        _authenticationService.CreatePasswordHash(request.PasswordHash, out byte[] passwordHash, out byte[] passwordSalt);
-        await _userService.RegisterAsync(request.Username, passwordHash);
-
-
-        return Ok(new RegistrationResponse { Token = token, UserName = request.Username });
+        var token = await _authenticationService.RegisterAsync(request.UserName,request.Password);
+        return Ok(new RegistrationResponse { Token = token, UserName = request.UserName });
     }
 
     #region Feature  development

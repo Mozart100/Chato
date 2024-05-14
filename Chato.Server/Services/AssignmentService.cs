@@ -5,6 +5,7 @@ namespace Chato.Server.Services;
 public interface IAssignmentService
 {
     Task JoinGroupByConnectionId(string nameOrId, string roomName);
+    //Task RegisterToDefaultRoomAsync(string username, byte[] passwordHash);
     Task RemoveUserByConnectionIdAsync(string connectionId);
     Task RemoveUserByUserNameOrIdAsync(string userNameOrId);
 }
@@ -73,5 +74,10 @@ public class AssignmentService : IAssignmentService
                 await _roomService.AddUserAsync(roomName, user.UserName);
             }
         }
+    }
+
+    public Task RegisterToDefaultRoomAsync(string username, byte[] passwordHash)
+    {
+        throw new NotImplementedException();
     }
 }

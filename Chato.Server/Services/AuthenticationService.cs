@@ -12,19 +12,36 @@ public interface IAuthenticationService
 {
     void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
     string CreateToken(string user);
+    Task<string> RegisterAsync(string userName, string password);
 }
 
 public class AuthenticationService : IAuthenticationService
 {
     private readonly AuthenticationConfig _config;
+    private readonly IUserService _userService;
 
-    public AuthenticationService(IOptions<AuthenticationConfig> config)
+    public AuthenticationService(IOptions<AuthenticationConfig> config,
+        IUserService userService)
     {
         _config = config.Value;
+
+        this._userService = userService;
     }
 
 
-    public string CreateToken(string  userName)
+    public async Task<string>  RegisterAsync(string  userName, string password)
+    {
+        var token = CreateToken(userName);
+
+        CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+
+        await _userService.RegisterAsync(userName, passwordHash);
+
+        return token;
+
+    }
+
+    public string CreateToken(string userName)
     {
         try
         {

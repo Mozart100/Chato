@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Chato.Server.BackgroundTasks
 {
+
+
     public class TestBackgroundTask : BackgroundService
     {
         public const string MessageTemplate = "message-{0}";
