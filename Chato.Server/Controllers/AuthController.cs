@@ -44,7 +44,7 @@ public class AuthController : ControllerBase
         var token = _authenticationService.CreateToken(request.Username);
 
         _authenticationService.CreatePasswordHash(request.PasswordHash, out byte[] passwordHash, out byte[] passwordSalt);
-        await _userService.RegisterAsync(request.Username, passwordHash, passwordSalt);
+        await _userService.RegisterAsync(request.Username, passwordHash);
 
 
         return Ok(new RegistrationResponse { Token = token, UserName = request.Username });

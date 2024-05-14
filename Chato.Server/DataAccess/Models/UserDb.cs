@@ -12,7 +12,6 @@ public class UserDb : EntityDbBase
     
     public string Password { get; init; }
     public byte [] PasswordHash { get; init; }
-    public byte [] PasswordSalt { get; init; }
     
     public string ConnectionId { get; set; }
 
