@@ -1,26 +1,52 @@
 ﻿namespace Chato.Server.Infrastracture;
 
+public interface IDelegateQueue
+{
+    Task EnqueueAsync(Func<Task> callback);
+    void Initialize(CancellationToken stoppingToken);
+}
 
-public class DelegateQueue
+public class DelegateQueue : IDelegateQueue
 {
     private readonly Queue<Func<Task>> _delegates;
-    private readonly CancellationToken _cancellationToken;
-    private readonly Task backgroundTask;
     private readonly SemaphoreSlim _semaphore;
 
-    public DelegateQueue(CancellationToken cancellationToken)
+    private CancellationToken _cancellationToken;
+    private Task _backgroundTask;
+
+    public DelegateQueue()
     {
-        _cancellationToken = cancellationToken;
         _delegates = new Queue<Func<Task>>();
         _semaphore = new SemaphoreSlim(0);
 
-        backgroundTask = Task.Run(async () => await Execute());
     }
 
-    public async Task Enqueue(Func<Task> callback)
+    public void Initialize(CancellationToken stoppingToken)
+    {
+        _cancellationToken = stoppingToken;
+        _backgroundTask = Task.Run(async () => await Execute());
+    }
+
+    public async Task EnqueueAsync(Func<Task> callback)
     {
         _delegates.Enqueue(callback);
         _semaphore.Release();
+    }
+
+    public void Enqueue(Action callback)
+    {
+        var manuelResetEvent = new ManualResetEvent(false);
+
+        Func<Task> wrapper = async () =>
+        {
+            callback();
+            manuelResetEvent.Set();
+        };
+
+        _delegates.Enqueue(wrapper);
+        _semaphore.Release();
+
+        manuelResetEvent.WaitOne();
     }
 
     public async Task Execute()

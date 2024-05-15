@@ -31,6 +31,9 @@ public static class ServiceRegistrar
         services.AddSingleton<IUserRepository, UserRepository>();
 
 
+        services.AddSingleton<IDelegateQueue, DelegateQueue>();
+
+        
         //services.AddSingleton<IPreloadDataLoader, GenerateDefaultRoomAndUsersService>();
 
 
@@ -47,7 +50,9 @@ public static class ServiceRegistrar
         services.AddTransient<ProblemDetailsFactory, ProblemDetailsAdvanceFeaturesFactory>();
 
         services.AddHostedService<PreloadBackgroundTask>();
+        services.AddHostedService<DelegateQueueBackgroundTask>();
 
+        
 
 
 
