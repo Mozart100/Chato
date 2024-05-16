@@ -46,7 +46,7 @@ public class UserService : IUserService
 
     public async Task AssignConectionnId(string userName, string connectionId)
     {
-        await _userRepository.AssignConectionnId(userName, connectionId);
+        await _userRepository.AssignConnectionId(userName, connectionId);
 
     }
 

@@ -93,7 +93,7 @@ namespace Chato.Server.DataAccess.Repository
             return Get(selector);
         }
 
-        public async Task<TModel> InsertAsync(TModel model)
+        public virtual async Task<TModel> InsertAsync(TModel model)
         {
             return Insert(model);
         }
@@ -107,7 +107,7 @@ namespace Chato.Server.DataAccess.Repository
         /// </summary>
         /// <param name="instance"></param>
         /// <returns></returns>
-        public TModel Insert(TModel instance)
+        public virtual TModel Insert(TModel instance)
         {
            
             if (Models.Add(instance) == false)

@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-using IHost host = CReateHostBuilder(args).Build();
+using IHost host = CreateHostBuilder(args).Build();
 using var scop = host.Services.CreateScope();
 var services = scop.ServiceProvider;
 
@@ -22,7 +22,7 @@ catch (Exception ex)
 
 
 
-static IHostBuilder CReateHostBuilder(string[] args)
+static IHostBuilder CreateHostBuilder(string[] args)
 {
     var config = new ScenarioConfig
     {

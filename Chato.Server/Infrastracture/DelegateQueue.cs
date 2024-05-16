@@ -2,8 +2,10 @@
 
 public interface IDelegateQueue
 {
-    Task EnqueueAsync(Func<Task> callback);
+    Task BeginInvokeAsync(Func<Task> callback);
     void Initialize(CancellationToken stoppingToken);
+    void Invoke(Action callback);
+    Task InvokeAsync(Func<Task> callback);
 }
 
 public class DelegateQueue : IDelegateQueue
@@ -27,13 +29,29 @@ public class DelegateQueue : IDelegateQueue
         _backgroundTask = Task.Run(async () => await Execute());
     }
 
-    public async Task EnqueueAsync(Func<Task> callback)
+    public async Task BeginInvokeAsync(Func<Task> callback)
     {
         _delegates.Enqueue(callback);
         _semaphore.Release();
     }
 
-    public void Enqueue(Action callback)
+    public async Task InvokeAsync(Func<Task> callback)
+    {
+        var manuelResetEvent = new ManualResetEvent(false);
+
+        Func<Task> wrapper = async () =>
+        {
+            await callback();
+            manuelResetEvent.Set();
+        };
+
+        _delegates.Enqueue(wrapper);
+        _semaphore.Release();
+
+        manuelResetEvent.WaitOne();
+    }
+
+    public void Invoke(Action callback)
     {
         var manuelResetEvent = new ManualResetEvent(false);
 
@@ -48,6 +66,8 @@ public class DelegateQueue : IDelegateQueue
 
         manuelResetEvent.WaitOne();
     }
+
+  
 
     public async Task Execute()
     {

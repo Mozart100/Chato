@@ -3,14 +3,10 @@ using Chato.Server.DataAccess.Repository;
 using Chato.Server.Errors;
 using Chato.Server.Infrastracture;
 using Chato.Server.Services;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
-using Microsoft.Extensions.Configuration;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
-using System.Text;
 
 namespace Chato.Server.Startup;
 
@@ -29,6 +25,7 @@ public static class ServiceRegistrar
 
         services.AddSingleton<IRoomRepository, RoomRepository>();
         services.AddSingleton<IUserRepository, UserRepository>();
+        services.Decorate<IUserRepository, UserRepositoryManager>();
 
 
         services.AddSingleton<IDelegateQueue, DelegateQueue>();
