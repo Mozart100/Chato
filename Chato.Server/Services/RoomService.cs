@@ -68,7 +68,7 @@ public class RoomService : IRoomService
 
     public async Task RemoveRoomByNameOrIdAsync(string nameOrId)
     {
-        var room = await _chatRoomRepository.RemoveAsync(x => x.GroupName == nameOrId);
+        var room = await _chatRoomRepository.RemoveAsync(x => x.RoomName == nameOrId);
     }
 
     public async Task RmoveHistoryByRoomNameAsync(string roomName)

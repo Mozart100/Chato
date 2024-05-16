@@ -7,10 +7,10 @@ public class ChatRoomDb : EntityDbBase
 {
     public override string Id
     {
-        get => GroupName;
-        set => GroupName = value;
+        get => RoomName;
+        set => RoomName = value;
     }
-    public string GroupName { get; private set; }
+    public string RoomName { get; private set; }
 
     public List<SenderInfo> SenderInfo { get; set; } = new List<SenderInfo>();
     public HashSet<string> Users { get;  } = new HashSet<string>();
