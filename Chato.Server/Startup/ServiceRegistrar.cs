@@ -24,6 +24,10 @@ public static class ServiceRegistrar
         });
 
         services.AddSingleton<IRoomRepository, RoomRepository>();
+        services.Decorate<IRoomRepository, DelegateQueueRoomRepository>();
+
+
+        
         services.AddSingleton<IUserRepository, UserRepository>();
         services.Decorate<IUserRepository, DelegateQueueUserRepository>();
 
