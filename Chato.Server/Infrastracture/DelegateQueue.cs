@@ -31,8 +31,7 @@ public class DelegateQueue : IDelegateQueue
 
     public async Task BeginInvokeAsync(Func<Task> callback)
     {
-        _delegates.Enqueue(callback);
-        _semaphore.Release();
+        Enqueue(callback);
     }
 
     public async Task InvokeAsync(Func<Task> callback)
@@ -45,11 +44,13 @@ public class DelegateQueue : IDelegateQueue
             manuelResetEvent.Set();
         };
 
-        _delegates.Enqueue(wrapper);
-        _semaphore.Release();
-
-        manuelResetEvent.WaitOne();
+        if (Enqueue(wrapper))
+        {
+            manuelResetEvent.WaitOne();
+        }
     }
+
+
 
     public void Invoke(Action callback)
     {
@@ -61,21 +62,40 @@ public class DelegateQueue : IDelegateQueue
             manuelResetEvent.Set();
         };
 
-        _delegates.Enqueue(wrapper);
-        _semaphore.Release();
-
-        manuelResetEvent.WaitOne();
+        if (Enqueue(wrapper))
+        {
+            manuelResetEvent.WaitOne();
+        }
     }
 
-  
+    private bool Enqueue(Func<Task> callback)
+    {
+        if (callback == null)
+        {
+            return false;
+        }
 
-    public async Task Execute()
+        _delegates.Enqueue(callback);
+        _semaphore.Release();
+
+        return true;
+    }
+
+    private async Task Execute()
     {
         while (!_cancellationToken.IsCancellationRequested)
         {
             if (_delegates.TryDequeue(out var action))
             {
-                await action();
+                if (action == null)
+                {
+                    continue;
+                }
+                if (action != null)
+                {
+                    await action();
+                }
+
                 continue;
             }
 
