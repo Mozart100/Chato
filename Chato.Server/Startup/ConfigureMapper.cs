@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using Chato.Server.DataAccess.Models;
 
 namespace Chato.Server.Startup
 {
@@ -6,7 +7,7 @@ namespace Chato.Server.Startup
     {
         public ConfigureMapper()
         {
-            //CreateMap<AddCityRequest, CityDb>();
+            CreateMap<ChatRoomDb, ChatRoomDb>();
             //CreateMap<CityDb, AddCityResponse>();
         }
     }
