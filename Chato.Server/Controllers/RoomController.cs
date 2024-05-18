@@ -1,4 +1,6 @@
-﻿using Chato.Server.Services;
+﻿using Chato.Server.DataAccess.Models;
+using Chato.Server.Infrastracture;
+using Chato.Server.Services;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chato.Server.Controllers;
@@ -23,7 +25,10 @@ public class RoomController : ControllerBase
     public async Task<ActionResult<GetAllRoomResponse>> GetAllRooms()
     {
        var result  = await _roomService.GetAllRoomAsync();
-        return Ok(new GetAllRoomResponse { Rooms = result });
+
+        //var dtos = result.SafeSelect(x => new ChatRoomDto(x.RoomName, x.SenderInfo.SafeToArray(), x.Users.SafeToArray()));
+
+        return Ok(new GetAllRoomResponse { Rooms = result.SafeToArray()});
     }
 
 
@@ -32,6 +37,7 @@ public class RoomController : ControllerBase
     public async Task<ActionResult<GetAllRoomResponse>> GetAllUsers()
     {
         var result = await _userService.GetAllUsersAsync();
+
         return Ok(new GetAllUserResponse { Users = result.ToArray() });
     }
 

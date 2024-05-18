@@ -54,7 +54,7 @@
 
         public static IEnumerable<TTarget> SafeSelect<TSource, TTarget>(this IEnumerable<TSource> collection, Func<TSource, TTarget> func)
         {
-            if (collection == null || !collection.Any())
+            if (!collection.IsNullOrEmpty())
             {
                 foreach (var item in collection)
                 {

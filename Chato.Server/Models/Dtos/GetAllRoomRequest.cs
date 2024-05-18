@@ -7,5 +7,5 @@
 
 public class GetAllRoomResponse
 {
-    public ChatRoomDb[] Rooms { get; set; }
+    public ChatRoomDto[] Rooms { get; set; }
 }
