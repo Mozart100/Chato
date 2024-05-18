@@ -32,13 +32,36 @@
             return true;
         }
 
-        public static IEnumerable<TTarget> SafeSelect<TSource,TTarget>(this IEnumerable<TSource> collection, Func<TSource,TTarget> func )
+        public static TSource[] SafeToArray<TSource>(this IEnumerable<TSource> collection)
+        {
+            var result = new TSource[] { };
+
+            if (!collection.IsNullOrEmpty())
+            {
+                var list = new List<TSource>();
+                foreach (var item in collection)
+                {
+                    list.Add(item);
+                }
+
+                result = list.ToArray();
+            }
+
+            return result;
+        }
+
+
+
+        public static IEnumerable<TTarget> SafeSelect<TSource, TTarget>(this IEnumerable<TSource> collection, Func<TSource, TTarget> func)
         {
             if (collection == null || !collection.Any())
             {
                 foreach (var item in collection)
                 {
-                    yield return func(item);
+                    if (item != null)
+                    {
+                        yield return func(item);
+                    }
                 }
             }
         }

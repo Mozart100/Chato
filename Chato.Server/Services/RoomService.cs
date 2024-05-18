@@ -8,10 +8,10 @@ namespace Chato.Server.Services;
 public interface IRoomService
 {
     Task AddUserAsync(string roomName, string userName);
-    Task<ChatRoomDb> CreateRoomAsync(string roomName);
-    Task<ChatRoomDb[]> GetAllRoomAsync();
+    Task<ChatRoomDto> CreateRoomAsync(string roomName);
+    Task<ChatRoomDto[]> GetAllRoomAsync();
     Task<IEnumerable<SenderInfo>> GetGroupHistoryAsync(string roomName);
-    Task<ChatRoomDb> GetRoomByNameOrIdAsync(string nameOrId);
+    Task<ChatRoomDto?> GetRoomByNameOrIdAsync(string nameOrId);
     Task JoinOrCreateRoom(string roomName, string userName);
     Task RemoveRoomByNameOrIdAsync(string nameOrId);
     Task RemoveUserAndRoomFromRoom(string roomName, string username);
@@ -49,7 +49,7 @@ public class RoomService : IRoomService
         return room;
     }
 
-    public async Task<ChatRoomDb> CreateRoomAsync(string roomName)
+    public async Task<ChatRoomDto> CreateRoomAsync(string roomName)
     {
         var result = default(ChatRoomDb);
 
@@ -57,7 +57,8 @@ public class RoomService : IRoomService
         {
             result = await CreateRoomCoreAsync(roomName);
         });
-        return result;
+
+        return result.ToChatRoomDto();
     }
 
 
@@ -67,7 +68,7 @@ public class RoomService : IRoomService
     }
 
 
-    public async Task<ChatRoomDb[]> GetAllRoomAsync()
+    public async Task<ChatRoomDto[]> GetAllRoomAsync()
     {
         ChatRoomDb[] result = null;
 
@@ -76,7 +77,7 @@ public class RoomService : IRoomService
             var list = await _chatRoomRepository.GetAllAsync();
             result = list.ToArray();
         });
-        return result;
+        return result.SafeSelect(x => x.ToChatRoomDto()).SafeToArray();
     }
 
     public async Task<IEnumerable<SenderInfo>> GetGroupHistoryAsync(string roomName)
@@ -95,7 +96,7 @@ public class RoomService : IRoomService
         return result;
     }
 
-    public async Task<ChatRoomDb?> GetRoomByNameOrIdAsync(string nameOrId)
+    public async Task<ChatRoomDto   ?> GetRoomByNameOrIdAsync(string nameOrId)
     {
         var result = default(ChatRoomDb);
 
@@ -104,7 +105,7 @@ public class RoomService : IRoomService
             result = await GetRoomByNameOrIdCoreAsync(nameOrId);
 
         });
-        return result ;
+        return result == null ? null : result.ToChatRoomDto();
     }
 
     private async Task<ChatRoomDb> GetRoomByNameOrIdCoreAsync(string nameOrId)
