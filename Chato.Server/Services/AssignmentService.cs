@@ -48,16 +48,19 @@ public class AssignmentService : IAssignmentService
         {
             foreach (var roomName in user.Rooms.ToArray())
             {
-                var room = await _roomService.GetRoomByNameOrIdAsync(roomName);
-                if (room is not null)
-                {
-                    room.Users.Remove(user.UserName);
+                await _roomService.RemoveUserAndRoomFromRoom(roomName, user.UserName);
+                //var room = await _roomService.GetRoomByNameOrIdAsync(roomName);
 
-                    if (room.Users.Any() == false)
-                    {
-                        await _roomService.RemoveRoomByNameOrIdAsync(roomName);
-                    }
-                }
+                //if (room is not null)
+                //{
+
+                //    room.Users.Remove(user.UserName);
+
+                //    if (room.Users.Any() == false)
+                //    {
+                //        await _roomService.RemoveRoomByNameOrIdAsync(roomName);
+                //    }
+                //}
             }
         }
     }
@@ -68,16 +71,18 @@ public class AssignmentService : IAssignmentService
         if (user is not null)
         {
             user.Rooms.Add(roomName);
-            var room = await _roomService.GetRoomByNameOrIdAsync(roomName);
-            if (room is not null)
-            {
-                room.Users.Add(user.UserName);
-            }
-            else
-            {
-                var ptr = await _roomService.CreateRoomAsync(roomName);
-                await _roomService.AddUserAsync(roomName, user.UserName);
-            }
+            await _roomService.JoinOrCreateRoom(roomName,user.UserName);
+
+            //var room = await _roomService.GetRoomByNameOrIdAsync(roomName);
+            //if (room is not null)
+            //{
+            //    room.Users.Add(user.UserName);
+            //}
+            //else
+            //{
+            //    var ptr = await _roomService.CreateRoomAsync(roomName);
+            //    await _roomService.AddUserAsync(roomName, user.UserName);
+            //}
         }
     }
 

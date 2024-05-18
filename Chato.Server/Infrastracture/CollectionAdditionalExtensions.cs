@@ -31,5 +31,16 @@
 
             return true;
         }
+
+        public static IEnumerable<TTarget> SafeSelect<TSource,TTarget>(this IEnumerable<TSource> collection, Func<TSource,TTarget> func )
+        {
+            if (collection == null || !collection.Any())
+            {
+                foreach (var item in collection)
+                {
+                    yield return func(item);
+                }
+            }
+        }
     }
 }
