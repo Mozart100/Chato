@@ -2,11 +2,11 @@
 
 namespace Chato.Server.BackgroundTasks;
 
-public class DelegateQueueBackgroundTask : BackgroundService
+public class StarterDelegateQueueBackgroundTask : BackgroundService
 {
     private readonly IDelegateQueue delegateQueue;
 
-    public DelegateQueueBackgroundTask(IDelegateQueue delegateQueue)
+    public StarterDelegateQueueBackgroundTask(IDelegateQueue delegateQueue)
     {
         this.delegateQueue = delegateQueue;
     }

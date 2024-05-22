@@ -6,7 +6,6 @@ public interface IAssignmentService
 {
     Task JoinGroupByConnectionId(string nameOrId, string roomName);
     Task<string> RegisterUserAndAssignToRoom(string userName, string password, string roomName);
-    //Task RegisterToDefaultRoomAsync(string username, byte[] passwordHash);
     Task RemoveUserByConnectionIdAsync(string connectionId);
     Task RemoveUserByUserNameOrIdAsync(string userNameOrId);
 }
@@ -49,18 +48,6 @@ public class AssignmentService : IAssignmentService
             foreach (var roomName in user.Rooms.ToArray())
             {
                 await _roomService.RemoveUserAndRoomFromRoom(roomName, user.UserName);
-                //var room = await _roomService.GetRoomByNameOrIdAsync(roomName);
-
-                //if (room is not null)
-                //{
-
-                //    room.Users.Remove(user.UserName);
-
-                //    if (room.Users.Any() == false)
-                //    {
-                //        await _roomService.RemoveRoomByNameOrIdAsync(roomName);
-                //    }
-                //}
             }
         }
     }
@@ -72,23 +59,7 @@ public class AssignmentService : IAssignmentService
         {
             user.Rooms.Add(roomName);
             await _roomService.JoinOrCreateRoom(roomName,user.UserName);
-
-            //var room = await _roomService.GetRoomByNameOrIdAsync(roomName);
-            //if (room is not null)
-            //{
-            //    room.Users.Add(user.UserName);
-            //}
-            //else
-            //{
-            //    var ptr = await _roomService.CreateRoomAsync(roomName);
-            //    await _roomService.AddUserAsync(roomName, user.UserName);
-            //}
         }
-    }
-
-    public Task RegisterToDefaultRoomAsync(string username, byte[] passwordHash)
-    {
-        throw new NotImplementedException();
     }
 
     public async Task<string> RegisterUserAndAssignToRoom(string userName, string password,string roomName)
