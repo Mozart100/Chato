@@ -51,7 +51,7 @@ public static class ServiceRegistrar
         services.AddTransient<ProblemDetailsFactory, ProblemDetailsAdvanceFeaturesFactory>();
 
         services.AddHostedService<PreloadBackgroundTask>();
-        services.AddHostedService<StarterDelegateQueueBackgroundTask>();
+        services.AddHostedService<DelegateQueueBackgroundTask>();
 
         
 
