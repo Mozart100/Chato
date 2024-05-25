@@ -7,6 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MainHeaderComponent } from './main-header/main-header.component';
 import { MainContentComponent } from './main-content/main-content.component';
 import { MainFooterComponent } from './main-footer/main-footer.component';
+import { MaterialModule } from './material/material.module';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { MainFooterComponent } from './main-footer/main-footer.component';
   imports: [
     BrowserModule,
     AppRoutingModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    MaterialModule
   ],
   providers: [],
   bootstrap: [AppComponent]
