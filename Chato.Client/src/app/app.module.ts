@@ -7,6 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MainHeaderComponent } from './main-header/main-header.component';
 import { MainContentComponent } from './main-content/main-content.component';
 import { MainFooterComponent } from './main-footer/main-footer.component';
+import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './material/material.module';
 
 @NgModule({
@@ -20,6 +21,7 @@ import { MaterialModule } from './material/material.module';
     BrowserModule,
     AppRoutingModule,
     BrowserAnimationsModule,
+    ReactiveFormsModule,
     MaterialModule
   ],
   providers: [],
