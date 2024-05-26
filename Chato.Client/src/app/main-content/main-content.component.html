@@ -2,26 +2,34 @@
 
 <div class="layout">
     <div class="layout-content">
-        <form class="example-form" [formGroup]="signupForm" (ngSubmit)="onSubmit()">
-    
-            <div class="form-group">
-              <label for="username">User Name</label>
-              <input type="text" id="userName" formControlName="userName" />
-                <div *ngIf="!signupForm.get('userName')?.valid && signupForm.get('userName')?.touched" class="error-occured">
-                  <div *ngIf="signupForm.get('userName')!.errors?.['xxx']">xxx invalid user/ name</div>
-                  <div *ngIf="signupForm.get('userName')!.errors?.['required']">Field required</div>
-                </div>
-            </div>
+        <form class="example-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+        
+
+            <!-- <mat-form-field>
+                <mat-label>User Name</mat-label>
+                <input matInput  formControlName="userName">
+            </mat-form-field>
+
+
+            <mat-form-field>
+                <mat-label>Password</mat-label>
+                <input matInput  formControlName="userPassword">
+            </mat-form-field>
+
+
+            <mat-form-field>
+                <mat-label>Input</mat-label>
+                <input matInput>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>Textarea</mat-label>
+                <textarea matInput></textarea>
+              </mat-form-field> -->
             
-            <div class="form-group">
-              <label for="email">Email</label>
-              <input type="text" id="email"  formControlName="email"/>
-              <span *ngIf="!signupForm.get('email')?.valid && signupForm.get('email')?.touched" class="error-occured">Please enter valid datas</span>
-            </div>
         
             <div class="center">
-              <button type="submit">Submit</button>
-            </div>
+              <button mat-bu type="submit">Submit</button>
+            </div> 
         
           </form>
     </div>
