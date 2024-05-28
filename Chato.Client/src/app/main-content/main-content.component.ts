@@ -16,7 +16,7 @@ import { LoginService } from '../service/login-service.service';
 export class MainContentComponent implements OnInit {
   
   form = this.fb.group({
-    title: ['', [Validators.required, Validators.minLength(4)]],
+    userName: ['', [Validators.required, Validators.minLength(4)]],
     userPassword: ['', [Validators.required, Validators.minLength(4)]],
   });
 
@@ -27,15 +27,15 @@ export class MainContentComponent implements OnInit {
   ngOnInit(): void {}
 
   get getCurseTitle() {
-    return this.form.controls['title'];
+    return this.form.controls['userName'];
   }
 
   onSubmit() {
-    console.log('submmited');
+    console.log('submmited',this.form);
     debugger;
 
 
-    this._loginService.resistrationUser("sss", "xxx").pipe(
+    this._loginService.resistrationUser(this.form.value.userName!, this.form.value.userPassword!).pipe(
       tap(response => console.log(response))
     ).subscribe(
       response => {

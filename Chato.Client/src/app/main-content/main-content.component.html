@@ -1,11 +1,11 @@
-<p>main-content works!</p>
 
 <div class="layout">
     <div class="layout-content">
-        <form class="example-form" [formGroup]="form" (ngSubmit)="onSubmit()">
+      
+      ======{{form.controls.userName.errors | json}}======
+      <form class="example-form" [formGroup]="form" (ngSubmit)="onSubmit()">
         
-
-            <!-- <mat-form-field>
+           <mat-form-field>
                 <mat-label>User Name</mat-label>
                 <input matInput  formControlName="userName">
             </mat-form-field>
@@ -17,7 +17,7 @@
             </mat-form-field>
 
 
-            <mat-form-field>
+          <!--  <mat-form-field>
                 <mat-label>Input</mat-label>
                 <input matInput>
               </mat-form-field>
@@ -28,7 +28,7 @@
             
         
             <div class="center">
-              <button mat-bu type="submit">Submit</button>
+              <button mat-raised-button color="primary" type="submit">Submit</button>
             </div> 
         
           </form>
