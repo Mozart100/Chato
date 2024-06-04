@@ -32,7 +32,7 @@ export class MainContentComponent implements OnInit {
 
   onSubmit() {
     console.log('submmited',this.form);
-    debugger;
+    // debugger;s
 
 
     this._loginService.resistrationUser(this.form.value.userName!, this.form.value.userPassword!).pipe(

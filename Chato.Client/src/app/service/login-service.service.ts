@@ -20,6 +20,6 @@ export class LoginService {
     const body = { userName, password };
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    return this.httpClient.post<RegistrationRequest>(url, body, { headers });
+    return this.httpClient.post<RegistrationResponse>(url, body, { headers });
   }
 }
