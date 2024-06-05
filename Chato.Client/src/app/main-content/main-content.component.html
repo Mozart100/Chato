@@ -2,36 +2,7 @@
 <div class="layout">
     <div class="layout-content">
       
-      ======{{form.controls.userName.errors | json}}======
-      <form class="example-form" [formGroup]="form" (ngSubmit)="onSubmit()">
-        
-           <mat-form-field>
-                <mat-label>User Name</mat-label>
-                <input matInput  formControlName="userName">
-            </mat-form-field>
 
-
-            <mat-form-field>
-                <mat-label>Password</mat-label>
-                <input matInput  formControlName="userPassword">
-            </mat-form-field>
-
-
-          <!--  <mat-form-field>
-                <mat-label>Input</mat-label>
-                <input matInput>
-              </mat-form-field>
-              <mat-form-field>
-                <mat-label>Textarea</mat-label>
-                <textarea matInput></textarea>
-              </mat-form-field> -->
-            
-        
-            <div class="center">
-              <button mat-raised-button color="primary" type="submit">Submit</button>
-            </div> 
-        
-          </form>
     </div>
     <div class="layout-sidebar">
         List

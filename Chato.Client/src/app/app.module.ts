@@ -12,6 +12,7 @@ import { MainContentComponent } from './main-content/main-content.component';
 import { MainFooterComponent } from './main-footer/main-footer.component';
 import { ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './material/material.module';
+import { DialogBodyComponent } from './dialog-body/dialog-body.component';
 
 @NgModule({
   declarations: [
@@ -19,6 +20,7 @@ import { MaterialModule } from './material/material.module';
     MainHeaderComponent,
     MainContentComponent,
     MainFooterComponent,
+    DialogBodyComponent,
   ],
   imports: [
     BrowserModule,
