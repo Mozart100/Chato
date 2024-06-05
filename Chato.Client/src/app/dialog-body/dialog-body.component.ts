@@ -7,6 +7,8 @@ import {
 } from '@angular/forms';
 import { Observable, tap } from 'rxjs';
 import { LoginService } from '../service/login-service.service';
+import AppConsts from '../Consts/AppConsts';
+import { DialogRef } from '@angular/cdk/dialog';
 
 
 
@@ -22,7 +24,7 @@ export class DialogBodyComponent {
     userPassword: ['', [Validators.required, Validators.minLength(4)]],
   });
 
-  constructor(private fb: FormBuilder, private _loginService:LoginService) {
+  constructor(private fb: FormBuilder, private _loginService:LoginService , private _dialog:DialogRef<DialogBodyComponent>) {
   }
 
 
@@ -37,6 +39,8 @@ export class DialogBodyComponent {
       response => {
         // Handle the successful response here
         console.log('User registered successfully:', response);
+        sessionStorage.setItem(AppConsts.Token, response.token!);
+        this._dialog.close();
       },
       error => {
         // Handle the error response here
