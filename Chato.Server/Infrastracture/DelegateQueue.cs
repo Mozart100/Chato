@@ -14,8 +14,6 @@ public class DelegateQueue : IDelegateQueue
     private readonly Queue<Func<Task>> _delegates;
     private readonly SemaphoreSlim _semaphore;
 
-    private CancellationToken _cancellationToken;
-    private Task _backgroundTask;
 
     public DelegateQueue()
     {
@@ -44,8 +42,6 @@ public class DelegateQueue : IDelegateQueue
             manuelResetEvent.WaitOne();
         }
     }
-
-
 
     public void Invoke(Action callback)
     {
