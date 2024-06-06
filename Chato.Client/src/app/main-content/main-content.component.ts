@@ -1,12 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  FormBuilder,
-  FormControl,
-  FormGroup,
-  Validators,
-} from '@angular/forms';
 import { Observable, tap } from 'rxjs';
-import { LoginService } from '../service/login-service.service';
+import { RoomService } from '../service/room-service.service';
 
 @Component({
   selector: 'app-main-content',
@@ -15,37 +9,25 @@ import { LoginService } from '../service/login-service.service';
 })
 export class MainContentComponent implements OnInit {
   
-  form = this.fb.group({
-    userName: ['', [Validators.required, Validators.minLength(4)]],
-    userPassword: ['', [Validators.required, Validators.minLength(4)]],
-  });
 
-  constructor(private fb: FormBuilder, private _loginService:LoginService) {
+  constructor(private _roomService:RoomService) {
     // const tmp =fb.group()
   }
 
-  ngOnInit(): void {}
-
-  get getCurseTitle() {
-    return this.form.controls['userName'];
-  }
-
-  onSubmit() {
-    console.log('submmited',this.form);
-    // debugger;s
-
-
-    this._loginService.resistrationUser(this.form.value.userName!, this.form.value.userPassword!).pipe(
-      tap(response => console.log(response))
+  ngOnInit() {
+    this._roomService.getRooms().pipe(
+      tap(res => console.log(res))
     ).subscribe(
       response => {
-        // Handle the successful response here
-        console.log('User registered successfully:', response);
+        // Handle the response, e.g., assign it to a component property
+        console.log('Rooms:', response);
       },
       error => {
-        // Handle the error response here
-        console.error('Registration error:', error);
+        // Handle any errors
+        console.error('Error fetching rooms:', error);
       }
     );
   }
+
+  
 }

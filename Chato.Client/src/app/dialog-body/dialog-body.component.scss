@@ -7,11 +7,15 @@
     display: flex;
     flex-direction: column; /* or row, depending on your desired layout */
     gap: 1rem; /* space between flex items */
+
+    & >  mat-form-field {
+        flex: 1; /* adjust this if you want the fields to have equal width */
+      }
   }
   
-  .form-layout mat-form-field {
-    flex: 1; /* adjust this if you want the fields to have equal width */
-  }
+//   .form-layout >  mat-form-field {
+//     flex: 1; /* adjust this if you want the fields to have equal width */
+//   }
   
   .center {
     // display: flex;

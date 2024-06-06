@@ -30,15 +30,13 @@ export class DialogBodyComponent {
 
   onSubmit() {
     console.log('submmited',this.form);
-    debugger;
 
 
     this._loginService.resistrationUser(this.form.value.userName!, this.form.value.userPassword!).pipe(
-      tap(response => console.log(response))
+      // tap(response => console.log(response))
     ).subscribe(
       response => {
-        // Handle the successful response here
-        console.log('User registered successfully:', response);
+        //console.log('User registered successfully:', response);
         sessionStorage.setItem(AppConsts.Token, response.token!);
         this._dialog.close();
       },
