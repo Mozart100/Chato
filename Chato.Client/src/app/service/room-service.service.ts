@@ -2,15 +2,15 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { GetAllRoomResponse } from '../Models/GetAllRoomResponse';
 import { Observable } from 'rxjs';
+import { ServiceBase } from './ServiceBase';
 
 @Injectable({
   providedIn: 'root'
 })
-export class RoomService {
-  private baseUrl: string;
+export class RoomService extends ServiceBase {
 
-  constructor(private httpClient: HttpClient) {
-    this.baseUrl = 'https://localhost:7138';
+  constructor( httpClient: HttpClient) {
+    super(httpClient);
   }
 
 
