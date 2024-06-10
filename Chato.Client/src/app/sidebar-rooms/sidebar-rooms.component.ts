@@ -10,35 +10,18 @@ import { ChatRoomDto } from '../Models/GetAllRoomResponse';
   styleUrls: ['./sidebar-rooms.component.scss']
 })
 export class SidebarRoomsComponent  implements OnInit {
-  private roomsSubject: BehaviorSubject<ChatRoomDto[]>;
   
   rooms$: Observable<ChatRoomDto[]>;
 
-  constructor(private _roomService: RoomService) {
-    // const tmp =fb.group()
-    this.roomsSubject = new BehaviorSubject<ChatRoomDto[]>([]);
-    this.rooms$ = this.roomsSubject.asObservable();
-  }
+  constructor(private _roomService: RoomService ) {
 
-  ngOnInit() {
-    this._roomService
-      .getRooms()
-      .pipe(
-        tap((res) => {
-          if (res && res.rooms) {
-            this.roomsSubject.next(res.rooms);
-          }
-        })
-      )
-      .subscribe(
-        (response) => {
-          // Handle the response, e.g., assign it to a component property
-          console.log('Rooms:', response);
-        },
-        (error) => {
-          // Handle any errors
-          console.error('Error fetching rooms:', error);
-        }
-      );
+    // const tmp =fb.group()
+    this.rooms$ = this._roomService.rooms$;
   }
+  
+  ngOnInit(): void {
+    
+    this._roomService.getRooms();
+    }
+
 }

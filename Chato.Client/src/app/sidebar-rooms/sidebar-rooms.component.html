@@ -1,1 +1,7 @@
 <p>sidebar-rooms works!</p>
+
+
+<div class="list" *ngFor="let item of rooms$ | async">
+    {{ item | json }}
+  </div>
+  
