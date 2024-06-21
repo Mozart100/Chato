@@ -1,0 +1,7 @@
+<div class="layout">
+  <h1>Rooms</h1>
+
+  <div class="list" *ngFor="let item of rooms$ | async">
+    {{ item.roomName}}
+  </div>
+</div>
