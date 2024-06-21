@@ -3,6 +3,7 @@ using Chato.Server.DataAccess.Repository;
 using Chato.Server.Errors;
 using Chato.Server.Infrastracture;
 using Chato.Server.Services;
+using Chato.Server.Services.Validations;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
 using Microsoft.OpenApi.Models;
@@ -48,15 +49,14 @@ public static class ServiceRegistrar
             options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
         });
 
-        services.AddTransient<ProblemDetailsFactory, ProblemDetailsAdvanceFeaturesFactory>();
+        //services.AddTransient<ProblemDetailsFactory, ProblemDetailsAdvanceFeaturesFactory>();
 
         services.AddHostedService<PreloadBackgroundTask>();
         services.AddHostedService<DelegateQueueBackgroundTask>();
 
-        
 
 
-
+        //kcservices.AddMiddleware
 
 
         return services;
@@ -86,10 +86,17 @@ public static class ServiceRegistrar
         services.AddScoped<IRoomService, RoomService>();
         services.AddScoped<IAssignmentService, AssignmentService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
+        services.AddScoped<IRegistrationValidationService, RegistrationValidationService>();
 
-        
 
-        
+
+
+
+        services.AddExceptionHandler<GlobalExceptionHandler>();
+        services.AddProblemDetails();
+
+
+
         services.AddHttpContextAccessor();
 
 

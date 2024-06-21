@@ -12,6 +12,16 @@
             return false;
         }
 
+        public static List<T> SafeToList<T>(this IEnumerable<T> collection)
+        {
+            if (collection.IsNullOrEmpty())
+            {
+                return new List<T>();
+            }
+
+            return collection.ToList();
+        }
+
         public static int SafeCount<T>(this IEnumerable<T> collection)
         {
             if (collection == null || !collection.Any())

@@ -7,7 +7,7 @@ namespace Chato.Server.Controllers
     {
         [HttpGet]
         [Route("/error")]
-        public IActionResult Index()
+        public IActionResult Error()
         {
             var exception = HttpContext.Features.Get<IExceptionHandlerFeature>()?.Error;
             return Problem(title: exception?.Message);

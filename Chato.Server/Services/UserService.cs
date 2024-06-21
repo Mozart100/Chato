@@ -1,7 +1,7 @@
 ﻿using Chato.Server.DataAccess.Models;
 using Chato.Server.DataAccess.Repository;
 using Chato.Server.Infrastracture;
-using Microsoft.AspNetCore.Identity;
+using Chato.Server.Models.Dtos;
 using System.Security.Claims;
 
 namespace Chato.Server.Services;
@@ -9,13 +9,15 @@ namespace Chato.Server.Services;
 
 public interface IUserService
 {
-    Task AssignConectionnId(string userName, string connectionId);
-    Task<IEnumerable<UserDb>> GetAllUsersAsync();
+    Task AssignConnectionId(string userName, string connectionId);
+    Task AssignRoomNameAsync(string userNameOrId, string roomName);
+    Task<IEnumerable<User>> GetAllUsersAsync();
     string GetMyName();
-    Task<UserDb> GetUserByConnectionId(string connectionId);
-    Task<UserDb> GetUserByNameOrIdAsync(string nameOrId);
-    Task RegisterAsync(string username, byte[] passwordHash);
+    Task<User> GetUserByConnectionId(string connectionId);
+    Task<User> GetUserByNameOrIdGetOrDefaultAsync(string nameOrId);
+    Task RegisterAsync(string username, byte[] passwordHash, string description, string gender, int age);
     Task<bool> RemoveUserByUserNameOrIdAsync(string userNameOrId);
+    Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<byte[]> files);
 }
 
 public class UserService : IUserService
@@ -43,20 +45,26 @@ public class UserService : IUserService
         return result;
     }
 
-    public async Task RegisterAsync(string username, byte[] passwordHash)
+    public async Task RegisterAsync(string username, byte[] passwordHash, string description, string gender, int age)
     {
-        await _delegateQueue.InvokeAsync(async () => await _userRepository.InsertAsync(new UserDb { Id = username, PasswordHash = passwordHash }));
+        await _delegateQueue.InvokeAsync(async () => await _userRepository.InsertAsync(new UserDb { Id = username, PasswordHash = passwordHash, Description = description, Gender = gender, Age = age }));
     }
 
 
-    public async Task AssignConectionnId(string userName, string connectionId)
+    public async Task AssignRoomNameAsync(string userNameOrId, string roomName)
+    {
+        await _delegateQueue.InvokeAsync(async () => await _userRepository.AddRoomToUser(userNameOrId, roomName));
+
+    }
+
+    public async Task AssignConnectionId(string userName, string connectionId)
     {
         await _delegateQueue.InvokeAsync(async () => await _userRepository.AssignConnectionId(userName, connectionId));
     }
 
-    public async Task<UserDb> GetUserByConnectionId(string connectionId)
+    public async Task<User> GetUserByConnectionId(string connectionId)
     {
-        var result = default(UserDb);
+        var result = default(User);
 
         await _delegateQueue.InvokeAsync(async () =>
         {
@@ -76,9 +84,9 @@ public class UserService : IUserService
         return result;
     }
 
-    public async Task<UserDb> GetUserByNameOrIdAsync(string nameOrId)
+    public async Task<User> GetUserByNameOrIdGetOrDefaultAsync(string nameOrId)
     {
-        var result = default(UserDb);
+        var result = default(User);
 
         await _delegateQueue.InvokeAsync(async () =>
         {
@@ -87,9 +95,9 @@ public class UserService : IUserService
         return result;
     }
 
-    public async Task<IEnumerable<UserDb>> GetAllUsersAsync()
+    public async Task<IEnumerable<User>> GetAllUsersAsync()
     {
-        var result = Enumerable.Empty<UserDb>();
+        var result = Enumerable.Empty<User>();
 
         await _delegateQueue.InvokeAsync(async () =>
         {
@@ -99,4 +107,22 @@ public class UserService : IUserService
         return result;
     }
 
+    public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<byte[]> files)
+    {
+        var response = new UploadDocumentsResponse();
+
+        await _delegateQueue.InvokeAsync(async () =>
+        {
+            await _userRepository.UpdateAsync(user => user.UserName == userName, user =>
+            {
+                response.Document1 = (user.Document1 = files.ElementAtOrDefault(0)) is not null;
+                response.Document2 = (user.Document2 = files.ElementAtOrDefault(1)) is not null;
+                response.Document3 = (user.Document3 = files.ElementAtOrDefault(2)) is not null;
+                response.Document4 = (user.Document4 = files.ElementAtOrDefault(3)) is not null;
+                response.Document5 = (user.Document5 = files.ElementAtOrDefault(4)) is not null;
+            });
+        });
+
+        return response;
+    }
 }

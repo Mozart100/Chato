@@ -1,4 +1,6 @@
-﻿namespace Chato.Server.Services;
+﻿using Chato.Server.Models.Dtos;
+
+namespace Chato.Server.Services;
 
 public interface IPreloadDataLoader
 {
@@ -24,10 +26,23 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
     {
         for (int j = 0; j < 3; j++)
         {
-            var userName = $"{IUsersPreload.DefaultRoom}__User{j + 1}";
-            var password = userName;
+            //var userName = $"{IUsersPreload.DefaultRoom}__User{j + 1}";
+            //var password = userName;
+            //var description = $"Description_{IUsersPreload.DefaultRoom}";
+            //var gender = "male";
+            //var age = 20;
 
-            var token = await _assignmentService.RegisterUserAndAssignToRoom(userName, password, IUsersPreload.DefaultRoom);
+            var request = new RegistrationRequest()
+            {
+                UserName = $"{IUsersPreload.DefaultRoom}__User{j + 1}",
+                Password = $"{IUsersPreload.DefaultRoom}__Password{j + 1}",
+                Description = $"Description_{IUsersPreload.DefaultRoom}",
+                Gender = "male",
+                Age = 20,
+            };
+
+            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, IUsersPreload.DefaultRoom);
+            //var token = await _assignmentService.RegisterUserAndAssignToRoom(userName, password, IUsersPreload.DefaultRoom, description, gender, age);
         }
     }
 }

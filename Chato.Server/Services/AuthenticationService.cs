@@ -1,10 +1,16 @@
 ﻿using Chato.Server.Controllers;
 using Chato.Server.Infrastracture;
+using Chato.Server.Models.Dtos;
+using Chato.Server.Services.Validations;
+using Microsoft.AspNetCore.Mvc.RazorPages;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
+using System.Reflection;
+using System.Reflection.Metadata;
 using System.Security.Claims;
 using System.Security.Cryptography;
+using System.Xml.Linq;
 
 namespace Chato.Server.Services;
 
@@ -12,34 +18,50 @@ public interface IAuthenticationService
 {
     void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
     string CreateToken(string user);
-    Task<string> RegisterAsync(string userName, string password);
+    //Task<string> RegisterAsync(string userName, string password, string description, string gender, int age);
+    Task<string> RegisterAsync(RegistrationRequest request);
+    Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents);
 }
 
 public class AuthenticationService : IAuthenticationService
 {
     private readonly AuthenticationConfig _config;
     private readonly IUserService _userService;
+    private readonly IRegistrationValidationService _registrationValidationService;
 
     public AuthenticationService(IOptions<AuthenticationConfig> config,
-        IUserService userService)
+        IUserService userService,
+        IRegistrationValidationService registrationValidationService)
     {
         _config = config.Value;
 
         this._userService = userService;
+        this._registrationValidationService = registrationValidationService;
     }
 
-
-    public async Task<string>  RegisterAsync(string  userName, string password)
+    public async Task<string> RegisterAsync(RegistrationRequest request)
     {
-        var token = CreateToken(userName);
-
-        CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
-
-        await _userService.RegisterAsync(userName, passwordHash);
-
-        return token;
-
+        await _registrationValidationService.RegistrationRequestValidateAsync(request);
+        return await RegisterAsync(request.UserName, request.Password, request.Description, request.Gender, request.Age);
     }
+
+    public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents)
+    {
+        var data = new List<byte[]>(); 
+        
+        foreach (var document in documents)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                await document.CopyToAsync(memoryStream);
+                var documentBytes = memoryStream.ToArray();
+                data.Add(documentBytes);
+            }
+        }
+
+        return await _userService.UploadFilesAsync(userName, data);
+    }
+
 
     public string CreateToken(string userName)
     {
@@ -49,7 +71,7 @@ public class AuthenticationService : IAuthenticationService
             var claims = new List<Claim>
             {
                 new Claim(ClaimTypes.Name, userName),
-                new Claim(ClaimTypes.Role, AuthorizeRoles.User)
+                new Claim(ClaimTypes.Role, AuthorizeRoleConsts.User)
             };
 
             var key = new SymmetricSecurityKey(GetBytes(_config.Token));
@@ -71,7 +93,7 @@ public class AuthenticationService : IAuthenticationService
         }
     }
 
-    public static  byte[] GetBytes(string secret)
+    public static byte[] GetBytes(string secret)
     {
 
         return System.Text.Encoding.UTF32.GetBytes(secret);
@@ -87,6 +109,15 @@ public class AuthenticationService : IAuthenticationService
         }
     }
 
+    private async Task<string> RegisterAsync(string userName, string password, string description, string gender, int age)
+    {
+        var token = CreateToken(userName);
 
+        CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
 
+        await _userService.RegisterAsync(userName, passwordHash, description, gender, age);
+
+        return token;
+
+    }
 }

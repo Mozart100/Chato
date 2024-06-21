@@ -5,6 +5,9 @@ public class RegistrationRequest
 {
     public string UserName { get; set; } = string.Empty;
     public string Password { get; set; } = string.Empty;
+    public int Age { get; set; }
+    public string Description { get; set; }
+    public string Gender { get; set; } = string.Empty ;
 }
 
 public class UserResponse
@@ -23,6 +26,10 @@ public class RegistrationResponse
     public string Token { get; set; } = string.Empty;
     public DateTime TokenCreated { get; set; }
     public DateTime TokenExpires { get; set; }
+
+    public int Age { get; set; }
+    public string Description { get; set; }
+    public string Gender { get; set; }
 }
 
 public class RefreshToken

@@ -16,14 +16,29 @@ public interface IChatHub
     //Task SendToUser(string fromUser, byte[] message);
 }
 
+public interface IChattobEndpoints
+{
+    Task BroadcastMessage(string fromUser, byte[] message);
+    IAsyncEnumerable<byte[]> Downloads(HubDownloadInfo downloadInfo, [EnumeratorCancellation] CancellationToken cancellationToken);
+    IAsyncEnumerable<SenderInfo> GetGroupHistory(string roomName, [EnumeratorCancellation] CancellationToken cancellationToken);
+    Task JoinGroup(string roomName);
+    Task LeaveGroup(string groupName);
+    Task OnConnectedAsync();
+    Task RemoveChatHistory(string groupName);
+    Task SendMessageToOthersInGroup(string group, string fromUser, byte[] ptr);
+    Task SendMessageToOtherUser(string fromUser, string toUser, byte[] ptr);
+    Task UserDisconnectAsync();
+}
+
+
 [Authorize]
-public class ChatHub : Hub<IChatHub>
+public class ChattoHub : Hub<IChatHub> , IChattobEndpoints
 {
     private readonly IUserService _userService;
     private readonly IRoomService _roomService;
     private readonly IAssignmentService _userRoomService;
 
-    public ChatHub(
+    public ChattoHub(
         IUserService userService,
         IRoomService roomService,
         IAssignmentService userRoomService)
@@ -38,19 +53,19 @@ public class ChatHub : Hub<IChatHub>
     {
         var ptr = Encoding.UTF8.GetBytes("Your are connected");
 
-        var comnectionId = Context.ConnectionId;
+        var connectionId = Context.ConnectionId;
         var user = Context.User;
 
-        await _userService.AssignConectionnId(user.Identity.Name, comnectionId);
+        await _userService.AssignConnectionId(user.Identity.Name, connectionId);
 
-        await SendMessageToOthers("server", ptr);
+        await BroadcastMessage("server", ptr);
         await base.OnConnectedAsync();
     }
 
 
-    public Task SendMessageToOthers(string user, byte[] message)
+    public Task BroadcastMessage(string fromUser, byte[] message)
     {
-        return Clients.Others.SendMessage(user, message);
+        return Clients.Others.SendMessage(fromUser, message);
     }
 
     public async Task SendMessageToOthersInGroup(string group, string fromUser, byte[] ptr)
@@ -64,7 +79,7 @@ public class ChatHub : Hub<IChatHub>
     public async Task SendMessageToOtherUser(string fromUser, string toUser, byte[] ptr)
     {
         //var user = await _userRepository.GetAsync(x => x.UserName == toUser);
-        var user = await _userService.GetUserByNameOrIdAsync(toUser);
+        var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
         if (user is not null)
         {
             await Clients.Client(user.ConnectionId).SendMessage(fromUser, ptr);

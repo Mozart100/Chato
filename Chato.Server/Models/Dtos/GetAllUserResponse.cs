@@ -2,5 +2,5 @@
 
 public class GetAllUserResponse
 {
-    public UserDb[] Users { get; set; }
+    public User[] Users { get; set; }
 }
