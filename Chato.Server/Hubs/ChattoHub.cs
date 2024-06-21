@@ -1,4 +1,4 @@
-﻿using Chato.Server.DataAccess.Models;
+using Chato.Server.DataAccess.Models;
 using Chato.Server.DataAccess.Repository;
 using Chato.Server.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -140,19 +140,4 @@ public class ChattoHub : Hub<IChatHub> , IChattobEndpoints
             await Task.Delay(200);
         }
     }
-
-
-
-
-    //public async IAsyncEnumerable<string> Download(HubDownloadInfo downloadInfo, [EnumeratorCancellation] CancellationToken cancellationToken)
-    //{
-    //    var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "css.txt");
-    //    var bytes = File.ReadAllBytes(path);
-
-    //    for (var i = 0; i < downloadInfo.Amount && cancellationToken.IsCancellationRequested == false; i++)
-    //    {
-    //        yield return $"Download - {i}";
-    //        await Task.Delay(200);
-    //    }
-    //}
 }
