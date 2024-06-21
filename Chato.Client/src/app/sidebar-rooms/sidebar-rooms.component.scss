@@ -1,0 +1,17 @@
+.layout{
+
+    // background: gray;
+    width: 100%;
+
+    > h1 {
+        text-align: center;
+    }
+
+    > .list{
+    
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        margin-top:1rem;
+    }
+}
