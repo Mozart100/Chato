@@ -1,9 +1,8 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
-using Chato.Automation.Scenario;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 
-namespace Arkovean.Chat.Automation.Scenario;
+namespace Chato.Automation.Scenario;
 
 internal class BasicScenario : InstructionScenarioBase
 {
@@ -23,17 +22,17 @@ internal class BasicScenario : InstructionScenarioBase
 
         BusinessLogicCallbacks.Add(SetupGroup);
         BusinessLogicCallbacks.Add(SendingToSpecificPerson);
-        BusinessLogicCallbacks.Add(async () => await UsersCleanup(_users.Keys.ToArray()));
+        BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
 
         BusinessLogicCallbacks.Add(SetupGroup);
         BusinessLogicCallbacks.Add(ImageSendingStep);
-        BusinessLogicCallbacks.Add(async () => await UsersCleanup(_users.Keys.ToArray()));
+        BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
 
         BusinessLogicCallbacks.Add(SetupGroup);
         BusinessLogicCallbacks.Add(VerificationStep);
-        BusinessLogicCallbacks.Add(async () =>  await UsersCleanup(_users.Keys.ToArray()));
+        BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
 
         //SummaryLogicCallback.Add(CheckAllCleaned);
@@ -59,8 +58,8 @@ internal class BasicScenario : InstructionScenarioBase
         var nathanReceive1 = firstGroup.RecievingFrom(Nathan_User, anatoliySender.UserName);
         var olessyaReceive1 = firstGroup.Is_Not_Received(Olessya_User);
 
-        
-        anatoliySender.Connect(nathanReceive1,olessyaReceive1);
+
+        anatoliySender.Connect(nathanReceive1, olessyaReceive1);
 
         var graph = new InstructionGraph(anatoliySender);
         await InstructionExecuter(graph);

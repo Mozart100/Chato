@@ -5,11 +5,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Chato.Server.Controllers;
 
-public class AuthorizeRoles
+
+public class AuthorizeRoleConsts
 {
     public const string User = "User";
 }
-
 
 [Route("api/[controller]")]
 [ApiController]
@@ -18,7 +18,7 @@ public class AuthController : ControllerBase
     private readonly IUserService _userService;
     private readonly IAuthenticationService _authenticationService;
 
-    public AuthController(IUserService userService, IAuthenticationService authenticationService )
+    public AuthController(IUserService userService, IAuthenticationService authenticationService)
     {
         _userService = userService;
         this._authenticationService = authenticationService;
@@ -33,10 +33,21 @@ public class AuthController : ControllerBase
 
     [Route("register")]
     [HttpPost]
-    public async Task<ActionResult<RegistrationResponse>> Register(RegistrationRequest request)
+    public async Task<ActionResult<RegistrationResponse>> Register([FromBody] RegistrationRequest request)
     {
-        var token = await _authenticationService.RegisterAsync(request.UserName,request.Password);
+        //throw new Exception("xxxx");
+        var token = await _authenticationService.RegisterAsync(request);
         return Ok(new RegistrationResponse { Token = token, UserName = request.UserName });
+    }
+
+    [Route("upload")]
+    [HttpPost, Authorize]
+    public async Task<ActionResult<UploadDocumentsResponse>> Upload(IEnumerable<IFormFile> documents)
+    {
+        var userName = User.Identity.Name;
+        var response = await _authenticationService.UploadFilesAsync(userName, documents);
+
+        return Ok(response);
     }
 
     #region Feature  development

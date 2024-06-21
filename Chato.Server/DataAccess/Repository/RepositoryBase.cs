@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 
 namespace Chato.Server.DataAccess.Repository
 {
+
     public interface IRepositoryBase<TModel> where TModel : class
     {
         TModel Get(Predicate<TModel> selector);

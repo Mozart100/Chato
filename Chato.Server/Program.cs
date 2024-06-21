@@ -1,6 +1,7 @@
 using Chato.Server.Errors;
 using Chato.Server.Hubs;
 using Chato.Server.Infrastracture;
+using Chato.Server.Middlewares;
 using Chato.Server.Services;
 using Chato.Server.Startup;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -50,7 +51,8 @@ builder.Services.AddTransient<IPreloadDataLoader, GenerateDefaultRoomAndUsersSer
 
 
 var app = builder.Build();
-app.UseAuthentication();
+//app.UseAuthentication();
+
 
 
 // Configure the HTTP request pipeline.
@@ -66,12 +68,17 @@ app.UseHttpsRedirection();
 
 
 
-app.UseExceptionHandler("/error");
-app.MapHub<ChatHub>("/chat");
+app.MapHub<ChattoHub>("/chat");
 
 
 app.UseAuthentication();
 app.UseAuthorization();
+
+app.UseMiddleware<ChattoExceptionMiddleware>();
+
+//app.UseExceptionHandler("/error");
+app.UseExceptionHandler();
+
 app.MapControllers();
 
 

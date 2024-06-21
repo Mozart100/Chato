@@ -1,9 +1,8 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
-using Chato.Automation.Scenario;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 
-namespace Arkovean.Chat.Automation.Scenario;
+namespace Chato.Automation.Scenario;
 
 internal class HubStreamScenario : InstructionScenarioBase
 {
@@ -28,7 +27,7 @@ internal class HubStreamScenario : InstructionScenarioBase
         SetupsLogicCallback.Add(TreeUserSetups);
         BusinessLogicCallbacks.Add(TreePoepleHandShakeStep);
         //SummaryLogicCallback.Add(() => GroupUsersCleanup(First_Group, Second_Group));
-        BusinessLogicCallbacks.Add(async () => await UsersCleanup(_users.Keys.ToArray()));
+        BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
 
         var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "css.txt");

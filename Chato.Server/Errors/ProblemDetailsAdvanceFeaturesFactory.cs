@@ -9,6 +9,7 @@ using System.Diagnostics;
 
 namespace Chato.Server.Errors
 {
+
     public class ProblemDetailsAdvanceFeaturesFactory : ProblemDetailsFactory
     {
         private readonly ApiBehaviorOptions _options;
@@ -89,6 +90,7 @@ namespace Chato.Server.Errors
             if (traceId != null)
             {
                 problemDetails.Extensions["traceId"] = traceId;
+                problemDetails.Extensions["xxx"] = "traceIdxxxx";
             }
 
             var exception = httpContext.Features.Get<IExceptionHandlerFeature>()?.Error;

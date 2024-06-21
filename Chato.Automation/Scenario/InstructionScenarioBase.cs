@@ -7,16 +7,16 @@ namespace Chato.Automation.Scenario;
 
 public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 {
-    private readonly CounterSignal _counterSignal;
+    protected readonly CounterSignal _counterSignal;
     private readonly Dictionary<string, Func<UserInstructionExecuter, InstructionNode, Task>> _actionMapper;
     private readonly CancellationTokenSource _cancellationTokenSource;
 
-    protected readonly Dictionary<string, UserInstructionExecuter> _users;
+    protected readonly Dictionary<string, UserInstructionExecuter> Users;
     private readonly Dictionary<string, HashSet<string>> _groupUsers;
 
     public InstructionScenarioBase(ILogger logger, ScenarioConfig config) : base(logger, config)
     {
-        _users = new Dictionary<string, UserInstructionExecuter>();
+        Users = new Dictionary<string, UserInstructionExecuter>();
         _groupUsers = new Dictionary<string, HashSet<string>>();
 
         _counterSignal = new CounterSignal(2);
@@ -29,18 +29,17 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
     }
 
-    public async Task RegisterUsers(params string[] users)
+    public virtual async Task RegisterUsers(params string[] users)
     {
-
         foreach (var user in users)
         {
-            var registrationRequest = new RegistrationRequest { Password = "string", UserName = user };
+            var registrationRequest = new RegistrationRequest { Password = "string", UserName = user  , Age =20 , Description=$"Description_{user}" , Gender ="male" };
             var registrationInfo = await RunPostCommand<RegistrationRequest, RegistrationResponse>(RegisterAuthControllerUrl, registrationRequest);
 
             var executer = new UserInstructionExecuter(registrationInfo, HubUrl, Logger, _counterSignal);
             await executer.RegisterAsync();
 
-            _users.Add(user, executer);
+            Users.Add(user, executer);
         }
     }
 
@@ -55,7 +54,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
         foreach (var user in users)
         {
-            var executer = _users[user]; ;// new UserInstructionExecuter(registrationInfo, tokenResponse, HubUrl, Logger, _counterSignal);
+            var executer = Users[user]; ;// new UserInstructionExecuter(registrationInfo, tokenResponse, HubUrl, Logger, _counterSignal);
             await executer.InitializeWithGroupAsync(groupName);
 
             stacked.Add(user);
@@ -136,7 +135,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
                     continue;
                 }
 
-                var userExecuter = _users[instruction.UserName];
+                var userExecuter = Users[instruction.UserName];
                 await _actionMapper[instruction.Instruction.InstractionName]?.Invoke(userExecuter, instruction);
             }
 
@@ -161,9 +160,9 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
                 }
             }
 
-            await _users[user].UserDisconnectingAsync();
-            await _users[user].KillConnectionAsync();
-            _users.Remove(user);
+            await Users[user].UserDisconnectingAsync();
+            await Users[user].KillConnectionAsync();
+            Users.Remove(user);
         }
     }
 

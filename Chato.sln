@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34031.279
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chato.Server", "Chato.Server\Chato.Server.csproj", "{2BBBF510-2531-4129-ABF5-6A7FE3556AF3}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Chato.Automation", "Chato.Automation\Chato.Automation.csproj", "{ECFD29D9-911E-4FC9-8252-47B289BF2163}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{2BBBF510-2531-4129-ABF5-6A7FE3556AF3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2BBBF510-2531-4129-ABF5-6A7FE3556AF3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2BBBF510-2531-4129-ABF5-6A7FE3556AF3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2BBBF510-2531-4129-ABF5-6A7FE3556AF3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{ECFD29D9-911E-4FC9-8252-47B289BF2163}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ECFD29D9-911E-4FC9-8252-47B289BF2163}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ECFD29D9-911E-4FC9-8252-47B289BF2163}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ECFD29D9-911E-4FC9-8252-47B289BF2163}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {79FA4FF4-21A2-42D8-A997-E509247AA1AC}
+	EndGlobalSection
+EndGlobal

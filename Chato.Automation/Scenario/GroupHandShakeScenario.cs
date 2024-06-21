@@ -1,8 +1,7 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
-using Chato.Automation.Scenario;
 using Microsoft.Extensions.Logging;
 
-namespace Arkovean.Chat.Automation.Scenario;
+namespace Chato.Automation.Scenario;
 internal class GroupHandShakeScenario : InstructionScenarioBase
 {
     private const string First_Group = "haifa";
@@ -22,11 +21,11 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
 
         SetupsLogicCallback.Add(TwoUserSetups);
         BusinessLogicCallbacks.Add(TwoPeopleHandShakeStep);
-        BusinessLogicCallbacks.Add(async () => await UsersCleanup(_users.Keys.ToArray()));
+        BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
         BusinessLogicCallbacks.Add(TreeUserSetups);
         BusinessLogicCallbacks.Add(TreePoepleHandShakeStep);
-        BusinessLogicCallbacks.Add(async () => await UsersCleanup(_users.Keys.ToArray()));
+        BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
     }
 
@@ -103,7 +102,7 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
         await InstructionExecuter(graph);
     }
 
-   
+
 
     private async Task TreeUserSetups()
     {

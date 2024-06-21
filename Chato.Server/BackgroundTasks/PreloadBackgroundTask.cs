@@ -14,7 +14,6 @@ public class PreloadBackgroundTask : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-
         await  Task.Delay(1000  * 5);
         using (IServiceScope scope = _serviceScopeFactory.CreateScope())
         {

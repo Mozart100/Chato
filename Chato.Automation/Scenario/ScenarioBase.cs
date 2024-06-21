@@ -4,6 +4,9 @@ using System.Net.Http.Json;
 using System.Text.Json;
 using Chato.Server.Infrastracture;
 using Microsoft.Extensions.Logging;
+using System.Net.Http.Headers;
+using Microsoft.AspNetCore.Identity.Data;
+using System;
 
 namespace Chato.Automation.Scenario;
 
@@ -20,7 +23,7 @@ public abstract class ScenarioBase
     protected List<Func<Task>> BusinessLogicCallbacks;
     protected List<Func<Task>> SummaryLogicCallback;
 
-    public ScenarioBase(ILogger logger ,  ScenarioConfig config)
+    public ScenarioBase(ILogger logger, ScenarioConfig config)
     {
 
         Logger = logger;
@@ -200,6 +203,27 @@ public abstract class ScenarioBase
         return await RunPutOrPostCommand<TRequest, TResponse>(url, request, false);
     }
 
+    public async Task<TResponse> UploadFiles<TResponse>(string url, string token, params string[] filePaths)
+    {
+        using (var client = new HttpClient())
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            using var content = new MultipartFormDataContent();
+
+            for (int i = 0; i < filePaths.Length; i++)
+            {
+                var fileStream = File.OpenRead(filePaths[i]);
+                var fileContent = new StreamContent(fileStream);
+                fileContent.Headers.ContentType = new MediaTypeHeaderValue("multipart/form-data");
+                content.Add(fileContent, $"documents", Path.GetFileName(filePaths[i]));
+            }
+
+            var response = await client.PostAsync(url, content);
+            return await EnsureSuccess<TResponse>(response) ?? throw new Exception($"Failed Populate in {url}");
+
+        }
+    }
 
     private async Task<TResponse> RunPutOrPostCommand<TRequest, TResponse>(string url, TRequest request, bool isPostRequest = true)
     {
@@ -221,20 +245,24 @@ public abstract class ScenarioBase
                 response = await client.PutAsync(url, content);
             }
 
-            if (response.IsSuccessStatusCode)
-            {
-                string responseContent = await response.Content.ReadAsStringAsync();
-                var recieveOptions = new JsonSerializerOptions
-                {
-                    PropertyNameCaseInsensitive = true
-                };
-                //recieveOptions.Converters.Add(_dateOnlyConverter);
-
-                var responseData = JsonSerializer.Deserialize<TResponse>(responseContent, recieveOptions);
-                return responseData;
-            }
-
-            throw new Exception($"Failed Populate in {url}");
+            return await EnsureSuccess<TResponse>(response) ?? throw new Exception($"Failed Populate in {url}");
         }
     }
+    private async Task<TResponse> EnsureSuccess<TResponse>(HttpResponseMessage message)
+    {
+        var response = default(TResponse);
+        if (message.IsSuccessStatusCode)
+        {
+            string responseContent = await message.Content.ReadAsStringAsync();
+            var recieveOptions = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true
+            };
+
+            response = JsonSerializer.Deserialize<TResponse>(responseContent, recieveOptions);
+        }
+
+        return response;
+    }
+
 }

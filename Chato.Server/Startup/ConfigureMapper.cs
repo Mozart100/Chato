@@ -1,14 +1,13 @@
 ﻿using AutoMapper;
 using Chato.Server.DataAccess.Models;
 
-namespace Chato.Server.Startup
+namespace Chato.Server.Startup;
+
+public class ConfigureMapper : Profile
 {
-    public class ConfigureMapper : Profile
+    public ConfigureMapper()
     {
-        public ConfigureMapper()
-        {
-            CreateMap<ChatRoomDb, ChatRoomDb>();
-            //CreateMap<CityDb, AddCityResponse>();
-        }
+        CreateMap<UserDb,User>();
+        //CreateMap<CityDb, AddCityResponse>();
     }
 }

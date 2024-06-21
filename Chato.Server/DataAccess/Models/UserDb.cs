@@ -1,6 +1,17 @@
 ﻿namespace Chato.Server.DataAccess.Models;
 
-public class UserDb : EntityDbBase
+public class User : EntityDbBase 
+{
+    public string UserName { get; set; }
+    public int Age { get; set; }
+    public string Description { get; set; }
+    public string Gender { get; set; }
+    public string[] Rooms { get; set; }
+    public string ConnectionId { get; set; }
+
+}
+
+public class UserDb : User
 {
     public override string Id
     {
@@ -8,37 +19,11 @@ public class UserDb : EntityDbBase
         set => UserName = value;
     }
 
-    public string UserName { get; private set; }
-    
-    //public string Password { get; init; }
-    public byte [] PasswordHash { get; init; }
-    
-    public string ConnectionId { get; set; }
+    public byte[] PasswordHash { get; init; }
 
-
-    public List<string> Rooms = new List<string>();
+    public byte [] Document1 { get; set; }
+    public byte [] Document2 { get; set; }
+    public byte [] Document3 { get; set; }
+    public byte [] Document4 { get; set; }
+    public byte [] Document5 { get; set; }
 }
-
-//public struct UserDto
-//{
-//    public string UserName { get; init; }
-
-//    public byte[] PasswordHash { get; init; }
-
-//    public string ConnectionId { get; set; }
-
-//    public string[] Rooms { get; init; }
-
-   
-//    public UserDto(string userName, byte[] passwordHash, string connectionId, string[] rooms)
-//    {
-//        UserName = userName;
-//        PasswordHash = passwordHash;
-//        ConnectionId = connectionId;
-//        Rooms = rooms ;
-//    }
-
-//    public override int GetHashCode() => UserName.GetHashCode();
-
-//    public override bool Equals(object? obj) => obj is UserDb user && UserName.Equals(user.Id);
-//}

@@ -1,5 +1,4 @@
-﻿using Arkovean.Chat.Automation.Scenario;
-using Chato.Automation;
+﻿using Chato.Automation;
 using Chato.Automation.Scenario;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -43,6 +42,9 @@ static IHostBuilder CreateHostBuilder(string[] args)
         services.AddSingleton<GroupHandShakeScenario>();
         services.AddSingleton<HubStreamScenario>();
         services.AddSingleton<BasicScenario>();
+        services.AddSingleton<RegistrationValidationScenario>();
+
+        
 
 
     });
