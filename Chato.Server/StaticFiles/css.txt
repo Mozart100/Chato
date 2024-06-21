@@ -1,0 +1,57 @@
+$blueColor: rgb(15, 115, 23);
+
+@mixin to-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header {
+  
+  #{&}-logo{
+    position:relative;
+}
+
+#{&}-logo::after{
+  top:50%;
+  left:50%;
+  content:'Nathan';
+  position :absolute;
+  transform:translate(-50%,-50%);
+}
+  
+  
+  display: flex;
+  justify-content: space-between;
+
+  #{&}-nav {
+    display: flex;
+    & {
+      @include to-center;
+    }
+
+    &-item {
+      margin-right: 2rem;
+    }
+  }
+}
+
+.container-sidebar {
+  display: flex;
+  flex-direction: column;
+
+  #{&}-item {
+    @include to-center;
+    padding: 3rem;
+    // background:$blueColor;
+    margin: 0.5rem;
+  }
+
+  @for $i from 1 through 4 {
+    .item-#{$i} {
+      // background:rgb(15,100+$i*50%,15);
+      background: darken(rgb(15, 100 + $i * 10%, 15), $i * 10%);
+      // background:darken(rgb(15,100+$i*10%,15),$i*10%);
+    }
+  }
+}

@@ -1,0 +1,69 @@
+// *,
+// *::before,
+// *::after {
+//   box-sizing: border-box;
+// }
+
+// html,
+// body {
+//   margin: 0;
+//   padding: 0;
+// }
+
+.input-zone {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  margin: 10px;
+}
+
+.input-zone-input {
+  flex: 1;
+  margin-right: 10px;
+}
+
+.message-author {
+  font-weight: bold;
+}
+
+.messages {
+  border: 1px solid #000;
+  margin: 10px;
+  max-height: 300px;
+  min-height: 300px;
+  overflow-y: auto;
+  padding: 5px;
+}
+
+
+
+
+
+.main-layout-container {
+    min-height: 100vh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    grid-template-columns: 1fr 10rem;
+    padding: 10px;
+    border: 2px red solid;
+  
+    &-header {
+      grid-column: 1 / -1;
+    }
+  
+    &-content {
+      grid-column: 1 / 2;
+      background: lightseagreen;
+    }
+  
+    &-sidebar {
+      grid-column: 2 / 3;
+      background: palevioletred;
+    }
+  
+    &-footer {
+      grid-column: 1 / -1;
+    }
+  
+  }
+  
