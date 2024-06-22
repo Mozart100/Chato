@@ -19,6 +19,10 @@ public interface IChatHub
 public interface IChattobEndpoints
 {
     Task BroadcastMessage(string fromUser, byte[] message);
+    Task ReplyMessage(string fromUser, byte[] message);
+    Task SendMessageToOtherUser(string fromUser, string toUser, byte[] ptr);
+
+
     IAsyncEnumerable<byte[]> Downloads(HubDownloadInfo downloadInfo, [EnumeratorCancellation] CancellationToken cancellationToken);
     IAsyncEnumerable<SenderInfo> GetGroupHistory(string roomName, [EnumeratorCancellation] CancellationToken cancellationToken);
     Task JoinGroup(string roomName);
@@ -26,7 +30,7 @@ public interface IChattobEndpoints
     Task OnConnectedAsync();
     Task RemoveChatHistory(string groupName);
     Task SendMessageToOthersInGroup(string group, string fromUser, byte[] ptr);
-    Task SendMessageToOtherUser(string fromUser, string toUser, byte[] ptr);
+    
     Task UserDisconnectAsync();
 }
 
