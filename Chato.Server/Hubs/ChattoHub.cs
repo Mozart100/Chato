@@ -58,8 +58,13 @@ public class ChattoHub : Hub<IChatHub> , IChattobEndpoints
 
         await _userService.AssignConnectionId(user.Identity.Name, connectionId);
 
-        await BroadcastMessage("server", ptr);
+        await ReplyMessage("server", ptr);
         await base.OnConnectedAsync();
+    }
+
+    public Task ReplyMessage(string fromUser, byte[] message)
+    {
+        return Clients.Caller.SendMessage(fromUser, message);
     }
 
 
