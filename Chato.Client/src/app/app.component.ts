@@ -30,10 +30,8 @@ export class AppComponent implements OnInit {
     // this.matDialog.open(DialogBodyComponent,{width:"350pxs"});
 
     this.UserName = this.generateRandomNumber() + this.UserName;
-    debugger;
     this._loginService.resistrationUser(this.UserName,"Qq123456").subscribe(res=>{
       console.log("app.component - registration response received session"+ res.token!);
-      debugger;
       sessionStorage.setItem(AppConsts.Token,res.token!);
     });
 
