@@ -1,12 +1,15 @@
 import { Injectable, OnInit } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import AppConsts from '../Consts/AppConsts';
+import { getMemberChattobEndpointsName } from '../Consts/ServerChatEndpoints';
+import { debug } from 'console';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SignalrListenerService implements OnInit {
   private _connection: signalR.HubConnection;
+  
 
   constructor() {
     this._connection = new signalR.HubConnectionBuilder()
@@ -15,18 +18,28 @@ export class SignalrListenerService implements OnInit {
       })
       .build();
 
-    this._connection.on('SendMessageToOthers',
+    const ptr = getMemberChattobEndpointsName('BroadcastMessage');
+    debugger;
+    this._connection.on(
+      getMemberChattobEndpointsName('BroadcastMessage'),
       (user: string, message: string) => {
+        debugger;
         // const decodedMessage = atob(message);
         console.log(`Received from ${user} this message: ${message}`);
       }
     );
+    
+    const ptr2 = getMemberChattobEndpointsName('SendMessageToOtherUser');
+    debugger; 
+    this._connection.on(
+      getMemberChattobEndpointsName('SendMessageToOtherUser'),
+      (user: string, message: string) => {
+        debugger;
+        // const decodedMessage = atob(message);
 
-    this._connection.on('SendMessage', (user: string, message: string) => {
-      // const decodedMessage = atob(message);
-
-      console.log(`Received from ${user} this message: ${message}`);
-    });
+        console.log(`Received from ${user} this message: ${message}`);
+      }
+    );
 
     // this.startConnection();
   }
@@ -51,6 +64,8 @@ export class SignalrListenerService implements OnInit {
   }
 
   public sendMessage(user: string, message: string): void {
+
+    debugger;
     this._connection
       .invoke('SendMessageToOthers', user, message)
       .catch((err) => console.error('Error while sending message: ' + err));
