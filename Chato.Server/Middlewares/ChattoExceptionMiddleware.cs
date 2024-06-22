@@ -54,6 +54,10 @@ public class ChattoExceptionMiddleware
             var json = JsonSerializer.Serialize(problemDetails);
             await httpContext.Response.WriteAsync(json);
         }
+        catch(Exception ex)
+        {
+
+        }
     }
 
     //public async Task InvokeAsync(HttpContext context, RequestDelegate next)

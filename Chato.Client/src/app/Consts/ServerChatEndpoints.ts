@@ -1,6 +1,10 @@
 export interface IChattobEndpoints {
-    BroadcastMessage(fromUser: string, message: string): void;
-    SendMessageToOtherUser(fromUser: string, toUser: string, message: string): void;
+    // BroadcastMessage(fromUser: string, message: string): void;
+    // SendMessageToOtherUser(fromUser: string, toUser: string, message: string): void;
+
+    BroadcastMessage( fromUser:string, message : string):void;
+    ReplyMessage( fromUser:string, message:string):void;
+    SendMessageToOtherUser(fromUser :string, toUser:string ,  ptr:string):void;
 }
 
 

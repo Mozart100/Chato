@@ -12,13 +12,16 @@ export class SignalrListenerService implements OnInit {
   
 
   constructor() {
+
+
+    debugger;
     this._connection = new signalR.HubConnectionBuilder()
       .withUrl('https://localhost:7138/chat', {
         accessTokenFactory: () => this.getToken(),
       })
       .build();
 
-    const ptr = getMemberChattobEndpointsName('BroadcastMessage');
+    const ptr = getMemberChattobEndpointsName("BroadcastMessage");
     debugger;
     this._connection.on(
       getMemberChattobEndpointsName('BroadcastMessage'),
@@ -28,11 +31,16 @@ export class SignalrListenerService implements OnInit {
         console.log(`Received from ${user} this message: ${message}`);
       }
     );
+
+    this._connection.on(getMemberChattobEndpointsName('ReplyMessage'),(fromUser:string,message:string)=>{
+      debugger;
+      console.log(`Received from ${fromUser} this message: ${message}`);
+
+    })
     
     const ptr2 = getMemberChattobEndpointsName('SendMessageToOtherUser');
     debugger; 
-    this._connection.on(
-      getMemberChattobEndpointsName('SendMessageToOtherUser'),
+    this._connection.on(ptr2,
       (user: string, message: string) => {
         debugger;
         // const decodedMessage = atob(message);
@@ -67,7 +75,7 @@ export class SignalrListenerService implements OnInit {
 
     debugger;
     this._connection
-      .invoke('SendMessageToOthers', user, message)
+      .invoke(getMemberChattobEndpointsName('BroadcastMessage'), user, message)
       .catch((err) => console.error('Error while sending message: ' + err));
   }
 }
