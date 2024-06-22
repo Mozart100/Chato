@@ -64,8 +64,6 @@ internal class BasicScenario : InstructionScenarioBase
         var graph = new InstructionGraph(anatoliySender);
         await InstructionExecuter(graph);
 
-        //var roomInfo = await Get<GetAllRoomResponse>(RoomsControllerUrl);
-        //roomInfo.Rooms.Should().HaveCount(0);
     }
 
     private async Task ImageSendingStep()

@@ -1,41 +1,55 @@
 import { Injectable, OnInit } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import AppConsts from '../Consts/AppConsts';
+import { getMemberChattobEndpointsName } from '../Consts/ServerChatEndpoints';
+import { debug } from 'console';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SignalrListenerService implements OnInit {
   private _connection: signalR.HubConnection;
+  
 
   constructor() {
+
+
+    debugger;
     this._connection = new signalR.HubConnectionBuilder()
       .withUrl('https://localhost:7138/chat', {
         accessTokenFactory: () => this.getToken(),
       })
       .build();
 
-    this._connection.on("SendMessageToOthers", (user: string, message: string) => {
-  
+    const ptr = getMemberChattobEndpointsName("BroadcastMessage");
+    debugger;
+    this._connection.on(
+      getMemberChattobEndpointsName('BroadcastMessage'),
+      (user: string, message: string) => {
+        debugger;
+        // const decodedMessage = atob(message);
+        console.log(`Received from ${user} this message: ${message}`);
+      }
+    );
+
+    this._connection.on(getMemberChattobEndpointsName('ReplyMessage'),(fromUser:string,message:string)=>{
+      debugger;
+      console.log(`Received from ${fromUser} this message: ${message}`);
+
+    })
     
-      // const decodedMessage = atob(message);
+    const ptr2 = getMemberChattobEndpointsName('SendMessageToOtherUser');
+    debugger; 
+    this._connection.on(ptr2,
+      (user: string, message: string) => {
+        debugger;
+        // const decodedMessage = atob(message);
 
-      console.log(`Received from ${user} this message: ${message}`);
+        console.log(`Received from ${user} this message: ${message}`);
+      }
+    );
 
-});
-
-this._connection.on("SendMessage", (user: string, message: string) => {
-  
-
-  // const decodedMessage = atob(message);
-
-  console.log(`Received from ${user} this message: ${message}`);
-
-});
-
-
-
-    this.startConnection();
+    // this.startConnection();
   }
 
   ngOnInit(): void {
@@ -43,7 +57,7 @@ this._connection.on("SendMessage", (user: string, message: string) => {
   }
 
   private getToken(): string {
-    const token =  localStorage.getItem(AppConsts.Token) || '';
+    const token = sessionStorage.getItem(AppConsts.Token) || '';
     debugger;
     return token;
   }
@@ -58,8 +72,10 @@ this._connection.on("SendMessage", (user: string, message: string) => {
   }
 
   public sendMessage(user: string, message: string): void {
+
+    debugger;
     this._connection
-      .invoke('SendMessageToOthers', user, message)
+      .invoke(getMemberChattobEndpointsName('BroadcastMessage'), user, message)
       .catch((err) => console.error('Error while sending message: ' + err));
   }
 }
