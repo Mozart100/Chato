@@ -2,80 +2,57 @@ import { Injectable, OnInit } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import AppConsts from '../Consts/AppConsts';
 import { getMemberChattobEndpointsName } from '../Consts/ServerChatEndpoints';
-import { debug } from 'console';
 
 @Injectable({
   providedIn: 'root',
 })
 export class SignalrListenerService implements OnInit {
   private _connection: signalR.HubConnection;
-  
 
   constructor() {
-
-
-    debugger;
     this._connection = new signalR.HubConnectionBuilder()
       .withUrl('https://localhost:7138/chat', {
         accessTokenFactory: () => this.getToken(),
       })
       .build();
 
-    const ptr = getMemberChattobEndpointsName("BroadcastMessage");
-    debugger;
+    // Register SignalR event handlers
     this._connection.on(
-      getMemberChattobEndpointsName('BroadcastMessage'),
+      getMemberChattobEndpointsName('SendMessage'),
       (user: string, message: string) => {
         debugger;
-        // const decodedMessage = atob(message);
-        console.log(`Received from ${user} this message: ${message}`);
+        const decodedMessage = atob(message);
+        console.log(`Received from ${user} this message: ${decodedMessage}`);
       }
     );
 
-    this._connection.on(getMemberChattobEndpointsName('ReplyMessage'),(fromUser:string,message:string)=>{
-      debugger;
-      console.log(`Received from ${fromUser} this message: ${message}`);
-
-    })
-    
-    const ptr2 = getMemberChattobEndpointsName('SendMessageToOtherUser');
-    debugger; 
-    this._connection.on(ptr2,
-      (user: string, message: string) => {
-        debugger;
-        // const decodedMessage = atob(message);
-
-        console.log(`Received from ${user} this message: ${message}`);
-      }
-    );
-
-    // this.startConnection();
+  
   }
 
   ngOnInit(): void {
-    // Add any additional initialization logic
+    // Optionally start the connection here or call startConnection() from a component
+    this.startConnection();
   }
 
   private getToken(): string {
-    const token = sessionStorage.getItem(AppConsts.Token) || '';
-    debugger;
-    return token;
+    return sessionStorage.getItem(AppConsts.Token) || '';
   }
 
   public startConnection(): void {
     this._connection
       .start()
       .then(() => {
-        console.log('Connection started');
+        console.log('SignalR connection started');
       })
       .catch((err) => console.log('Error while starting connection: ' + err));
   }
 
   public sendMessage(user: string, message: string): void {
-
-    debugger;
     this._connection
-      .invoke(getMemberChattobEndpointsName('BroadcastMessage'), user, message)
+      .send(getMemberChattobEndpointsName('BroadcastMessage'), user, "kukariku")
+      .then(() => {
+        console.log('Message sent');
+      })
       .catch((err) => console.error('Error while sending message: ' + err));
   }
 }
