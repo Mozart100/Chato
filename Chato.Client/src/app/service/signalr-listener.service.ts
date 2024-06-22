@@ -15,27 +15,20 @@ export class SignalrListenerService implements OnInit {
       })
       .build();
 
-    this._connection.on("SendMessageToOthers", (user: string, message: string) => {
-  
-    
+    this._connection.on('SendMessageToOthers',
+      (user: string, message: string) => {
+        // const decodedMessage = atob(message);
+        console.log(`Received from ${user} this message: ${message}`);
+      }
+    );
+
+    this._connection.on('SendMessage', (user: string, message: string) => {
       // const decodedMessage = atob(message);
 
       console.log(`Received from ${user} this message: ${message}`);
+    });
 
-});
-
-this._connection.on("SendMessage", (user: string, message: string) => {
-  
-
-  // const decodedMessage = atob(message);
-
-  console.log(`Received from ${user} this message: ${message}`);
-
-});
-
-
-
-    this.startConnection();
+    // this.startConnection();
   }
 
   ngOnInit(): void {
@@ -43,7 +36,7 @@ this._connection.on("SendMessage", (user: string, message: string) => {
   }
 
   private getToken(): string {
-    const token =  localStorage.getItem(AppConsts.Token) || '';
+    const token = sessionStorage.getItem(AppConsts.Token) || '';
     debugger;
     return token;
   }

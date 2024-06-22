@@ -16,7 +16,8 @@ export class AppComponent implements OnInit {
   title = 'Chato.Client';
   messages:string="";
 
-  readonly UserName="anatoliy38";
+
+  UserName="anatoliy38";
 
   /**
    *
@@ -28,15 +29,19 @@ export class AppComponent implements OnInit {
   ngOnInit(): void {
     // this.matDialog.open(DialogBodyComponent,{width:"350pxs"});
 
+    this.UserName = this.generateRandomNumber() + this.UserName;
+    debugger;
     this._loginService.resistrationUser(this.UserName,"Qq123456").subscribe(res=>{
       console.log("app.component - registration response received session"+ res.token!);
       debugger;
       sessionStorage.setItem(AppConsts.Token,res.token!);
     });
 
-    this._signalrListenerService.sendMessage(this.UserName,"xxx");
   }
 
+  generateRandomNumber(): number {
+    return Math.floor(Math.random() * 10000) + 1;
+  }
 
   openDialog()
   {
@@ -45,6 +50,9 @@ export class AppComponent implements OnInit {
 
 
   onClicked(){
-      console.log("Pressed  " + this.messages);
+    this._signalrListenerService.startConnection();
+      console.log("SendMessage  ");
+    this._signalrListenerService.sendMessage(this.UserName,"xxx");
+    console.log("SendMessage  Succeeded!");
   }
 }
