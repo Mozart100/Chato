@@ -1,7 +1,7 @@
 ﻿using Chato.Server.DataAccess.Models;
 using Chato.Server.DataAccess.Repository;
 using Chato.Server.Infrastracture;
-using Chato.Server.Models.Dtos;
+using Chatto.Shared;
 using System.Security.Claims;
 
 namespace Chato.Server.Services;

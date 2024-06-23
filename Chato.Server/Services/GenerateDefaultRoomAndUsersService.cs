@@ -1,4 +1,4 @@
-﻿using Chato.Server.Models.Dtos;
+﻿using Chatto.Shared;
 
 namespace Chato.Server.Services;
 

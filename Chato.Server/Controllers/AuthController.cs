@@ -1,5 +1,5 @@
-﻿using Chato.Server.Models.Dtos;
-using Chato.Server.Services;
+﻿using Chato.Server.Services;
+using Chatto.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 

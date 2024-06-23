@@ -1,6 +1,5 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
-using Chato.Automation.Responses;
-using Chato.Server.Models.Dtos;
+using Chatto.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace Chato.Automation.Scenario;

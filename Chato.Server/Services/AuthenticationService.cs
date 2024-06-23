@@ -1,16 +1,12 @@
 ﻿using Chato.Server.Controllers;
 using Chato.Server.Infrastracture;
-using Chato.Server.Models.Dtos;
 using Chato.Server.Services.Validations;
-using Microsoft.AspNetCore.Mvc.RazorPages;
+using Chatto.Shared;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System.IdentityModel.Tokens.Jwt;
-using System.Reflection;
-using System.Reflection.Metadata;
 using System.Security.Claims;
 using System.Security.Cryptography;
-using System.Xml.Linq;
 
 namespace Chato.Server.Services;
 
