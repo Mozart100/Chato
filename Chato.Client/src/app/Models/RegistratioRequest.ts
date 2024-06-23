@@ -1,6 +1,5 @@
 export interface RegistrationRequest {
     userName?: string ;
-    password?: string ;
 }
 
 export interface RegistrationResponse {

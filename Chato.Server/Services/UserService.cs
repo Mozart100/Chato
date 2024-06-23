@@ -15,7 +15,8 @@ public interface IUserService
     string GetMyName();
     Task<User> GetUserByConnectionId(string connectionId);
     Task<User> GetUserByNameOrIdGetOrDefaultAsync(string nameOrId);
-    Task RegisterAsync(string username, byte[] passwordHash, string description, string gender, int age);
+    Task RegisterAsync(string username, string description, string gender, int age);
+    //Task RegisterAsync(string username, byte[] passwordHash, string description, string gender, int age);
     Task<bool> RemoveUserByUserNameOrIdAsync(string userNameOrId);
     Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<byte[]> files);
 }
@@ -45,9 +46,9 @@ public class UserService : IUserService
         return result;
     }
 
-    public async Task RegisterAsync(string username, byte[] passwordHash, string description, string gender, int age)
+    public async Task RegisterAsync(string username,  string description, string gender, int age)
     {
-        await _delegateQueue.InvokeAsync(async () => await _userRepository.InsertAsync(new UserDb { Id = username, PasswordHash = passwordHash, Description = description, Gender = gender, Age = age }));
+        await _delegateQueue.InvokeAsync(async () => await _userRepository.InsertAsync(new UserDb { Id = username, Description = description, Gender = gender, Age = age }));
     }
 
 

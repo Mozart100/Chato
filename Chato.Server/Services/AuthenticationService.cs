@@ -16,7 +16,7 @@ namespace Chato.Server.Services;
 
 public interface IAuthenticationService
 {
-    void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
+    //void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt);
     string CreateToken(string user);
     //Task<string> RegisterAsync(string userName, string password, string description, string gender, int age);
     Task<string> RegisterAsync(RegistrationRequest request);
@@ -42,7 +42,7 @@ public class AuthenticationService : IAuthenticationService
     public async Task<string> RegisterAsync(RegistrationRequest request)
     {
         await _registrationValidationService.RegistrationRequestValidateAsync(request);
-        return await RegisterAsync(request.UserName, request.Password, request.Description, request.Gender, request.Age);
+        return await RegisterAsync(request.UserName,  request.Description, request.Gender, request.Age);
     }
 
     public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents)
@@ -100,7 +100,7 @@ public class AuthenticationService : IAuthenticationService
     }
 
 
-    public void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
+    private void CreatePasswordHash(string password, out byte[] passwordHash, out byte[] passwordSalt)
     {
         using (var hmac = new HMACSHA512())
         {
@@ -109,13 +109,14 @@ public class AuthenticationService : IAuthenticationService
         }
     }
 
-    private async Task<string> RegisterAsync(string userName, string password, string description, string gender, int age)
+    private async Task<string> RegisterAsync(string userName, string description, string gender, int age)
     {
         var token = CreateToken(userName);
 
-        CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
+        //CreatePasswordHash(password, out byte[] passwordHash, out byte[] passwordSalt);
 
-        await _userService.RegisterAsync(userName, passwordHash, description, gender, age);
+        await _userService.RegisterAsync(userName, description, gender, age);
+        //await _userService.RegisterAsync(userName, passwordHash, descrkccption, gender, age);
 
         return token;
 

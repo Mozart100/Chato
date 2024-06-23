@@ -19,7 +19,7 @@ public class UserDb : User
         set => UserName = value;
     }
 
-    public byte[] PasswordHash { get; init; }
+    //public byte[] PasswordHash { get; init; }
 
     public byte [] Document1 { get; set; }
     public byte [] Document2 { get; set; }

@@ -25,18 +25,18 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
 
     private async Task SetupGroupStep()
     {
-        var request = new RegistrationRequest { Password = "string", UserName = Anatoliy_User, Age = 20, Description = $"Description_{Anatoliy_User}" };
+        var request = new RegistrationRequest {  UserName = Anatoliy_User, Age = 20, Description = $"Description_{Anatoliy_User}" };
         await RegisterUser(request);
 
 
-        request = new RegistrationRequest { Password = "string", UserName = Anatoliy_User, Age = 10, Description = $"Description_{Anatoliy_User}", Gender = "male" };
+        request = new RegistrationRequest {  UserName = Anatoliy_User, Age = 10, Description = $"Description_{Anatoliy_User}", Gender = "male" };
         await RegisterUser(request);
 
 
         await RegisterUsers(Anatoliy_User);
 
 
-        request = new RegistrationRequest { Password = "string", UserName = Anatoliy_User, Age = 20, Description = $"Description_{Anatoliy_User}", Gender = "male" };
+        request = new RegistrationRequest {  UserName = Anatoliy_User, Age = 20, Description = $"Description_{Anatoliy_User}", Gender = "male" };
         await RegisterUser(request);
 
 

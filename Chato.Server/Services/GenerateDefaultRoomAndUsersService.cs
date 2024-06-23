@@ -35,7 +35,7 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
             var request = new RegistrationRequest()
             {
                 UserName = $"{IUsersPreload.DefaultRoom}__User{j + 1}",
-                Password = $"{IUsersPreload.DefaultRoom}__Password{j + 1}",
+                //Password = $"{IUsersPreload.DefaultRoom}__Password{j + 1}",
                 Description = $"Description_{IUsersPreload.DefaultRoom}",
                 Gender = "male",
                 Age = 20,
