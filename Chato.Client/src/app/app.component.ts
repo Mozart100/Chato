@@ -30,7 +30,8 @@ export class AppComponent implements OnInit {
     // this.matDialog.open(DialogBodyComponent,{width:"350pxs"});
 
     this.UserName = this.generateRandomNumber() + this.UserName;
-    this._loginService.resistrationUser(this.UserName,"Qq123456").subscribe(res=>{
+    const password = this.generateRandomNumber() + "Qq123456";
+    this._loginService.resistrationUser(this.UserName,password).subscribe(res=>{
       console.log("app.component - registration response received session"+ res.token!);
       sessionStorage.setItem(AppConsts.Token,res.token!);
     });
@@ -48,9 +49,6 @@ export class AppComponent implements OnInit {
 
 
   onClicked(){
-    this._signalrListenerService.startConnection();
-      console.log("SendMessage  ");
     this._signalrListenerService.sendMessage(this.UserName,"xxx");
-    console.log("SendMessage  Succeeded!");
   }
 }

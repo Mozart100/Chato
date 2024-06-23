@@ -12,26 +12,51 @@ export class SignalrListenerService implements OnInit {
   constructor() {
     this._connection = new signalR.HubConnectionBuilder()
       .withUrl('https://localhost:7138/chat', {
-        accessTokenFactory: () => this.getToken(),
+        accessTokenFactory: ()=>  this.getToken(),
       })
+      .withAutomaticReconnect()
+      .configureLogging(signalR.LogLevel.Information)
       .build();
 
-    // Register SignalR event handlers
-    this._connection.on(
-      getMemberChattobEndpointsName('SendMessage'),
-      (user: string, message: string) => {
+      // Register SignalR event handlers
+      this._connection.on(
+        'SendMessage',
+        (user: string, message: string) => {
         debugger;
         const decodedMessage = atob(message);
-        console.log(`Received from ${user} this message: ${decodedMessage}`);
+        console.log(`Received from [${user}] this message: ${decodedMessage}`);
       }
     );
 
+
+    this._connection.on(
+      'SendAll',
+      (user: string, message: string) => {
+      debugger;
+      console.log(`Received from [${user}] this message: ${message}`);
+    }
+    
+  );
+
+  
+  this._connection.on(
+    'SendText',
+    (user: string, message: string) => {
+    debugger;
+    console.log(`Received from [${user}] this message: ${message}`);
+  }
+  
+);
+
+  
+    
+    
+    this.startConnection();
   
   }
 
   ngOnInit(): void {
     // Optionally start the connection here or call startConnection() from a component
-    this.startConnection();
   }
 
   private getToken(): string {
@@ -48,8 +73,11 @@ export class SignalrListenerService implements OnInit {
   }
 
   public sendMessage(user: string, message: string): void {
+
+    const encodedMessage = btoa('hello'); // base64 encode the message
+    const messageBytes = new TextEncoder().encode(encodedMessage); 
     this._connection
-      .send(getMemberChattobEndpointsName('BroadcastMessage'), user, "kukariku")
+      .send('SendAll', user, 'hello')
       .then(() => {
         console.log('Message sent');
       })

@@ -13,6 +13,7 @@ public record HubDownloadInfo(int Amount);
 public interface IChatHub
 {
     Task SendMessage(string fromUser, byte[] message);
+    Task SendText(string fromUser, string message);
     //Task SendToUser(string fromUser, byte[] message);
 }
 
@@ -71,9 +72,15 @@ public class ChattoHub : Hub<IChatHub> , IChattobEndpoints
         return Clients.Caller.SendMessage(fromUser, message);
     }
 
+    public Task SendAll(string fromUser, string message)
+    {
+        return Clients.Others.SendText(fromUser,message);
+    }
+
 
     public Task BroadcastMessage(string fromUser, byte[] message)
     {
+        var str = Encoding.UTF8.GetString(message);
         return Clients.Others.SendMessage(fromUser, message);
     }
 
@@ -150,18 +157,4 @@ public class ChattoHub : Hub<IChatHub> , IChattobEndpoints
         }
     }
 
-
-
-
-    //public async IAsyncEnumerable<string> Download(HubDownloadInfo downloadInfo, [EnumeratorCancellation] CancellationToken cancellationToken)
-    //{
-    //    var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "css.txt");
-    //    var bytes = File.ReadAllBytes(path);
-
-    //    for (var i = 0; i < downloadInfo.Amount && cancellationToken.IsCancellationRequested == false; i++)
-    //    {
-    //        yield return $"Download - {i}";
-    //        await Task.Delay(200);
-    //    }
-    //}
 }
