@@ -6,12 +6,12 @@ import {
   RegistrationResponse,
 } from '../Models/RegistratioRequest';
 import { Observable } from 'rxjs';
-import { ServiceBase } from './ServiceBase';
+import { HttpServiceBase } from './ServiceBase';
 
 @Injectable({
   providedIn: 'root',
 })
-export class LoginService extends ServiceBase {
+export class LoginService extends HttpServiceBase {
   constructor(httpClient: HttpClient) {
     super(httpClient);
   }

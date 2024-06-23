@@ -2,13 +2,13 @@ import { Injectable } from '@angular/core';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { ServiceBase } from './ServiceBase';
+import { HttpServiceBase } from './ServiceBase';
 import { ChatRoomDto, GetAllRoomResponse } from '../Models/GetAllRoomResponse';
 
 @Injectable({
   providedIn: 'root',
 })
-export class RoomService extends ServiceBase {
+export class RoomService extends HttpServiceBase {
 
   private _roomsSubject = new BehaviorSubject<ChatRoomDto[]>([]);
   rooms$: Observable<ChatRoomDto[]> = this._roomsSubject.asObservable();

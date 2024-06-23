@@ -14,7 +14,7 @@ import { SignalrListenerService } from './service/signalr-listener.service';
 })
 export class AppComponent implements OnInit {
   title = 'Chato.Client';
-  messages:string="";
+  message:string="";
 
 
   UserName="anatoliy38";
@@ -49,6 +49,6 @@ export class AppComponent implements OnInit {
 
 
   onClicked(){
-    this._signalrListenerService.sendMessage(this.UserName,"xxx");
+    this._signalrListenerService.sendMessage(this.UserName,this.message);
   }
 }
