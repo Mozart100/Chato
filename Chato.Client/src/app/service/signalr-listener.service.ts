@@ -1,7 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import AppConsts from '../Consts/AppConsts';
-import { getMemberChattobEndpointsName } from '../Consts/ServerChatEndpoints';
+import { ToChattobEndpoint } from '../Consts/ServerChatEndpoints';
 
 @Injectable({
   providedIn: 'root',
@@ -20,9 +20,8 @@ export class SignalrListenerService implements OnInit {
 
       // Register SignalR event handlers
       this._connection.on(
-        'SendMessage',
+        ToChattobEndpoint('SendMessage'),
         (user: string, message: string) => {
-        debugger;
         const decodedMessage = atob(message);
         console.log(`Received from [${user}] this message: ${decodedMessage}`);
       }
@@ -30,26 +29,12 @@ export class SignalrListenerService implements OnInit {
 
 
     this._connection.on(
-      'SendAll',
+      ToChattobEndpoint('SendText'),
       (user: string, message: string) => {
-      debugger;
       console.log(`Received from [${user}] this message: ${message}`);
     }
     
   );
-
-  
-  this._connection.on(
-    'SendText',
-    (user: string, message: string) => {
-    debugger;
-    console.log(`Received from [${user}] this message: ${message}`);
-  }
-  
-);
-
-  
-    
     
     this.startConnection();
   
@@ -74,10 +59,10 @@ export class SignalrListenerService implements OnInit {
 
   public sendMessage(user: string, message: string): void {
 
-    const encodedMessage = btoa('hello'); // base64 encode the message
-    const messageBytes = new TextEncoder().encode(encodedMessage); 
+    // const encodedMessage = btoa('hello'); // base64 encode the message
+    // const messageBytes = new TextEncoder().encode(encodedMessage); 
     this._connection
-      .send('SendAll', user, 'hello')
+      .send(ToChattobEndpoint('SendAll'), user, message)
       .then(() => {
         console.log('Message sent');
       })
