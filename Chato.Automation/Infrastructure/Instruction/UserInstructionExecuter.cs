@@ -19,17 +19,17 @@ public class UserInstructionExecuter
 {
     public const string Hub_From_Server = "server";
 
-    private const string Hub_Send_Message_To_Others_Topic = nameof(IChattobEndpoints.BroadcastMessage);
+    private const string Hub_Send_Message_To_Others_Topic = nameof(ChattoHub.BroadcastMessage);
 
-    private const string Hub_Send_Other_In_Group_Topic = nameof(IChattobEndpoints.SendMessageToOthersInGroup);
-    private const string Hub_Leave_Group_Topic = nameof(IChattobEndpoints.LeaveGroup);
-    private const string Hub_Join_Group_Topic = nameof(IChattobEndpoints.JoinGroup);
+    private const string Hub_Send_Other_In_Group_Topic = nameof(ChattoHub.SendMessageToOthersInGroup);
+    private const string Hub_Leave_Group_Topic = nameof(ChattoHub.LeaveGroup);
+    private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinGroup);
 
-    private const string Hub_Download_Topic = nameof(IChattobEndpoints.Downloads);
-    private const string Hub_GetGroupHistory_Topic = nameof(IChattobEndpoints.GetGroupHistory);
-    private const string Hub_RemoveGroupHistory_Topic = nameof(IChattobEndpoints.RemoveChatHistory);
-    private const string Hub_SendMessageToOtherUser_Topic = nameof(IChattobEndpoints.SendMessageToOtherUser);
-    private const string Hub_OnDisconnectedAsync_Topic = nameof(IChattobEndpoints.UserDisconnectAsync);
+    private const string Hub_Download_Topic = nameof(ChattoHub.Downloads);
+    private const string Hub_GetGroupHistory_Topic = nameof(ChattoHub.GetGroupHistory);
+    private const string Hub_RemoveGroupHistory_Topic = nameof(ChattoHub.RemoveChatHistory);
+    private const string Hub_SendMessageToOtherUser_Topic = nameof(ChattoHub.SendMessageToOtherUser);
+    private const string Hub_OnDisconnectedAsync_Topic = nameof(ChattoHub.UserDisconnectAsync);
 
 
 
