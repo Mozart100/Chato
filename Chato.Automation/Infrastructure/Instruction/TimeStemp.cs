@@ -1,30 +1,23 @@
 ﻿namespace Chato.Automation.Infrastructure.Instruction;
 
 
-public struct TimeStemp
+public struct TimeStamp
 {
-    private int _start;
+    private readonly int _start;
 
-    public void Start()
+    private TimeStamp(int start)
     {
-        _start = Environment.TickCount;
+        _start = start;
     }
 
-    public int StartTimestamp
+    public static TimeStamp Reset()
     {
-        get { return _start; }
+        return new TimeStamp(Environment.TickCount);
     }
-
     public int Elapsed
     {
         get { return Environment.TickCount - _start; }
     }
-
-    public static TimeStemp Reset()
-    {
-        return new TimeStemp();
-    }
-
 
     public bool IsSecondOver(int seconds)
     {

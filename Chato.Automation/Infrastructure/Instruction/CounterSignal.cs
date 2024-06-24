@@ -45,7 +45,7 @@ public class CounterSignal
             var isReleased = await Task.Run(async () =>
             {
                 var result = false;
-                var timeStemp = TimeStemp.Reset();
+                var timeStemp = TimeStamp.Reset();
                 do
                 {
                     if (await IsReleased())
@@ -56,7 +56,7 @@ public class CounterSignal
 
                     await Task.Delay(period);
 
-                } while (timeStemp.IsSecondOver(timeoutInSecond));
+                } while (timeStemp.IsSecondOver(timeoutInSecond) == false);
 
                 return result;
             });
@@ -100,7 +100,6 @@ public class CounterSignal
     {
         await _counterSignal.Reset();
     }
-
 
     public async Task SetThrasholdAsync(int thrashold)
     {
