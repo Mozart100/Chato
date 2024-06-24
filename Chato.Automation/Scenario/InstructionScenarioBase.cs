@@ -113,6 +113,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         _actionMapper.Add(UserInstructions.Received_Instrauction, async (userExecuter, instruction) => await userExecuter.ListenToStringCheckAsync(instruction.FromArrived, instruction.Message));
         _actionMapper.Add(UserInstructions.Not_Received_Instrauction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync());
         _actionMapper.Add(UserInstructions.Run_Download_Instrauction, async (userExecuter, instruction) => await userExecuter.DownloadStream(instruction.Message));
+        _actionMapper.Add(UserInstructions.Get_Group_Info_Instrauction, async (userExecuter, instruction) => await userExecuter.GetGroupInfo(instruction.GroupName));
     }
 
 

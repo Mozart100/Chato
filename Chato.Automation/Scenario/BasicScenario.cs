@@ -55,12 +55,11 @@ internal class BasicScenario : InstructionScenarioBase
         var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
         var anatoliySender = firstGroup.SendingTo(Anatoliy_User, Nathan_User);
-        var nathanReceive1 = firstGroup.RecievingFrom(Nathan_User, anatoliySender.UserName);
+        var nathanReceive1 = firstGroup.ReceivingFrom(Nathan_User, anatoliySender.UserName);
         var olessyaReceive1 = firstGroup.Is_Not_Received(Olessya_User);
 
 
-        anatoliySender.Connect(nathanReceive1, olessyaReceive1);
-
+        anatoliySender.Connect(nathanReceive1, olessyaReceive1).GetGroupInfo(firstGroup.GroupName);
         var graph = new InstructionGraph(anatoliySender);
         await InstructionExecuter(graph);
 
@@ -76,8 +75,8 @@ internal class BasicScenario : InstructionScenarioBase
         var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
         var anatoliySender = firstGroup.SendingBroadcast(Anatoliy_User);
-        var olessyaReceive1 = firstGroup.RecievingFrom(Olessya_User, anatoliySender.UserName);
-        var nathanReceive1 = firstGroup.RecievingFrom(Nathan_User, anatoliySender.UserName);
+        var olessyaReceive1 = firstGroup.ReceivingFrom(Olessya_User, anatoliySender.UserName);
+        var nathanReceive1 = firstGroup.ReceivingFrom(Nathan_User, anatoliySender.UserName);
 
         anatoliySender.Connect(olessyaReceive1, nathanReceive1);
 
@@ -101,7 +100,7 @@ internal class BasicScenario : InstructionScenarioBase
 
         var anatoliySender = firstGroup.SendingBroadcast(Anatoliy_User);
         var olessyaSender = firstGroup.SendingBroadcast(Olessya_User);
-        var maxReceiver1 = firstGroup.RecievingFrom(Max_User, olessyaSender.UserName);
+        var maxReceiver1 = firstGroup.ReceivingFrom(Max_User, olessyaSender.UserName);
 
         anatoliySender.Connect(olessyaSender)
             .Do(maxReceiver1, async user =>
@@ -109,7 +108,7 @@ internal class BasicScenario : InstructionScenarioBase
                 await RegisterUsers(Max_User);
                 await AssignUserToGroupAsync(First_Group, Max_User);
             })
-            .Verificationn(Max_User, anatoliySender, olessyaSender);
+            .ReceivedVerification(Max_User, anatoliySender, olessyaSender);
 
         var graph = new InstructionGraph(anatoliySender);
         await InstructionExecuter(graph);

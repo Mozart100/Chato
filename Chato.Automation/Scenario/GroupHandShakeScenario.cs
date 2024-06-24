@@ -46,7 +46,7 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
         var groupRoot = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
         var anatoliySender = groupRoot.SendingBroadcast(Anatoliy_User);
-        var olessyaReceive = groupRoot.RecievingFrom(Olessya_User, anatoliySender.UserName);
+        var olessyaReceive = groupRoot.ReceivingFrom(Olessya_User, anatoliySender.UserName);
 
 
 
@@ -55,7 +55,7 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
         var secondRoot = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_2);
 
         var olessyaSender = secondRoot.SendingBroadcast(Olessya_User);
-        var anatoliyReceiver = secondRoot.RecievingFrom(Anatoliy_User, olessyaSender.UserName);
+        var anatoliyReceiver = secondRoot.ReceivingFrom(Anatoliy_User, olessyaSender.UserName);
 
 
         anatoliySender.Connect(olessyaReceive).Connect(olessyaSender).Connect(anatoliyReceiver);
@@ -73,8 +73,8 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
 
 
         var anatoliySender = firstGroup.SendingBroadcast(Anatoliy_User);
-        var olessyaReceive1 = firstGroup.RecievingFrom(Olessya_User, anatoliySender.UserName);
-        var nathanReceive1 = firstGroup.RecievingFrom(Nathan_User, anatoliySender.UserName);
+        var olessyaReceive1 = firstGroup.ReceivingFrom(Olessya_User, anatoliySender.UserName);
+        var nathanReceive1 = firstGroup.ReceivingFrom(Nathan_User, anatoliySender.UserName);
         var nataliRecevier = secondtGroup.Is_Not_Received(Natali_User);
 
 
@@ -83,9 +83,9 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
 
 
         var olessyaSender = secondRoot.SendingBroadcast(Olessya_User);
-        var anatoliyReceiver = secondRoot.RecievingFrom(Anatoliy_User, olessyaSender.UserName);
-        var nathanReceiver2 = secondRoot.RecievingFrom(Nathan_User, olessyaSender.UserName);
-        var maxReceiver1 = secondRoot.RecievingFrom(Max_User, olessyaSender.UserName);
+        var anatoliyReceiver = secondRoot.ReceivingFrom(Anatoliy_User, olessyaSender.UserName);
+        var nathanReceiver2 = secondRoot.ReceivingFrom(Nathan_User, olessyaSender.UserName);
+        var maxReceiver1 = secondRoot.ReceivingFrom(Max_User, olessyaSender.UserName);
 
 
         anatoliySender.Connect(nataliRecevier, nathanReceive1, olessyaReceive1)
@@ -94,7 +94,7 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
                 await RegisterUsers(Max_User);
                 await AssignUserToGroupAsync(First_Group, Max_User);
             })
-            .Verificationn(Max_User, anatoliySender)
+            .ReceivedVerification(Max_User, anatoliySender)
             .Connect(olessyaSender).Connect(anatoliyReceiver, nathanReceiver2, maxReceiver1);
 
         var graph = new InstructionGraph(anatoliySender);
