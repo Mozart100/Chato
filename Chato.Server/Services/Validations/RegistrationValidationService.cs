@@ -1,5 +1,5 @@
 ﻿using Arkovean.Chat.Services.Validations;
-using Chato.Server.Models.Dtos;
+using Chatto.Shared;
 using FluentValidation;
 
 namespace Chato.Server.Services.Validations

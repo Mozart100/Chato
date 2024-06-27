@@ -1,5 +1,6 @@
 ﻿
 using Chato.Server.Infrastracture;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace Chato.Server.DataAccess.Models;
 
@@ -35,6 +36,8 @@ public struct ChatRoomDto
         SenderInfo = senderInfos;
         Users = users;
     }
+
+    public static ChatRoomDto Empty() => new ChatRoomDto("", null, null);
 
     public override int GetHashCode() => RoomName.GetHashCode();
 

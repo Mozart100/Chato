@@ -1,6 +1,5 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
-using Chato.Automation.Responses;
-using Chato.Server.Models.Dtos;
+using Chatto.Shared;
 using Microsoft.Extensions.Logging;
 
 namespace Chato.Automation.Scenario;
@@ -33,7 +32,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
     {
         foreach (var user in users)
         {
-            var registrationRequest = new RegistrationRequest {  UserName = user  , Age =20 , Description=$"Description_{user}" , Gender ="male" };
+            var registrationRequest = new RegistrationRequest { UserName = user, Age = 20, Description = $"Description_{user}", Gender = "male" };
             var registrationInfo = await RunPostCommand<RegistrationRequest, RegistrationResponse>(RegisterAuthControllerUrl, registrationRequest);
 
             var executer = new UserInstructionExecuter(registrationInfo, HubUrl, Logger, _counterSignal);
@@ -92,7 +91,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
             {
-                throw new Exception("Not all users receved their messages");
+                throw new Exception("Not all users received their messages");
             }
         });
 
@@ -106,10 +105,20 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
             {
-                throw new Exception("Not all users receved their messages");
+                throw new Exception("Not all users received their messages");
             }
         });
 
+        //_actionMapper.Add(UserInstructions.Get_Group_Info_Instrauction, async (userExecuter, instruction) =>
+        //{
+        //    await _counterSignal.SetThrasholdAsync(1);
+
+        //    await userExecuter.GetGroupInfo(instruction.GroupName);
+        //    if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
+        //    {
+        //        throw new Exception("Not all users received their messages");
+        //    }
+        //});
 
         _actionMapper.Add(UserInstructions.Received_Instrauction, async (userExecuter, instruction) => await userExecuter.ListenToStringCheckAsync(instruction.FromArrived, instruction.Message));
         _actionMapper.Add(UserInstructions.Not_Received_Instrauction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync());

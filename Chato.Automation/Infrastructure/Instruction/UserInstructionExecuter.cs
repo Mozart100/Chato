@@ -1,11 +1,9 @@
 ﻿using Chato.Automation.Extensions;
-using Chato.Automation.Responses;
 using Chato.Server.DataAccess.Models;
 using Chato.Server.Hubs;
 using Chato.Server.Infrastracture;
-using Chato.Server.Models.Dtos;
+using Chatto.Shared;
 using FluentAssertions;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using System.Text;
@@ -21,17 +19,18 @@ public class UserInstructionExecuter
 {
     public const string Hub_From_Server = "server";
 
-    private const string Hub_Send_Message_To_Others_Topic = nameof(IChattobEndpoints.BroadcastMessage);
+    private const string Hub_Send_Message_To_Others_Topic = nameof(ChattoHub.BroadcastMessage);
 
-    private const string Hub_Send_Other_In_Group_Topic = nameof(IChattobEndpoints.SendMessageToOthersInGroup);
-    private const string Hub_Leave_Group_Topic = nameof(IChattobEndpoints.LeaveGroup);
-    private const string Hub_Join_Group_Topic = nameof(IChattobEndpoints.JoinGroup);
+    private const string Hub_Send_Other_In_Group_Topic = nameof(ChattoHub.SendMessageToOthersInGroup);
+    private const string Hub_Leave_Group_Topic = nameof(ChattoHub.LeaveGroup);
+    private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinGroup);
+    //private const string Hub_Get_Group_Info_Topic = nameof(ChattoHub.GetGroupInfo);
 
-    private const string Hub_Download_Topic = nameof(IChattobEndpoints.Downloads);
-    private const string Hub_GetGroupHistory_Topic = nameof(IChattobEndpoints.GetGroupHistory);
-    private const string Hub_RemoveGroupHistory_Topic = nameof(IChattobEndpoints.RemoveChatHistory);
-    private const string Hub_SendMessageToOtherUser_Topic = nameof(IChattobEndpoints.SendMessageToOtherUser);
-    private const string Hub_OnDisconnectedAsync_Topic = nameof(IChattobEndpoints.UserDisconnectAsync);
+    private const string Hub_Download_Topic = nameof(ChattoHub.Downloads);
+    private const string Hub_GetGroupHistory_Topic = nameof(ChattoHub.GetGroupHistory);
+    private const string Hub_RemoveGroupHistory_Topic = nameof(ChattoHub.RemoveChatHistory);
+    private const string Hub_SendMessageToOtherUser_Topic = nameof(ChattoHub.SendMessageToOtherUser);
+    private const string Hub_OnDisconnectedAsync_Topic = nameof(ChattoHub.UserDisconnectAsync);
 
 
 
@@ -150,6 +149,14 @@ public class UserInstructionExecuter
     }
 
 
+    //public async Task GetGroupInfo( string groupName)
+    //{
+    //    _logger.LogInformation($"Getting {UserName} info.");
+
+    //    await _connection.InvokeAsync(Hub_Get_Group_Info_Topic, groupName);
+    //}
+
+
     public async Task DownloadStream(byte[] message)
     {
         _logger.LogInformation($"{UserName} download.");
@@ -191,6 +198,13 @@ public class UserInstructionExecuter
                 var message = Encoding.UTF8.GetString(ptr);
                 _logger.LogWarning($"{UserName} received message [{message}] but was ignored from [{user}].");
             }
+        });
+
+
+        _connection.On<string>(nameof(IChatHub.SelfReplay), async (message) =>
+        {
+            var ptr = Encoding.UTF8.GetBytes(message);
+            await ExpectedMessages(UserName, ptr);
         });
 
     }

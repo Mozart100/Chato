@@ -1,4 +1,4 @@
-﻿namespace Chato.Server.Models.Dtos;
+﻿namespace Chatto.Shared;
 
 
 public class RegistrationRequest
@@ -7,7 +7,7 @@ public class RegistrationRequest
     //public string Password { get; set; } = string.Empty;
     public int Age { get; set; }
     public string Description { get; set; }
-    public string Gender { get; set; } = string.Empty ;
+    public string Gender { get; set; } = string.Empty;
 }
 
 public class UserResponse

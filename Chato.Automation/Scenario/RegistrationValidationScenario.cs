@@ -1,4 +1,4 @@
-﻿using Chato.Server.Models.Dtos;
+﻿using Chatto.Shared;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 

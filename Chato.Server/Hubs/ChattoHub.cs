@@ -1,19 +1,23 @@
 ﻿using Chato.Server.DataAccess.Models;
-using Chato.Server.DataAccess.Repository;
 using Chato.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Runtime.CompilerServices;
 using System.Text;
+using System.Text.Json;
 
 namespace Chato.Server.Hubs;
 
 public record HubDownloadInfo(int Amount);
 
+
 public interface IChatHub
 {
     Task SendMessage(string fromUser, byte[] message);
     Task SendText(string fromUser, string message);
+    Task SelfReplay(string message);
+
+    //Task NotifyGroupInfo(string type , string message);
     //Task SendToUser(string fromUser, byte[] message);
 }
 
@@ -23,21 +27,13 @@ public interface IChattobEndpoints
     Task ReplyMessage(string fromUser, byte[] message);
     Task SendMessageToOtherUser(string fromUser, string toUser, byte[] ptr);
 
+    //Task GetGroupInfo(string groupNamekc);
 
-    IAsyncEnumerable<byte[]> Downloads(HubDownloadInfo downloadInfo, [EnumeratorCancellation] CancellationToken cancellationToken);
-    IAsyncEnumerable<SenderInfo> GetGroupHistory(string roomName, [EnumeratorCancellation] CancellationToken cancellationToken);
-    Task JoinGroup(string roomName);
-    Task LeaveGroup(string groupName);
-    Task OnConnectedAsync();
-    Task RemoveChatHistory(string groupName);
-    Task SendMessageToOthersInGroup(string group, string fromUser, byte[] ptr);
-    
-    Task UserDisconnectAsync();
 }
 
 
 [Authorize]
-public class ChattoHub : Hub<IChatHub> , IChattobEndpoints
+public class ChattoHub : Hub<IChatHub>, IChattobEndpoints
 {
     private readonly IUserService _userService;
     private readonly IRoomService _roomService;
@@ -74,7 +70,7 @@ public class ChattoHub : Hub<IChatHub> , IChattobEndpoints
 
     public Task SendAll(string fromUser, string message)
     {
-        return Clients.Others.SendText(fromUser,message);
+        return Clients.Others.SendText(fromUser, message);
     }
 
 
@@ -83,6 +79,24 @@ public class ChattoHub : Hub<IChatHub> , IChattobEndpoints
         var str = Encoding.UTF8.GetString(message);
         return Clients.Others.SendMessage(fromUser, message);
     }
+
+    //public async Task GetGroupInfo(string groupName)
+    //{
+    //    var roomInfo = await _roomService.GetRoomByNameOrIdAsync(groupName);
+
+    //    var serialized = string.Empty;
+
+    //    if (roomInfo is not null)
+    //    {
+    //        serialized = JsonSerializer.Serialize(roomInfo);
+    //    }
+    //    else
+    //    {
+    //        serialized = JsonSerializer.Serialize(ChatRoomDto.Empty());
+    //    }
+
+    //    await Clients.Caller.SelfReplay(serialized);
+    //}
 
     public async Task SendMessageToOthersInGroup(string group, string fromUser, byte[] ptr)
     {

@@ -1,5 +1,5 @@
 ﻿using Chato.Server.DataAccess.Models;
-using Chato.Server.Models.Dtos;
+using Chatto.Shared;
 
 namespace Chato.Server.Services;
 

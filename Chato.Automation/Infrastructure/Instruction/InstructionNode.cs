@@ -39,7 +39,7 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode RecievingFrom(this InstructionNode info, string userName, string arrivedFrom)
+    public static InstructionNode ReceivingFrom(this InstructionNode info, string userName, string arrivedFrom)
     {
         var @new = info with
         {
@@ -53,7 +53,23 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    internal static InstructionNode Verificationn(this InstructionNode info, string userName, params InstructionNode[] fromInstructions)
+    //public static InstructionNode GetGroupInfo(this InstructionNode info,  string groupName)
+    //{
+    //    var @new = info with
+    //    {
+    //        UserName = info.UserName,
+    //        Instruction = new GetRoomInfoInstruction(),
+    //        FromArrived = null,
+    //        Children = new(),
+    //    };
+
+    //    var result = Connect(info, @new);
+    //    return result;
+    //}
+
+
+
+    internal static InstructionNode ReceivedVerification(this InstructionNode info, string userName, params InstructionNode[] fromInstructions)
     {
         var current = info;
         foreach (var instruction in fromInstructions)

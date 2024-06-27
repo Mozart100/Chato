@@ -63,8 +63,8 @@ internal class HubStreamScenario : InstructionScenarioBase
 
 
         var anatoliySender = firstGroup.SendingBroadcast(Anatoliy_User);
-        var olessyaReceive1 = firstGroup.RecievingFrom(Olessya_User, anatoliySender.UserName);
-        var nathanReceive1 = firstGroup.RecievingFrom(Nathan_User, anatoliySender.UserName);
+        var olessyaReceive1 = firstGroup.ReceivingFrom(Olessya_User, anatoliySender.UserName);
+        var nathanReceive1 = firstGroup.ReceivingFrom(Nathan_User, anatoliySender.UserName);
         var nataliRecevier = secondtGroup.Is_Not_Received(Natali_User);
 
 
@@ -73,9 +73,9 @@ internal class HubStreamScenario : InstructionScenarioBase
 
 
         var olessyaSender = secondRoot.SendingBroadcast(Olessya_User);
-        var anatoliyReceiver = secondRoot.RecievingFrom(Anatoliy_User, olessyaSender.UserName);
-        var nathanReceiver2 = secondRoot.RecievingFrom(Nathan_User, olessyaSender.UserName);
-        var maxReceiver1 = secondRoot.RecievingFrom(Max_User, olessyaSender.UserName);
+        var anatoliyReceiver = secondRoot.ReceivingFrom(Anatoliy_User, olessyaSender.UserName);
+        var nathanReceiver2 = secondRoot.ReceivingFrom(Nathan_User, olessyaSender.UserName);
+        var maxReceiver1 = secondRoot.ReceivingFrom(Max_User, olessyaSender.UserName);
 
 
         anatoliySender.Connect(nataliRecevier, nathanReceive1, olessyaReceive1)
@@ -84,7 +84,7 @@ internal class HubStreamScenario : InstructionScenarioBase
                 await RegisterUsers(Max_User);
                 await AssignUserToGroupAsync(First_Group, Max_User);
             })
-            .Verificationn(Max_User, anatoliySender)
+            .ReceivedVerification(Max_User, anatoliySender)
             .Connect(olessyaSender)
             .Connect(anatoliyReceiver, nathanReceiver2, maxReceiver1);
 

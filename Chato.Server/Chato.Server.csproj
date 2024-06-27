@@ -33,4 +33,12 @@
     </None>
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="Models\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Chatto.Shared\Chatto.Shared.csproj" />
+  </ItemGroup>
+
 </Project>
