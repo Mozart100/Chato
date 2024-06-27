@@ -10,7 +10,7 @@ public static class UserInstructions
 
     public const string Run_Operation_Instrauction = "do_operation";//done
     public const string Run_Download_Instrauction = "do_download";
-    public const string Get_Group_Info_Instrauction = "Get_Room_Info";
+    //public const string Get_Group_Info_Instrauction = "Get_Room_Info";
 }
 
 
@@ -56,8 +56,8 @@ public class UserDownloadInstruction : UserInstractionBase
     public override string InstractionName => UserInstructions.Run_Download_Instrauction;
 }
 
-public class GetRoomInfoInstruction : UserInstractionBase
-{
-    public override string InstractionName => UserInstructions.Get_Group_Info_Instrauction;
-}
+//public class GetRoomInfoInstruction : UserInstractionBase
+//{
+//    public override string InstractionName => UserInstructions.Get_Group_Info_Instrauction;
+//}
 

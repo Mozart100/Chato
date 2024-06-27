@@ -59,7 +59,7 @@ internal class BasicScenario : InstructionScenarioBase
         var olessyaReceive1 = firstGroup.Is_Not_Received(Olessya_User);
 
 
-        anatoliySender.Connect(nathanReceive1, olessyaReceive1).GetGroupInfo(firstGroup.GroupName);
+        anatoliySender.Connect(nathanReceive1, olessyaReceive1);//.GetGroupInfo(firstGroup.GroupName);
         var graph = new InstructionGraph(anatoliySender);
         await InstructionExecuter(graph);
 

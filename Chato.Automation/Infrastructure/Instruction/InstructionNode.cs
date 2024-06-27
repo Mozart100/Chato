@@ -53,19 +53,19 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode GetGroupInfo(this InstructionNode info,  string groupName)
-    {
-        var @new = info with
-        {
-            UserName = info.UserName,
-            Instruction = new GetRoomInfoInstruction(),
-            FromArrived = null,
-            Children = new(),
-        };
+    //public static InstructionNode GetGroupInfo(this InstructionNode info,  string groupName)
+    //{
+    //    var @new = info with
+    //    {
+    //        UserName = info.UserName,
+    //        Instruction = new GetRoomInfoInstruction(),
+    //        FromArrived = null,
+    //        Children = new(),
+    //    };
 
-        var result = Connect(info, @new);
-        return result;
-    }
+    //    var result = Connect(info, @new);
+    //    return result;
+    //}
 
 
 

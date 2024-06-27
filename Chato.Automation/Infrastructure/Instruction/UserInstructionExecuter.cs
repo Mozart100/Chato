@@ -24,7 +24,7 @@ public class UserInstructionExecuter
     private const string Hub_Send_Other_In_Group_Topic = nameof(ChattoHub.SendMessageToOthersInGroup);
     private const string Hub_Leave_Group_Topic = nameof(ChattoHub.LeaveGroup);
     private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinGroup);
-    private const string Hub_Get_Group_Info_Topic = nameof(ChattoHub.GetGroupInfo);
+    //private const string Hub_Get_Group_Info_Topic = nameof(ChattoHub.GetGroupInfo);
 
     private const string Hub_Download_Topic = nameof(ChattoHub.Downloads);
     private const string Hub_GetGroupHistory_Topic = nameof(ChattoHub.GetGroupHistory);
@@ -149,12 +149,12 @@ public class UserInstructionExecuter
     }
 
 
-    public async Task GetGroupInfo( string groupName)
-    {
-        _logger.LogInformation($"Getting {UserName} info.");
+    //public async Task GetGroupInfo( string groupName)
+    //{
+    //    _logger.LogInformation($"Getting {UserName} info.");
 
-        await _connection.InvokeAsync(Hub_Get_Group_Info_Topic, groupName);
-    }
+    //    await _connection.InvokeAsync(Hub_Get_Group_Info_Topic, groupName);
+    //}
 
 
     public async Task DownloadStream(byte[] message)

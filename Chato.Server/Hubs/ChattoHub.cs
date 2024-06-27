@@ -1,10 +1,7 @@
 ﻿using Chato.Server.DataAccess.Models;
-using Chato.Server.DataAccess.Repository;
-using Chato.Server.Infrastracture;
 using Chato.Server.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using System;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
@@ -13,13 +10,14 @@ namespace Chato.Server.Hubs;
 
 public record HubDownloadInfo(int Amount);
 
+
 public interface IChatHub
 {
     Task SendMessage(string fromUser, byte[] message);
     Task SendText(string fromUser, string message);
     Task SelfReplay(string message);
 
-    Task NotifyGroupInfo(string message);
+    //Task NotifyGroupInfo(string type , string message);
     //Task SendToUser(string fromUser, byte[] message);
 }
 
@@ -29,8 +27,7 @@ public interface IChattobEndpoints
     Task ReplyMessage(string fromUser, byte[] message);
     Task SendMessageToOtherUser(string fromUser, string toUser, byte[] ptr);
 
-    Task GetGroupInfo(string groupName);
-
+    //Task GetGroupInfo(string groupNamekc);
 
 }
 
@@ -83,23 +80,23 @@ public class ChattoHub : Hub<IChatHub>, IChattobEndpoints
         return Clients.Others.SendMessage(fromUser, message);
     }
 
-    public async Task GetGroupInfo(string groupName)
-    {
-        var roomInfo = await _roomService.GetRoomByNameOrIdAsync(groupName);
+    //public async Task GetGroupInfo(string groupName)
+    //{
+    //    var roomInfo = await _roomService.GetRoomByNameOrIdAsync(groupName);
 
-        var serialized = string.Empty;
+    //    var serialized = string.Empty;
 
-        if (roomInfo is not null)
-        {
-            serialized = JsonSerializer.Serialize(roomInfo);
-        }
-        else
-        {
-            serialized = JsonSerializer.Serialize(ChatRoomDto.Empty());
-        }
+    //    if (roomInfo is not null)
+    //    {
+    //        serialized = JsonSerializer.Serialize(roomInfo);
+    //    }
+    //    else
+    //    {
+    //        serialized = JsonSerializer.Serialize(ChatRoomDto.Empty());
+    //    }
 
-        await Clients.Caller.SelfReplay(serialized);
-    }
+    //    await Clients.Caller.SelfReplay(serialized);
+    //}
 
     public async Task SendMessageToOthersInGroup(string group, string fromUser, byte[] ptr)
     {
