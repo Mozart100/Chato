@@ -68,4 +68,23 @@ export class SignalrListenerService implements OnInit {
       })
       .catch((err) => console.error('Error while sending message: ' + err));
   }
+
+
+
+  // public sendMessage(user: string, message: string): void {
+  //   const encoder = new TextEncoder();
+  //   const bytes = encoder.encode(message);
+  
+  //   // Convert Uint8Array to regular array
+  //   const byteArray = Array.from(bytes);
+  //   debugger;
+  
+  //   this._connection
+  //     .send(ToChattobEndpoint('BroadcastMessage'), user, byteArray)
+  //     .then(() => {
+  //       console.log('Message sent');
+  //     })
+  //     .catch((err) => console.error('Error while sending message: ' + err));
+  // }
+  
 }

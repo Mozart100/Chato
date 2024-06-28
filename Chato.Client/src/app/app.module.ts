@@ -14,6 +14,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { MaterialModule } from './material/material.module';
 import { DialogBodyComponent } from './dialog-body/dialog-body.component';
 import { SidebarRoomsComponent } from './sidebar-rooms/sidebar-rooms.component';
+import { RoomInfoComponent } from './room-info/room-info.component';
 
 @NgModule({
   declarations: [
@@ -23,6 +24,7 @@ import { SidebarRoomsComponent } from './sidebar-rooms/sidebar-rooms.component';
     MainFooterComponent,
     DialogBodyComponent,
     SidebarRoomsComponent,
+    RoomInfoComponent,
   ],
   imports: [
     BrowserModule,

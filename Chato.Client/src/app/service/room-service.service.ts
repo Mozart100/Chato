@@ -21,7 +21,7 @@ export class RoomService extends HttpServiceBase {
     const url = `${this.baseUrl}/api/room`;
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
-    this.httpClient.get<GetAllRoomResponse>(url, { headers }).pipe(
+    this.httpClient.get<GetAllRoomResponse>(url+'/all', { headers }).pipe(
       tap((response) => {
         console.log("Entered");
         if (response && response.rooms) {
@@ -33,4 +33,5 @@ export class RoomService extends HttpServiceBase {
       })
     ).subscribe();
   }
+
 }
