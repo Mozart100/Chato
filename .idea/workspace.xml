@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="9a51c75d-ca4d-4a0e-a275-aa9fd7304925" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/Chato.Client/.editorconfig" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/.editorconfig" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/.gitignore" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/README.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/angular.json" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/angular.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/Consts/AppConsts.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/Consts/ServerChatEndpoints.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/Models/GetAllRoomResponse.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/Models/RegistratioRequest.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/SignalR/SignalRServer.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/app-routing.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/src/app/app-routing.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/app.component.html" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/src/app/app.component.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/app.component.scss" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/src/app/app.component.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/app.component.ts" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/src/app/app.component.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/app.module.ts" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/src/app/app.module.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/dialog-body/dialog-body.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/dialog-body/dialog-body.component.scss" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/dialog-body/dialog-body.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/main-content/main-content.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/main-content/main-content.component.scss" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/main-content/main-content.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/main-footer/main-footer.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/main-footer/main-footer.component.scss" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/main-footer/main-footer.component.spec.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/main-footer/main-footer.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/main-header/main-header.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/main-header/main-header.component.scss" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/main-header/main-header.component.spec.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/main-header/main-header.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/material/material.module.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/service/ServiceBase.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/service/login-service.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/service/room-service.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/service/signalr-listener.service.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/sidebar-rooms/sidebar-rooms.component.html" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/sidebar-rooms/sidebar-rooms.component.scss" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/app/sidebar-rooms/sidebar-rooms.component.ts" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/assets/.gitkeep" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/favicon.ico" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/src/favicon.ico" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/src/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/main.ts" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/src/main.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/src/styles.scss" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/src/styles.scss" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/tsconfig.app.json" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/tsconfig.app.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/tsconfig.json" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/tsconfig.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Chato.Client/tsconfig.spec.json" beforeDir="false" afterPath="$PROJECT_DIR$/Chato.Client/tsconfig.spec.json" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitHubPullRequestSearchHistory"><![CDATA[{
+  "lastFilter": {
+    "state": "OPEN",
+    "assignee": "derzhavets-emg"
+  }
+}]]></component>
+  <component name="GithubPullRequestsUISettings"><![CDATA[{
+  "selectedUrlAndAccountId": {
+    "url": "https://github.com/Mozart100/Chato.git",
+    "accountId": "505f1a40-4127-498d-b6f6-b963b319fb9d"
+  }
+}]]></component>
+  <component name="ProjectColorInfo"><![CDATA[{
+  "customColor": "",
+  "associatedIndex": 1
+}]]></component>
+  <component name="ProjectId" id="2iV9jAj9ar38n43qLRA55O8YL4L" />
+  <component name="ProjectViewState">
+    <option name="autoscrollFromSource" value="true" />
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "git-widget-placeholder": "feature/replace__client",
+    "nodejs_package_manager_path": "npm",
+    "vue.rearranger.settings.migration": "true"
+  }
+}]]></component>
+  <component name="RunManager" selected="npm.Angular CLI Server">
+    <configuration name="Tests (chatvia)" type="JavaScriptTestRunnerKarma">
+      <config-file value="$PROJECT_DIR$/karma.conf.js" />
+      <working-directory value="$PROJECT_DIR$" />
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+    <configuration name="Angular Application" type="JavascriptDebugType" uri="http://localhost:4200">
+      <method v="2" />
+    </configuration>
+    <configuration name="Angular CLI Server" type="js.build_tools.npm">
+      <package-json value="$PROJECT_DIR$/package.json" />
+      <command value="run" />
+      <scripts>
+        <script value="start" />
+      </scripts>
+      <node-interpreter value="project" />
+      <envs />
+      <method v="2" />
+    </configuration>
+  </component>
+  <component name="SharedIndexes">
+    <attachedChunks>
+      <set>
+        <option value="bundled-js-predefined-d6986cc7102b-19b454f630c8-JavaScript-WS-242.16677.27" />
+      </set>
+    </attachedChunks>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="9a51c75d-ca4d-4a0e-a275-aa9fd7304925" name="Changes" comment="" />
+      <created>1719565011092</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1719565011092</updated>
+      <workItem from="1719565013041" duration="16000" />
+    </task>
+    <servers />
+  </component>
+</project>
