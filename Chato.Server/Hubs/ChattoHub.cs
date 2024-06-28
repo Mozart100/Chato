@@ -27,8 +27,6 @@ public interface IChattobEndpoints
     Task ReplyMessage(string fromUser, byte[] message);
     Task SendMessageToOtherUser(string fromUser, string toUser, byte[] ptr);
 
-    //Task GetGroupInfo(string groupNamekc);
-
 }
 
 
