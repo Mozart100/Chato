@@ -41,6 +41,9 @@ public class ChatoController : ControllerBase
 [ApiController]
 public class RoomController : ControllerBase
 {
+    public const string All_Route = "all";
+    public const string Room_Route = "{room}";
+
     private readonly IRoomService _roomService;
     private readonly IUserService _userService;
 
@@ -52,7 +55,7 @@ public class RoomController : ControllerBase
 
 
     [HttpGet]
-    [Route("")]
+    [Route(All_Route)]
     public async Task<ActionResult<GetAllRoomResponse>> GetAllRooms()
     {
        var result  = await _roomService.GetAllRoomAsync();
@@ -64,6 +67,15 @@ public class RoomController : ControllerBase
 
 
     [HttpGet]
+    [Route("{roomName}")]
+    public async Task<ActionResult<ChatRoomDto>> GetRoom(string roomName)
+    {
+        var room = await _roomService.GetRoomByNameOrIdAsync(roomName);
+        return Ok(room);
+    }
+
+
+    [HttpGet] 
     [Route("users")]
     public async Task<ActionResult> GetAllUsers()
     {

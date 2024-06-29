@@ -2,7 +2,16 @@
 <div class="layout">
     <div class="layout-content">
       
-
+        <div  class="messages"></div>
+        <div class="input-zone">
+          <label id="lblMessage" for="tbMessage">Message:</label>
+          <input id="tbMessage" class="input-zone-input" type="text" [(ngModel)]="message" />
+        
+          <button id="btnSend" mat-raised-button color="primary" (click)="onClicked()">Send</button>
+        
+        </div>
+        
+        
     </div>
 </div>
 

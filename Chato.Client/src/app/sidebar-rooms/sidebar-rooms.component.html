@@ -1,7 +1,7 @@
 <div class="layout">
   <h1>Rooms</h1>
 
-  <div class="list" *ngFor="let item of rooms$ | async">
-    {{ item.roomName}}
+  <div class="list" *ngFor="let room of rooms$ | async">
+    <button mat-raised-button color="primary" onclick="roomSelected(room)">{{ room.roomName}}</button>
   </div>
 </div>
