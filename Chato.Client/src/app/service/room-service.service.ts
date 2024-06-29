@@ -3,7 +3,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { HttpServiceBase } from './ServiceBase';
-import { ChatRoomDto, GetAllRoomResponse } from '../Models/GetAllRoomResponse';
+import { ChatRoomDto, GetAllRoomResponse } from '../generated/Dtos';
 
 @Injectable({
   providedIn: 'root',

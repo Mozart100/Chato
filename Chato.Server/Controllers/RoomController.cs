@@ -75,7 +75,7 @@ public class RoomController : ControllerBase
     }
 
 
-    [HttpGet]
+    [HttpGet] 
     [Route("users")]
     public async Task<ActionResult> GetAllUsers()
     {

@@ -4,7 +4,7 @@ import { Injectable } from '@angular/core';
 import {
   RegistrationRequest,
   RegistrationResponse,
-} from '../Models/RegistratioRequest';
+} from '../generated/Dtos';
 import { Observable } from 'rxjs';
 import { HttpServiceBase } from './ServiceBase';
 
@@ -20,7 +20,7 @@ export class LoginService extends HttpServiceBase {
     userName: string
   ): Observable<RegistrationResponse> {
     const url = `${this.baseUrl}/api/Auth/register`; // Adjust endpoint as needed
-    const body = { userName,age:18,description:"xdsdf",gender:"male"};
+    const body:RegistrationRequest = { userName,age:18,description:"xdsdf",gender:"male"};
     const headers = new HttpHeaders({ 'Content-Type': 'application/json' });
 
     return this.httpClient.post<RegistrationResponse>(url, body, { headers });

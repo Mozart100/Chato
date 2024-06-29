@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable, filter, tap } from 'rxjs';
 import { RoomService } from '../service/room-service.service';
-import { ChatRoomDto } from '../Models/GetAllRoomResponse';
+import { ChatRoomDto } from '../generated/Dtos';
 import { SignalrListenerService } from '../service/signalr-listener.service';
 import { LoginService } from '../service/login-service.service';
 import AppConsts from '../Consts/AppConsts';

@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { BehaviorSubject, Observable, filter, tap } from 'rxjs';
 import { RoomService } from '../service/room-service.service';
-import { ChatRoomDto } from '../Models/GetAllRoomResponse';
+import { ChatRoomDto } from '../generated/Dtos';
 
 @Component({
   selector: 'app-sidebar-rooms',
