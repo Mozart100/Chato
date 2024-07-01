@@ -1,7 +1,7 @@
 import { Injectable, OnInit } from '@angular/core';
 import * as signalR from '@microsoft/signalr';
 import AppConsts from '../Consts/AppConsts';
-import { ToChattobEndpoint } from '../Consts/ServerChatEndpoints';
+import { ChattoEndpoint } from '../Consts/ServerChatEndpoints';
 
 @Injectable({
   providedIn: 'root',
@@ -19,17 +19,17 @@ export class SignalrListenerService implements OnInit {
       .build();
 
       // Register SignalR event handlers
-      this._connection.on(
-        ToChattobEndpoint('SendMessage'),
-        (user: string, message: string) => {
-        const decodedMessage = atob(message);
-        console.log(`Received from [${user}] this message: ${decodedMessage}`);
-      }
-    );
+
+    this._connection.on(
+      ChattoEndpoint('SelfReplay'),
+      (message: string) => {
+      console.log(`SelfReplayc this message: ${message}`);
+    }
+  );
 
 
     this._connection.on(
-      ToChattobEndpoint('SendText'),
+      ChattoEndpoint('SendText'),
       (user: string, message: string) => {
       console.log(`Received from [${user}] this message: ${message}`);
     }
@@ -62,7 +62,7 @@ export class SignalrListenerService implements OnInit {
     // const encodedMessage = btoa('hello'); // base64 encode the message
     // const messageBytes = new TextEncoder().encode(encodedMessage); 
     this._connection
-      .send(ToChattobEndpoint('SendAll'), user, message)
+      .send(ChattoEndpoint('BroadcastMessage'), user, message)
       .then(() => {
         console.log('Message sent');
       })
