@@ -19,13 +19,13 @@ export class SignalrListenerService implements OnInit {
       .build();
 
       // Register SignalR event handlers
-      this._connection.on(
-        ToChattobEndpoint('SendMessage'),
-        (user: string, message: string) => {
-        const decodedMessage = atob(message);
-        console.log(`Received from [${user}] this message: ${decodedMessage}`);
-      }
-    );
+
+    this._connection.on(
+      ToChattobEndpoint('SelfReplay'),
+      (message: string) => {
+      console.log(`SelfReplayc this message: ${message}`);
+    }
+  );
 
 
     this._connection.on(
@@ -62,7 +62,7 @@ export class SignalrListenerService implements OnInit {
     // const encodedMessage = btoa('hello'); // base64 encode the message
     // const messageBytes = new TextEncoder().encode(encodedMessage); 
     this._connection
-      .send(ToChattobEndpoint('SendAll'), user, message)
+      .send(ToChattobEndpoint('BroadcastMessage'), user, message)
       .then(() => {
         console.log('Message sent');
       })
