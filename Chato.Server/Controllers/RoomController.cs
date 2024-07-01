@@ -10,7 +10,6 @@ public class ChatoResponseResult : ObjectResult
     public ChatoResponseResult(object response)
         : base(response)
     {
-
     }
 }
 
