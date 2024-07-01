@@ -70,7 +70,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         }
         else
         {
-            await userExecuter.SendMessageToOthersInGroup(groupName: groupName, userNameFrom: userNameFrom, message: message);
+            await userExecuter.SendMessageToOthersInGroup(groupName: groupName, userNameFrom: userNameFrom, ptr: message);
         }
     }
 
@@ -78,7 +78,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
     private async Task SendPeerToPeerMessage(UserInstructionExecuter userExecuter, string userNameFrom, string toUser, byte[] message)
     {
         //var message2 = Encoding.UTF8.GetString(message);
-        await userExecuter.SendMessageFromUserToUserUsers(userNameFrom: userNameFrom, toUser: toUser, message: message);
+        await userExecuter.SendMessageFromUserToUserUsers(userNameFrom: userNameFrom, toUser: toUser, ptr: message);
     }
 
     private void Initialize()

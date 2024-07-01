@@ -40,7 +40,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
         services.AddSingleton<App>();
         services.AddSingleton<ScenarioConfig>(config);
         services.AddSingleton<GroupHandShakeScenario>();
-        services.AddSingleton<HubStreamScenario>();
+        //services.AddSingleton<HubStreamScenario>();
         services.AddSingleton<BasicScenario>();
         services.AddSingleton<RegistrationValidationScenario>();
 

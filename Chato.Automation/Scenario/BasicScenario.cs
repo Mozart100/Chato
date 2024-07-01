@@ -25,9 +25,9 @@ internal class BasicScenario : InstructionScenarioBase
         BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
 
-        BusinessLogicCallbacks.Add(SetupGroup);
-        BusinessLogicCallbacks.Add(ImageSendingStep);
-        BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
+        //BusinessLogicCallbacks.Add(SetupGroup);
+        //BusinessLogicCallbacks.Add(ImageSendingStep);
+        //BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
 
         BusinessLogicCallbacks.Add(SetupGroup);
@@ -65,26 +65,26 @@ internal class BasicScenario : InstructionScenarioBase
 
     }
 
-    private async Task ImageSendingStep()
-    {
-        var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "test.jpeg");
+    //private async Task ImageSendingStep()
+    //{
+    //    var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "test.jpeg");
 
-        var message_1 = File.ReadAllBytes(path);
-
-
-        var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
-
-        var anatoliySender = firstGroup.SendingBroadcast(Anatoliy_User);
-        var olessyaReceive1 = firstGroup.ReceivingFrom(Olessya_User, anatoliySender.UserName);
-        var nathanReceive1 = firstGroup.ReceivingFrom(Nathan_User, anatoliySender.UserName);
-
-        anatoliySender.Connect(olessyaReceive1, nathanReceive1);
+    //    var message_1 = File.ReadAllBytes(path);
 
 
-        var graph = new InstructionGraph(anatoliySender);
-        await InstructionExecuter(graph);
+    //    var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
-    }
+    //    var anatoliySender = firstGroup.SendingBroadcast(Anatoliy_User);
+    //    var olessyaReceive1 = firstGroup.ReceivingFrom(Olessya_User, anatoliySender.UserName);
+    //    var nathanReceive1 = firstGroup.ReceivingFrom(Nathan_User, anatoliySender.UserName);
+
+    //    anatoliySender.Connect(olessyaReceive1, nathanReceive1);
+
+
+    //    var graph = new InstructionGraph(anatoliySender);
+    //    await InstructionExecuter(graph);
+
+    //}
 
 
     private async Task VerificationStep()

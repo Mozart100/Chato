@@ -115,29 +115,30 @@ public class UserInstructionExecuter
         await _connection.SendAsync(Hub_Send_Message_To_Others_Topic, userNameFrom, message);
     }
 
-    public async Task SendMessageFromUserToUserUsers(string userNameFrom, string toUser, byte[] message)
+    public async Task SendMessageFromUserToUserUsers(string userNameFrom, string toUser, byte[] ptr)
     {
+        var message = Encoding.UTF8.GetString(ptr);
         _logger.LogInformation($"{userNameFrom} sending message to user [{toUser}] this message [{message}].");
 
         await _connection.SendAsync(Hub_SendMessageToOtherUser_Topic, userNameFrom, toUser, message);
     }
 
 
-    public async Task SendMessageToOthersInGroup(string groupName, string userNameFrom, byte[] message)
+    public async Task SendMessageToOthersInGroup(string groupName, string userNameFrom, byte[] ptr)
     {
-        var isStringFile = FileHelper.IsFileText(message);
+        var isStringFile = FileHelper.IsFileText(ptr);
         var templateMessage = "image";
 
         if (isStringFile)
         {
-            templateMessage = Encoding.UTF8.GetString(message);
+            templateMessage = Encoding.UTF8.GetString(ptr);
         }
 
         _logger.LogInformation($"{userNameFrom} sending in group [{groupName}] message [{templateMessage}].");
 
 
         //var ptr = Encoding.UTF8.GetBytes(message);
-        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, groupName, userNameFrom, message);
+        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, groupName, userNameFrom, templateMessage);
     }
 
 
@@ -187,15 +188,16 @@ public class UserInstructionExecuter
 
     protected async Task Listen()
     {
-        _connection.On<string, byte[]>(nameof(IChatHub.SendMessage), async (user, ptr) =>
+        _connection.On<string, string>(nameof(IChatHub.SendText), async (user, message) =>
         {
             if (_ignoreUsers.Contains(user) == false)
             {
+                var ptr = Encoding.UTF8.GetBytes(message);
                 await ExpectedMessages(user, ptr);
             }
             else
             {
-                var message = Encoding.UTF8.GetString(ptr);
+                //var message = Encoding.UTF8.GetString(message);
                 _logger.LogWarning($"{UserName} received message [{message}] but was ignored from [{user}].");
             }
         });

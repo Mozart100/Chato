@@ -13,25 +13,13 @@ public record HubDownloadInfo(int Amount);
 
 public interface IChatHub
 {
-    Task SendMessage(string fromUser, byte[] message);
     Task SendText(string fromUser, string message);
     Task SelfReplay(string message);
 
-    //Task NotifyGroupInfo(string type , string message);
-    //Task SendToUser(string fromUser, byte[] message);
 }
-
-public interface IChattobEndpoints
-{
-    Task BroadcastMessage(string fromUser, byte[] message);
-    Task ReplyMessage(string fromUser, byte[] message);
-    Task SendMessageToOtherUser(string fromUser, string toUser, byte[] ptr);
-
-}
-
 
 [Authorize]
-public class ChattoHub : Hub<IChatHub>, IChattobEndpoints
+public class ChattoHub : Hub<IChatHub>
 {
     private readonly IUserService _userService;
     private readonly IRoomService _roomService;
@@ -57,60 +45,37 @@ public class ChattoHub : Hub<IChatHub>, IChattobEndpoints
 
         await _userService.AssignConnectionId(user.Identity.Name, connectionId);
 
-        await ReplyMessage("server", ptr);
+        await ReplyMessage("server", "You are connected");
         await base.OnConnectedAsync();
     }
 
-    public Task ReplyMessage(string fromUser, byte[] message)
+    public Task ReplyMessage(string fromUser, string message)
     {
-        return Clients.Caller.SendMessage(fromUser, message);
+        return Clients.Caller.SendText(fromUser, message);
     }
 
-    public Task SendAll(string fromUser, string message)
+
+    public Task BroadcastMessage(string fromUser, string message)
     {
+        //var str = Encoding.UTF8.GetString(message);
         return Clients.Others.SendText(fromUser, message);
     }
 
-
-    public Task BroadcastMessage(string fromUser, byte[] message)
-    {
-        var str = Encoding.UTF8.GetString(message);
-        return Clients.Others.SendMessage(fromUser, message);
-    }
-
-    //public async Task GetGroupInfo(string groupName)
-    //{
-    //    var roomInfo = await _roomService.GetRoomByNameOrIdAsync(groupName);
-
-    //    var serialized = string.Empty;
-
-    //    if (roomInfo is not null)
-    //    {
-    //        serialized = JsonSerializer.Serialize(roomInfo);
-    //    }
-    //    else
-    //    {
-    //        serialized = JsonSerializer.Serialize(ChatRoomDto.Empty());
-    //    }
-
-    //    await Clients.Caller.SelfReplay(serialized);
-    //}
-
-    public async Task SendMessageToOthersInGroup(string group, string fromUser, byte[] ptr)
+    public async Task SendMessageToOthersInGroup(string group, string fromUser, string message)
     {
         //var message = Encoding.UTF8.GetkckString(ptr);
-
+        var ptr = Encoding.UTF8.GetBytes(message);
         await _roomService.SendMessageAsync(group, fromUser, ptr);
-        await Clients.OthersInGroup(group).SendMessage(fromUser, ptr);
+        await Clients.OthersInGroup(group).SendText(fromUser, message);
     }
 
-    public async Task SendMessageToOtherUser(string fromUser, string toUser, byte[] ptr)
+    public async Task SendMessageToOtherUser(string fromUser, string toUser, string ptr)
     {
         //var user = await _userRepository.GetAsync(x => x.UserName == toUser);
         var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
         if (user is not null)
         {
-            await Clients.Client(user.ConnectionId).SendMessage(fromUser, ptr);
+            await Clients.Client(user.ConnectionId).SendText(fromUser, ptr);
         }
     }
 
