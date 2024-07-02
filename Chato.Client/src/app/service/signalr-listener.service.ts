@@ -12,32 +12,26 @@ export class SignalrListenerService implements OnInit {
   constructor() {
     this._connection = new signalR.HubConnectionBuilder()
       .withUrl('https://localhost:7138/chat', {
-        accessTokenFactory: ()=>  this.getToken(),
+        accessTokenFactory: () => this.getToken(),
       })
       .withAutomaticReconnect()
       .configureLogging(signalR.LogLevel.Information)
       .build();
 
-      // Register SignalR event handlers
+    // Register SignalR event handlers
 
-    this._connection.on(
-      ChattoEndpoint('SelfReplay'),
-      (message: string) => {
+    this._connection.on(ChattoEndpoint('SelfReplay'), (message: string) => {
       console.log(`SelfReplayc this message: ${message}`);
-    }
-  );
-
+    });
 
     this._connection.on(
       ChattoEndpoint('SendText'),
       (user: string, message: string) => {
-      console.log(`Received from [${user}] this message: ${message}`);
-    }
-    
-  );
-    
+        console.log(`Received from [${user}] this message: ${message}`);
+      }
+    );
+
     this.startConnection();
-  
   }
 
   ngOnInit(): void {
@@ -57,28 +51,24 @@ export class SignalrListenerService implements OnInit {
       .catch((err) => console.log('Error while starting connection: ' + err));
   }
 
-  public sendMessage(user: string, message: string): void {
-
+  public async sendMessage(user: string, message: string) {
     // const encodedMessage = btoa('hello'); // base64 encode the message
-    // const messageBytes = new TextEncoder().encode(encodedMessage); 
-    this._connection
-      .send(ChattoEndpoint('BroadcastMessage'), user, message)
-      .then(() => {
-        console.log('Message sent');
-      })
-      .catch((err) => console.error('Error while sending message: ' + err));
+    // const messageBytes = new TextEncoder().encode(encodedMessage);
+    await this._connection.send(
+      ChattoEndpoint('BroadcastMessage'),
+      user,
+      message
+    );
   }
-
-
 
   // public sendMessage(user: string, message: string): void {
   //   const encoder = new TextEncoder();
   //   const bytes = encoder.encode(message);
-  
+
   //   // Convert Uint8Array to regular array
   //   const byteArray = Array.from(bytes);
   //   debugger;
-  
+
   //   this._connection
   //     .send(ToChattobEndpoint('BroadcastMessage'), user, byteArray)
   //     .then(() => {
@@ -86,5 +76,4 @@ export class SignalrListenerService implements OnInit {
   //     })
   //     .catch((err) => console.error('Error while sending message: ' + err));
   // }
-  
 }

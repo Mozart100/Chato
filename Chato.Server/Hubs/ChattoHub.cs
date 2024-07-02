@@ -15,7 +15,6 @@ public interface IChatHub
 {
     Task SendText(string fromUser, string message);
     Task SelfReplay(string message);
-
 }
 
 [Authorize]

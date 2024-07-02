@@ -84,9 +84,9 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
     private void Initialize()
     {
 
-        _actionMapper.Add(UserInstructions.Publish_Broadcasting_Instrauction, async (userExecuter, instruction) =>
+        _actionMapper.Add(UserInstructions.Publish_Broadcasting_Instruction, async (userExecuter, instruction) =>
         {
-            await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstractionName != UserInstructions.Not_Received_Instrauction).Count());
+            await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstructionName != UserInstructions.Not_Received_Instruction).Count());
             await SendBroadcastingMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
@@ -96,11 +96,11 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         });
 
 
-        _actionMapper.Add(UserInstructions.Publish_PeerToPeer_Instrauction, async (userExecuter, instruction) =>
+        _actionMapper.Add(UserInstructions.Publish_PeerToPeer_Instruction, async (userExecuter, instruction) =>
         {
             var toUser = instruction.Instruction.Tag as string ?? throw new ArgumentNullException("Should be user name");
 
-            await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstractionName != UserInstructions.Not_Received_Instrauction).Count());
+            await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstructionName != UserInstructions.Not_Received_Instruction).Count());
             await SendPeerToPeerMessage(userExecuter: userExecuter, userNameFrom: instruction.UserName, toUser: toUser, message: instruction.Message);
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
@@ -120,9 +120,9 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         //    }
         //});
 
-        _actionMapper.Add(UserInstructions.Received_Instrauction, async (userExecuter, instruction) => await userExecuter.ListenToStringCheckAsync(instruction.FromArrived, instruction.Message));
-        _actionMapper.Add(UserInstructions.Not_Received_Instrauction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync());
-        _actionMapper.Add(UserInstructions.Run_Download_Instrauction, async (userExecuter, instruction) => await userExecuter.DownloadStream(instruction.Message));
+        _actionMapper.Add(UserInstructions.Received_Instruction, async (userExecuter, instruction) => await userExecuter.ListenToStringCheckAsync(instruction.FromArrived, instruction.Message));
+        _actionMapper.Add(UserInstructions.Not_Received_Instruction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync());
+        _actionMapper.Add(UserInstructions.Run_Download_Instruction, async (userExecuter, instruction) => await userExecuter.DownloadStream(instruction.Message));
     }
 
 
@@ -134,7 +134,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         {
             foreach (var instruction in instructions)
             {
-                if (instruction.Instruction.InstractionName.Equals(UserInstructions.Run_Operation_Instrauction))
+                if (instruction.Instruction.InstructionName.Equals(UserInstructions.Run_Operation_Instruction))
                 {
                     if (instruction.Instruction.Tag is Func<InstructionNode, Task> callback)
                     {
@@ -145,7 +145,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
                 }
 
                 var userExecuter = Users[instruction.UserName];
-                await _actionMapper[instruction.Instruction.InstractionName]?.Invoke(userExecuter, instruction);
+                await _actionMapper[instruction.Instruction.InstructionName]?.Invoke(userExecuter, instruction);
             }
 
             instructions = await graph.MoveNext();

@@ -115,6 +115,33 @@ internal class BasicScenario : InstructionScenarioBase
     }
 
 
+    //private async Task ConfirmRoomIsDeletedStep()
+    //{
+    //    var message_1 = "Shalom";
+    //    var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
+
+
+    //    var anatoliySender = firstGroup.SendingBroadcast(Anatoliy_User);
+    //    var olessyaSender = firstGroup.SendingBroadcast(Olessya_User);
+    //    var maxReceiver1 = firstGroup.ReceivingFrom(Max_User, olessyaSender.UserName);
+
+    //    anatoliySender.Connect(olessyaSender)
+    //        .Do(maxReceiver1, async user =>
+    //        {
+    //            await RegisterUsers(Max_User);
+    //            await AssignUserToGroupAsync(First_Group, Max_User);
+    //        })
+    //        .ReceivedVerification(Max_User, anatoliySender, olessyaSender);
+
+    //    var graph = new InstructionGraph(anatoliySender);
+    //    await InstructionExecuter(graph);
+    //}
+
+
+
+
+
+
     private async Task SetupGroup()
     {
         await RegisterUsers(Anatoliy_User, Olessya_User, Nathan_User);
