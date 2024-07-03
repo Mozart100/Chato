@@ -81,6 +81,15 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         await userExecuter.SendMessageFromUserToUserUsers(userNameFrom: userNameFrom, toUser: toUser, ptr: message);
     }
 
+    private async Task SendMessageToOthersInGroup(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte[] message)
+    {
+        //var message2 = Encoding.UTF8.GetString(message);
+        await userExecuter.SendMessageToOthersInGroup(groupName: groupName, userNameFrom: userNameFrom, ptr: message);
+
+    }
+
+
+
     private void Initialize()
     {
 
@@ -109,16 +118,17 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             }
         });
 
-        //_actionMapper.Add(UserInstructions.Get_Group_Info_Instrauction, async (userExecuter, instruction) =>
-        //{
-        //    await _counterSignal.SetThrasholdAsync(1);
+        _actionMapper.Add(UserInstructions.Publish_ToRestRoom_Instruction, async (userExecuter, instruction) =>
+        {
+            await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstructionName != UserInstructions.Not_Received_Instruction).Count());
+            await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName:instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
 
-        //    await userExecuter.GetGroupInfo(instruction.GroupName);
-        //    if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
-        //    {
-        //        throw new Exception("Not all users received their messages");
-        //    }
-        //});
+            if (await _counterSignal.WaitAsync(timeoutInSecond: 10005) == false)
+            {
+                throw new Exception("Not all users received their messages");
+            }
+        });
+
 
         _actionMapper.Add(UserInstructions.Received_Instruction, async (userExecuter, instruction) => await userExecuter.ListenToStringCheckAsync(instruction.FromArrived, instruction.Message));
         _actionMapper.Add(UserInstructions.Not_Received_Instruction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync());

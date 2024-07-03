@@ -123,7 +123,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             UserName = userName,
-            Instruction = new UserBroadcastInstruction(),
+            Instruction = new UserSendStringMessageRestRoomInstruction(),
             Children = new(),
 
         };

@@ -26,7 +26,7 @@ public abstract class UserInstractionBase
     }
 }
 
-public class UserBroadcastRestRoomInstruction : UserInstractionBase
+public class UserSendStringMessageRestRoomInstruction : UserInstractionBase
 {
     public override string InstructionName => UserInstructions.Publish_ToRestRoom_Instruction;
 }

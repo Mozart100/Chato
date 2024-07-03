@@ -25,14 +25,15 @@ internal class BasicScenario : InstructionScenarioBase
         BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
 
-        //BusinessLogicCallbacks.Add(SetupGroup);
-        //BusinessLogicCallbacks.Add(ImageSendingStep);
-        //BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
-
-
         BusinessLogicCallbacks.Add(SetupGroup);
         BusinessLogicCallbacks.Add(VerificationStep);
         BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
+
+
+        BusinessLogicCallbacks.Add(SetupGroup);
+        BusinessLogicCallbacks.Add(ConfirmRoomIsDeletedStep);
+        BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
+
 
 
         //SummaryLogicCallback.Add(CheckAllCleaned);
@@ -65,28 +66,6 @@ internal class BasicScenario : InstructionScenarioBase
 
     }
 
-    //private async Task ImageSendingStep()
-    //{
-    //    var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "test.jpeg");
-
-    //    var message_1 = File.ReadAllBytes(path);
-
-
-    //    var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
-
-    //    var anatoliySender = firstGroup.SendingBroadcast(Anatoliy_User);
-    //    var olessyaReceive1 = firstGroup.ReceivingFrom(Olessya_User, anatoliySender.UserName);
-    //    var nathanReceive1 = firstGroup.ReceivingFrom(Nathan_User, anatoliySender.UserName);
-
-    //    anatoliySender.Connect(olessyaReceive1, nathanReceive1);
-
-
-    //    var graph = new InstructionGraph(anatoliySender);
-    //    await InstructionExecuter(graph);
-
-    //}
-
-
     private async Task VerificationStep()
     {
 
@@ -115,31 +94,23 @@ internal class BasicScenario : InstructionScenarioBase
     }
 
 
-    //private async Task ConfirmRoomIsDeletedStep()
-    //{
-    //    var message_1 = "Shalom";
-    //    var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
+    private async Task ConfirmRoomIsDeletedStep()
+    {
+        var message_1 = "Shalom";
+        var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
 
-    //    var anatoliySender = firstGroup.SendingBroadcast(Anatoliy_User);
-    //    var olessyaSender = firstGroup.SendingBroadcast(Olessya_User);
-    //    var maxReceiver1 = firstGroup.ReceivingFrom(Max_User, olessyaSender.UserName);
-
-    //    anatoliySender.Connect(olessyaSender)
-    //        .Do(maxReceiver1, async user =>
-    //        {
-    //            await RegisterUsers(Max_User);
-    //            await AssignUserToGroupAsync(First_Group, Max_User);
-    //        })
-    //        .ReceivedVerification(Max_User, anatoliySender, olessyaSender);
-
-    //    var graph = new InstructionGraph(anatoliySender);
-    //    await InstructionExecuter(graph);
-    //}
+        var anatoliySender = firstGroup.SendingToRestRoom(Anatoliy_User);
+        var olessyaSender = firstGroup.ReceivingFrom( Olessya_User, anatoliySender.UserName);
+        var maxReceiver1 = firstGroup.ReceivingFrom(Nathan_User, anatoliySender.UserName);
 
 
 
+        anatoliySender.Connect(olessyaSender,maxReceiver1);
 
+        var graph = new InstructionGraph(anatoliySender);
+        await InstructionExecuter(graph);
+    }
 
 
     private async Task SetupGroup()
