@@ -30,8 +30,8 @@ internal class BasicScenario : InstructionScenarioBase
         BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
 
-        BusinessLogicCallbacks.Add(SetupGroup);
-        BusinessLogicCallbacks.Add(ConfirmRoomIsDeletedStep);
+        BusinessLogicCallbacks.Add(Setup_SendingOnlyToRoomStep_Step);
+        BusinessLogicCallbacks.Add(SendingOnlyToRoomStep);
         BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
 
@@ -94,19 +94,21 @@ internal class BasicScenario : InstructionScenarioBase
     }
 
 
-    private async Task ConfirmRoomIsDeletedStep()
+    private async Task SendingOnlyToRoomStep()
     {
         var message_1 = "Shalom";
         var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
 
         var anatoliySender = firstGroup.SendingToRestRoom(Anatoliy_User);
-        var olessyaSender = firstGroup.ReceivingFrom( Olessya_User, anatoliySender.UserName);
-        var maxReceiver1 = firstGroup.ReceivingFrom(Nathan_User, anatoliySender.UserName);
+        var olessyaSender = firstGroup.ReceivingFrom(Olessya_User, anatoliySender.UserName);
+        var nathanReceiver = firstGroup.ReceivingFrom(Nathan_User, anatoliySender.UserName);
+
+        var maxReceiver = firstGroup.Is_Not_Received(Max_User);
 
 
 
-        anatoliySender.Connect(olessyaSender,maxReceiver1);
+        anatoliySender.Connect(olessyaSender, nathanReceiver, maxReceiver);
 
         var graph = new InstructionGraph(anatoliySender);
         await InstructionExecuter(graph);
@@ -116,6 +118,12 @@ internal class BasicScenario : InstructionScenarioBase
     private async Task SetupGroup()
     {
         await RegisterUsers(Anatoliy_User, Olessya_User, Nathan_User);
+        await AssignUserToGroupAsync(First_Group, Anatoliy_User, Olessya_User, Nathan_User);
+    }
+
+    private async Task Setup_SendingOnlyToRoomStep_Step()
+    {
+        await RegisterUsers(Anatoliy_User, Olessya_User, Nathan_User, Max_User);
         await AssignUserToGroupAsync(First_Group, Anatoliy_User, Olessya_User, Nathan_User);
     }
 
