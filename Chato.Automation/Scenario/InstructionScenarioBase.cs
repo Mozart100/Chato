@@ -123,7 +123,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstructionName != UserInstructions.Not_Received_Instruction).Count());
             await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName:instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
 
-            if (await _counterSignal.WaitAsync(timeoutInSecond: 10005) == false)
+            if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
             {
                 throw new Exception("Not all users received their messages");
             }
