@@ -72,12 +72,12 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
 
 
         var url = string.Format(SpecificRoomTemplatesUrl, First_Group);
-        var response = default(ChatRoomDto);
+        var response = default(GetRoomResponse);
         anatoliySender.Connect(olessyaSender, nathanReceiver, maxReceiver)
             .Do(maxReceiver, async user=> {
 
-                response = await Get<ChatRoomDto>(url);
-                response.Should().NotBeNull();
+                response = await Get<GetRoomResponse>(url);
+                response.Room.Should().NotBeNull();
             }).LeaveRoom( Anatoliy_User,Olessya_User,Nathan_User) ;
 
 
@@ -85,8 +85,8 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
         await InstructionExecuter(graph);
 
 
-        response = await Get<ChatRoomDto>(url);
-        response.Should().BeNull();
+        response = await Get<GetRoomResponse>(url);
+        response.Room.Should().BeNull();
     }
 
     private async Task Setup_SendingInsideTheRoom_Step()

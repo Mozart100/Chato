@@ -4,6 +4,8 @@ namespace Chatto.Shared;
 
 public class GetRoomResponse
 {
+    [JsonPropertyName("room")]
+
     public ChatRoomDto Room { get; set; }
 }
 

@@ -65,10 +65,11 @@ public class RoomController : ControllerBase
 
     [HttpGet]
     [Route("{roomName}")]
-    public async Task<ActionResult<ChatRoomDto>> GetRoom(string roomName)
+    public async Task<ActionResult<GetRoomResponse>> GetRoom(string roomName)
     {
         var room = await _roomService.GetRoomByNameOrIdAsync(roomName);
-        return Ok(room);
+
+        return Ok(new GetRoomResponse { Room = room});
     }
 
 
