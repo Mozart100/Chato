@@ -5,7 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Chato.Server.Controllers;
 
-public class ChatoResponseResult : ObjectResult 
+public class ChatoResponseResult : ObjectResult
 {
     public ChatoResponseResult(object response)
         : base(response)
@@ -57,11 +57,8 @@ public class RoomController : ControllerBase
     [Route(All_Route)]
     public async Task<ActionResult<GetAllRoomResponse>> GetAllRooms()
     {
-       var result  = await _roomService.GetAllRoomAsync();
-
-        //var dtos = result.SafeSelect(x => new ChatRoomDto(x.RoomName, x.SenderInfo.SafeToArray(), x.Users.SafeToArray()));
-
-        return Ok(new GetAllRoomResponse { Rooms = result.SafeToArray()});
+        var result = await _roomService.GetAllRoomAsync();
+        return Ok(new GetAllRoomResponse { Rooms = result.SafeToArray() });
     }
 
 
@@ -74,7 +71,7 @@ public class RoomController : ControllerBase
     }
 
 
-    [HttpGet] 
+    [HttpGet]
     [Route("users")]
     public async Task<ActionResult> GetAllUsers()
     {

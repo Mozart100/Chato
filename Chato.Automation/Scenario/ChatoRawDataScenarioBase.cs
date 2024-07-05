@@ -15,6 +15,10 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
         RoomsControllerUrl = $"{BaseUrl}/api/room";
         GetAllRoomsUrl = $"{RoomsControllerUrl}";
         GetAllUsersUrl = $"{RoomsControllerUrl}/users";
+
+
+        var argument = "{0}";
+        SpecificRoomTemplatesUrl = $"{RoomsControllerUrl}/{argument}";
     }
 
     protected string HubUrl { get; }
@@ -24,6 +28,7 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
 
 
     protected string RoomsControllerUrl { get; }
+    protected string SpecificRoomTemplatesUrl { get; }
     protected string GetAllRoomsUrl { get; }
     protected string GetAllUsersUrl { get; }
 

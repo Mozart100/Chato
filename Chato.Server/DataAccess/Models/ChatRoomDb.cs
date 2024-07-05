@@ -1,6 +1,7 @@
 ﻿
 using Chato.Server.Infrastracture;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Text.Json.Serialization;
 
 namespace Chato.Server.DataAccess.Models;
 
@@ -21,27 +22,30 @@ public class ChatRoomDb : EntityDbBase
 }
 
 
-
-public struct ChatRoomDto
+public class ChatRoomDto
 {
+    [JsonPropertyName("roomName")]
     public string RoomName { get; init; }
 
+    [JsonPropertyName("senderInfo")]
     public SenderInfo[] SenderInfo { get; set; }
+
+    [JsonPropertyName("users")]
     public string[] Users { get; init; }
 
-
-    public ChatRoomDto(string roomName, SenderInfo[] senderInfos, string[] users)
+    [JsonConstructor]
+    public ChatRoomDto(string roomName, SenderInfo[] senderInfo, string[] users)
     {
         RoomName = roomName;
-        SenderInfo = senderInfos;
+        SenderInfo = senderInfo;
         Users = users;
     }
 
-    public static ChatRoomDto Empty() => new ChatRoomDto("", null, null);
+    public static ChatRoomDto Empty() => new ChatRoomDto("", Array.Empty<SenderInfo>(), Array.Empty<string>());
 
     public override int GetHashCode() => RoomName.GetHashCode();
 
-    public override bool Equals(object? obj) => obj is ChatRoomDb room && RoomName.Equals(room.Id);
+    public override bool Equals(object? obj) => obj is ChatRoomDto room && RoomName.Equals(room.RoomName);
 }
 
 

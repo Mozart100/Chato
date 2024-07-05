@@ -159,10 +159,23 @@ public abstract class ScenarioBase
             // Check the response status
             if (response.IsSuccessStatusCode)
             {
-                var res = await response.Content.ReadFromJsonAsync<TDto>();
+                var result = default(TDto);
 
-                return res;
+                var responseContent = await response.Content.ReadAsStringAsync();
+                if (responseContent.IsNullOrEmpty() == false)
+                {
+                    var options = new JsonSerializerOptions
+                    {
+                        PropertyNameCaseInsensitive = false
+                    };
 
+                    result = JsonSerializer.Deserialize<TDto>(responseContent);
+                    //var responseData = JsonSerializer.Deserialize<TDto>(responseContent, options);
+                }
+
+                return result;
+
+                //var res = await response.Content.ReadFromJsonAsync<TDto>();
             }
 
             var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();
