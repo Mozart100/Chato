@@ -1,4 +1,5 @@
 ﻿using Chato.Server.DataAccess.Models;
+using Chatto.Shared;
 using System.Reflection;
 
 namespace Chato.Server.DataAccess.Repository;

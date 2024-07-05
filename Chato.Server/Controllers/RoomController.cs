@@ -1,6 +1,7 @@
 ﻿using Chato.Server.DataAccess.Models;
 using Chato.Server.Infrastracture;
 using Chato.Server.Services;
+using Chatto.Shared;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chato.Server.Controllers;

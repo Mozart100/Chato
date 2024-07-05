@@ -1,5 +1,6 @@
 ﻿using Chato.Server.DataAccess.Models;
 using Chato.Server.Services;
+using Chatto.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Runtime.CompilerServices;
