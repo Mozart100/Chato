@@ -25,11 +25,11 @@ public class UserService : IUserService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUserRepository _userRepository;
-    private readonly IDelegateQueue _delegateQueue;
+    private readonly ILockerDelegateQueue _delegateQueue;
 
     public UserService(IHttpContextAccessor httpContextAccessor,
         IUserRepository userRepository,
-        IDelegateQueue delegateQueue)
+        ILockerDelegateQueue delegateQueue)
     {
         _httpContextAccessor = httpContextAccessor;
         this._userRepository = userRepository;

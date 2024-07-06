@@ -33,7 +33,7 @@ public static class ServiceRegistrar
         //services.Decorate<IUserRepository, DelegateQueueUserRepository>();
 
 
-        services.AddSingleton<IDelegateQueue, LockDelegateQueue>();
+        services.AddSingleton<ILockerDelegateQueue, LockDelegateQueue>();
 
 
         services.AddSignalR();

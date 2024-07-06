@@ -8,15 +8,18 @@ public interface IDelegateQueue
     Task<Func<Task>> PopOrWaitAsync(CancellationToken cancellationToken);
 }
 
-public class LockDelegateQueue : DelegateQueueBase, IDelegateQueue
+public interface ILockerDelegateQueue : IDelegateQueue;
+
+
+public class LockDelegateQueue : DelegateQueueBase, ILockerDelegateQueue
+
 {
 
 }
 
+public class CacheRemovableIteDelegateQueue : DelegateQueueBase
+{
+    public interface IX : ILockerDelegateQueue;
 
-
-//public class DelegateQueue : DelegateQueueBase, IDelegateQueue
-//{
-
-//}
+}
 

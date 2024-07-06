@@ -4,9 +4,9 @@ namespace Chato.Server.BackgroundTasks;
 
 public class DelegateQueueBackgroundTask : BackgroundService
 {
-    private readonly IDelegateQueue _delegateQueue;
+    private readonly ILockerDelegateQueue _delegateQueue;
 
-    public DelegateQueueBackgroundTask( IDelegateQueue delegateQueue)
+    public DelegateQueueBackgroundTask( ILockerDelegateQueue delegateQueue)
     {
         this._delegateQueue = delegateQueue;
     }

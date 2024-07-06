@@ -25,9 +25,9 @@ public interface IRoomService
 public class RoomService : IRoomService
 {
     private readonly IRoomRepository _chatRoomRepository;
-    private readonly IDelegateQueue _delegateQueue;
+    private readonly ILockerDelegateQueue _delegateQueue;
 
-    public RoomService(IRoomRepository chatRoomRepository, IDelegateQueue delegateQueue, IRoomIndexerRepository roomIndexerRepository)
+    public RoomService(IRoomRepository chatRoomRepository, ILockerDelegateQueue delegateQueue, IRoomIndexerRepository roomIndexerRepository)
     {
         this._chatRoomRepository = chatRoomRepository;
         this._delegateQueue = delegateQueue;
