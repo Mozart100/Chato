@@ -1,21 +1,12 @@
-﻿namespace Chato.Server.Infrastracture;
+﻿namespace Chato.Server.Infrastracture.QueueDelegates;
 
-public interface IDelegateQueue
-{
-    Task BeginInvokeAsync(Func<Task> callback);
-    void Invoke(Action callback);
-    Task InvokeAsync(Func<Task> callback);
-    Task<Func<Task>> PopOrWaitAsync(CancellationToken cancellationToken);
-}
-
-
-public class DelegateQueue : IDelegateQueue
+public abstract class DelegateQueueBase 
 {
     private readonly Queue<Func<Task>> _delegates;
     private readonly SemaphoreSlim _semaphore;
 
 
-    public DelegateQueue()
+    public DelegateQueueBase()
     {
         _delegates = new Queue<Func<Task>>();
         _semaphore = new SemaphoreSlim(0);
@@ -80,7 +71,8 @@ public class DelegateQueue : IDelegateQueue
         }
 
         await _semaphore.WaitAsync(cancellationToken);
-        
+
         return null;
     }
 }
+

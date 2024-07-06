@@ -1,4 +1,4 @@
-﻿using Chato.Server.Infrastracture;
+﻿using Chato.Server.Infrastracture.QueueDelegates;
 
 namespace Chato.Server.BackgroundTasks;
 

@@ -1,7 +1,7 @@
 ﻿using Chato.Server.BackgroundTasks;
 using Chato.Server.DataAccess.Repository;
 using Chato.Server.Errors;
-using Chato.Server.Infrastracture;
+using Chato.Server.Infrastracture.QueueDelegates;
 using Chato.Server.Services;
 using Chato.Server.Services.Validations;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -33,7 +33,7 @@ public static class ServiceRegistrar
         //services.Decorate<IUserRepository, DelegateQueueUserRepository>();
 
 
-        services.AddSingleton<IDelegateQueue, DelegateQueue>();
+        services.AddSingleton<IDelegateQueue, LockDelegateQueue>();
 
 
         services.AddSignalR();
