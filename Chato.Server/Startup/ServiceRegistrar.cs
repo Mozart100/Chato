@@ -25,22 +25,15 @@ public static class ServiceRegistrar
         });
 
         services.AddSingleton<IRoomRepository, RoomRepository>();
-        //services.Decorate<IRoomRepository, DelegateQueueRoomRepository>();
-
-
-        
         services.AddSingleton<IUserRepository, UserRepository>();
+        services.AddSingleton<IRoomIndexerRepository, RoomIndexerRepository>();
+
+
+
         //services.Decorate<IUserRepository, DelegateQueueUserRepository>();
 
 
         services.AddSingleton<IDelegateQueue, DelegateQueue>();
-
-        
-        //services.AddSingleton<IPreloadDataLoader, GenerateDefaultRoomAndUsersService>();
-
-
-
-
 
 
         services.AddSignalR();
@@ -68,6 +61,8 @@ public static class ServiceRegistrar
         services.AddEndpointsApiExplorer();
         services.AddAutoMapper(typeof(Program).Assembly);
 
+        services.AddMemoryCache();
+
 
        services.AddSwaggerGen(options =>
         {
@@ -87,9 +82,6 @@ public static class ServiceRegistrar
         services.AddScoped<IAssignmentService, AssignmentService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IRegistrationValidationService, RegistrationValidationService>();
-
-
-
 
 
         services.AddExceptionHandler<GlobalExceptionHandler>();

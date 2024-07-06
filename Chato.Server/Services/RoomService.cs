@@ -20,12 +20,13 @@ public interface IRoomService
     Task SendMessageAsync(string group, string fromUser, byte[] ptr);
 }
 
+
 public class RoomService : IRoomService
 {
     private readonly IRoomRepository _chatRoomRepository;
     private readonly IDelegateQueue _delegateQueue;
 
-    public RoomService(IRoomRepository chatRoomRepository, IDelegateQueue delegateQueue)
+    public RoomService(IRoomRepository chatRoomRepository, IDelegateQueue delegateQueue, IRoomIndexerRepository roomIndexerRepository)
     {
         this._chatRoomRepository = chatRoomRepository;
         this._delegateQueue = delegateQueue;
@@ -62,8 +63,7 @@ public class RoomService : IRoomService
         return result.ToChatRoomDto();
     }
 
-
-    public async Task<ChatRoomDb> CreateRoomCoreAsync(string roomName)
+    private async Task<ChatRoomDb> CreateRoomCoreAsync(string roomName)
     {
         return await _chatRoomRepository.InsertAsync(new ChatRoomDb { Id = roomName });
     }
