@@ -74,7 +74,9 @@ app.MapHub<ChattoHub>("/chat");
 app.UseAuthentication();
 app.UseAuthorization();
 
+app.UseMiddleware<ResponseWrappingMiddleware>();
 app.UseMiddleware<ChattoExceptionMiddleware>();
+
 
 //app.UseExceptionHandler("/error");
 app.UseExceptionHandler();
