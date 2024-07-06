@@ -29,7 +29,7 @@ public class RoomService : IRoomService
     private readonly IRoomIndexerRepository _roomIndexerRepository;
 
     public RoomService(IRoomRepository chatRoomRepository,
-        ILockerDelegateQueue lockerQueue, 
+        ILockerDelegateQueue lockerQueue,
         IRoomIndexerRepository roomIndexerRepository)
     {
         this._chatRoomRepository = chatRoomRepository;
@@ -70,7 +70,13 @@ public class RoomService : IRoomService
 
     private async Task<ChatRoomDb> CreateRoomCoreAsync(string roomName)
     {
-        return await _chatRoomRepository.InsertAsync(new ChatRoomDb { Id = roomName });
+        var result = await _chatRoomRepository.InsertAsync(new ChatRoomDb { Id = roomName });
+        if (result is not null)
+        {
+            await _roomIndexerRepository.AddAsync(roomName);
+        }
+
+        return result;
     }
 
 
