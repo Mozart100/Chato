@@ -34,6 +34,7 @@ public static class ServiceRegistrar
 
 
         services.AddSingleton<ILockerDelegateQueue, LockerDelegateQueue>();
+        services.AddSingleton<ICacheRemovableIteDelegateQueue, CacheRemovableIteDelegateQueue>();
 
 
         services.AddSignalR();
@@ -46,7 +47,10 @@ public static class ServiceRegistrar
 
         services.AddHostedService<PreloadBackgroundTask>();
         services.AddHostedService<DelegateQueueBackgroundTask>();
+        services.AddHostedService<CacheRemovalItemBackgroundTask>();
 
+
+        
 
 
         //kcservices.AddMiddleware

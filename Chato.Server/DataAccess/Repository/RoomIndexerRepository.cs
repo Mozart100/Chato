@@ -4,10 +4,6 @@ using Microsoft.Extensions.Caching.Memory;
 
 namespace Chato.Server.DataAccess.Repository;
 
-//public interface IRoomRepository : IRepositoryBase<ChatRoomDb>
-//{
-//    Task SendMessageAsync(string group, string user, byte[] ptr);
-//}
 
 public class RoomIndexerDb
 {
@@ -48,7 +44,7 @@ public class RoomIndexerRepository : IRoomIndexerRepository
         _cache = cache;
         _cacheEntryOptions = new MemoryCacheEntryOptions
         {
-            SlidingExpiration = TimeSpan.FromMinutes(5), // Set the sliding expiration time here
+            SlidingExpiration = TimeSpan.FromMinutes(5), 
 
             PostEvictionCallbacks =
             {
