@@ -1,6 +1,8 @@
 ﻿using Chato.Server.DataAccess.Models;
 using Chato.Server.Services;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Caching.Memory;
+using System.Collections.Concurrent;
 
 namespace Chato.Server.DataAccess.Repository;
 
@@ -28,7 +30,7 @@ public record RoomIndexerDb(string RoomNameOrId);
 
 public interface IRoomIndexerRepository
 {
-    Task AddAsync(string roomId);
+    Task AddOrUpdateRoomAsync(string roomId);
     Task RemoveAsync(string roomId);
 }
 
@@ -38,6 +40,9 @@ public class RoomIndexerRepository : IRoomIndexerRepository
 
     private readonly IMemoryCache _cache;
     private readonly MemoryCacheEntryOptions _cacheEntryOptions;
+
+    private readonly ConcurrentDictionary<object, object> _keys;
+
 
     public RoomIndexerRepository(IMemoryCache cache)
     {
@@ -52,24 +57,36 @@ public class RoomIndexerRepository : IRoomIndexerRepository
                 {
                     EvictionCallback = async (key, value, reason, state) =>
                     {
+                        _keys.TryAdd(key, null);
                         Console.WriteLine($"Cache entry with key {key} was evicted due to {reason}");
                     }
                 }
             }
         };
+
+        _keys = new ConcurrentDictionary<object, object>();
     }
 
-    public async Task AddAsync(string roomNameOrId)
+    
+    public async Task AddOrUpdateRoomAsync(string roomNameOrId)
     {
-        if (_cache.TryGetValue(roomNameOrId, out _) == false)
-        {
-            _cache.Set(roomNameOrId, new RoomIndexerDb(roomNameOrId), _cacheEntryOptions);
-        }
+        //var room = new RoomIndexerDb(roomNameOrId);
+        //using (var entry = _cache.CreateEntry(room.RoomNameOrId))
+        //{
+        //    entry.Value = room;
+        //    entry.SetOptions(_cacheEntryOptions);
+        //}
     }
 
 
     public async Task RemoveAsync(string roomNameOrId)
     {
         _cache.Remove(roomNameOrId);
+    }
+
+
+    public IEnumerable<object> GetAllKeys()
+    {
+        return _keys.Keys;
     }
 }

@@ -73,7 +73,7 @@ public class RoomService : IRoomService
         var result = await _chatRoomRepository.InsertAsync(new ChatRoomDb { Id = roomName });
         if (result is not null)
         {
-            await _roomIndexerRepository.AddAsync(roomName);
+            await _roomIndexerRepository.AddOrUpdateRoomAsync(roomName);
         }
 
         return result;
