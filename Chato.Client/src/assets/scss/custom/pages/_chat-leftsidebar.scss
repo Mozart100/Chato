@@ -102,8 +102,7 @@
         .unread-message {
             position: absolute;
             display: inline-block;
-            right: 24px/*rtl:auto*/;
-            left: auto/*rtl:0*/;
+            inset-inline-end: 24px;
             top: 33px;
 
             .badge {
@@ -125,12 +124,8 @@
         border-radius: 50%;
         border: 2px solid $card-bg;
         position: absolute;
-        right: 0/*rtl:auto*/;
-        left: auto/*rtl:0*/;
-
+        inset-inline-end: 0;
         bottom: 0;
-
-
     }
 
     &.online {

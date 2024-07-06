@@ -9,14 +9,11 @@ import { chat, groups } from './data'
 import { Chats, Groups } from './chat.model'
 
 import { Lightbox } from 'ngx-lightbox'
-import { OwlOptions } from 'ngx-owl-carousel-o'
-import { environment } from '../../../environments/environment'
 import { AuthenticationService } from '../../core/services/auth.service'
-import { AuthfakeauthenticationService } from '../../core/services/authfake.service'
 
 // Date Format
 import { DatePipe } from '@angular/common'
-import { LangService } from "../../core/services/lang.service"
+import { LangService } from '../../core/services/lang.service'
 
 @Component({
     selector: 'app-index',
@@ -41,10 +38,11 @@ export class IndexComponent implements OnInit {
 
     images: { src: string; thumb: string; caption: string }[] = []
 
-    constructor(private authFackservice: AuthfakeauthenticationService, private authService: AuthenticationService,
-                private router: Router, public translate: TranslateService, private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
+    constructor(private router: Router,
+                private modalService: NgbModal, private offcanvasService: NgbOffcanvas,
                 public formBuilder: FormBuilder, private datePipe: DatePipe, private lightbox: Lightbox,
-                public langService: LangService) {
+                public langService: LangService,
+                private auth: AuthenticationService) {
     }
 
     /**
@@ -69,13 +67,13 @@ export class IndexComponent implements OnInit {
             message: ['', [Validators.required]],
         })
 
-        const user = window.sessionStorage.getItem('currentUser')
-        if (user) {
-            this.senderName = JSON.parse(user).username
-            this.senderProfile = 'assets/images/users/' + JSON.parse(user).profile
-        } else {
-            this.router.navigate(['/account/login'])
-        }
+        // const user = window.sessionStorage.getItem('currentUser')
+        // if (user) {
+        //     this.senderName = JSON.parse(user).username
+        //     this.senderProfile = 'assets/images/users/' + JSON.parse(user).profile
+        // } else {
+        //     this.router.navigate(['/account/login'])
+        // }
         this.chat = chat
         this.groups = groups
         this.onListScroll()
@@ -117,12 +115,7 @@ export class IndexComponent implements OnInit {
      * Logout the user
      */
     logout() {
-        if (environment.defaultauth === 'firebase') {
-            this.authService.logout()
-        } else if (environment.defaultauth === 'fackbackend') {
-            this.authFackservice.logout()
-        }
-        this.router.navigate(['/account/login'])
+        this.auth.logout()
     }
 
     openCallModal(content) {
@@ -165,18 +158,18 @@ export class IndexComponent implements OnInit {
 // Contact Search
     ContactSearch() {
         var input: any, filter: any, ul: any, li: any, a: any | undefined, i: any, txtValue: any
-        input = document.getElementById("searchContact") as HTMLAreaElement
+        input = document.getElementById('searchContact') as HTMLAreaElement
         filter = input.value.toUpperCase()
-        ul = document.querySelectorAll(".chat-user-list")
+        ul = document.querySelectorAll('.chat-user-list')
         ul.forEach((item: any) => {
-            li = item.getElementsByTagName("li")
+            li = item.getElementsByTagName('li')
             for (i = 0; i < li.length; i++) {
-                a = li[i].getElementsByTagName("h5")[0]
+                a = li[i].getElementsByTagName('h5')[0]
                 txtValue = a?.innerText
                 if (txtValue?.toUpperCase().indexOf(filter) > -1) {
-                    li[i].style.display = ""
+                    li[i].style.display = ''
                 } else {
-                    li[i].style.display = "none"
+                    li[i].style.display = 'none'
                 }
             }
         })
@@ -185,17 +178,17 @@ export class IndexComponent implements OnInit {
 // Message Search
     MessageSearch() {
         var input: any, filter: any, ul: any, li: any, a: any | undefined, i: any, txtValue: any
-        input = document.getElementById("searchMessage") as HTMLAreaElement
+        input = document.getElementById('searchMessage') as HTMLAreaElement
         filter = input.value.toUpperCase()
-        ul = document.getElementById("users-conversation")
-        li = ul.getElementsByTagName("li")
+        ul = document.getElementById('users-conversation')
+        li = ul.getElementsByTagName('li')
         for (i = 0; i < li.length; i++) {
-            a = li[i].getElementsByTagName("p")[0]
+            a = li[i].getElementsByTagName('p')[0]
             txtValue = a?.innerText
             if (txtValue?.toUpperCase().indexOf(filter) > -1) {
-                li[i].style.display = ""
+                li[i].style.display = ''
             } else {
-                li[i].style.display = "none"
+                li[i].style.display = 'none'
             }
         }
     }
@@ -228,9 +221,9 @@ export class IndexComponent implements OnInit {
             }
             var img = this.img ? this.img : ''
             var status = this.img ? true : ''
-            var dateTime = this.datePipe.transform(new Date(), "h:mm a")
-            var chatReplyUser = this.isreplyMessage == true ? (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .conversation-name") as HTMLAreaElement).innerHTML : ''
-            var chatReplyMessage = this.isreplyMessage == true ? (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .mb-0") as HTMLAreaElement).innerText : ''
+            var dateTime = this.datePipe.transform(new Date(), 'h:mm a')
+            var chatReplyUser = this.isreplyMessage == true ? (document.querySelector('.replyCard .replymessage-block .flex-grow-1 .conversation-name') as HTMLAreaElement).innerHTML : ''
+            var chatReplyMessage = this.isreplyMessage == true ? (document.querySelector('.replyCard .replymessage-block .flex-grow-1 .mb-0') as HTMLAreaElement).innerText : ''
             this.message.push({
                 id: 1,
                 message: message,
@@ -328,9 +321,9 @@ export class IndexComponent implements OnInit {
         this.isreplyMessage = true
         document.querySelector('.replyCard')?.classList.add('show')
         var copyText = event.target.closest('.chats').querySelector('.messageText').innerHTML;
-        (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .mb-0") as HTMLAreaElement).innerHTML = copyText
-        var msgOwnerName: any = event.target.closest(".chats").classList.contains("right") == true ? 'You' : document.querySelector('.username')?.innerHTML;
-        (document.querySelector(".replyCard .replymessage-block .flex-grow-1 .conversation-name") as HTMLAreaElement).innerHTML = msgOwnerName
+        (document.querySelector('.replyCard .replymessage-block .flex-grow-1 .mb-0') as HTMLAreaElement).innerHTML = copyText
+        var msgOwnerName: any = event.target.closest('.chats').classList.contains('right') == true ? 'You' : document.querySelector('.username')?.innerHTML;
+        (document.querySelector('.replyCard .replymessage-block .flex-grow-1 .conversation-name') as HTMLAreaElement).innerHTML = msgOwnerName
     }
 
     /**
@@ -363,13 +356,13 @@ export class IndexComponent implements OnInit {
         this.mode = mode
         switch (mode) {
             case 'light':
-                document.body.setAttribute('data-bs-theme', "light")
+                document.body.setAttribute('data-bs-theme', 'light')
                 break
             case 'dark':
-                document.body.setAttribute('data-bs-theme', "dark")
+                document.body.setAttribute('data-bs-theme', 'dark')
                 break
             default:
-                document.body.setAttribute('data-bs-theme', "light")
+                document.body.setAttribute('data-bs-theme', 'light')
                 break
         }
     }
@@ -410,18 +403,18 @@ export class IndexComponent implements OnInit {
 // Group Search
     GroupSearch() {
         var input: any, filter: any, ul: any, li: any, a: any | undefined, i: any, txtValue: any
-        input = document.getElementById("searchGroup") as HTMLAreaElement
+        input = document.getElementById('searchGroup') as HTMLAreaElement
         filter = input.value.toUpperCase()
-        ul = document.querySelectorAll(".group-list")
+        ul = document.querySelectorAll('.group-list')
         ul.forEach((item: any) => {
-            li = item.getElementsByTagName("li")
+            li = item.getElementsByTagName('li')
             for (i = 0; i < li.length; i++) {
-                a = li[i].getElementsByTagName("h5")[0]
+                a = li[i].getElementsByTagName('h5')[0]
                 txtValue = a?.innerText
                 if (txtValue?.toUpperCase().indexOf(filter) > -1) {
-                    li[i].style.display = ""
+                    li[i].style.display = ''
                 } else {
-                    li[i].style.display = "none"
+                    li[i].style.display = 'none'
                 }
             }
         })

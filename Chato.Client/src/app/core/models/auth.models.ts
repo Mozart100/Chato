@@ -1,10 +1,23 @@
 export class User {
-    id: number;
-    username: string;
-    password: string;
-    firstName?: string;
-    lastName?: string;
-    token?: string;
-    email: string;
-    profile?: string;
+    username: string
+    age: number
+    gender: string
+    description: string
+}
+
+export interface RegistrationRequest {
+    UserName: string
+    Age: number
+    Description: string
+    Gender: string
+}
+
+export interface RegistrationResponse {
+    userName: string
+    age: number
+    description: string
+    gender: string
+    token: string
+    tokenCreated: Date
+    tokenExpires: Date
 }

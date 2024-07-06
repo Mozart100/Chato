@@ -1,35 +1,25 @@
-import { Injectable } from '@angular/core';
-import { Router, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
+import { inject } from '@angular/core'
+import { Router, CanActivateFn } from '@angular/router'
+import { AuthenticationService } from '../services/auth.service'
+import { SAVED_TOKEN_KEY } from '../helpers/consts'
 
-import { AuthenticationService } from '../services/auth.service';
-import { AuthfakeauthenticationService } from '../services/authfake.service';
+export const authGuard: CanActivateFn = (route, state) => {
+    const router = inject(Router)
 
-import { environment } from '../../../environments/environment';
-
-@Injectable({ providedIn: 'root' })
-export class AuthGuard  {
-    constructor(
-        private router: Router,
-        private authenticationService: AuthenticationService,
-        private authFackservice: AuthfakeauthenticationService
-    ) { }
-
-    canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-        if (environment.defaultauth === 'firebase') {
-            const currentUser = this.authenticationService.currentUser();
-            if (currentUser && currentUser.profile) {
-                // logged in so return true
-                return true;
-            }
-        } else {
-            const currentUser = this.authFackservice.currentUserValue;
-            if (currentUser && currentUser.profile) {
-                // logged in so return true
-                return true;
-            }
-        }
-        // not logged in so redirect to login page with the return url
-        this.router.navigate(['/account/login'], { queryParams: { returnUrl: state.url } });
-        return false;
+    // check if we have token
+    const token = sessionStorage.getItem(SAVED_TOKEN_KEY)
+    if (!token || token === 'undefined') {
+        router.navigate(['/account/login'], { queryParams: { returnUrl: state.url } })
+        return false
     }
+
+    // if we have token, check its validity
+    const authService = inject(AuthenticationService)
+    return authService.checkAuth()
+        .then(isAuth => {
+            if (!isAuth) {
+                router.navigate(['/account/login'], { queryParams: { returnUrl: state.url } })
+            }
+            return isAuth
+        })
 }

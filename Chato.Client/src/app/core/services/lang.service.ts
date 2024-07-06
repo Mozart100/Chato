@@ -1,28 +1,24 @@
-import { Injectable } from "@angular/core"
-import { TranslateService } from "@ngx-translate/core"
+import { Injectable } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
-const SELECTED_LANG = "selected.language"
+const SELECTED_LANG = 'selected.language';
 
 @Injectable({ providedIn: 'root' })
 export class LangService {
 
     readonly langs = [
         { text: 'Hebrew', flag: 'assets/images/flags/israel.png', lang: 'he' },
-        { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' },
-        { text: 'Spanish', flag: 'assets/images/flags/spain.jpg', lang: 'es' },
-        { text: 'German', flag: 'assets/images/flags/germany.jpg', lang: 'de' },
-        { text: 'Italian', flag: 'assets/images/flags/italy.jpg', lang: 'it' },
-        { text: 'Russian', flag: 'assets/images/flags/russia.jpg', lang: 'ru' },
-    ]
+        { text: 'English', flag: 'assets/images/flags/us.jpg', lang: 'en' }
+    ];
 
     constructor(private translate: TranslateService) {
-        this.loadSelectedLanguage()
+        this.loadSelectedLanguage();
     }
 
     private loadSelectedLanguage() {
-        const lang = localStorage.getItem(SELECTED_LANG)
+        const lang = localStorage.getItem(SELECTED_LANG);
         if (lang) {
-            this.setLanguage(lang)
+            this.setLanguage(lang);
         }
     }
 
@@ -31,8 +27,8 @@ export class LangService {
      * @param lang language
      */
     setLanguage(lang: string) {
-        this.translate.use(lang)
-        this.setDirection(lang)
+        this.translate.use(lang);
+        this.setDirection(lang);
     }
 
     /**
@@ -40,12 +36,12 @@ export class LangService {
      * @param lang language
      */
     setDirection(lang: string) {
-        document.documentElement.dir = lang === 'he' ? "rtl" : "ltr"
-        localStorage.setItem(SELECTED_LANG, lang)
+        document.documentElement.dir = lang === 'he' ? 'rtl' : 'ltr';
+        localStorage.setItem(SELECTED_LANG, lang);
     }
 
 
     get lang() {
-        return this.translate.currentLang
+        return this.translate.currentLang;
     }
 }

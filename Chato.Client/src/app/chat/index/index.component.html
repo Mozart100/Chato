@@ -78,7 +78,7 @@
         <div class="flex-lg-column d-none d-lg-block">
             <ul class="nav side-menu-nav justify-content-center">
 
-                <li class="nav-item btn-group dropup profile-user-dropdown" ngbDropdown placement="top-left">
+                <li class="nav-item btn-group dropup profile-user-dropdown" ngbDropdown>
                     <a class="nav-link dropdown-toggle" href="javascript:void(0);" role="button" ngbDropdownToggle
                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         <i class="ri-global-line"></i>
@@ -87,8 +87,8 @@
                         @for (item of langService.langs; track $index) {
                             <a class="dropdown-item" (click)="langService.setLanguage(item.lang)"
                                [ngClass]="{'active': langService.lang === item.lang}" href="javascript: void(0);">
-                                <img src="{{item.flag}}" alt="user-image" class="me-1" height="12"> <span
-                                class="align-middle">{{ item.text }}</span>
+                                <img src="{{item.flag}}" [alt]="item" height="12">
+                                <span class="align-middle">{{ item.text }}</span>
                             </a>
                         }
                     </div>
@@ -236,7 +236,7 @@
 
                         <!-- Start chat-message-list -->
                         <div>
-                            <h5 class="mb-3 px-3 font-size-16">{{ 'chat.tabs.chats.recent.title' | translate }}</h5>
+                            <h5 class="mb-3 px-3 font-size-16">{{ 'chat.tabs.chats.recentChats' | translate }}</h5>
 
                             <ngx-simplebar class="chat-message-list px-2" data-simplebar-track="light">
                                 <ul class="list-unstyled chat-list chat-user-list">
@@ -260,17 +260,19 @@
                                                         @if (user.status) {
                                                             <span class="user-status"></span>
                                                         }
-                                                    </div>ng
+                                                    </div>
 
                                                     <div class="flex-grow-1 overflow-hidden">
                                                         <h5 class="text-truncate font-size-15 mb-1">{{ user.name | translate }}</h5>
                                                         @if (user.isTyping) {
-                                                            <p class="chat-user-message text-truncate mb-0">typing<span
-                                                                class="animate-typing">
-                            <span class="dot ms-1"></span>
-                            <span class="dot ms-1"></span>
-                            <span class="dot ms-1"></span>
-                          </span></p>
+                                                            <p class="chat-user-message mb-0">
+                                                                <span class="me-1">{{ 'chat.tabs.chats.typing' | translate }}</span>
+                                                                <span class="animate-typing">
+                                                                    <span class="dot ms-1"></span>
+                                                                    <span class="dot ms-1"></span>
+                                                                    <span class="dot ms-1"></span>
+                                                                  </span>
+                                                            </p>
                                                         }
                                                         <p class="chat-user-message text-truncate mb-0">{{ user.lastMessage | translate }}</p>
                                                     </div>

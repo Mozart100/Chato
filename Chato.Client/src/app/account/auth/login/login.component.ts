@@ -1,17 +1,16 @@
-import { Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
-import { first } from 'rxjs/operators';
+import { Component, OnInit } from '@angular/core'
+import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms'
+import { ActivatedRoute, Router } from '@angular/router'
 
-import { AuthenticationService } from '../../../core/services/auth.service';
-import { AuthfakeauthenticationService } from '../../../core/services/authfake.service';
+import { AuthenticationService } from '../../../core/services/auth.service'
 
-import { environment } from '../../../../environments/environment';
+import { TranslateService } from '@ngx-translate/core'
+import { firstValueFrom } from 'rxjs'
 
 @Component({
-  selector: 'app-login',
-  templateUrl: './login.component.html',
-  styleUrls: ['./login.component.scss']
+    selector: 'app-login',
+    templateUrl: './login.component.html',
+    styleUrls: ['./login.component.scss']
 })
 
 /**
@@ -19,63 +18,60 @@ import { environment } from '../../../../environments/environment';
  */
 export class LoginComponent implements OnInit {
 
-  loginForm: UntypedFormGroup;
-  submitted = false;
-  error = '';
-  returnUrl: string;
+    loginForm: UntypedFormGroup
+    submitted = false
+    error = ''
+    returnUrl: string
 
-  // set the currenr year
-  year: number = new Date().getFullYear();
-
-  // tslint:disable-next-line: max-line-length
-  constructor(private formBuilder: UntypedFormBuilder, private route: ActivatedRoute, private router: Router, public authenticationService: AuthenticationService, public authFackservice: AuthfakeauthenticationService) { }
-
-
-  ngOnInit(): void {
-    this.loginForm = this.formBuilder.group({
-      email: ['chatvia@themesbrand.com', [Validators.required, Validators.email]],
-      password: ['123456', [Validators.required]],
-    });
-
-    // reset login status
-    // this.authenticationService.logout();
-    // get return url from route parameters or default to '/'
-    // tslint:disable-next-line: no-string-literal
-    this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/';
-  }
-
-  // convenience getter for easy access to form fields
-  get f() { return this.loginForm.controls; }
-
-  /**
-   * Form submit
-   */
-  onSubmit() {
-    this.submitted = true;
-
-    // stop here if form is invalid
-    if (this.loginForm.invalid) {
-      return;
-    } else {
-      if (environment.defaultauth === 'firebase') {
-        this.authenticationService.login(this.f.email.value, this.f.password.value).then((res: any) => {
-          this.router.navigate(['/']);
-        })
-          .catch(error => {
-            this.error = error ? error : '';
-          });
-      } else if (environment.defaultauth === 'fackbackend') {
-        this.authFackservice.login(this.f.email.value, this.f.password.value)
-          .pipe(first())
-          .subscribe(
-            data => {
-              this.router.navigate(['/']);
-              // this.router.navigate(['/']);
-            },
-            error => {
-              this.error = error ? error : '';
-            });
-      }
+    constructor(private formBuilder: UntypedFormBuilder,
+                private route: ActivatedRoute,
+                private router: Router,
+                private auth: AuthenticationService,
+                private translate: TranslateService) {
     }
-  }
+
+
+    ngOnInit(): void {
+        this.loginForm = this.formBuilder.group({
+            username: ['Michael', [Validators.required, Validators.min(3)]],
+            description: ['Ohhh, wanna dance with somebody', [Validators.required, Validators.min(3)]],
+            age: [40, [Validators.required, Validators.min(18)]],
+            gender: ['', []],
+        })
+
+        // fill gender placeholder
+        firstValueFrom(this.translate.get('login.form.gender.placeholder'))
+            .then(text => this.loginForm.controls.gender.setValue(text))
+
+        // reset login status
+        // this.authenticationService.logout();
+        // get return url from route parameters or default to '/'
+        // tslint:disable-next-line: no-string-literal
+        this.returnUrl = this.route.snapshot.queryParams['returnUrl'] || '/'
+    }
+
+    // convenience getter for easy access to form fields
+    get f() {
+        return this.loginForm.controls
+    }
+
+    /**
+     * Form submit
+     */
+    onSubmit() {
+        this.submitted = true
+
+        if (this.loginForm.invalid) { // stop here if form is invalid
+            return
+        } else {
+            this.auth.register({
+                Age: this.loginForm.controls.age.value,
+                Description: this.loginForm.controls.description.value,
+                Gender: this.loginForm.controls.gender.value,
+                UserName: this.loginForm.controls.username.value
+            }).then(() => {
+                this.router.navigate(['/'])
+            })
+        }
+    }
 }

@@ -1,31 +1,28 @@
 {
     "login": {
-        "title": "Sign in",
-        "message": "Sign in to continue to Chat.",
+        "title": "הירשם",
+        "message": "אנחנו לא מאחסנים נתוני משתמש. המשתמש שלך יהיה פעיל עד שתסגור את לשונית הדפדפן",
         "form": {
             "email": {
-                "label": "Username",
-                "placeholder": "Enter your email",
+                "label": "שם משתמש",
+                "placeholder": "הכנס שם משתמש",
                 "validation": {
-                    "required": "Email is mandatory.",
-                    "invalid": "Email is invalid. Please provide valid email."
+                    "required": "שם משתמש הוא חובה",
+                    "invalid": "שם משתמש לא חוקי. זה צריך להכיל לפחות 3 אותיות"
                 }
             },
-            "password": {
-                "label": "Password",
-                "placeholder": "Enter your password",
+            "description": {
+                "label": "תיאור",
+                "placeholder": "הזן כמה פרטים על עצמך",
                 "validation": {
-                    "required": "Password is mandatory."
+                    "required": "התיאור הוא חובה",
+                    "invalid": "התיאור אינו חוקי. זה צריך להכיל לפחות 3 אותיות"
                 }
             },
-            "remebertext": "Remember me",
             "button": {
-                "text": "Sign In"
-            },
-            "forgotlink": "Forgot your password?"
-        },
-        "signuptext": "Don't have an account ?",
-        "signuplink": "Signup now"
+                "text": "הירשם"
+            }
+        }
     },
     "signup": {
         "title": "Sign up",
@@ -158,6 +155,8 @@
             },
             "chats": {
                 "title": "צ'אטים",
+                "typing": "הקלדה",
+                "recentChats": "אחרונים",
                 "search": {
                     "placeholder": "חפש הודעות או משתמשים"
                 },
@@ -169,7 +168,7 @@
                     "5": "Teresa"
                 },
                 "recent": {
-                    "title": "Recent",
+
                     "userslist": {
                         "user1": {
                             "name": "Patrick Hendricks",

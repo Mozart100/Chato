@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { AuthenticationService } from '../../../core/services/auth.service'
 
 @Component({
   selector: 'app-profile',
@@ -10,15 +11,9 @@ import { Component, OnInit } from '@angular/core';
  */
 export class ProfileComponent implements OnInit {
 
-  senderName:any;
-  senderProfile:any;
-
-  constructor() { }
+  constructor(public auth: AuthenticationService) { }
 
   ngOnInit(): void {
-    const user = window.sessionStorage.getItem('currentUser');
-    this.senderName = JSON.parse(user).username
-    this.senderProfile = 'assets/images/users/'+JSON.parse(user).profile
   }
 
 }
