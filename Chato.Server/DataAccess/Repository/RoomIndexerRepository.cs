@@ -5,26 +5,26 @@ using Microsoft.Extensions.Caching.Memory;
 namespace Chato.Server.DataAccess.Repository;
 
 
-public class RoomIndexerDb
-{
+public record RoomIndexerDb(string RoomNameOrId);
+//{
 
-    public string RoomIndex { get; init; }
+//    public string RoomIndex { get; init; }
 
-    public override int GetHashCode()
-    {
-        return RoomIndex.GetHashCode();
-    }
+//    public override int GetHashCode()
+//    {
+//        return RoomIndex.GetHashCode();
+//    }
 
-    public override bool Equals(object? obj)
-    {
-        if (obj is RoomIndexerDb entity)
-        {
-            return RoomIndex.Equals(entity.RoomIndex);
-        }
+//    public override bool Equals(object? obj)
+//    {
+//        if (obj is RoomIndexerDb entity)
+//        {
+//            return RoomIndex.Equals(entity.RoomIndex);
+//        }
 
-        return false;
-    }
-}
+//        return false;
+//    }
+//}
 
 public interface IRoomIndexerRepository
 {
@@ -63,13 +63,13 @@ public class RoomIndexerRepository : IRoomIndexerRepository
     {
         if (_cache.TryGetValue(roomNameOrId, out _) == false)
         {
-            _cache.Set(roomNameOrId, new RoomIndexerDb { RoomIndex = roomNameOrId }, _cacheEntryOptions);
+            _cache.Set(roomNameOrId, new RoomIndexerDb(roomNameOrId), _cacheEntryOptions);
         }
     }
 
 
     public async Task RemoveAsync(string roomNameOrId)
     {
-        //_cache.Remove(roomNameOrId);
+        _cache.Remove(roomNameOrId);
     }
 }

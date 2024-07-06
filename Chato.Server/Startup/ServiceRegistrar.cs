@@ -34,7 +34,7 @@ public static class ServiceRegistrar
 
 
         services.AddSingleton<ILockerDelegateQueue, LockerDelegateQueue>();
-        services.AddSingleton<ICacheRemovableIteDelegateQueue, CacheRemovableIteDelegateQueue>();
+        services.AddSingleton<ICacheItemDelegateQueue, CacheItemDelegateQueue>();
 
 
         services.AddSignalR();

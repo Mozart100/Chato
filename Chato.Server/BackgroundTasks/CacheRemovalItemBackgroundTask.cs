@@ -1,26 +1,34 @@
-﻿using Chato.Server.Services;
+﻿using Chato.Server.DataAccess.Repository;
+using Chato.Server.Infrastracture.QueueDelegates;
+using Chato.Server.Services;
 
 namespace Chato.Server.BackgroundTasks;
 
 public class CacheRemovalItemBackgroundTask : BackgroundService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
+    private readonly ICacheItemDelegateQueue _cacheDelegateQueue;
 
-    public CacheRemovalItemBackgroundTask(IServiceScopeFactory serviceScopeFactory)
+    public CacheRemovalItemBackgroundTask(IServiceScopeFactory serviceScopeFactory,
+        ICacheItemDelegateQueue cacheRemovableIteDelegateQueue
+        )
     {
         this._serviceScopeFactory = serviceScopeFactory;
+        this._cacheDelegateQueue = cacheRemovableIteDelegateQueue;
     }
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        //await Task.Delay(1000 * 5);
-        //using (IServiceScope scope = _serviceScopeFactory.CreateScope())
+        //while (!stoppingToken.IsCancellationRequested)
         //{
-        //    var preloaders = scope.ServiceProvider.GetRequiredService<IEnumerable<IPreloadDataLoader>>();
+        //    var result = await _cacheDelegateQueue.PopOrWaitAsync(stoppingToken);
 
-        //    foreach (var preloader in preloaders)
+        //    if (result is not null)
         //    {
-        //        await preloader.ExecuteAsync();
-
+        //        using (IServiceScope scope = _serviceScopeFactory.CreateScope())
+        //        {
+        //            var roomService = scope.ServiceProvider.GetRequiredService<IRoomService>();
+        //            await roomService.RemoveRoomByNameOrIdAsync(result.RoomNameOrId);
+        //        }
         //    }
         //}
     }
