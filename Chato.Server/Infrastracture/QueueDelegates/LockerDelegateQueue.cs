@@ -11,15 +11,8 @@ public interface IDelegateQueue
 public interface ILockerDelegateQueue : IDelegateQueue;
 
 
-public class LockDelegateQueue : DelegateQueueBase, ILockerDelegateQueue
-
+public class LockerDelegateQueue : DelegateQueueBase, ILockerDelegateQueue
 {
-
-}
-
-public class CacheRemovableIteDelegateQueue : DelegateQueueBase
-{
-    public interface IX : ILockerDelegateQueue;
 
 }
 
