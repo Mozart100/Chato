@@ -8,7 +8,7 @@ namespace Chato.Server.DataAccess.Repository;
 public class RoomIndexerDb
 {
 
-    public int RoomIndex { get; init; }
+    public string RoomIndex { get; init; }
 
     public override int GetHashCode()
     {
@@ -28,8 +28,8 @@ public class RoomIndexerDb
 
 public interface IRoomIndexerRepository
 {
-    Task Add(int roomId);
-    Task Rmove(int roomId);
+    Task AddAsync(string roomId);
+    Task RemoveAsync(string roomId);
 }
 
 public class RoomIndexerRepository : IRoomIndexerRepository
@@ -44,7 +44,7 @@ public class RoomIndexerRepository : IRoomIndexerRepository
         _cache = cache;
         _cacheEntryOptions = new MemoryCacheEntryOptions
         {
-            SlidingExpiration = TimeSpan.FromMinutes(5), 
+            SlidingExpiration = TimeSpan.FromMinutes(5),
 
             PostEvictionCallbacks =
             {
@@ -59,19 +59,17 @@ public class RoomIndexerRepository : IRoomIndexerRepository
         };
     }
 
-    public async Task Add(int roomId)
+    public async Task AddAsync(string roomNameOrId)
     {
-        if (_cache.TryGetValue(roomId, out _) == false)
+        if (_cache.TryGetValue(roomNameOrId, out _) == false)
         {
-            _cache.Set(roomId, new RoomIndexerDb { RoomIndex = roomId }, _cacheEntryOptions);
+            _cache.Set(roomNameOrId, new RoomIndexerDb { RoomIndex = roomNameOrId }, _cacheEntryOptions);
         }
     }
 
 
-    public async Task Rmove(int roomId)
+    public async Task RemoveAsync(string roomNameOrId)
     {
-        {
-            _cache.Remove(roomId);
-        }
+        //_cache.Remove(roomNameOrId);
     }
 }

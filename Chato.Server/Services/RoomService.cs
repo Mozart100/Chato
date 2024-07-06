@@ -26,11 +26,13 @@ public class RoomService : IRoomService
 {
     private readonly IRoomRepository _chatRoomRepository;
     private readonly ILockerDelegateQueue _delegateQueue;
+    private readonly IRoomIndexerRepository _roomIndexerRepository;
 
     public RoomService(IRoomRepository chatRoomRepository, ILockerDelegateQueue delegateQueue, IRoomIndexerRepository roomIndexerRepository)
     {
         this._chatRoomRepository = chatRoomRepository;
         this._delegateQueue = delegateQueue;
+        this._roomIndexerRepository = roomIndexerRepository;
     }
 
     public async Task AddUserAsync(string roomName, string userName)
@@ -119,7 +121,8 @@ public class RoomService : IRoomService
     public async Task RemoveRoomByNameOrIdAsync(string nameOrId)
     {
         await _delegateQueue.InvokeAsync(async () => await RemoveRoomByNameOrIdCoreAsync(nameOrId));
-        //await _delegateQueue.InvokeAsync(async () => await _chatRoomRepository.RemoveAsync(x => x.RoomName == nameOrId));
+        await _roomIndexerRepository.RemoveAsync(nameOrId);
+        //await _cacheQueue.InvokeAsync(async () => await _chatRoomRepository.RemoveAsync(x => x.RoomName == nameOrId));
     }
 
 
