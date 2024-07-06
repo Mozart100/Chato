@@ -17,7 +17,7 @@ public interface IRoomService
     Task JoinOrCreateRoom(string roomName, string userName);
     Task RemoveRoomByNameOrIdAsync(string nameOrId);
     Task RemoveUserAndRoomFromRoom(string roomName, string username);
-    Task RmoveHistoryByRoomNameAsync(string roomName);
+    Task RemoveHistoryByRoomNameAsync(string roomName);
     Task SendMessageAsync(string group, string fromUser, byte[] ptr);
 }
 
@@ -98,7 +98,7 @@ public class RoomService : IRoomService
         return result;
     }
 
-    public async Task<ChatRoomDto   ?> GetRoomByNameOrIdAsync(string nameOrId)
+    public async Task<ChatRoomDto> GetRoomByNameOrIdAsync(string nameOrId)
     {
         var result = default(ChatRoomDb);
 
@@ -107,7 +107,8 @@ public class RoomService : IRoomService
             result = await GetRoomByNameOrIdCoreAsync(nameOrId);
 
         });
-        return result == null ? null : result.ToChatRoomDto();
+
+        return result?.ToChatRoomDto();
     }
 
     private async Task<ChatRoomDb> GetRoomByNameOrIdCoreAsync(string nameOrId)
@@ -127,7 +128,7 @@ public class RoomService : IRoomService
         await _chatRoomRepository.RemoveAsync(x => x.RoomName == nameOrId);
     }
 
-    public async Task RmoveHistoryByRoomNameAsync(string roomName)
+    public async Task RemoveHistoryByRoomNameAsync(string roomName)
     {
         await _delegateQueue.InvokeAsync(async () =>
         {

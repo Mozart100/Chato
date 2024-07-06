@@ -107,7 +107,7 @@ public class ChattoHub : Hub<IChatHub>
 
     public async Task RemoveChatHistory(string groupName)
     {
-        await _roomService.RmoveHistoryByRoomNameAsync(groupName);
+        await _roomService.RemoveHistoryByRoomNameAsync(groupName);
 
     }
 
