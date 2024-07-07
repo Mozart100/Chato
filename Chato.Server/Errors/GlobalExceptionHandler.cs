@@ -20,6 +20,8 @@ namespace Chato.Server.Errors
 
         public async ValueTask<bool> TryHandleAsync(HttpContext httpContext, Exception exception, CancellationToken cancellationToken)
         {
+            httpContext.Response.ContentType = "application/json";
+
             if (exception is ChatoException chatoException)
             {
                 var problemDetails = _problemDetailsFactory.CreateProblemDetails(
@@ -36,14 +38,11 @@ namespace Chato.Server.Errors
                 }
 
 
-                httpContext.Response.ContentType = "application/json";
-                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-
                 var response = new ResponseWrapper<ProblemDetails>
                 {
                     Response = problemDetails,
                     IsSucceeded = false,
-                    StatusCode = StatusCodes.Status400BadRequest
+                    StatusCode = 123
                 };
                 //var json = JsonSerializer.Serialize(problemDetails);
                 await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
@@ -57,8 +56,8 @@ namespace Chato.Server.Errors
                     StatusCode = StatusCodes.Status400BadRequest
                 };
 
-                httpContext.Response.ContentType = "application/json";
-                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+                //httpContext.Response.ContentType = "application/json";
+                //httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 
                 await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
 

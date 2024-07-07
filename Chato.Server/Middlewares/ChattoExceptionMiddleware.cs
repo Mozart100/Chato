@@ -6,7 +6,6 @@ using System.Text.Json;
 namespace Chato.Server.Middlewares;
 
 
-
 public class ChattoExceptionMiddleware 
 {
     private readonly RequestDelegate _next;
