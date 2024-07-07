@@ -1,5 +1,7 @@
 ﻿using Arkovean.Chat.Services.Validations;
+using Chatto.Shared;
 using Microsoft.AspNetCore.Diagnostics;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using System.Text.Json;
 
@@ -37,9 +39,32 @@ namespace Chato.Server.Errors
                 httpContext.Response.ContentType = "application/json";
                 httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
 
+                var response = new ResponseWrapper<ProblemDetails>
+                {
+                    Response = problemDetails,
+                    IsSucceeded = false,
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
                 //var json = JsonSerializer.Serialize(problemDetails);
-                await httpContext.Response.WriteAsJsonAsync(problemDetails, cancellationToken);
+                await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
             }
+            else
+            {
+                var response = new ResponseWrapper<Exception>
+                {
+                    Response = exception,
+                    IsSucceeded = false,
+                    StatusCode = StatusCodes.Status400BadRequest
+                };
+
+                httpContext.Response.ContentType = "application/json";
+                httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
+
+                await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
+
+            }
+
+
 
 
             return true;
