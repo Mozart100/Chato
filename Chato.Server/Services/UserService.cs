@@ -1,6 +1,6 @@
 ﻿using Chato.Server.DataAccess.Models;
 using Chato.Server.DataAccess.Repository;
-using Chato.Server.Infrastracture;
+using Chato.Server.Infrastracture.QueueDelegates;
 using Chatto.Shared;
 using System.Security.Claims;
 
@@ -25,11 +25,11 @@ public class UserService : IUserService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUserRepository _userRepository;
-    private readonly IDelegateQueue _delegateQueue;
+    private readonly ILockerDelegateQueue _delegateQueue;
 
     public UserService(IHttpContextAccessor httpContextAccessor,
         IUserRepository userRepository,
-        IDelegateQueue delegateQueue)
+        ILockerDelegateQueue delegateQueue)
     {
         _httpContextAccessor = httpContextAccessor;
         this._userRepository = userRepository;

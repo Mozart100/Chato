@@ -25,32 +25,32 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
 
     private async Task SetupGroupStep()
     {
-        var request = new RegistrationRequest {  UserName = Anatoliy_User, Age = 20, Description = $"Description_{Anatoliy_User}" };
+        var request = new RegistrationRequest { UserName = Anatoliy_User, Age = 20, Description = $"Description_{Anatoliy_User}" };
         await RegisterUser(request);
 
 
-        request = new RegistrationRequest {  UserName = Anatoliy_User, Age = 10, Description = $"Description_{Anatoliy_User}", Gender = "male" };
+        request = new RegistrationRequest { UserName = Anatoliy_User, Age = 10, Description = $"Description_{Anatoliy_User}", Gender = "male" };
         await RegisterUser(request);
 
 
         await RegisterUsers(Anatoliy_User);
 
 
-        request = new RegistrationRequest {  UserName = Anatoliy_User, Age = 20, Description = $"Description_{Anatoliy_User}", Gender = "male" };
+        request = new RegistrationRequest { UserName = Anatoliy_User, Age = 20, Description = $"Description_{Anatoliy_User}", Gender = "male" };
         await RegisterUser(request);
 
 
         var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "test.jpeg");
-        var files = new[] { path, path };  
+        var files = new[] { path, path };
         var token = Users[Anatoliy_User].RegisterResponse.Token;
 
-        var response = await UploadFiles<UploadDocumentsResponse>(UploadFilesUrl, token, files);
+        var response = await UploadFiles<ResponseWrapper<UploadDocumentsResponse>>(UploadFilesUrl, token, files);
 
-        response.Document1.Should().BeTrue();
-        response.Document2.Should().BeTrue();
-        response.Document3.Should().BeFalse();
-        response.Document4.Should().BeFalse();
-        response.Document5.Should().BeFalse();
+        response.Response.Document1.Should().BeTrue();
+        response.Response.Document2.Should().BeTrue();
+        response.Response.Document3.Should().BeFalse();
+        response.Response.Document4.Should().BeFalse();
+        response.Response.Document5.Should().BeFalse();
     }
 
     private async Task RegisterUser(RegistrationRequest request)
@@ -58,7 +58,7 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
         var isExceptionOccurred = false;
         try
         {
-            var registrationInfo = await RunPostCommand<RegistrationRequest, RegistrationResponse>(RegisterAuthControllerUrl, request);
+            var registrationInfo = await RunPostCommand<RegistrationRequest, ResponseWrapper<RegistrationResponse>>(RegisterAuthControllerUrl, request);
         }
         catch (Exception ex)
         {

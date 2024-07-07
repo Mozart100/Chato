@@ -1,10 +1,11 @@
 ﻿
 using Chato.Server.Infrastracture;
+using Chatto.Shared;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.Text.Json.Serialization;
 
 namespace Chato.Server.DataAccess.Models;
 
-public record SenderInfo(string UserName,byte[] Message);
 
 public class ChatRoomDb : EntityDbBase
 {
@@ -20,29 +21,6 @@ public class ChatRoomDb : EntityDbBase
 
 }
 
-
-
-public struct ChatRoomDto
-{
-    public string RoomName { get; init; }
-
-    public SenderInfo[] SenderInfo { get; set; }
-    public string[] Users { get; init; }
-
-
-    public ChatRoomDto(string roomName, SenderInfo[] senderInfos, string[] users)
-    {
-        RoomName = roomName;
-        SenderInfo = senderInfos;
-        Users = users;
-    }
-
-    public static ChatRoomDto Empty() => new ChatRoomDto("", null, null);
-
-    public override int GetHashCode() => RoomName.GetHashCode();
-
-    public override bool Equals(object? obj) => obj is ChatRoomDb room && RoomName.Equals(room.Id);
-}
 
 
 public static class ChatRoomDbExtensions

@@ -33,11 +33,11 @@ public class AuthController : ControllerBase
 
     [Route("register")]
     [HttpPost]
-    public async Task<ActionResult<RegistrationResponse>> Register([FromBody] RegistrationRequest request)
+    public async Task<RegistrationResponse> Register([FromBody] RegistrationRequest request)
     {
         //throw new Exception("xxxx");
         var token = await _authenticationService.RegisterAsync(request);
-        return Ok(new RegistrationResponse { Token = token, UserName = request.UserName });
+        return new RegistrationResponse { Token = token, UserName = request.UserName , Description = request.Description , Age = request.Age, Gender  = request.Gender };
     }
 
     [Route("upload")]

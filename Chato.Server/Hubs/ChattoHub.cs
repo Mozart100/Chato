@@ -1,5 +1,6 @@
 ﻿using Chato.Server.DataAccess.Models;
 using Chato.Server.Services;
+using Chatto.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 using System.Runtime.CompilerServices;
@@ -106,7 +107,7 @@ public class ChattoHub : Hub<IChatHub>
 
     public async Task RemoveChatHistory(string groupName)
     {
-        await _roomService.RmoveHistoryByRoomNameAsync(groupName);
+        await _roomService.RemoveHistoryByRoomNameAsync(groupName);
 
     }
 

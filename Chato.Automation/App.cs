@@ -10,12 +10,14 @@ internal class App
     //private readonly HubStreamScenario _hubStreamScenario;
     private readonly BasicScenario _basicScenario;
     private readonly RegistrationValidationScenario _registrationValidationScenario;
+    private readonly RoomSendingReceivingScenario roomSendingReceivingScenario;
 
     public App(ILogger<App> logger, 
         GroupHandShakeScenario groupHandShakeScenario,
         //HubStreamScenario hubStreamScenario,
         BasicScenario basicScenario,
-        RegistrationValidationScenario registrationValidationScenario
+        RegistrationValidationScenario registrationValidationScenario,
+        RoomSendingReceivingScenario roomSendingReceivingScenario
         )
     {
         _logger = logger;
@@ -23,6 +25,7 @@ internal class App
         //this._hubStreamScenario = hubStreamScenario;
         this._basicScenario = basicScenario;
         this._registrationValidationScenario = registrationValidationScenario;
+        this.roomSendingReceivingScenario = roomSendingReceivingScenario;
     }
 
 
@@ -31,6 +34,7 @@ internal class App
 
         await _registrationValidationScenario.StartRunScenario();
         await _basicScenario.StartRunScenario();
+        await roomSendingReceivingScenario.StartRunScenario();
         await _groupHandShakeScenario.StartRunScenario();
         //await _hubStreamScenario.StartRunScenario();
 

@@ -2,10 +2,10 @@
 
 namespace Chato.Automation.Infrastructure.Instruction;
 
-public record InstructionNode(string UserName, string? GroupName, UserInstractionBase Instruction, byte[] Message, string? FromArrived,
+public record InstructionNode(string UserName, string? GroupName, UserInstructionBase Instruction, byte[] Message, string? FromArrived,
     HashSet<InstructionNode> Children)
 {
-    public InstructionNode(string userName, string? groupName, UserInstractionBase instruction, byte[] message, string? fromArrived)
+    public InstructionNode(string userName, string? groupName, UserInstructionBase instruction, byte[] message, string? fromArrived)
         : this(userName, groupName, instruction, message, fromArrived, new HashSet<InstructionNode>())
     {
     }
@@ -52,22 +52,6 @@ public static class InstructionNodeFluentApi
 
         return @new;
     }
-
-    //public static InstructionNode GetGroupInfo(this InstructionNode info,  string groupName)
-    //{
-    //    var @new = info with
-    //    {
-    //        UserName = info.UserName,
-    //        Instruction = new GetRoomInfoInstruction(),
-    //        FromArrived = null,
-    //        Children = new(),
-    //    };
-
-    //    var result = Connect(info, @new);
-    //    return result;
-    //}
-
-
 
     internal static InstructionNode ReceivedVerification(this InstructionNode info, string userName, params InstructionNode[] fromInstructions)
     {
@@ -123,7 +107,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             UserName = userName,
-            Instruction = new UserBroadcastInstruction(),
+            Instruction = new UserSendStringMessageRestRoomInstruction(),
             Children = new(),
 
         };
@@ -132,7 +116,23 @@ public static class InstructionNodeFluentApi
     }
 
 
+    public static InstructionNode LeaveRoom(this InstructionNode info, params string[] userNames)
+    {
+        var ptr = info;
+        foreach (var userName in userNames)
+        {
+            var @new = info with
+            {
+                UserName = userName,
+                Instruction = new LeaveRoomInstruction(),
+                Children = new(),
+            };
 
+            ptr = Connect(ptr, @new);
+        }
+
+        return ptr;
+    }
 
     public static InstructionNode Do(this InstructionNode info, InstructionNode target, Func<InstructionNode, Task> operation)
     {

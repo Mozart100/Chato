@@ -1,7 +1,7 @@
 ﻿using Chato.Server.BackgroundTasks;
 using Chato.Server.DataAccess.Repository;
 using Chato.Server.Errors;
-using Chato.Server.Infrastracture;
+using Chato.Server.Infrastracture.QueueDelegates;
 using Chato.Server.Services;
 using Chato.Server.Services.Validations;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
@@ -25,22 +25,16 @@ public static class ServiceRegistrar
         });
 
         services.AddSingleton<IRoomRepository, RoomRepository>();
-        //services.Decorate<IRoomRepository, DelegateQueueRoomRepository>();
-
-
-        
         services.AddSingleton<IUserRepository, UserRepository>();
+        services.AddSingleton<IRoomIndexerRepository, RoomIndexerRepository>();
+
+
+
         //services.Decorate<IUserRepository, DelegateQueueUserRepository>();
 
 
-        services.AddSingleton<IDelegateQueue, DelegateQueue>();
-
-        
-        //services.AddSingleton<IPreloadDataLoader, GenerateDefaultRoomAndUsersService>();
-
-
-
-
+        services.AddSingleton<ILockerDelegateQueue, LockerDelegateQueue>();
+        services.AddSingleton<ICacheItemDelegateQueue, CacheItemDelegateQueue>();
 
 
         services.AddSignalR();
@@ -53,7 +47,10 @@ public static class ServiceRegistrar
 
         services.AddHostedService<PreloadBackgroundTask>();
         services.AddHostedService<DelegateQueueBackgroundTask>();
+        services.AddHostedService<CacheRemovalItemBackgroundTask>();
 
+
+        
 
 
         //kcservices.AddMiddleware
@@ -67,6 +64,8 @@ public static class ServiceRegistrar
         services.AddControllers();
         services.AddEndpointsApiExplorer();
         services.AddAutoMapper(typeof(Program).Assembly);
+
+        services.AddMemoryCache();
 
 
        services.AddSwaggerGen(options =>
@@ -87,9 +86,6 @@ public static class ServiceRegistrar
         services.AddScoped<IAssignmentService, AssignmentService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IRegistrationValidationService, RegistrationValidationService>();
-
-
-
 
 
         services.AddExceptionHandler<GlobalExceptionHandler>();

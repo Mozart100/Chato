@@ -150,12 +150,12 @@ public class UserInstructionExecuter
     }
 
 
-    //public async Task GetGroupInfo( string groupName)
-    //{
-    //    _logger.LogInformation($"Getting {UserName} info.");
+    public async Task LeaveGroupInfo(string groupName)
+    {
+        _logger.LogInformation($"Getting {UserName} info.");
 
-    //    await _connection.InvokeAsync(Hub_Get_Group_Info_Topic, groupName);
-    //}
+        await _connection.InvokeAsync(Hub_Leave_Group_Topic, groupName);
+    }
 
 
     public async Task DownloadStream(byte[] message)

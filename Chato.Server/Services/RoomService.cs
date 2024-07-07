@@ -1,6 +1,8 @@
 ﻿using Chato.Server.DataAccess.Models;
 using Chato.Server.DataAccess.Repository;
 using Chato.Server.Infrastracture;
+using Chato.Server.Infrastracture.QueueDelegates;
+using Chatto.Shared;
 
 namespace Chato.Server.Services;
 
@@ -15,24 +17,29 @@ public interface IRoomService
     Task JoinOrCreateRoom(string roomName, string userName);
     Task RemoveRoomByNameOrIdAsync(string nameOrId);
     Task RemoveUserAndRoomFromRoom(string roomName, string username);
-    Task RmoveHistoryByRoomNameAsync(string roomName);
+    Task RemoveHistoryByRoomNameAsync(string roomName);
     Task SendMessageAsync(string group, string fromUser, byte[] ptr);
 }
+
 
 public class RoomService : IRoomService
 {
     private readonly IRoomRepository _chatRoomRepository;
-    private readonly IDelegateQueue _delegateQueue;
+    private readonly ILockerDelegateQueue _lockerQueue;
+    private readonly IRoomIndexerRepository _roomIndexerRepository;
 
-    public RoomService(IRoomRepository chatRoomRepository, IDelegateQueue delegateQueue)
+    public RoomService(IRoomRepository chatRoomRepository,
+        ILockerDelegateQueue lockerQueue,
+        IRoomIndexerRepository roomIndexerRepository)
     {
         this._chatRoomRepository = chatRoomRepository;
-        this._delegateQueue = delegateQueue;
+        this._lockerQueue = lockerQueue;
+        this._roomIndexerRepository = roomIndexerRepository;
     }
 
     public async Task AddUserAsync(string roomName, string userName)
     {
-        await _delegateQueue.InvokeAsync(async () =>
+        await _lockerQueue.InvokeAsync(async () =>
         {
             var room = await AddUserCoreAsync(roomName, userName);
         });
@@ -53,7 +60,7 @@ public class RoomService : IRoomService
     {
         var result = default(ChatRoomDb);
 
-        await _delegateQueue.InvokeAsync(async () =>
+        await _lockerQueue.InvokeAsync(async () =>
         {
             result = await CreateRoomCoreAsync(roomName);
         });
@@ -61,10 +68,15 @@ public class RoomService : IRoomService
         return result.ToChatRoomDto();
     }
 
-
-    public async Task<ChatRoomDb> CreateRoomCoreAsync(string roomName)
+    private async Task<ChatRoomDb> CreateRoomCoreAsync(string roomName)
     {
-        return await _chatRoomRepository.InsertAsync(new ChatRoomDb { Id = roomName });
+        var result = await _chatRoomRepository.InsertAsync(new ChatRoomDb { Id = roomName });
+        if (result is not null)
+        {
+            await _roomIndexerRepository.AddOrUpdateRoomAsync(roomName);
+        }
+
+        return result;
     }
 
 
@@ -72,7 +84,7 @@ public class RoomService : IRoomService
     {
         ChatRoomDb[] result = null;
 
-        await _delegateQueue.InvokeAsync(async () =>
+        await _lockerQueue.InvokeAsync(async () =>
         {
             var list = await _chatRoomRepository.GetAllAsync();
             result = list.ToArray();
@@ -84,7 +96,7 @@ public class RoomService : IRoomService
     {
         var result = Enumerable.Empty<SenderInfo>();
 
-        await _delegateQueue.InvokeAsync(async () =>
+        await _lockerQueue.InvokeAsync(async () =>
         {
             var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
             if (room is not null)
@@ -96,16 +108,17 @@ public class RoomService : IRoomService
         return result;
     }
 
-    public async Task<ChatRoomDto   ?> GetRoomByNameOrIdAsync(string nameOrId)
+    public async Task<ChatRoomDto> GetRoomByNameOrIdAsync(string nameOrId)
     {
         var result = default(ChatRoomDb);
 
-        await _delegateQueue.InvokeAsync(async () =>
+        await _lockerQueue.InvokeAsync(async () =>
         {
             result = await GetRoomByNameOrIdCoreAsync(nameOrId);
 
         });
-        return result == null ? null : result.ToChatRoomDto();
+
+        return result?.ToChatRoomDto();
     }
 
     private async Task<ChatRoomDb> GetRoomByNameOrIdCoreAsync(string nameOrId)
@@ -115,8 +128,9 @@ public class RoomService : IRoomService
 
     public async Task RemoveRoomByNameOrIdAsync(string nameOrId)
     {
-        await _delegateQueue.InvokeAsync(async () => await RemoveRoomByNameOrIdCoreAsync(nameOrId));
-        //await _delegateQueue.InvokeAsync(async () => await _chatRoomRepository.RemoveAsync(x => x.RoomName == nameOrId));
+        await _lockerQueue.InvokeAsync(async () => await RemoveRoomByNameOrIdCoreAsync(nameOrId));
+        await _roomIndexerRepository.RemoveAsync(nameOrId);
+        //await _cacheQueue.InvokeAsync(async () => await _chatRoomRepository.RemoveAsync(x => x.RoomName == nameOrId));
     }
 
 
@@ -125,9 +139,9 @@ public class RoomService : IRoomService
         await _chatRoomRepository.RemoveAsync(x => x.RoomName == nameOrId);
     }
 
-    public async Task RmoveHistoryByRoomNameAsync(string roomName)
+    public async Task RemoveHistoryByRoomNameAsync(string roomName)
     {
-        await _delegateQueue.InvokeAsync(async () =>
+        await _lockerQueue.InvokeAsync(async () =>
         {
             var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
             if (room is not null)
@@ -139,20 +153,19 @@ public class RoomService : IRoomService
 
     public async Task SendMessageAsync(string roomName, string fromUser, byte[] ptr)
     {
-        await _delegateQueue.InvokeAsync(async () =>
+        await _lockerQueue.InvokeAsync(async () =>
         {
             var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
             if (room is not null)
             {
                 room.SenderInfo.Add(new SenderInfo(fromUser, ptr));
-
             }
         });
     }
 
     public async Task RemoveUserAndRoomFromRoom(string roomName, string username)
     {
-        await _delegateQueue.InvokeAsync(async () =>
+        await _lockerQueue.InvokeAsync(async () =>
         {
             var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
             room.Users.Remove(username);
@@ -166,7 +179,7 @@ public class RoomService : IRoomService
 
     public async Task JoinOrCreateRoom(string roomName, string userName)
     {
-        await _delegateQueue.InvokeAsync(async () =>
+        await _lockerQueue.InvokeAsync(async () =>
         {
             var room = await GetRoomByNameOrIdCoreAsync(roomName);
             if (room is not null)
