@@ -6,9 +6,12 @@
         public TResponse Response { get; set; }
     }
 
-        public class ResponseWrapper<TResponse> : ResponseWrapperSlim<TResponse> where TResponse : class
+    public class ResponseWrapper<TResponse> : ResponseWrapperSlim<TResponse> where TResponse : class
     {
         public int StatusCode { get; set; }
     }
 
+
+
 }
+

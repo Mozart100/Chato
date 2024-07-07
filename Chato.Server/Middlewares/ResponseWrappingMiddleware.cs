@@ -38,35 +38,41 @@ namespace Chato.Server.Middlewares
             {
                 context.Response.Body = newBodyStream;
 
-                //try
-                //{
-                    await _next(context);
+                await _next(context);
 
-                    context.Response.Body = originalBodyStream;
-
+                if (context.Response.StatusCode >= 400)
+                {
+                    // Skip wrapping the response since it has been handled by the GlobalExceptionHandler
                     newBodyStream.Seek(0, SeekOrigin.Begin);
-                    var newBodyText = await new StreamReader(newBodyStream).ReadToEndAsync();
+                    await newBodyStream.CopyToAsync(originalBodyStream);
+                    return;
+                }
 
-                    var responseObject = newBodyText.Length > 0
-                        ? JsonSerializer.Deserialize<object>(newBodyText)
-                        : null;
+                context.Response.Body = originalBodyStream;
 
-                    var wrappedResponse = new ResponseWrapper<object>
-                    {
-                        IsSucceeded = context.Response.StatusCode >= 200 && context.Response.StatusCode < 400,
-                        Response = responseObject as object,
-                        StatusCode = context.Response.StatusCode
-                    };
+                newBodyStream.Seek(0, SeekOrigin.Begin);
+                var newBodyText = await new StreamReader(newBodyStream).ReadToEndAsync();
 
-                    var wrappedResponseJson = JsonSerializer.Serialize(wrappedResponse, new JsonSerializerOptions
-                    {
-                        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-                        WriteIndented = false
-                    });
+                var responseObject = newBodyText.Length > 0
+                    ? JsonSerializer.Deserialize<object>(newBodyText)
+                    : null;
 
-                    context.Response.ContentType = "application/json";
-                    context.Response.ContentLength = wrappedResponseJson.Length;
-                    await context.Response.WriteAsync(wrappedResponseJson);
+                var wrappedResponse = new ResponseWrapper<object>
+                {
+                    IsSucceeded = context.Response.StatusCode >= 200 && context.Response.StatusCode < 400,
+                    Response = responseObject as object,
+                    StatusCode = context.Response.StatusCode
+                };
+
+                var wrappedResponseJson = JsonSerializer.Serialize(wrappedResponse, new JsonSerializerOptions
+                {
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                    WriteIndented = false
+                });
+
+                context.Response.ContentType = "application/json";
+                context.Response.ContentLength = wrappedResponseJson.Length;
+                await context.Response.WriteAsync(wrappedResponseJson);
                 //}
                 //catch (Exception ex)
                 //{
