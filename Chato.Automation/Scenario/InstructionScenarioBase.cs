@@ -33,9 +33,9 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         foreach (var user in users)
         {
             var registrationRequest = new RegistrationRequest { UserName = user, Age = 20, Description = $"Description_{user}", Gender = "male" };
-            var registrationInfo = await RunPostCommand<RegistrationRequest, RegistrationResponse>(RegisterAuthControllerUrl, registrationRequest);
+            var registrationInfo = await RunPostCommand<RegistrationRequest, ResponseWrapper<RegistrationResponse>>(RegisterAuthControllerUrl, registrationRequest);
 
-            var executer = new UserInstructionExecuter(registrationInfo, HubUrl, Logger, _counterSignal);
+            var executer = new UserInstructionExecuter(registrationInfo.Response, HubUrl, Logger, _counterSignal);
             await executer.RegisterAsync();
 
             Users.Add(user, executer);
@@ -121,7 +121,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         _actionMapper.Add(UserInstructions.Publish_ToRestRoom_Instruction, async (userExecuter, instruction) =>
         {
             await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstructionName != UserInstructions.Not_Received_Instruction).Count());
-            await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName:instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
+            await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
             {
