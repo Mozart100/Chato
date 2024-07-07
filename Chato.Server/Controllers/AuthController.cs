@@ -37,7 +37,7 @@ public class AuthController : ControllerBase
     {
         //throw new Exception("xxxx");
         var token = await _authenticationService.RegisterAsync(request);
-        return new RegistrationResponse { Token = token, UserName = request.UserName };
+        return new RegistrationResponse { Token = token, UserName = request.UserName , Description = request.Description , Age = request.Age, Gender  = request.Gender };
     }
 
     [Route("upload")]
