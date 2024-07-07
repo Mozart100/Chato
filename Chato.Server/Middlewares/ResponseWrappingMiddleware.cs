@@ -60,7 +60,7 @@ namespace Chato.Server.Middlewares
                 var wrappedResponse = new ResponseWrapper<object>
                 {
                     IsSucceeded = context.Response.StatusCode >= 200 && context.Response.StatusCode < 400,
-                    Response = responseObject as object,
+                    Body = responseObject as object,
                     StatusCode = context.Response.StatusCode
                 };
 

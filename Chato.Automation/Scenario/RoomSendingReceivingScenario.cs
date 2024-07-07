@@ -77,7 +77,7 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
             .Do(maxReceiver, async user=> {
 
                 response = await Get<ResponseWrapper<GetRoomResponse>>(url);
-                response.Response.Room.Should().NotBeNull();
+                response.Body.Room.Should().NotBeNull();
             }).LeaveRoom( Anatoliy_User,Olessya_User,Nathan_User) ;
 
 
@@ -85,7 +85,7 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
         await InstructionExecuter(graph);
 
         response = await Get<ResponseWrapper<GetRoomResponse>>(url);
-        response.Response.Room.Should().BeNull();
+        response.Body.Room.Should().BeNull();
     }
 
     private async Task Setup_SendingInsideTheRoom_Step()

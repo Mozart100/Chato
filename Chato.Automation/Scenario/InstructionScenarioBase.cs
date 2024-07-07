@@ -35,7 +35,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             var registrationRequest = new RegistrationRequest { UserName = user, Age = 20, Description = $"Description_{user}", Gender = "male" };
             var registrationInfo = await RunPostCommand<RegistrationRequest, ResponseWrapper<RegistrationResponse>>(RegisterAuthControllerUrl, registrationRequest);
 
-            var executer = new UserInstructionExecuter(registrationInfo.Response, HubUrl, Logger, _counterSignal);
+            var executer = new UserInstructionExecuter(registrationInfo.Body, HubUrl, Logger, _counterSignal);
             await executer.RegisterAsync();
 
             Users.Add(user, executer);
