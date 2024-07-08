@@ -73,10 +73,15 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
 
         var url = string.Format(SpecificRoomTemplatesUrl, First_Group);
         var response = default(ResponseWrapper<GetRoomResponse>);
+        var dataContext = Users[Max_User];
+        var token = dataContext.RegisterResponse.Token;
+
+
         anatoliySender.Connect(olessyaSender, nathanReceiver, maxReceiver)
             .Do(maxReceiver, async user=> {
 
-                response = await Get<ResponseWrapper<GetRoomResponse>>(url);
+       
+                response = await Get<ResponseWrapper<GetRoomResponse>>(url,token);
                 response.Body.Room.Should().NotBeNull();
             }).LeaveRoom( Anatoliy_User,Olessya_User,Nathan_User) ;
 
@@ -84,7 +89,7 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
         var graph = new InstructionGraph(anatoliySender);
         await InstructionExecuter(graph);
 
-        response = await Get<ResponseWrapper<GetRoomResponse>>(url);
+        response = await Get<ResponseWrapper<GetRoomResponse>>(url,token);
         response.Body.Room.Should().BeNull();
     }
 

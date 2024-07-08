@@ -2,6 +2,7 @@
 using Chato.Server.Infrastracture;
 using Chato.Server.Services;
 using Chatto.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chato.Server.Controllers;
@@ -55,7 +56,7 @@ public class RoomController : ControllerBase
 
 
     [HttpGet]
-    [Route(All_Route)]
+    [Route(All_Route), Authorize]
     public async Task<GetAllRoomResponse> GetAllRooms()
     {
         var result = await _roomService.GetAllRoomAsync();
@@ -64,7 +65,7 @@ public class RoomController : ControllerBase
 
 
     [HttpGet]
-    [Route("{roomName}")]
+    [Route("{roomName}"),Authorize]
     public async Task<GetRoomResponse> GetRoom(string roomName)
     {
         var room = await _roomService.GetRoomByNameOrIdAsync(roomName);
@@ -74,7 +75,7 @@ public class RoomController : ControllerBase
 
 
     [HttpGet]
-    [Route("users")]
+    [Route("users"), Authorize]
     public async Task<GetAllUserResponse> GetAllUsers()
     {
         var result = await _userService.GetAllUsersAsync();
