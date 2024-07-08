@@ -75,7 +75,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<ResponseWrappingMiddleware>();
-app.UseMiddleware<ChattoExceptionMiddleware>();
+//app.UseMiddleware<ChattoExceptionMiddleware>();
 
 
 //app.UseExceptionHandler("/error");

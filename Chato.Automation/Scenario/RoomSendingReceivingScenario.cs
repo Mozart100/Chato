@@ -73,19 +73,23 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
 
         var url = string.Format(SpecificRoomTemplatesUrl, First_Group);
         var response = default(ResponseWrapper<GetRoomResponse>);
+
+        string token = string.Empty;
+
         anatoliySender.Connect(olessyaSender, nathanReceiver, maxReceiver)
             .Do(maxReceiver, async user=> {
 
-                response = await Get<ResponseWrapper<GetRoomResponse>>(url);
-                response.Response.Room.Should().NotBeNull();
+                token = user.RegistrationResponse.Token;    
+                response = await Get<ResponseWrapper<GetRoomResponse>>(url,token);
+                response.Body.Room.Should().NotBeNull();
             }).LeaveRoom( Anatoliy_User,Olessya_User,Nathan_User) ;
 
 
         var graph = new InstructionGraph(anatoliySender);
         await InstructionExecuter(graph);
 
-        response = await Get<ResponseWrapper<GetRoomResponse>>(url);
-        response.Response.Room.Should().BeNull();
+        response = await Get<ResponseWrapper<GetRoomResponse>>(url,token);
+        response.Body.Room.Should().BeNull();
     }
 
     private async Task Setup_SendingInsideTheRoom_Step()

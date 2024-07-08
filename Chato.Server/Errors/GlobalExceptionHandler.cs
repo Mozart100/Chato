@@ -3,6 +3,8 @@ using Chatto.Shared;
 using Microsoft.AspNetCore.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
+using System.Collections;
+using System.Text;
 using System.Text.Json;
 
 namespace Chato.Server.Errors
@@ -22,51 +24,63 @@ namespace Chato.Server.Errors
         {
             httpContext.Response.ContentType = "application/json";
 
+            var response = new ResponseWrapper<ProblemDetails>
+            {
+                IsSucceeded = false,
+            };
+
             if (exception is ChatoException chatoException)
             {
-                var problemDetails = _problemDetailsFactory.CreateProblemDetails(
-                        httpContext,
-                        statusCode: StatusCodes.Status400BadRequest,
-                        title: "Validation error",
-                        detail: "One or more validation errors occurred.",
-                        instance: httpContext.Request.Path
-                    );
+                var problemDetails = GetProblemDetails(httpContext, "One or more validation errors occurred.");
 
+                var sb = new StringBuilder();
                 foreach (var item in chatoException.ChatoErrors)
                 {
                     problemDetails.Extensions.Add(item.PropertyName, item.ErrorMessage);
+                    sb.AppendLine($"{item.PropertyName} ==> {item.ErrorMessage}");
                 }
 
+                problemDetails.Extensions.Add("Reason", $"Validation error: {sb.ToString().TrimEnd()}");
+                problemDetails.Status = null;
 
-                var response = new ResponseWrapper<ProblemDetails>
+                response = new ResponseWrapper<ProblemDetails>
                 {
-                    Response = problemDetails,
-                    IsSucceeded = false,
-                    StatusCode = 123
+                    Body = problemDetails,
+                    StatusCode = StatusCodes.Status400BadRequest
                 };
-                //var json = JsonSerializer.Serialize(problemDetails);
-                await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
             }
             else
             {
-                var response = new ResponseWrapper<Exception>
+                var problemDetails = GetProblemDetails(httpContext,  exception.Message);
+                problemDetails.Status = null;
+
+                
+                foreach (DictionaryEntry dataItem in exception.Data)
                 {
-                    Response = exception,
-                    IsSucceeded = false,
-                    StatusCode = StatusCodes.Status400BadRequest
+                    if (dataItem.Key is string key)
+                    {
+                        problemDetails.Extensions[key] = dataItem.Value?.ToString();
+                    }
+                }
+
+                problemDetails.Extensions.Add("Reason", exception.Message);
+
+                response = new ResponseWrapper<ProblemDetails>
+                {
+                    Body = problemDetails,
+                    StatusCode = StatusCodes.Status500InternalServerError
                 };
-
-                //httpContext.Response.ContentType = "application/json";
-                //httpContext.Response.StatusCode = StatusCodes.Status400BadRequest;
-
-                await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
-
             }
 
-
-
+            await httpContext.Response.WriteAsJsonAsync(response, cancellationToken);
 
             return true;
+        }
+
+
+        private ProblemDetails GetProblemDetails(HttpContext httpContext, string detail)
+        {
+            return _problemDetailsFactory.CreateProblemDetails(httpContext, detail: detail, instance: httpContext.Request.Path);
         }
     }
 }

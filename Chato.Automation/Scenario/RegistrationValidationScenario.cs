@@ -46,11 +46,11 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
 
         var response = await UploadFiles<ResponseWrapper<UploadDocumentsResponse>>(UploadFilesUrl, token, files);
 
-        response.Response.Document1.Should().BeTrue();
-        response.Response.Document2.Should().BeTrue();
-        response.Response.Document3.Should().BeFalse();
-        response.Response.Document4.Should().BeFalse();
-        response.Response.Document5.Should().BeFalse();
+        response.Body.Document1.Should().BeTrue();
+        response.Body.Document2.Should().BeTrue();
+        response.Body.Document3.Should().BeFalse();
+        response.Body.Document4.Should().BeFalse();
+        response.Body.Document5.Should().BeFalse();
     }
 
     private async Task RegisterUser(RegistrationRequest request)

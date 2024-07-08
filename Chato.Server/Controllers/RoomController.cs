@@ -2,6 +2,7 @@
 using Chato.Server.Infrastracture;
 using Chato.Server.Services;
 using Chatto.Shared;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Chato.Server.Controllers;
@@ -55,31 +56,31 @@ public class RoomController : ControllerBase
 
 
     [HttpGet]
-    [Route(All_Route)]
-    public async Task<ActionResult<GetAllRoomResponse>> GetAllRooms()
+    [Route(All_Route), Authorize]
+    public async Task<GetAllRoomResponse> GetAllRooms()
     {
         var result = await _roomService.GetAllRoomAsync();
-        return Ok(new GetAllRoomResponse { Rooms = result.SafeToArray() });
+        return new GetAllRoomResponse { Rooms = result.SafeToArray() };
     }
 
 
     [HttpGet]
-    [Route("{roomName}")]
-    public async Task<ActionResult<GetRoomResponse>> GetRoom(string roomName)
+    [Route("{roomName}"),Authorize]
+    public async Task<GetRoomResponse> GetRoom(string roomName)
     {
         var room = await _roomService.GetRoomByNameOrIdAsync(roomName);
 
-        return Ok(new GetRoomResponse { Room = room});
+        return new GetRoomResponse { Room = room };
     }
 
 
     [HttpGet]
-    [Route("users")]
-    public async Task<ActionResult> GetAllUsers()
+    [Route("users"), Authorize]
+    public async Task<GetAllUserResponse> GetAllUsers()
     {
         var result = await _userService.GetAllUsersAsync();
 
-        return Ok(new GetAllUserResponse { Users = result.ToArray() });
+        return new GetAllUserResponse { Users = result.ToArray() };
     }
 
 

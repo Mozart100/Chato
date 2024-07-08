@@ -150,10 +150,16 @@ public abstract class ScenarioBase
         }
     }
 
-    protected async Task<TDto> Get<TDto>(string url)
+    protected async Task<TDto> Get<TDto>(string url, string? token = null)
     {
         using (HttpClient client = new HttpClient())
         {
+
+            if (token is not null)
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+
             HttpResponseMessage response = await client.GetAsync(url);
 
             // Check the response status
