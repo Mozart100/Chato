@@ -147,9 +147,14 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             {
                 if (instruction.Instruction.InstructionName.Equals(UserInstructions.Run_Operation_Instruction))
                 {
-                    if (instruction.Instruction.Tag is Func<InstructionNode, Task> callback)
+                    if (instruction.Instruction.Tag is Func<IUserInfo, Task> callback)
                     {
-                        await callback(instruction);
+                        var registerInfo = default(RegistrationResponse);
+                        if( Users.TryGetValue(instruction.UserName,out var ins))
+                        {
+                            registerInfo = ins.RegisterResponse;
+                        }
+                        await callback(new  UserInfo(instruction, registerInfo));
                     }
 
                     continue;

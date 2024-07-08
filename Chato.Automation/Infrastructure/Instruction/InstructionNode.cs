@@ -1,6 +1,16 @@
-﻿using System.Text;
+﻿using Chatto.Shared;
+using System.Text;
 
 namespace Chato.Automation.Infrastructure.Instruction;
+
+public interface IUserInfo
+{
+    public InstructionNode Instruction { get;  }
+    public RegistrationResponse RegistrationResponse { get;  }
+}
+
+
+public record UserInfo(InstructionNode Instruction, RegistrationResponse RegistrationResponse) : IUserInfo;
 
 public record InstructionNode(string UserName, string? GroupName, UserInstructionBase Instruction, byte[] Message, string? FromArrived,
     HashSet<InstructionNode> Children)
@@ -134,12 +144,12 @@ public static class InstructionNodeFluentApi
         return ptr;
     }
 
-    public static InstructionNode Do(this InstructionNode info, InstructionNode target, Func<InstructionNode, Task> operation)
+    public static InstructionNode Do(this InstructionNode info, InstructionNode target, Func<IUserInfo, Task> operation)
     {
         var @new = info with
         {
             UserName = target.UserName,
-            Instruction = new UserRunOperationInstruction() { Tag = operation },
+            Instruction = new UserRunOperationInstruction() { Tag = operation },//parameter = token
             FromArrived = null,
             Message = null,
             Children = new(),

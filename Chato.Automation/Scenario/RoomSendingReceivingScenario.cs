@@ -73,14 +73,13 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
 
         var url = string.Format(SpecificRoomTemplatesUrl, First_Group);
         var response = default(ResponseWrapper<GetRoomResponse>);
-        var dataContext = Users[Max_User];
-        var token = dataContext.RegisterResponse.Token;
 
+        string token = string.Empty;
 
         anatoliySender.Connect(olessyaSender, nathanReceiver, maxReceiver)
             .Do(maxReceiver, async user=> {
 
-       
+                token = user.RegistrationResponse.Token;    
                 response = await Get<ResponseWrapper<GetRoomResponse>>(url,token);
                 response.Body.Room.Should().NotBeNull();
             }).LeaveRoom( Anatoliy_User,Olessya_User,Nathan_User) ;
