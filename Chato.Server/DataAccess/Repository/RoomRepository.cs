@@ -38,7 +38,7 @@ public class RoomRepository : RepositoryBase<ChatRoomDb>, IRoomRepository
     {
         if (Models.Add(instance) == true)
         {
-            _roomIndexerRepository.AddOrUpdateRoom(instance.RoomName);
+            _roomIndexerRepository.AddToCache(instance.RoomName);
             return instance;
         }
 

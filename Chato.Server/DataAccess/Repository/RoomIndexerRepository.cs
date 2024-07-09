@@ -12,8 +12,8 @@ public record RoomIndexerCache(string RoomNameOrId);
 
 public interface IRoomIndexerRepository
 {
-    void AddOrUpdateRoom(string roomNameOrId);
-    Task AddOrUpdateRoomAsync(string roomId);
+    void AddToCache(string roomNameOrId);
+    Task AddToCacheAsync(string roomId);
     void Remove(string roomNameOrId);
     Task RemoveAsync(string roomId);
 }
@@ -62,12 +62,12 @@ public class RoomIndexerRepository : IRoomIndexerRepository
     }
 
 
-    public async Task AddOrUpdateRoomAsync(string roomNameOrId)
+    public async Task AddToCacheAsync(string roomNameOrId)
     {
-        AddOrUpdateRoom(roomNameOrId);
+        AddToCache(roomNameOrId);
     }
 
-    public void AddOrUpdateRoom(string roomNameOrId)
+    public void AddToCache(string roomNameOrId)
     {
         var room = new RoomIndexerCache(roomNameOrId);
         using (var entry = _cache.CreateEntry(room.RoomNameOrId))
