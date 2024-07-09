@@ -1,4 +1,5 @@
 ﻿using Chato.Server.DataAccess.Models;
+using Chato.Server.Infrastracture.QueueDelegates;
 using Chato.Server.Services;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Caching.Memory;
@@ -8,25 +9,6 @@ namespace Chato.Server.DataAccess.Repository;
 
 
 public record RoomIndexerDb(string RoomNameOrId);
-//{
-
-//    public string RoomIndex { get; init; }
-
-//    public override int GetHashCode()
-//    {
-//        return RoomIndex.GetHashCode();
-//    }
-
-//    public override bool Equals(object? obj)
-//    {
-//        if (obj is RoomIndexerDb entity)
-//        {
-//            return RoomIndex.Equals(entity.RoomIndex);
-//        }
-
-//        return false;
-//    }
-//}
 
 public interface IRoomIndexerRepository
 {
@@ -39,17 +21,20 @@ public class RoomIndexerRepository : IRoomIndexerRepository
     const int Eviction_Timeout_In_Seconds = 10;
 
     private readonly IMemoryCache _cache;
+    //private readonly IRoomService _roomService;
     private readonly MemoryCacheEntryOptions _cacheEntryOptions;
 
-    private readonly ConcurrentDictionary<object, object> _keys;
+    private readonly ConcurrentDictionary<string, object> _keys;
 
 
     public RoomIndexerRepository(IMemoryCache cache)
     {
         _cache = cache;
+        //this._roomService = roomService;
+
         _cacheEntryOptions = new MemoryCacheEntryOptions
         {
-            SlidingExpiration = TimeSpan.FromMinutes(5),
+            SlidingExpiration = TimeSpan.FromSeconds(Eviction_Timeout_In_Seconds),
 
             PostEvictionCallbacks =
             {
@@ -57,17 +42,21 @@ public class RoomIndexerRepository : IRoomIndexerRepository
                 {
                     EvictionCallback = async (key, value, reason, state) =>
                     {
-                        _keys.TryAdd(key, null);
+                       if( key is string nameOrId && _keys.TryRemove(nameOrId, out _))
+                       {
+                          //await _roomService.RemoveRoomByNameOrIdAsync(nameOrId);
+                       }
+
                         Console.WriteLine($"Cache entry with key {key} was evicted due to {reason}");
                     }
                 }
             }
         };
 
-        _keys = new ConcurrentDictionary<object, object>();
+        _keys = new ConcurrentDictionary<string, object>();
     }
 
-    
+
     public async Task AddOrUpdateRoomAsync(string roomNameOrId)
     {
         //var room = new RoomIndexerDb(roomNameOrId);
@@ -75,17 +64,19 @@ public class RoomIndexerRepository : IRoomIndexerRepository
         //{
         //    entry.Value = room;
         //    entry.SetOptions(_cacheEntryOptions);
+        //    _keys.TryAdd(room.RoomNameOrId, null);
         //}
     }
 
 
     public async Task RemoveAsync(string roomNameOrId)
     {
+        _keys.TryRemove(roomNameOrId, out _);
         _cache.Remove(roomNameOrId);
     }
 
 
-    public IEnumerable<object> GetAllKeys()
+    public IEnumerable<string> GetAllKeys()
     {
         return _keys.Keys;
     }

@@ -128,15 +128,18 @@ public class RoomService : IRoomService
 
     public async Task RemoveRoomByNameOrIdAsync(string nameOrId)
     {
-        await _lockerQueue.InvokeAsync(async () => await RemoveRoomByNameOrIdCoreAsync(nameOrId));
-        await _roomIndexerRepository.RemoveAsync(nameOrId);
-        //await _cacheQueue.InvokeAsync(async () => await _chatRoomRepository.RemoveAsync(x => x.RoomName == nameOrId));
+        await _lockerQueue.InvokeAsync(async () =>
+        {
+            await RemoveRoomByNameOrIdCoreAsync(nameOrId);
+        });
     }
-
 
     private async Task RemoveRoomByNameOrIdCoreAsync(string nameOrId)
     {
-        await _chatRoomRepository.RemoveAsync(x => x.RoomName == nameOrId);
+        if (await _chatRoomRepository.RemoveAsync(x => x.RoomName == nameOrId))
+        {
+            await _roomIndexerRepository.RemoveAsync(nameOrId);
+        }
     }
 
     public async Task RemoveHistoryByRoomNameAsync(string roomName)

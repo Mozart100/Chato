@@ -51,6 +51,9 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
         response.Body.Document3.Should().BeFalse();
         response.Body.Document4.Should().BeFalse();
         response.Body.Document5.Should().BeFalse();
+
+
+
     }
 
     private async Task RegisterUser(RegistrationRequest request)

@@ -27,6 +27,8 @@ public static class ServiceRegistrar
         services.AddSingleton<IRoomRepository, RoomRepository>();
         services.AddSingleton<IUserRepository, UserRepository>();
         services.AddSingleton<IRoomIndexerRepository, RoomIndexerRepository>();
+        //services.AddSingleton<IPreloadDataLoader, GenerateDefaultRoomAndUsersService>();
+
 
 
 
