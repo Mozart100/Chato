@@ -59,13 +59,13 @@ public class RoomIndexerRepository : IRoomIndexerRepository
 
     public async Task AddOrUpdateRoomAsync(string roomNameOrId)
     {
-        //var room = new RoomIndexerDb(roomNameOrId);
-        //using (var entry = _cache.CreateEntry(room.RoomNameOrId))
-        //{
-        //    entry.Value = room;
-        //    entry.SetOptions(_cacheEntryOptions);
-        //    _keys.TryAdd(room.RoomNameOrId, null);
-        //}
+        var room = new RoomIndexerDb(roomNameOrId);
+        using (var entry = _cache.CreateEntry(room.RoomNameOrId))
+        {
+            entry.Value = room;
+            entry.SetOptions(_cacheEntryOptions);
+            _keys.TryAdd(room.RoomNameOrId, null);
+        }
     }
 
 
