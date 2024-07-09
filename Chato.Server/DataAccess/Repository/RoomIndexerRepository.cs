@@ -12,7 +12,9 @@ public record RoomIndexerDb(string RoomNameOrId);
 
 public interface IRoomIndexerRepository
 {
+    void AddOrUpdateRoom(string roomNameOrId);
     Task AddOrUpdateRoomAsync(string roomId);
+    void Remove(string roomNameOrId);
     Task RemoveAsync(string roomId);
 }
 
@@ -59,6 +61,11 @@ public class RoomIndexerRepository : IRoomIndexerRepository
 
     public async Task AddOrUpdateRoomAsync(string roomNameOrId)
     {
+        AddOrUpdateRoom(roomNameOrId);
+    }
+
+    public void AddOrUpdateRoom(string roomNameOrId)
+    {
         var room = new RoomIndexerDb(roomNameOrId);
         using (var entry = _cache.CreateEntry(room.RoomNameOrId))
         {
@@ -68,12 +75,17 @@ public class RoomIndexerRepository : IRoomIndexerRepository
         }
     }
 
-
     public async Task RemoveAsync(string roomNameOrId)
+    {
+        Remove(roomNameOrId);
+    }
+
+    public void Remove(string roomNameOrId)
     {
         _keys.TryRemove(roomNameOrId, out _);
         _cache.Remove(roomNameOrId);
     }
+
 
 
     public IEnumerable<string> GetAllKeys()
