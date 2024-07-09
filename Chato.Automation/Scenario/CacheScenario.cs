@@ -32,8 +32,13 @@ internal class CacheScenario : InstructionScenarioBase
 
     private async Task SendingInsideTheRoom()
     {
+        var max = 20;
+        for (int i = 0; i < max; i++)
+        {
+            await Task.Delay(1000);
+            Logger.LogInformation($"Delayed {i + 1}/{max} second.");
+        }
 
-        await Task.Delay(1000 * 30);
         var token = Users[Anatoliy_User].RegisterResponse.Token;
         var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
 
