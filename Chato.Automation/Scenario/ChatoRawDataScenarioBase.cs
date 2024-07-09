@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Chato.Server.Controllers;
+using Microsoft.Extensions.Logging;
 
 namespace Chato.Automation.Scenario;
 
@@ -13,7 +14,7 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
 
 
         RoomsControllerUrl = $"{BaseUrl}/api/room";
-        GetAllRoomsUrl = $"{RoomsControllerUrl}";
+        GetAllRoomsUrl = $"{RoomsControllerUrl}/{RoomController.All_Rooms_Route}";
         GetAllUsersUrl = $"{RoomsControllerUrl}/users";
 
 

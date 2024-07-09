@@ -11,7 +11,7 @@ namespace Chato.Server.Controllers;
 [ApiController]
 public class RoomController : ControllerBase
 {
-    public const string All_Route = "all";
+    public const string All_Rooms_Route = "all";
     public const string Room_Route = "{room}";
 
     private readonly IRoomService _roomService;
@@ -25,7 +25,7 @@ public class RoomController : ControllerBase
 
 
     [HttpGet]
-    [Route(All_Route), Authorize]
+    [Route(All_Rooms_Route), Authorize]
     public async Task<GetAllRoomResponse> GetAllRooms()
     {
         var result = await _roomService.GetAllRoomAsync();
