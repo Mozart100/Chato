@@ -8,7 +8,7 @@ using System.Collections.Concurrent;
 namespace Chato.Server.DataAccess.Repository;
 
 
-public record RoomIndexerDb(string RoomNameOrId);
+public record RoomIndexerCache(string RoomNameOrId);
 
 public interface IRoomIndexerRepository
 {
@@ -23,16 +23,18 @@ public class RoomIndexerRepository : IRoomIndexerRepository
     const int Eviction_Timeout_In_Seconds = 10;
 
     private readonly IMemoryCache _cache;
+    private readonly ICacheItemDelegateQueue _cacheItemDelegateQueue;
+
     //private readonly IRoomService _roomService;
     private readonly MemoryCacheEntryOptions _cacheEntryOptions;
 
     private readonly ConcurrentDictionary<string, object> _keys;
 
 
-    public RoomIndexerRepository(IMemoryCache cache)
+    public RoomIndexerRepository(IMemoryCache cache, ICacheItemDelegateQueue cacheItemDelegateQueue)
     {
         _cache = cache;
-        //this._roomService = roomService;
+        this._cacheItemDelegateQueue = cacheItemDelegateQueue;
 
         _cacheEntryOptions = new MemoryCacheEntryOptions
         {
@@ -44,9 +46,10 @@ public class RoomIndexerRepository : IRoomIndexerRepository
                 {
                     EvictionCallback = async (key, value, reason, state) =>
                     {
-                       if( key is string nameOrId && _keys.TryRemove(nameOrId, out _))
+                       if( key is string nameOrId )
                        {
-                          //await _roomService.RemoveRoomByNameOrIdAsync(nameOrId);
+                            await _cacheItemDelegateQueue.EnqueueAsync(nameOrId);
+                             _keys.TryRemove(nameOrId, out _);
                        }
 
                         Console.WriteLine($"Cache entry with key {key} was evicted due to {reason}");
@@ -66,7 +69,7 @@ public class RoomIndexerRepository : IRoomIndexerRepository
 
     public void AddOrUpdateRoom(string roomNameOrId)
     {
-        var room = new RoomIndexerDb(roomNameOrId);
+        var room = new RoomIndexerCache(roomNameOrId);
         using (var entry = _cache.CreateEntry(room.RoomNameOrId))
         {
             entry.Value = room;

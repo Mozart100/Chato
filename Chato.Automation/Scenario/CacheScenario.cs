@@ -41,7 +41,7 @@ internal class CacheScenario : InstructionScenarioBase
 
         var token = Users[Anatoliy_User].RegisterResponse.Token;
         var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
-
+        response.Body.Rooms.Should().BeNull();
 
 
         //var message_1 = "Shalom";
