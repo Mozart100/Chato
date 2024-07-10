@@ -8,19 +8,22 @@ using System.Collections.Concurrent;
 namespace Chato.Server.DataAccess.Repository;
 
 
-public record RoomIndexerCache(string RoomNameOrId);
+public class RoomIndexerCache
+{
+    public string RoomNameOrId { get; set; }
+}
 
 public interface IRoomIndexerRepository
 {
     void AddToCache(string roomNameOrId);
-    Task AddToCacheAsync(string roomId);
+    //Task AddToCacheAsync(string roomId)
     void Remove(string roomNameOrId);
-    Task RemoveAsync(string roomId);
+    //Task RemoveAsync(string roomId);
 }
 
 public class RoomIndexerRepository : IRoomIndexerRepository
 {
-    const int Eviction_Timeout_In_Seconds = 10;
+    const int Eviction_Timeout_In_Seconds = 5;
 
     private readonly IMemoryCache _cache;
     private readonly ICacheItemDelegateQueue _cacheItemDelegateQueue;
@@ -36,47 +39,81 @@ public class RoomIndexerRepository : IRoomIndexerRepository
         _cache = cache;
         this._cacheItemDelegateQueue = cacheItemDelegateQueue;
 
-        _cacheEntryOptions = new MemoryCacheEntryOptions
-        {
-            SlidingExpiration = TimeSpan.FromSeconds(Eviction_Timeout_In_Seconds),
+        //_cacheEntryOptions = new MemoryCacheEntryOptions()
+        //{
+        //    AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(2),
+        //    SlidingExpiration = TimeSpan.FromSeconds(4),
 
-            PostEvictionCallbacks =
-            {
-                new PostEvictionCallbackRegistration
-                {
-                    EvictionCallback = async (key, value, reason, state) =>
-                    {
-                       if( key is string nameOrId )
-                       {
-                            await _cacheItemDelegateQueue.EnqueueAsync(nameOrId);
-                             _keys.TryRemove(nameOrId, out _);
-                       }
+        //};
 
-                        Console.WriteLine($"Cache entry with key {key} was evicted due to {reason}");
-                    }
-                }
-            }
-        };
+        //_cacheEntryOptions.RegisterPostEvictionCallback(PostEvictionCallback);
 
         _keys = new ConcurrentDictionary<string, object>();
     }
 
-
+   
     public async Task AddToCacheAsync(string roomNameOrId)
     {
         AddToCache(roomNameOrId);
     }
 
-    public void AddToCache(string roomNameOrId)
+     void PostEvictionCallback(object key, object value, EvictionReason evictionReason, object state)
     {
-        var room = new RoomIndexerCache(roomNameOrId);
-        using (var entry = _cache.CreateEntry(room.RoomNameOrId))
+        if(evictionReason == EvictionReason.Expired)
         {
-            entry.Value = room;
-            entry.SetOptions(_cacheEntryOptions);
-            _keys.TryAdd(room.RoomNameOrId, null);
+            if( value is RoomIndexerCache data)
+            {
+                //await _cacheItemDelegateQueue.EnqueueAsync(data);
+            }
         }
     }
+
+    public void AddToCache(string roomNameOrId)
+    {
+        //var cacheEntryOptions = new MemoryCacheEntryOptions()l
+        //{
+        //    AbsoluteExpirationRelativeToNow = TimeSpan.FromHours(2),
+        //    SlidingExpiration = TimeSpan.FromSeconds(1),
+
+        //};
+
+        //cacheEntryOptions.RegisterPostEvictionCallback(PostEvictionCallback);
+
+        _cache.GetOrCreate("xxx", entry =>
+        {
+            entry.SlidingExpiration =  TimeSpan.FromSeconds(2);
+            entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromMinutes(6);
+            entry.RegisterPostEvictionCallback(PostEvictionCallback);
+            //entry.SetPriority(CacheItemPriority.Low);
+            return new RoomIndexerCache { RoomNameOrId = roomNameOrId };
+        });
+
+        //_cache.GetOrCreate(roomNameOrId, entry =>
+        //{
+        //    entry.SlidingExpiration = null;// TimeSpan.FromSeconds(2);
+        //    entry.AbsoluteExpirationRelativeToNow = TimeSpan.FromSeconds(2);
+        //    entry.RegisterPostEvictionCallback(PostEvictionCallback);
+        //    entry.SetPriority(CacheItemPriority.Low);
+        //    return new RoomIndexerCache { RoomNameOrId = roomNameOrId };
+        //});
+
+        //var tmp = _cache.Get<RoomIndexerCache>(roomNameOrId);
+
+        //if (_cache.TryGetValue(roomNameOrId,out var item) == false)
+        //{
+
+        //    _cache.Set(roomNameOrId, new RoomIndexerCache { RoomNameOrId = roomNameOrId }, cacheEntryOptions);
+
+        //}
+
+        //using (var entry = _cache.CreateEntry(room.RoomNameOrId))
+        //{
+        //    entry.Value = room;
+        //    entry.SetOptions(_cacheEntryOptions);
+        //    _keys.TryAdd(room.RoomNameOrId, null);
+        //}
+    }
+
 
     public async Task RemoveAsync(string roomNameOrId)
     {
@@ -85,8 +122,9 @@ public class RoomIndexerRepository : IRoomIndexerRepository
 
     public void Remove(string roomNameOrId)
     {
-        _keys.TryRemove(roomNameOrId, out _);
-        _cache.Remove(roomNameOrId);
+        //_cache.Remove(roomNameOrId);
+        //_keys.TryRemove(roomNameOrId, out _);
+
     }
 
 
