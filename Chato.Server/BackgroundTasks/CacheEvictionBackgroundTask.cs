@@ -6,7 +6,7 @@ namespace Chato.Server.BackgroundTasks;
 
 public class CacheEvictionBackgroundTask : BackgroundService
 {
-    private const int Period_Timeout = 2;
+    private const int Period_Timeout = 1;
     private const int Timeout_In_Second = 3;
 
     //private readonly ICacheItemDelegateQueue _cacheItemDelegateQueue;

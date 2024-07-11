@@ -1,4 +1,5 @@
 ﻿using Chato.Server.DataAccess.Models;
+using Chato.Server.Infrastracture;
 using Chatto.Shared;
 
 namespace Chato.Server.Services;
@@ -46,7 +47,7 @@ public class AssignmentService : IAssignmentService
     {
         if (user is not null)
         {
-            foreach (var roomName in user.Rooms.ToArray())
+            foreach (var roomName in user.Rooms.SafeToArray())
             {
                 await _roomService.RemoveUserAndRoomFromRoom(roomName, user.UserName);
             }
