@@ -26,8 +26,8 @@ builder.Services.CustomServiceRegistration(builder.Configuration);
 
 builder.Services.AddConfig<AuthenticationConfig>(builder.Configuration);
 
-var section = builder.Configuration.GetSection(EvictionRoomConfig.ApiName);
-builder.Services.Configure<EvictionRoomConfig>(section);
+var section = builder.Configuration.GetSection(CacheEvictionRoomConfig.ApiName);
+builder.Services.Configure<CacheEvictionRoomConfig>(section);
 
 //builder.Services.Configure<AuthenticationConfig>(builder.Configuration.GetSection(AuthenticationConfig.ApiName));
 

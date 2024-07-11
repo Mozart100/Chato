@@ -10,14 +10,14 @@ public class CacheEvictionBackgroundTask : BackgroundService
 {
     //private const int Period_Timeout = 1;
     //private const int Timeout_In_Second = 3;
-    private readonly EvictionRoomConfig _config;
+    private readonly CacheEvictionRoomConfig _config;
 
     //private readonly ICacheItemDelegateQueue _cacheItemDelegateQueue;
     private readonly IRoomIndexerRepository _roomIndexerRepository;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<CacheEvictionBackgroundTask> _logger;
 
-    public CacheEvictionBackgroundTask(IOptions<EvictionRoomConfig> config,
+    public CacheEvictionBackgroundTask(IOptions<CacheEvictionRoomConfig> config,
         IRoomIndexerRepository roomIndexerRepository,
         IServiceScopeFactory serviceScopeFactory,
         ILogger<CacheEvictionBackgroundTask> logger
