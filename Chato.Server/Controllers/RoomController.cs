@@ -29,7 +29,9 @@ public class RoomController : ControllerBase
     public async Task<GetAllRoomResponse> GetAllRooms()
     {
         var result = await _roomService.GetAllRoomAsync();
-        return new GetAllRoomResponse { Rooms = result.SafeToArray() };
+        var response =  new GetAllRoomResponse { Rooms = result.SafeToArray() };
+    
+          return response;
     }
 
 

@@ -5,13 +5,15 @@ namespace Chato.Server.Services;
 public interface IPreloadDataLoader
 {
     Task ExecuteAsync();
-    static string[] StaticRooms { get; } = { IUsersPreload.DefaultRoom };
+    static string[] StaticRooms { get; } = { IPersistentUsers.DefaultRoom,"To_Remove" };
 
 }
 
-public interface IUsersPreload 
+public interface IPersistentUsers 
 {
     public const string DefaultRoom = "Adults";
+
+    static string[] PersistentUsers { get; } = { IPersistentUsers.DefaultRoom };
 }
 
 

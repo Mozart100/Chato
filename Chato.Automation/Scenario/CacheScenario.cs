@@ -32,7 +32,7 @@ internal class CacheScenario : InstructionScenarioBase
 
     private async Task SendingInsideTheRoom()
     {
-        var max = 20;
+        var max = 8;
         for (int i = 0; i < max; i++)
         {
             await Task.Delay(1000 );
@@ -41,7 +41,7 @@ internal class CacheScenario : InstructionScenarioBase
 
         var token = Users[Anatoliy_User].RegisterResponse.Token;
         var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
-        response.Body.Rooms.Should().BeNull();
+        response.Body.Rooms.Count().Should().Be(1);
 
 
         //var message_1 = "Shalom";

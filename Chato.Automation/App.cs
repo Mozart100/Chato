@@ -40,7 +40,7 @@ internal class App
         await roomSendingReceivingScenario.StartRunScenario();
         await _groupHandShakeScenario.StartRunScenario();
 
-        //await _cacheScenario.StartRunScenario();
+        await _cacheScenario.StartRunScenario();
 
         //await _hubStreamScenario.StartRunScenario();
 

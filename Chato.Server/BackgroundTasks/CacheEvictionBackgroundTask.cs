@@ -6,8 +6,8 @@ namespace Chato.Server.BackgroundTasks;
 
 public class CacheEvictionBackgroundTask : BackgroundService
 {
-    private const int Period_Timeout = 3;
-    private const int Timeout_In_Second = 10;
+    private const int Period_Timeout = 2;
+    private const int Timeout_In_Second = 3;
 
     //private readonly ICacheItemDelegateQueue _cacheItemDelegateQueue;
     private readonly IRoomIndexerRepository _roomIndexerRepository;
@@ -28,6 +28,8 @@ public class CacheEvictionBackgroundTask : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await Task.Delay(1000 * 5);
+                   
+        var persistentUsers = new HashSet<string>(IPersistentUsers.PersistentUsers);
 
         while (!stoppingToken.IsCancellationRequested)
         {
@@ -38,6 +40,11 @@ public class CacheEvictionBackgroundTask : BackgroundService
 
                 foreach (var (roomName, timeStemp) in snapshot)
                 {
+                    if(persistentUsers.Contains(roomName) == true)
+                    {
+                        continue;
+                    }
+
                     if (timeStemp.IsSecondOver(Timeout_In_Second))
                     {
                         await roomService.RemoveRoomByNameOrIdAsync(roomName);
