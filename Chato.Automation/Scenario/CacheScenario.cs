@@ -7,7 +7,7 @@ namespace Chato.Automation.Scenario;
 
 internal class CacheScenario : InstructionScenarioBase
 {
-    private const string First_Group = "haifa";
+    private const string First_Group = nameof(CacheScenario);
 
     private const string Anatoliy_User = "anatoliy";
     private const string Olessya_User = "olessya";
@@ -35,7 +35,7 @@ internal class CacheScenario : InstructionScenarioBase
         var max = 20;
         for (int i = 0; i < max; i++)
         {
-            await Task.Delay(1000);
+            await Task.Delay(1000 );
             Logger.LogInformation($"Delayed {i + 1}/{max} second.");
         }
 

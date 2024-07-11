@@ -160,11 +160,14 @@ public class RoomService : IRoomService
         await _lockerQueue.InvokeAsync(async () =>
         {
             var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
-            room.Users.Remove(username);
-
-            if (room.Users.Any() == false)
+            if (room is not null)
             {
-                await RemoveRoomByNameOrIdCoreAsync(roomName);
+                room.Users.Remove(username);
+
+                if (room.Users.Any() == false)
+                {
+                    await RemoveRoomByNameOrIdCoreAsync(roomName);
+                }
             }
         });
     }

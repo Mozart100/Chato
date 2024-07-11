@@ -6,15 +6,15 @@ public interface ICacheItemDelegateQueue
 {
     Task<bool> ToRemoveAsync(string roomNameOrId);
     Task<RoomIndexerCache> PopOrWaitAsync(CancellationToken cancellationToken);
-    Task EnqueueAsync(string roomName);
+    Task EnqueueAsync(RoomIndexerCache cache);
 
 }
 
 public class CacheItemDelegateQueue : DelegateQueueBase<RoomIndexerCache>, ICacheItemDelegateQueue
 {
-    public async Task EnqueueAsync(string roomName)
+    public async Task EnqueueAsync(RoomIndexerCache data)
     {
-        await InvokeAsync(new RoomIndexerCache(roomName));
+        await InvokeAsync(data);
     }
 
     public override Task<RoomIndexerCache> PopOrWaitAsync(CancellationToken cancellationToken)

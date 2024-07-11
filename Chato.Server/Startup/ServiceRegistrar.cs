@@ -49,10 +49,10 @@ public static class ServiceRegistrar
 
         services.AddHostedService<PreloadBackgroundTask>();
         services.AddHostedService<DelegateQueueBackgroundTask>();
-        //services.AddHostedService<CacheRemovalItemBackgroundTask>();
+        //services.AddHostedService<CacheEvictionBackgroundTask>();
 
 
-        
+
 
 
         //kcservices.AddMiddleware
