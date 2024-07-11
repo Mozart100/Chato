@@ -1,4 +1,6 @@
-﻿namespace Chato.Automation.Infrastructure.Instruction;
+﻿using Chato.Server.Infrastracture;
+
+namespace Chato.Automation.Infrastructure.Instruction;
 
 public class CounterSignal
 {

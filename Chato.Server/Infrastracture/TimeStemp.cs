@@ -1,4 +1,4 @@
-﻿namespace Chato.Automation.Infrastructure.Instruction;
+﻿namespace Chato.Server.Infrastracture;
 
 
 public struct TimeStamp

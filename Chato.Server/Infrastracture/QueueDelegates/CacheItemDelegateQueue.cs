@@ -5,18 +5,19 @@ namespace Chato.Server.Infrastracture.QueueDelegates;
 public interface ICacheItemDelegateQueue 
 {
     Task<bool> ToRemoveAsync(string roomNameOrId);
-    Task<RoomIndexerDb> PopOrWaitAsync(CancellationToken cancellationToken);
+    Task<RoomIndexerCache> PopOrWaitAsync(CancellationToken cancellationToken);
+    Task EnqueueAsync(RoomIndexerCache cache);
 
 }
 
-public class CacheItemDelegateQueue : DelegateQueueBase<RoomIndexerDb>, ICacheItemDelegateQueue
+public class CacheItemDelegateQueue : DelegateQueueBase<RoomIndexerCache>, ICacheItemDelegateQueue
 {
-    public override Task InvokeAsync(RoomIndexerDb callback)
+    public async Task EnqueueAsync(RoomIndexerCache data)
     {
-        return base.InvokeAsync(callback);
+        await InvokeAsync(data);
     }
 
-    public override Task<RoomIndexerDb> PopOrWaitAsync(CancellationToken cancellationToken)
+    public override Task<RoomIndexerCache> PopOrWaitAsync(CancellationToken cancellationToken)
     {
         return base.PopOrWaitAsync(cancellationToken);
     }

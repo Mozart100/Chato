@@ -5,11 +5,15 @@ namespace Chato.Server.Services;
 public interface IPreloadDataLoader
 {
     Task ExecuteAsync();
+    static string[] StaticRooms { get; } = { IPersistentUsers.DefaultRoom,"To_Remove" };
+
 }
 
-public interface IUsersPreload : IPreloadDataLoader
+public interface IPersistentUsers 
 {
     public const string DefaultRoom = "Adults";
+
+    static string[] PersistentUsers { get; } = { IPersistentUsers.DefaultRoom };
 }
 
 
@@ -24,25 +28,21 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
 
     public async Task ExecuteAsync()
     {
-        for (int j = 0; j < 3; j++)
+        foreach (var room in IPreloadDataLoader.StaticRooms)
         {
-            //var userName = $"{IUsersPreload.DefaultRoom}__User{j + 1}";
-            //var password = userName;
-            //var description = $"Description_{IUsersPreload.DefaultRoom}";
-            //var gender = "male";
-            //var age = 20;
-
-            var request = new RegistrationRequest()
+            for (int j = 0; j < 3; j++)
             {
-                UserName = $"{IUsersPreload.DefaultRoom}__User{j + 1}",
-                //Password = $"{IUsersPreload.DefaultRoom}__Password{j + 1}",
-                Description = $"Description_{IUsersPreload.DefaultRoom}",
-                Gender = "male",
-                Age = 20,
-            };
+                var request = new RegistrationRequest()
+                {
+                    UserName = $"{room}__User{j + 1}",
+                    Description = $"Description_{room}",
+                    Gender = "male",
+                    Age = 20,
+                };
 
-            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, IUsersPreload.DefaultRoom);
-            //var token = await _assignmentService.RegisterUserAndAssignToRoom(userName, password, IUsersPreload.DefaultRoom, description, gender, age);
+                var token = await _assignmentService.RegisterUserAndAssignToRoom(request, room);
+            }
         }
+
     }
 }

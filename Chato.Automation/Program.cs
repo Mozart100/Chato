@@ -44,9 +44,13 @@ static IHostBuilder CreateHostBuilder(string[] args)
         services.AddSingleton<BasicScenario>();
         services.AddSingleton<RegistrationValidationScenario>();
         services.AddSingleton<RoomSendingReceivingScenario>();
-
+        services.AddSingleton<CacheScenario>();
 
         
+
+
+
+
 
     });
 }

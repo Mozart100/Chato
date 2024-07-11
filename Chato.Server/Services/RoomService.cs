@@ -26,15 +26,12 @@ public class RoomService : IRoomService
 {
     private readonly IRoomRepository _chatRoomRepository;
     private readonly ILockerDelegateQueue _lockerQueue;
-    private readonly IRoomIndexerRepository _roomIndexerRepository;
 
     public RoomService(IRoomRepository chatRoomRepository,
-        ILockerDelegateQueue lockerQueue,
-        IRoomIndexerRepository roomIndexerRepository)
+        ILockerDelegateQueue lockerQueue)
     {
         this._chatRoomRepository = chatRoomRepository;
         this._lockerQueue = lockerQueue;
-        this._roomIndexerRepository = roomIndexerRepository;
     }
 
     public async Task AddUserAsync(string roomName, string userName)
@@ -71,11 +68,6 @@ public class RoomService : IRoomService
     private async Task<ChatRoomDb> CreateRoomCoreAsync(string roomName)
     {
         var result = await _chatRoomRepository.InsertAsync(new ChatRoomDb { Id = roomName });
-        if (result is not null)
-        {
-            await _roomIndexerRepository.AddOrUpdateRoomAsync(roomName);
-        }
-
         return result;
     }
 
@@ -128,11 +120,11 @@ public class RoomService : IRoomService
 
     public async Task RemoveRoomByNameOrIdAsync(string nameOrId)
     {
-        await _lockerQueue.InvokeAsync(async () => await RemoveRoomByNameOrIdCoreAsync(nameOrId));
-        await _roomIndexerRepository.RemoveAsync(nameOrId);
-        //await _cacheQueue.InvokeAsync(async () => await _chatRoomRepository.RemoveAsync(x => x.RoomName == nameOrId));
+        await _lockerQueue.InvokeAsync(async () =>
+        {
+            await RemoveRoomByNameOrIdCoreAsync(nameOrId);
+        });
     }
-
 
     private async Task RemoveRoomByNameOrIdCoreAsync(string nameOrId)
     {
@@ -168,11 +160,14 @@ public class RoomService : IRoomService
         await _lockerQueue.InvokeAsync(async () =>
         {
             var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
-            room.Users.Remove(username);
-
-            if (room.Users.Any() == false)
+            if (room is not null)
             {
-                await RemoveRoomByNameOrIdCoreAsync(roomName);
+                room.Users.Remove(username);
+
+                if (room.Users.Any() == false)
+                {
+                    await RemoveRoomByNameOrIdCoreAsync(roomName);
+                }
             }
         });
     }

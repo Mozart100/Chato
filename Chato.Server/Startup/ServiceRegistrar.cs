@@ -27,6 +27,8 @@ public static class ServiceRegistrar
         services.AddSingleton<IRoomRepository, RoomRepository>();
         services.AddSingleton<IUserRepository, UserRepository>();
         services.AddSingleton<IRoomIndexerRepository, RoomIndexerRepository>();
+        //services.AddSingleton<IPreloadDataLoader, GenerateDefaultRoomAndUsersService>();
+
 
 
 
@@ -47,10 +49,10 @@ public static class ServiceRegistrar
 
         services.AddHostedService<PreloadBackgroundTask>();
         services.AddHostedService<DelegateQueueBackgroundTask>();
-        services.AddHostedService<CacheRemovalItemBackgroundTask>();
+        services.AddHostedService<CacheEvictionBackgroundTask>();
 
 
-        
+
 
 
         //kcservices.AddMiddleware

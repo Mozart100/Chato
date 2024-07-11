@@ -7,42 +7,11 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Chato.Server.Controllers;
 
-public class ChatoResponseResult : ObjectResult
-{
-    public ChatoResponseResult(object response)
-        : base(response)
-    {
-    }
-}
-
-public class ChatoResponseWrapper
-{
-
-    public ChatoResponseWrapper(object response)
-    {
-        Response = response;
-        IsSuccess = true;
-    }
-
-    public bool IsSuccess { get; }
-    public object Response { get; }
-}
-
-public class ChatoController : ControllerBase
-{
-    public ObjectResult ChatoResponse(object response)
-    {
-
-        return new ChatoResponseResult(response);
-    }
-}
-
-
 [Route("api/[controller]")]
 [ApiController]
 public class RoomController : ControllerBase
 {
-    public const string All_Route = "all";
+    public const string All_Rooms_Route = "all";
     public const string Room_Route = "{room}";
 
     private readonly IRoomService _roomService;
@@ -56,11 +25,13 @@ public class RoomController : ControllerBase
 
 
     [HttpGet]
-    [Route(All_Route), Authorize]
+    [Route(All_Rooms_Route), Authorize]
     public async Task<GetAllRoomResponse> GetAllRooms()
     {
         var result = await _roomService.GetAllRoomAsync();
-        return new GetAllRoomResponse { Rooms = result.SafeToArray() };
+        var response =  new GetAllRoomResponse { Rooms = result.SafeToArray() };
+    
+          return response;
     }
 
 

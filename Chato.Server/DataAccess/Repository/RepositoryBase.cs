@@ -39,7 +39,7 @@ namespace Chato.Server.DataAccess.Repository
             Models = new HashSet<TModel>();
         }
 
-        public async Task<bool> RemoveAsync(Predicate<TModel> selector)
+        public async virtual Task<bool> RemoveAsync(Predicate<TModel> selector)
         {
             var result = false;
             foreach (var model in Models)

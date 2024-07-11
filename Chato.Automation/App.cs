@@ -11,13 +11,15 @@ internal class App
     private readonly BasicScenario _basicScenario;
     private readonly RegistrationValidationScenario _registrationValidationScenario;
     private readonly RoomSendingReceivingScenario roomSendingReceivingScenario;
+    private readonly CacheScenario _cacheScenario;
 
     public App(ILogger<App> logger, 
         GroupHandShakeScenario groupHandShakeScenario,
         //HubStreamScenario hubStreamScenario,
         BasicScenario basicScenario,
         RegistrationValidationScenario registrationValidationScenario,
-        RoomSendingReceivingScenario roomSendingReceivingScenario
+        RoomSendingReceivingScenario roomSendingReceivingScenario,
+        CacheScenario cacheScenario
         )
     {
         _logger = logger;
@@ -26,6 +28,7 @@ internal class App
         this._basicScenario = basicScenario;
         this._registrationValidationScenario = registrationValidationScenario;
         this.roomSendingReceivingScenario = roomSendingReceivingScenario;
+        this._cacheScenario = cacheScenario;
     }
 
 
@@ -36,6 +39,9 @@ internal class App
         await _basicScenario.StartRunScenario();
         await roomSendingReceivingScenario.StartRunScenario();
         await _groupHandShakeScenario.StartRunScenario();
+
+        await _cacheScenario.StartRunScenario();
+
         //await _hubStreamScenario.StartRunScenario();
 
         Console.WriteLine("All test passed successfully!!!!!");

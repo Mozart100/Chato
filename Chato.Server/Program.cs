@@ -1,3 +1,4 @@
+using Chato.Server.Configuration;
 using Chato.Server.Errors;
 using Chato.Server.Hubs;
 using Chato.Server.Infrastracture;
@@ -8,6 +9,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using System.Security.Policy;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +25,10 @@ builder.Services.NativeServiceRegistration();
 builder.Services.CustomServiceRegistration(builder.Configuration);
 
 builder.Services.AddConfig<AuthenticationConfig>(builder.Configuration);
+
+var section = builder.Configuration.GetSection(CacheEvictionRoomConfig.ApiName);
+builder.Services.Configure<CacheEvictionRoomConfig>(section);
+
 //builder.Services.Configure<AuthenticationConfig>(builder.Configuration.GetSection(AuthenticationConfig.ApiName));
 
 
