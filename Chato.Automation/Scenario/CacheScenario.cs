@@ -32,6 +32,10 @@ internal class CacheScenario : InstructionScenarioBase
 
     private async Task SendingInsideTheRoom()
     {
+        var token = Users[Anatoliy_User].RegisterResponse.Token;
+        var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
+        response.Body.Rooms.Count().Should().BeGreaterThan(1);
+
         var max = 8;
         for (int i = 0; i < max; i++)
         {
@@ -39,26 +43,9 @@ internal class CacheScenario : InstructionScenarioBase
             Logger.LogInformation($"Delayed {i + 1}/{max} second.");
         }
 
-        var token = Users[Anatoliy_User].RegisterResponse.Token;
-        var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
+        response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
         response.Body.Rooms.Count().Should().Be(1);
 
-
-        //var message_1 = "Shalom";
-        //var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
-
-
-        //var anatoliySender = firstGroup.SendingToRestRoom(Anatoliy_User);
-        //var olessyaSender = firstGroup.ReceivingFrom(Olessya_User, anatoliySender.UserName);
-        //var nathanReceiver = firstGroup.ReceivingFrom(Nathan_User, anatoliySender.UserName);
-
-        //var maxReceiver = firstGroup.Is_Not_Received(Max_User);
-
-
-        //anatoliySender.Connect(olessyaSender, nathanReceiver, maxReceiver);
-
-        //var graph = new InstructionGraph(anatoliySender);
-        //await InstructionExecuter(graph);
     }
 
 
