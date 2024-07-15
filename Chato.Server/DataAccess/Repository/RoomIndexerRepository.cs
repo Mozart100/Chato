@@ -11,13 +11,14 @@ public class RoomIndexerCache
     public string RoomNameOrId { get; set; }
 }
 
+
 public interface IRoomIndexerRepository
 {
     void AddToCache(string roomNameOrId);
     //Task AddToCacheAsync(string roomId)
     void Remove(string roomNameOrId);
 
-    IEnumerable<(string Key, TimeStamp TimeStamp)> GetAllKeyValuesSnapshot();
+    IEnumerable<(string Key, TimeOnly TimeStamp)> GetAllKeyValuesSnapshot();
 
 
     //Task RemoveAsync(string roomId);
@@ -25,17 +26,24 @@ public interface IRoomIndexerRepository
 
 public class RoomIndexerRepository : IRoomIndexerRepository
 {
-    private readonly ConcurrentDictionary<string, TimeStamp> _roomTimeStemps;
+    private readonly ConcurrentDictionary<string, TimeOnly> _roomTimeStemps;
 
 
     public RoomIndexerRepository()
     {
-        _roomTimeStemps = new ConcurrentDictionary<string, TimeStamp>();
+        _roomTimeStemps = new ConcurrentDictionary<string, TimeOnly>();
     }
 
     public void AddToCache(string roomNameOrId)
     {
-        _roomTimeStemps.AddOrUpdate(roomNameOrId, key => TimeStamp.Reset(), (key, currentTimeStemp) => TimeStamp.Reset());
+        _roomTimeStemps.AddOrUpdate(roomNameOrId, key => TimeOnly.FromDateTime(DateTime.UtcNow), (key, currentTimeStemp) =>
+        {
+
+            var time = TimeOnly.FromDateTime(DateTime.UtcNow);
+            Console.WriteLine($"Updating timestamp for room '{key}': Minute = {time.Minute}  Scecond = {time.Second} and MilliSecond {time.Millisecond}");
+            return time;
+        }
+            );
     }
 
     public void Remove(string roomNameOrId)
@@ -43,10 +51,10 @@ public class RoomIndexerRepository : IRoomIndexerRepository
         _roomTimeStemps.Remove(roomNameOrId, out _);
     }
 
-    public IEnumerable<(string Key, TimeStamp TimeStamp)> GetAllKeyValuesSnapshot()
+    public IEnumerable<(string Key, TimeOnly TimeStamp)> GetAllKeyValuesSnapshot()
     {
-        var snapshot = new Dictionary<string, TimeStamp>(_roomTimeStemps);
-        var list = new List<(string key, TimeStamp value)>();
+        var snapshot = new Dictionary<string, TimeOnly>(_roomTimeStemps);
+        var list = new List<(string key, TimeOnly value)>();
 
         foreach (var kvp in snapshot)
         {

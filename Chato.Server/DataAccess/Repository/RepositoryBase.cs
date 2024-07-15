@@ -1,4 +1,5 @@
 ﻿using Chato.Server.DataAccess.Models;
+using Chato.Server.Infrastracture;
 using Chato.Server.Infrastracture.Exceptions;
 using Microsoft.AspNetCore.Http.HttpResults;
 
@@ -101,7 +102,7 @@ namespace Chato.Server.DataAccess.Repository
 
         public async Task<IEnumerable<TModel>> GetAllAsync()
         {
-            return Models.ToArray();
+            return GetAll();
         }
         /// <summary>
         /// Auto Id Generator
@@ -118,14 +119,14 @@ namespace Chato.Server.DataAccess.Repository
             
             return instance;
         }
-        public IEnumerable<TModel> GetAll()
+        public virtual IEnumerable<TModel> GetAll()
         {
-            return Models.ToArray();
+            return Models.SafeToArray();
         }
 
         public async Task<IEnumerable<TModel>> GetAllAsync(Func<TModel, bool> selector)
         {
-            return Models.Where(x => selector(x)).ToArray();
+            return GetAll().Where(x => selector(x)).SafeToArray();
         }
 
 

@@ -71,7 +71,7 @@ public class RoomService : IRoomService
         return result;
     }
 
-
+    
     public async Task<ChatRoomDto[]> GetAllRoomAsync()
     {
         ChatRoomDb[] result = null;
@@ -93,7 +93,7 @@ public class RoomService : IRoomService
             var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
             if (room is not null)
             {
-                result = room.SenderInfo.ToArray();
+                result = room.SenderInfo.SafeToArray();
             }
         });
 

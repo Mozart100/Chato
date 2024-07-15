@@ -2,6 +2,7 @@
 using Chato.Server.DataAccess.Repository;
 using Chato.Server.Infrastracture.QueueDelegates;
 using Chato.Server.Services;
+using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Options;
 
 namespace Chato.Server.BackgroundTasks;
@@ -32,27 +33,39 @@ public class CacheEvictionBackgroundTask : BackgroundService
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        await Task.Delay(1000 * 5);
-                   
+        await Task.Delay(1000 * 3);
+
         var persistentUsers = new HashSet<string>(IPersistentUsers.PersistentUsers);
 
         while (!stoppingToken.IsCancellationRequested)
         {
             using (IServiceScope scope = _serviceScopeFactory.CreateScope())
             {
-                var roomService = scope.ServiceProvider.GetRequiredService<IRoomService>();
                 var snapshot = _roomIndexerRepository.GetAllKeyValuesSnapshot();
 
-                foreach (var (roomName, timeStemp) in snapshot)
+                foreach (var (roomName, startTime) in snapshot)
                 {
                     if(persistentUsers.Contains(roomName) == true)
                     {
                         continue;
                     }
 
-                    if (timeStemp.IsSecondOver(_config.UnusedTimeoutSeconds))
+                    TimeOnly currentTime = TimeOnly.FromDateTime(DateTime.UtcNow);
+                    TimeSpan elapsed = currentTime.ToTimeSpan() - startTime.ToTimeSpan();
+
+
+                    // Check if the specified duration has passed
+                    //if (elapsed.TotalSeconds >= _config.UnusedTimeoutSeconds)
+                    if (elapsed.TotalSeconds >= 5)
                     {
+
+                        _logger.LogInformation($"Original  for room '{roomName}': Minute = {startTime.Minute}  Scecond = {startTime.Second} and MilliSecond {startTime.Millisecond}");
+                        _logger.LogInformation($"Timestamp for room '{roomName}': Minute = {currentTime.Minute}  Scecond = {currentTime.Second} and MilliSecond {currentTime.Millisecond}");
+
+
+                        var roomService = scope.ServiceProvider.GetRequiredService<IRoomService>();
                         await roomService.RemoveRoomByNameOrIdAsync(roomName);
+
                         _logger.LogInformation($"Room {roomName} was evicted!!!.");
                     }
                     else
@@ -62,7 +75,7 @@ public class CacheEvictionBackgroundTask : BackgroundService
                 }
             }
 
-            await Task.Delay(TimeSpan.FromSeconds(_config.PeriodTimeoutSeconds), stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
         }
     }
 }

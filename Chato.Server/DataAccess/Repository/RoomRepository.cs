@@ -33,6 +33,17 @@ public class RoomRepository : RepositoryBase<ChatRoomDb>, IRoomRepository
 
     }
 
+    public override IEnumerable<ChatRoomDb> GetAll()
+    {
+        var rooms = base.GetAll();
+        foreach (var item in rooms)
+        {
+            _roomIndexerRepository.AddToCache(item.RoomName);
+            
+        };
+
+        return rooms;
+    }
 
     public override ChatRoomDb Insert(ChatRoomDb instance)
     {
@@ -44,6 +55,18 @@ public class RoomRepository : RepositoryBase<ChatRoomDb>, IRoomRepository
 
         throw new Exception("Key already present.");
 
+    }
+
+    protected override ChatRoomDb CoreGet(Predicate<ChatRoomDb> selector)
+    {
+        var result =  base.CoreGet(selector);
+    
+        if(result is not null)
+        {
+            _roomIndexerRepository.AddToCache(result.RoomName);
+        }
+
+        return result;
     }
 
 
