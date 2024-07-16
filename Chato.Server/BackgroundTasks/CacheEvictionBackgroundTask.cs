@@ -40,7 +40,7 @@ public class CacheEvictionBackgroundTask : BackgroundService
             {
                 var snapshot = _roomIndexerRepository.GetAllKeyValuesSnapshot();
 
-                foreach (var (roomName, startUnusedTimeStamp) in snapshot)
+                foreach (var (roomName, startUnusedTimeStamp,  ThreshholdAbsoluteEviction) in snapshot)
                 {
                     if(persistentUsers.Contains(roomName) == true)
                     {

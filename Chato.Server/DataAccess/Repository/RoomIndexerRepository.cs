@@ -20,7 +20,7 @@ public interface IRoomIndexerRepository
     //Task AddToCacheAsync(string roomId)
     void Remove(string roomNameOrId);
 
-    IEnumerable<(string Key, TimeOnly UnusedTimeStamp)> GetAllKeyValuesSnapshot();
+    IEnumerable<(string Key, TimeOnly UnusedTimeStamp, TimeOnly ThreshholdAbsoluteEviction )> GetAllKeyValuesSnapshot();
 
 
     //Task RemoveAsync(string roomId);
@@ -67,14 +67,14 @@ public class RoomIndexerRepository : IRoomIndexerRepository
         _roomAbsoluteEviction.Remove(roomNameOrId, out _);
     }
 
-    public IEnumerable<(string Key, TimeOnly UnusedTimeStamp)> GetAllKeyValuesSnapshot()
+    public IEnumerable<(string Key, TimeOnly UnusedTimeStamp, TimeOnly ThreshholdAbsoluteEviction)> GetAllKeyValuesSnapshot()
     {
         var snapshot = new Dictionary<string, TimeOnly>(_roomTimeStemps);
-        var list = new List<(string key, TimeOnly value)>();
+        var list = new List<(string key, TimeOnly value, TimeOnly ThreshholdAbsoluteEviction)>();
 
         foreach (var kvp in snapshot)
         {
-            list.Add((kvp.Key, kvp.Value));
+            list.Add((kvp.Key, kvp.Value,TimeOnly.MinValue));
         }
 
         return list;
