@@ -55,8 +55,8 @@ public class CacheEvictionBackgroundTask : BackgroundService
 
 
                     // Check if the specified duration has passed
-                    //if (elapsed.TotalSeconds >= _config.UnusedTimeoutSeconds)
-                    if (elapsed.TotalSeconds >= 5)
+                    if (elapsed.TotalSeconds >= _config.UnusedTimeoutSeconds)
+                    //if (elapsed.TotalSeconds >= 5)
                     {
 
                         _logger.LogInformation($"Original  for room '{roomName}': Minute = {startTime.Minute}  Scecond = {startTime.Second} and MilliSecond {startTime.Millisecond}");
@@ -75,7 +75,7 @@ public class CacheEvictionBackgroundTask : BackgroundService
                 }
             }
 
-            await Task.Delay(TimeSpan.FromSeconds(1), stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(_config.PeriodTimeoutSeconds), stoppingToken);
         }
     }
 }

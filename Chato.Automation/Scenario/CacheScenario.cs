@@ -64,13 +64,13 @@ internal class CacheScenario : InstructionScenarioBase
         var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
         var cacheScenarioRoom = response.Body.Rooms.FirstOrDefault(x => x.RoomName == nameof(CacheScenario));
 
-
-        var max = 8;
-        for (int i = 0; i < max; i++)
-        {
-            await Task.Delay(1000);
-            Logger.LogInformation($"Delayed {i + 1}/{max} second.");
-        }
+        await CountDown();
+        //var max = 8;
+        //for (int i = 0; i < max; i++)
+        //{
+        //    await Task.Delay(1000);
+        //    Logger.LogInformation($"Delayed {i + 1}/{max} second.");
+        //}
 
         response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
         response.Body.Rooms.Count().Should().Be(1);

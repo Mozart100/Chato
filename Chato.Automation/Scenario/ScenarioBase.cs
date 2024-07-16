@@ -70,6 +70,16 @@ public abstract class ScenarioBase
         }
     }
 
+
+    protected async Task CountDown(int max = 10)
+    {
+        for (var i =0; i< max; i++)
+        {
+            await Task.Delay(1000);
+            Logger.LogInformation($"Delayed {i + 1}/{max} second.");
+        }
+    }
+
     public async Task StartRunScenario()
     {
         Console.WriteLine($" ------------------------{ScenarioName}----------------------------");
