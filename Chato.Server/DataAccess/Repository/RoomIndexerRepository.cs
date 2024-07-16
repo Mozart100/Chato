@@ -1,6 +1,8 @@
-﻿using Chato.Server.Infrastracture;
+﻿using Chato.Server.Configuration;
+using Chato.Server.Infrastracture;
 using Chato.Server.Infrastracture.QueueDelegates;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 
 namespace Chato.Server.DataAccess.Repository;
@@ -18,7 +20,7 @@ public interface IRoomIndexerRepository
     //Task AddToCacheAsync(string roomId)
     void Remove(string roomNameOrId);
 
-    IEnumerable<(string Key, TimeOnly TimeStamp)> GetAllKeyValuesSnapshot();
+    IEnumerable<(string Key, TimeOnly UnusedTimeStamp)> GetAllKeyValuesSnapshot();
 
 
     //Task RemoveAsync(string roomId);
@@ -27,16 +29,29 @@ public interface IRoomIndexerRepository
 public class RoomIndexerRepository : IRoomIndexerRepository
 {
     private readonly ConcurrentDictionary<string, TimeOnly> _roomTimeStemps;
+    private readonly ConcurrentDictionary<string, TimeOnly> _roomAbsoluteEviction;
+    private readonly CacheEvictionRoomConfig _config;
 
-
-    public RoomIndexerRepository()
+    public RoomIndexerRepository(IOptions<CacheEvictionRoomConfig> config)
     {
         _roomTimeStemps = new ConcurrentDictionary<string, TimeOnly>();
+        _roomAbsoluteEviction = new ConcurrentDictionary<string, TimeOnly>();
+        _config = config.Value;
     }
 
     public void AddToCache(string roomNameOrId)
     {
-        _roomTimeStemps.AddOrUpdate(roomNameOrId, key => TimeOnly.FromDateTime(DateTime.UtcNow), (key, currentTimeStemp) =>
+        _roomTimeStemps.AddOrUpdate(roomNameOrId, key =>
+        {
+            var timeStemp = TimeOnly.FromDateTime(DateTime.UtcNow);
+
+            var timeSpan = TimeSpan.FromSeconds(_config.AbsoluteEvictionInSeconds);
+
+            _roomAbsoluteEviction.GetOrAdd(roomNameOrId, timeStemp.Add(timeSpan));
+            return timeStemp;
+        },
+        
+        (key, currentTimeStemp) =>
         {
 
             var time = TimeOnly.FromDateTime(DateTime.UtcNow);
@@ -49,9 +64,10 @@ public class RoomIndexerRepository : IRoomIndexerRepository
     public void Remove(string roomNameOrId)
     {
         _roomTimeStemps.Remove(roomNameOrId, out _);
+        _roomAbsoluteEviction.Remove(roomNameOrId, out _);
     }
 
-    public IEnumerable<(string Key, TimeOnly TimeStamp)> GetAllKeyValuesSnapshot()
+    public IEnumerable<(string Key, TimeOnly UnusedTimeStamp)> GetAllKeyValuesSnapshot()
     {
         var snapshot = new Dictionary<string, TimeOnly>(_roomTimeStemps);
         var list = new List<(string key, TimeOnly value)>();

@@ -11,4 +11,5 @@ public class CacheEvictionRoomConfig : PQSConfig<CacheEvictionRoomConfig>
 {
     public int PeriodTimeoutSeconds { get; set; }
     public int UnusedTimeoutSeconds { get; set; }
+    public int AbsoluteEvictionInSeconds { get; set; }
 }

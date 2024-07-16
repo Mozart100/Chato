@@ -9,11 +9,8 @@ namespace Chato.Server.BackgroundTasks;
 
 public class CacheEvictionBackgroundTask : BackgroundService
 {
-    //private const int Period_Timeout = 1;
-    //private const int Timeout_In_Second = 3;
     private readonly CacheEvictionRoomConfig _config;
 
-    //private readonly ICacheItemDelegateQueue _cacheItemDelegateQueue;
     private readonly IRoomIndexerRepository _roomIndexerRepository;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<CacheEvictionBackgroundTask> _logger;
@@ -43,7 +40,7 @@ public class CacheEvictionBackgroundTask : BackgroundService
             {
                 var snapshot = _roomIndexerRepository.GetAllKeyValuesSnapshot();
 
-                foreach (var (roomName, startTime) in snapshot)
+                foreach (var (roomName, startUnusedTimeStamp) in snapshot)
                 {
                     if(persistentUsers.Contains(roomName) == true)
                     {
@@ -51,26 +48,36 @@ public class CacheEvictionBackgroundTask : BackgroundService
                     }
 
                     TimeOnly currentTime = TimeOnly.FromDateTime(DateTime.UtcNow);
-                    TimeSpan elapsed = currentTime.ToTimeSpan() - startTime.ToTimeSpan();
+                    TimeSpan elapsed = currentTime.ToTimeSpan() - startUnusedTimeStamp.ToTimeSpan();
 
-
-                    // Check if the specified duration has passed
                     if (elapsed.TotalSeconds >= _config.UnusedTimeoutSeconds)
-                    //if (elapsed.TotalSeconds >= 5)
                     {
-
-                        _logger.LogInformation($"Original  for room '{roomName}': Minute = {startTime.Minute}  Scecond = {startTime.Second} and MilliSecond {startTime.Millisecond}");
-                        _logger.LogInformation($"Timestamp for room '{roomName}': Minute = {currentTime.Minute}  Scecond = {currentTime.Second} and MilliSecond {currentTime.Millisecond}");
+                        _logger.LogInformation($"UnusedTimeoutSeconds Original  for room '{roomName}': Minute = {startUnusedTimeStamp.Minute}  Scecond = {startUnusedTimeStamp.Second} and MilliSecond {startUnusedTimeStamp.Millisecond}");
+                        _logger.LogInformation($"UnusedTimeoutSeconds Timestamp for room '{roomName}': Minute = {currentTime.Minute}  Scecond = {currentTime.Second} and MilliSecond {currentTime.Millisecond}");
 
 
                         var roomService = scope.ServiceProvider.GetRequiredService<IRoomService>();
                         await roomService.RemoveRoomByNameOrIdAsync(roomName);
 
-                        _logger.LogInformation($"Room {roomName} was evicted!!!.");
+                        _logger.LogInformation($"UnusedTimeoutSeconds Room {roomName} was evicted!!!.");
                     }
                     else
                     {
-                        _logger.LogInformation($"Eviction Cache missed!!!.");
+                        //if(elapsed.TotalSeconds >= _config.AbsoluteEvictionInSeconds)
+                        //{
+                        //    _logger.LogInformation($"AbsoluteEvictionInSeconds Original  for room '{roomName}': Minute = {startTime.Minute}  Scecond = {startTime.Second} and MilliSecond {startTime.Millisecond}");
+                        //    _logger.LogInformation($"AbsoluteEvictionInSeconds Timestamp for room '{roomName}': Minute = {currentTime.Minute}  Scecond = {currentTime.Second} and MilliSecond {currentTime.Millisecond}");
+
+
+                        //    var roomService = scope.ServiceProvider.GetRequiredService<IRoomService>();
+                        //    await roomService.RemoveRoomByNameOrIdAsync(roomName);
+
+                        //    _logger.LogInformation($"AbsoluteEvictionInSeconds Room {roomName} was evicted!!!.");
+                        //}
+                        //else
+                        {
+                            _logger.LogInformation($"Eviction Cache missed!!!.");
+                        }
                     }
                 }
             }
