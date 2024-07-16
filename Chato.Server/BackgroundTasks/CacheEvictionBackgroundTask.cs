@@ -63,18 +63,18 @@ public class CacheEvictionBackgroundTask : BackgroundService
                     }
                     else
                     {
-                        //if(elapsed.TotalSeconds >= _config.AbsoluteEvictionInSeconds)
-                        //{
-                        //    _logger.LogInformation($"AbsoluteEvictionInSeconds Original  for room '{roomName}': Minute = {startTime.Minute}  Scecond = {startTime.Second} and MilliSecond {startTime.Millisecond}");
-                        //    _logger.LogInformation($"AbsoluteEvictionInSeconds Timestamp for room '{roomName}': Minute = {currentTime.Minute}  Scecond = {currentTime.Second} and MilliSecond {currentTime.Millisecond}");
+                        if (currentTime > ThreshholdAbsoluteEviction)
+                        {
+                            _logger.LogInformation($"AbsoluteEvictionInSeconds Original  for room '{roomName}': Minute = {ThreshholdAbsoluteEviction.Minute}  Scecond = {ThreshholdAbsoluteEviction.Second} and MilliSecond {ThreshholdAbsoluteEviction.Millisecond}");
+                            _logger.LogInformation($"AbsoluteEvictionInSeconds Timestamp for room '{roomName}': Minute = {currentTime.Minute}  Scecond = {currentTime.Second} and MilliSecond {currentTime.Millisecond}");
 
 
-                        //    var roomService = scope.ServiceProvider.GetRequiredService<IRoomService>();
-                        //    await roomService.RemoveRoomByNameOrIdAsync(roomName);
+                            var roomService = scope.ServiceProvider.GetRequiredService<IRoomService>();
+                            await roomService.RemoveRoomByNameOrIdAsync(roomName);
 
-                        //    _logger.LogInformation($"AbsoluteEvictionInSeconds Room {roomName} was evicted!!!.");
-                        //}
-                        //else
+                            _logger.LogInformation($"AbsoluteEvictionInSeconds Room {roomName} was evicted!!!.");
+                        }
+                        else
                         {
                             _logger.LogInformation($"Eviction Cache missed!!!.");
                         }

@@ -74,7 +74,8 @@ public class RoomIndexerRepository : IRoomIndexerRepository
 
         foreach (var kvp in snapshot)
         {
-            list.Add((kvp.Key, kvp.Value,TimeOnly.MinValue));
+            //_roomAbsoluteEviction.TryGetValue(kvp.Key, out var )
+            list.Add((kvp.Key, kvp.Value, _roomAbsoluteEviction[kvp.Key]));
         }
 
         return list;

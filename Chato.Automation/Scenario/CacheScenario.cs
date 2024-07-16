@@ -29,8 +29,14 @@ internal class CacheScenario : InstructionScenarioBase
 
 
         BusinessLogicCallbacks.Add(Setup_SendingInsideTheRoom_Step);
-        BusinessLogicCallbacks.Add(CacheEvicted);
+        BusinessLogicCallbacks.Add(UnusedCacheEvicted);
         BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
+
+
+
+        //BusinessLogicCallbacks.Add(Setup_SendingInsideTheRoom_Step);
+        //BusinessLogicCallbacks.Add(AbsoluteEviction);
+        //BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
     }
 
@@ -41,36 +47,38 @@ internal class CacheScenario : InstructionScenarioBase
     private async Task UnusedCache_Preloning()
     {
         var token = Users[Anatoliy_User].RegisterResponse.Token;
-        var max = 8;
-        for (int i = 0; i < max; i++)
+        //var max = 8;
+        //for (int i = 0; i < max; i++)
+        //{
+        //    var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
+
+        //    var cacheScenarioRoom = response.Body.Rooms.FirstOrDefault(x => x.RoomName == nameof(CacheScenario));
+
+        //    cacheScenarioRoom.RoomName.Should().NotBeNull();
+
+        //    await Task.Delay(1000);
+        //    Logger.LogInformation($"Delayed {i + 1}/{max} second.");
+        //}
+
+        await CountDown(async () =>
         {
             var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
 
             var cacheScenarioRoom = response.Body.Rooms.FirstOrDefault(x => x.RoomName == nameof(CacheScenario));
 
             cacheScenarioRoom.RoomName.Should().NotBeNull();
+        }, 8);
 
-            await Task.Delay(1000);
-            Logger.LogInformation($"Delayed {i + 1}/{max} second.");
-        }
-
-        //await Task.Delay(1000 * 10);
 
     }
 
-    private async Task CacheEvicted()
+    private async Task UnusedCacheEvicted()
     {
         var token = Users[Anatoliy_User].RegisterResponse.Token;
         var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
         var cacheScenarioRoom = response.Body.Rooms.FirstOrDefault(x => x.RoomName == nameof(CacheScenario));
 
         await CountDown();
-        //var max = 8;
-        //for (int i = 0; i < max; i++)
-        //{
-        //    await Task.Delay(1000);
-        //    Logger.LogInformation($"Delayed {i + 1}/{max} second.");
-        //}
 
         response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
         response.Body.Rooms.Count().Should().Be(1);
@@ -79,6 +87,20 @@ internal class CacheScenario : InstructionScenarioBase
 
     }
 
+    private async Task AbsoluteEviction()
+    {
+        var token = Users[Anatoliy_User].RegisterResponse.Token;
+        var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
+        var cacheScenarioRoom = response.Body.Rooms.FirstOrDefault(x => x.RoomName == nameof(CacheScenario));
+
+        await CountDown(60);
+
+        response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
+        response.Body.Rooms.Count().Should().Be(1);
+        response.Body.Rooms.First().RoomName.Should().Be(IPersistentUsers.DefaultRoom);
+
+
+    }
 
 
     private async Task Setup_SendingInsideTheRoom_Step()
