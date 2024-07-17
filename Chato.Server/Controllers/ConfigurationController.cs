@@ -23,7 +23,7 @@ namespace Chato.Server.Controllers
 
         [Route(EvictionUrl)]
         [HttpGet]
-        public async Task<CacheEvictionRoomConfigDto> GetEvictionConfiguration()
+        public async Task<CacheEvictionRoomConfigDto> GetEvictionConfigurationAsync()
         {
             var dto = _mapper.Map<CacheEvictionRoomConfigDto>(_config);
             return dto;

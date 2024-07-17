@@ -1,6 +1,7 @@
 ﻿using Chato.Server.Configuration;
 using Chato.Server.Infrastracture;
 using Chato.Server.Infrastracture.QueueDelegates;
+using Chato.Server.Services;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
@@ -45,9 +46,10 @@ public class RoomIndexerRepository : IRoomIndexerRepository
         {
             var timeStemp = TimeOnly.FromDateTime(DateTime.UtcNow);
 
-            var timeSpan = TimeSpan.FromSeconds(_config.AbsoluteEviction);
-
-            _roomAbsoluteEviction.GetOrAdd(roomNameOrId, timeStemp.Add(timeSpan));
+            var timeToEvict = CacheEvictionUtility.Add(_config.TimeMeasurement, timeStemp, _config.AbsoluteEviction);
+            //var timeSpan = TimeSpan.FromSeconds(_config.AbsoluteEviction);
+            
+            _roomAbsoluteEviction.GetOrAdd(roomNameOrId, timeToEvict);
             return timeStemp;
         },
         

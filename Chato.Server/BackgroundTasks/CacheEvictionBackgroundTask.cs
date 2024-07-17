@@ -31,6 +31,8 @@ public class CacheEvictionBackgroundTask : BackgroundService
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         await Task.Delay(1000 * 3);
+        var unusedTimeout = CacheEvictionUtility.ConvertToTimeSpan(_config.TimeMeasurement, _config.UnusedTimeout);
+
 
         var persistentUsers = new HashSet<string>(IPersistentUsers.PersistentUsers);
 
@@ -50,8 +52,9 @@ public class CacheEvictionBackgroundTask : BackgroundService
                     TimeOnly currentTime = TimeOnly.FromDateTime(DateTime.UtcNow);
                     TimeSpan elapsed = currentTime.ToTimeSpan() - startUnusedTimeStamp.ToTimeSpan();
 
-                    if (elapsed.TotalSeconds >= _config.UnusedTimeout)
-                    {
+                    if (elapsed >= unusedTimeout)
+                    //if (elapsed.TotalSeconds >= _config.UnusedTimeout)
+                        {
                         _logger.LogInformation($"UnusedTimeoutSeconds Original  for room '{roomName}': Minute = {startUnusedTimeStamp.Minute}  Scecond = {startUnusedTimeStamp.Second} and MilliSecond {startUnusedTimeStamp.Millisecond}");
                         _logger.LogInformation($"UnusedTimeoutSeconds Timestamp for room '{roomName}': Minute = {currentTime.Minute}  Scecond = {currentTime.Second} and MilliSecond {currentTime.Millisecond}");
 
