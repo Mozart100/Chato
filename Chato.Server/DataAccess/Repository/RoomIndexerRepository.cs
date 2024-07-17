@@ -45,7 +45,7 @@ public class RoomIndexerRepository : IRoomIndexerRepository
         {
             var timeStemp = TimeOnly.FromDateTime(DateTime.UtcNow);
 
-            var timeSpan = TimeSpan.FromSeconds(_config.AbsoluteEvictionInSeconds);
+            var timeSpan = TimeSpan.FromSeconds(_config.AbsoluteEviction);
 
             _roomAbsoluteEviction.GetOrAdd(roomNameOrId, timeStemp.Add(timeSpan));
             return timeStemp;
