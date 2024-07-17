@@ -50,7 +50,7 @@ public class CacheEvictionBackgroundTask : BackgroundService
                     TimeOnly currentTime = TimeOnly.FromDateTime(DateTime.UtcNow);
                     TimeSpan elapsed = currentTime.ToTimeSpan() - startUnusedTimeStamp.ToTimeSpan();
 
-                    if (elapsed.TotalSeconds >= _config.UnusedTimeoutSeconds)
+                    if (elapsed.TotalSeconds >= _config.UnusedTimeout)
                     {
                         _logger.LogInformation($"UnusedTimeoutSeconds Original  for room '{roomName}': Minute = {startUnusedTimeStamp.Minute}  Scecond = {startUnusedTimeStamp.Second} and MilliSecond {startUnusedTimeStamp.Millisecond}");
                         _logger.LogInformation($"UnusedTimeoutSeconds Timestamp for room '{roomName}': Minute = {currentTime.Minute}  Scecond = {currentTime.Second} and MilliSecond {currentTime.Millisecond}");
@@ -82,7 +82,7 @@ public class CacheEvictionBackgroundTask : BackgroundService
                 }
             }
 
-            await Task.Delay(TimeSpan.FromSeconds(_config.PeriodTimeoutSeconds), stoppingToken);
+            await Task.Delay(TimeSpan.FromSeconds(_config.PeriodTimeout), stoppingToken);
         }
     }
 }
