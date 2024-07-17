@@ -1,7 +1,10 @@
-﻿using Chato.Server.Services;
+﻿using Chato.Server.FeatureFlags;
+using Chato.Server.Services;
 using Chatto.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.FeatureManagement;
+using Microsoft.FeatureManagement.Mvc;
 
 namespace Chato.Server.Controllers;
 
@@ -17,24 +20,30 @@ public class AuthController : ControllerBase
 {
     private readonly IUserService _userService;
     private readonly IAuthenticationService _authenticationService;
+    private readonly IFeatureManager _featureManager;
 
-    public AuthController(IUserService userService, IAuthenticationService authenticationService)
+    public AuthController(IUserService userService, IAuthenticationService authenticationService, IFeatureManager  featureManager)
     {
         _userService = userService;
         this._authenticationService = authenticationService;
+        this._featureManager = featureManager;
     }
 
+    [FeatureGate("ControllerEnabled")]
+    [Route("xxxx")]
     [HttpGet, Authorize]
-    public ActionResult<string> GetMe()
+    public async Task<string> GetMe()
     {
         var userName = _userService.GetMyName();
-        return Ok(userName);
+        return "Its all Good";
     }
 
     [Route("register")]
     [HttpPost]
     public async Task<RegistrationResponse> Register([FromBody] RegistrationRequest request)
     {
+        var flag = await _featureManager.IsEnabledAsync(FeatureFlagConsts.ClipArticale);
+
         //throw new Exception("xxxx");
         var token = await _authenticationService.RegisterAsync(request);
         return new RegistrationResponse { Token = token, UserName = request.UserName , Description = request.Description , Age = request.Age, Gender  = request.Gender };

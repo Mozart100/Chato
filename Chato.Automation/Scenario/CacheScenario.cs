@@ -48,7 +48,7 @@ internal class CacheScenario : InstructionScenarioBase
     {
         var token = Users[Anatoliy_User].RegisterResponse.Token;
 
-        await CountDown(async () =>
+        await CountDown(async (int tick) =>
         {
             var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
             var cacheScenarioRoom = response.Body.Rooms.FirstOrDefault(x => x.RoomName == nameof(CacheScenario));
@@ -77,9 +77,10 @@ internal class CacheScenario : InstructionScenarioBase
     {
         var token = Users[Anatoliy_User].RegisterResponse.Token;
 
-        await CountDown(async () =>
+        await CountDown(async (int tick) =>
         {
             var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
+
             //var cacheScenarioRoom = response.Body.Rooms.FirstOrDefault(x => x.RoomName == nameof(CacheScenario));
             //cacheScenarioRoom.RoomName.Should().NotBeNull();
         }, 50);

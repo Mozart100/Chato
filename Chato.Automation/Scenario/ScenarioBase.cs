@@ -80,11 +80,11 @@ public abstract class ScenarioBase
         }
     }
 
-    protected async Task CountDown(Func<Task> callback, int max=10)
+    protected async Task CountDown(Func<int ,Task> callback, int max=10)
     {
         for (var i = 0; i < max; i++)
         {
-            await callback();
+            await callback(i);
 
             await Task.Delay(1000);
             
