@@ -194,10 +194,10 @@ public abstract class ScenarioBase
                 {
                     var options = new JsonSerializerOptions
                     {
-                        PropertyNameCaseInsensitive = false
+                        PropertyNameCaseInsensitive = true
                     };
 
-                    result = JsonSerializer.Deserialize<TDto>(responseContent);
+                    result = JsonSerializer.Deserialize<TDto>(responseContent,options);
                     //var responseData = JsonSerializer.Deserialize<TDto>(responseContent, options);
                 }
 

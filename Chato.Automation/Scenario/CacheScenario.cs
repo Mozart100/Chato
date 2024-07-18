@@ -1,4 +1,5 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
+using Chato.Server.Configuration;
 using Chato.Server.Services;
 using Chatto.Shared;
 using FluentAssertions;
@@ -20,8 +21,13 @@ internal class CacheScenario : InstructionScenarioBase
     private const string Idan_User = "itan";
 
 
+    private CacheEvictionRoomConfigDto _evictionConfig;
+
     public CacheScenario(ILogger<BasicScenario> logger, ScenarioConfig config) : base(logger, config)
     {
+
+        SetupsLogicCallback.Add(GetConfigurations_Step);
+
         BusinessLogicCallbacks.Add(Setup_SendingInsideTheRoom_Step);
         BusinessLogicCallbacks.Add(UnusedCache_Preloning);
         BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
@@ -38,6 +44,11 @@ internal class CacheScenario : InstructionScenarioBase
         BusinessLogicCallbacks.Add(AbsoluteEviction);
         BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
+    }
+
+    private async Task GetConfigurations_Step()
+    {
+        _evictionConfig = await GetEvictionConfigurationAsync();
     }
 
     public override string ScenarioName => "Only Persistent cache remains.";
