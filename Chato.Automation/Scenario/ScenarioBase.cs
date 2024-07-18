@@ -70,6 +70,28 @@ public abstract class ScenarioBase
         }
     }
 
+
+    protected async Task CountDown(int max = 10)
+    {
+        for (var i =0; i< max; i++)
+        {
+            await Task.Delay(1000);
+            Logger.LogInformation($"Delayed {i + 1}/{max} second.");
+        }
+    }
+
+    protected async Task CountDown(Func<int ,Task> callback, int max=10)
+    {
+        for (var i = 0; i < max; i++)
+        {
+            await callback(i);
+
+            await Task.Delay(1000);
+            
+            Logger.LogInformation($"Delayed {i + 1}/{max} second.");
+        }
+    }
+
     public async Task StartRunScenario()
     {
         Console.WriteLine($" ------------------------{ScenarioName}----------------------------");
@@ -172,10 +194,10 @@ public abstract class ScenarioBase
                 {
                     var options = new JsonSerializerOptions
                     {
-                        PropertyNameCaseInsensitive = false
+                        PropertyNameCaseInsensitive = true
                     };
 
-                    result = JsonSerializer.Deserialize<TDto>(responseContent);
+                    result = JsonSerializer.Deserialize<TDto>(responseContent,options);
                     //var responseData = JsonSerializer.Deserialize<TDto>(responseContent, options);
                 }
 

@@ -4,10 +4,12 @@ namespace Chato.Server.BackgroundTasks;
 
 public class DelegateQueueBackgroundTask : BackgroundService
 {
+    private readonly ILogger<DelegateQueueBackgroundTask> logger;
     private readonly ILockerDelegateQueue _delegateQueue;
 
-    public DelegateQueueBackgroundTask( ILockerDelegateQueue delegateQueue)
+    public DelegateQueueBackgroundTask( ILogger<DelegateQueueBackgroundTask> logger ,   ILockerDelegateQueue delegateQueue)
     {
+        this.logger = logger;
         this._delegateQueue = delegateQueue;
     }
 
@@ -15,12 +17,21 @@ public class DelegateQueueBackgroundTask : BackgroundService
     {
         while (!stoppingToken.IsCancellationRequested)
         {
-            Func<Task>  callback = await _delegateQueue.PopOrWaitAsync(stoppingToken);
+            Func<Task> callback = await _delegateQueue.PopOrWaitAsync(stoppingToken);
 
-            if(callback is not null)
+            if (callback is not null)
             {
-                await callback();
+                try
+                {
+                    await callback();
+                }
+                catch (Exception ex)
+                {
+                    var target = callback.Target;
+                    this.logger.LogError(ex.ToString());
+                }
             }
+
         }
     }
 }

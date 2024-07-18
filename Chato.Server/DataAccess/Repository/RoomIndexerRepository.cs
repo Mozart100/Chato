@@ -1,6 +1,9 @@
-﻿using Chato.Server.Infrastracture;
+﻿using Chato.Server.Configuration;
+using Chato.Server.Infrastracture;
 using Chato.Server.Infrastracture.QueueDelegates;
+using Chato.Server.Utilities;
 using Microsoft.Extensions.Caching.Memory;
+using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
 
 namespace Chato.Server.DataAccess.Repository;
@@ -11,13 +14,14 @@ public class RoomIndexerCache
     public string RoomNameOrId { get; set; }
 }
 
+
 public interface IRoomIndexerRepository
 {
     void AddToCache(string roomNameOrId);
     //Task AddToCacheAsync(string roomId)
     void Remove(string roomNameOrId);
 
-    IEnumerable<(string Key, TimeStamp TimeStamp)> GetAllKeyValuesSnapshot();
+    IEnumerable<(string Key, TimeOnly UnusedTimeStamp, TimeOnly ThreshholdAbsoluteEviction )> GetAllKeyValuesSnapshot();
 
 
     //Task RemoveAsync(string roomId);
@@ -25,32 +29,55 @@ public interface IRoomIndexerRepository
 
 public class RoomIndexerRepository : IRoomIndexerRepository
 {
-    private readonly ConcurrentDictionary<string, TimeStamp> _roomTimeStemps;
+    private readonly ConcurrentDictionary<string, TimeOnly> _roomTimeStemps;
+    private readonly ConcurrentDictionary<string, TimeOnly> _roomAbsoluteEviction;
+    private readonly CacheEvictionRoomConfig _config;
 
-
-    public RoomIndexerRepository()
+    public RoomIndexerRepository(IOptions<CacheEvictionRoomConfig> config)
     {
-        _roomTimeStemps = new ConcurrentDictionary<string, TimeStamp>();
+        _roomTimeStemps = new ConcurrentDictionary<string, TimeOnly>();
+        _roomAbsoluteEviction = new ConcurrentDictionary<string, TimeOnly>();
+        _config = config.Value;
     }
 
     public void AddToCache(string roomNameOrId)
     {
-        _roomTimeStemps.AddOrUpdate(roomNameOrId, key => TimeStamp.Reset(), (key, currentTimeStemp) => TimeStamp.Reset());
+        _roomTimeStemps.AddOrUpdate(roomNameOrId, key =>
+        {
+            var timeStemp = TimeOnly.FromDateTime(DateTime.UtcNow);
+
+            var timeToEvict = CacheEvictionUtility.Add(_config.TimeMeasurement, timeStemp, _config.AbsoluteEviction);
+            //var timeSpan = TimeSpan.FromSeconds(_config.AbsoluteEviction);
+            
+            _roomAbsoluteEviction.GetOrAdd(roomNameOrId, timeToEvict);
+            return timeStemp;
+        },
+        
+        (key, currentTimeStemp) =>
+        {
+
+            var time = TimeOnly.FromDateTime(DateTime.UtcNow);
+            Console.WriteLine($"Updating timestamp for room '{key}': Minute = {time.Minute}  Scecond = {time.Second} and MilliSecond {time.Millisecond}");
+            return time;
+        }
+            );
     }
 
     public void Remove(string roomNameOrId)
     {
         _roomTimeStemps.Remove(roomNameOrId, out _);
+        _roomAbsoluteEviction.Remove(roomNameOrId, out _);
     }
 
-    public IEnumerable<(string Key, TimeStamp TimeStamp)> GetAllKeyValuesSnapshot()
+    public IEnumerable<(string Key, TimeOnly UnusedTimeStamp, TimeOnly ThreshholdAbsoluteEviction)> GetAllKeyValuesSnapshot()
     {
-        var snapshot = new Dictionary<string, TimeStamp>(_roomTimeStemps);
-        var list = new List<(string key, TimeStamp value)>();
+        var snapshot = new Dictionary<string, TimeOnly>(_roomTimeStemps);
+        var list = new List<(string key, TimeOnly value, TimeOnly ThreshholdAbsoluteEviction)>();
 
         foreach (var kvp in snapshot)
         {
-            list.Add((kvp.Key, kvp.Value));
+            //_roomAbsoluteEviction.TryGetValue(kvp.Key, out var )
+            list.Add((kvp.Key, kvp.Value, _roomAbsoluteEviction[kvp.Key]));
         }
 
         return list;

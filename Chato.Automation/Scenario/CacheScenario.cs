@@ -1,4 +1,7 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
+using Chato.Server.Configuration;
+using Chato.Server.Services;
+using Chato.Server.Utilities;
 using Chatto.Shared;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -7,6 +10,8 @@ namespace Chato.Automation.Scenario;
 
 internal class CacheScenario : InstructionScenarioBase
 {
+    private const int Forgiveness = 4;
+
     private const string First_Group = nameof(CacheScenario);
 
     private const string Anatoliy_User = "anatoliy";
@@ -19,49 +24,90 @@ internal class CacheScenario : InstructionScenarioBase
     private const string Idan_User = "itan";
 
 
+    private CacheEvictionRoomConfigDto _evictionConfig;
+
     public CacheScenario(ILogger<BasicScenario> logger, ScenarioConfig config) : base(logger, config)
     {
+
+        SetupsLogicCallback.Add(GetConfigurations_Step);
+
         BusinessLogicCallbacks.Add(Setup_SendingInsideTheRoom_Step);
-        BusinessLogicCallbacks.Add(SendingInsideTheRoom);
+        BusinessLogicCallbacks.Add(UnusedCache_Preloning);
         BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
+
+
+        BusinessLogicCallbacks.Add(Setup_SendingInsideTheRoom_Step);
+        BusinessLogicCallbacks.Add(UnusedCacheEvicted);
+        BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
+
+
+
+        BusinessLogicCallbacks.Add(Setup_SendingInsideTheRoom_Step);
+        BusinessLogicCallbacks.Add(AbsoluteEviction);
+        BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
+
+
+    }
+
+    private async Task GetConfigurations_Step()
+    {
+        _evictionConfig = await GetEvictionConfigurationAsync();
     }
 
     public override string ScenarioName => "Only Persistent cache remains.";
     public override string Description => "All cache except persistent removed.";
 
-    private async Task SendingInsideTheRoom()
+
+    private async Task UnusedCache_Preloning()
     {
-        var max = 8;
-        for (int i = 0; i < max; i++)
-        {
-            await Task.Delay(1000 );
-            Logger.LogInformation($"Delayed {i + 1}/{max} second.");
-        }
-
         var token = Users[Anatoliy_User].RegisterResponse.Token;
-        var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
-        response.Body.Rooms.Count().Should().Be(1);
+
+        var tolerence = CacheEvictionUtility.ConvertToTimeSpan(_evictionConfig.TimeMeasurement, _evictionConfig.UnusedTimeout + Forgiveness);
+        var amountTicks = (int)tolerence.TotalSeconds;
+
+        await CountDown(async (int tick) =>
+        {
+            var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
+            var cacheScenarioRoom = response.Body.Rooms.FirstOrDefault(x => x.RoomName == nameof(CacheScenario));
+            cacheScenarioRoom.RoomName.Should().NotBeNull();
+        }, amountTicks);
 
 
-        //var message_1 = "Shalom";
-        //var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
-
-
-        //var anatoliySender = firstGroup.SendingToRestRoom(Anatoliy_User);
-        //var olessyaSender = firstGroup.ReceivingFrom(Olessya_User, anatoliySender.UserName);
-        //var nathanReceiver = firstGroup.ReceivingFrom(Nathan_User, anatoliySender.UserName);
-
-        //var maxReceiver = firstGroup.Is_Not_Received(Max_User);
-
-
-        //anatoliySender.Connect(olessyaSender, nathanReceiver, maxReceiver);
-
-        //var graph = new InstructionGraph(anatoliySender);
-        //await InstructionExecuter(graph);
     }
 
+    private async Task UnusedCacheEvicted()
+    {
+        var token = Users[Anatoliy_User].RegisterResponse.Token;
+        var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
+        var cacheScenarioRoom = response.Body.Rooms.FirstOrDefault(x => x.RoomName == nameof(CacheScenario));
 
+
+        var tolerence = CacheEvictionUtility.ConvertToTimeSpan(_evictionConfig.TimeMeasurement, _evictionConfig.UnusedTimeout + Forgiveness);
+        var amountTicks = (int)tolerence.TotalSeconds;
+
+        await CountDown(amountTicks);
+
+        response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
+        response.Body.Rooms.Count().Should().Be(1);
+        response.Body.Rooms.First().RoomName.Should().Be(IPersistentUsers.DefaultRoom);
+
+
+    }
+
+    private async Task AbsoluteEviction()
+    {
+        var token = Users[Anatoliy_User].RegisterResponse.Token;
+
+        await CountDown(async (int tick) =>
+        {
+            var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
+
+            //var cacheScenarioRoom = response.Body.Rooms.FirstOrDefault(x => x.RoomName == nameof(CacheScenario));
+            //cacheScenarioRoom.RoomName.Should().NotBeNull();
+        }, 50);
+
+    }
 
 
     private async Task Setup_SendingInsideTheRoom_Step()
