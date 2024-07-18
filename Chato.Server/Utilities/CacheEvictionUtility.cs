@@ -1,4 +1,4 @@
-﻿namespace Chato.Server.Services;
+﻿namespace Chato.Server.Utilities;
 
 public static class CacheEvictionUtility
 {

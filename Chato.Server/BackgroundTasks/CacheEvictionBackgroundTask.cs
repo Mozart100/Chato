@@ -2,6 +2,7 @@
 using Chato.Server.DataAccess.Repository;
 using Chato.Server.Infrastracture.QueueDelegates;
 using Chato.Server.Services;
+using Chato.Server.Utilities;
 using Microsoft.AspNetCore.DataProtection.KeyManagement;
 using Microsoft.Extensions.Options;
 

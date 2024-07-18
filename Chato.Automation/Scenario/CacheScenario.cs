@@ -9,6 +9,8 @@ namespace Chato.Automation.Scenario;
 
 internal class CacheScenario : InstructionScenarioBase
 {
+    private const int Forgiveness = 4;
+
     private const string First_Group = nameof(CacheScenario);
 
     private const string Anatoliy_User = "anatoliy";
@@ -44,6 +46,8 @@ internal class CacheScenario : InstructionScenarioBase
         BusinessLogicCallbacks.Add(AbsoluteEviction);
         BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
+
+
     }
 
     private async Task GetConfigurations_Step()
@@ -59,12 +63,14 @@ internal class CacheScenario : InstructionScenarioBase
     {
         var token = Users[Anatoliy_User].RegisterResponse.Token;
 
+        var amountTicks = _evictionConfig.UnusedTimeout + Forgiveness;
+
         await CountDown(async (int tick) =>
         {
             var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
             var cacheScenarioRoom = response.Body.Rooms.FirstOrDefault(x => x.RoomName == nameof(CacheScenario));
             cacheScenarioRoom.RoomName.Should().NotBeNull();
-        }, 8);
+        }, amountTicks);
 
 
     }

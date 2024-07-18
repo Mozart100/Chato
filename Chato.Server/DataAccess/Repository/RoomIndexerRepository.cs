@@ -1,7 +1,7 @@
 ﻿using Chato.Server.Configuration;
 using Chato.Server.Infrastracture;
 using Chato.Server.Infrastracture.QueueDelegates;
-using Chato.Server.Services;
+using Chato.Server.Utilities;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 using System.Collections.Concurrent;
