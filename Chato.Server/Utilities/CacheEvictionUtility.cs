@@ -56,7 +56,6 @@ public static class CacheEvictionUtility
         return time;
     }
 
-
     public static TimeOnly Add(string timeMeasurement, TimeOnly current, int target)
     {
         var time = ConvertToTimeOnly(timeMeasurement, target);

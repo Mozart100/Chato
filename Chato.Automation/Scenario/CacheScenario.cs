@@ -1,6 +1,7 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
 using Chato.Server.Configuration;
 using Chato.Server.Services;
+using Chato.Server.Utilities;
 using Chatto.Shared;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
@@ -47,7 +48,6 @@ internal class CacheScenario : InstructionScenarioBase
         BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
 
-
     }
 
     private async Task GetConfigurations_Step()
@@ -63,7 +63,8 @@ internal class CacheScenario : InstructionScenarioBase
     {
         var token = Users[Anatoliy_User].RegisterResponse.Token;
 
-        var amountTicks = _evictionConfig.UnusedTimeout + Forgiveness;
+        var tolerence = CacheEvictionUtility.ConvertToTimeSpan(_evictionConfig.TimeMeasurement, _evictionConfig.UnusedTimeout + Forgiveness);
+        var amountTicks = (int)tolerence.TotalSeconds;
 
         await CountDown(async (int tick) =>
         {
@@ -81,7 +82,11 @@ internal class CacheScenario : InstructionScenarioBase
         var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
         var cacheScenarioRoom = response.Body.Rooms.FirstOrDefault(x => x.RoomName == nameof(CacheScenario));
 
-        await CountDown();
+
+        var tolerence = CacheEvictionUtility.ConvertToTimeSpan(_evictionConfig.TimeMeasurement, _evictionConfig.UnusedTimeout + Forgiveness);
+        var amountTicks = (int)tolerence.TotalSeconds;
+
+        await CountDown(amountTicks);
 
         response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
         response.Body.Rooms.Count().Should().Be(1);
