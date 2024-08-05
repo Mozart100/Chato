@@ -1,4 +1,5 @@
-﻿using Chato.Automation;
+﻿using System;
+using Chato.Automation;
 using Chato.Automation.Scenario;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -23,9 +24,17 @@ catch (Exception ex)
 
 static IHostBuilder CreateHostBuilder(string[] args)
 {
+    string baseUrl;
+    baseUrl = Environment.GetEnvironmentVariable("BASE_URL");
+    // If necessary, create it.
+    if (baseUrl == null)
+    {
+        baseUrl = "https://localhost:7138";
+       
+    }
     var config = new ScenarioConfig
     {
-        BaseUrl = "https://localhost:7138"
+        BaseUrl = baseUrl
     };
 
     return Host.CreateDefaultBuilder(args)
