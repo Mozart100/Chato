@@ -1,0 +1,16 @@
+version: '3.4'
+ 
+services:
+  chato.server:
+    image: ${DOCKER_REGISTRY-}chato.server
+    build:
+      context: .
+      dockerfile: Chato.Server/Dockerfile
+ 
+  chato.automation:
+    depends_on:
+      - chato.server
+    image: ${DOCKER_REGISTRY-}chato.automation
+    build:
+      context: .
+      dockerfile: Chato.Automation/Dockerfile

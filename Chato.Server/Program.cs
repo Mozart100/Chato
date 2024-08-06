@@ -70,7 +70,7 @@ if (app.Environment.IsDevelopment())
 
 }
 app.UseCors(ServiceRegistrar.CorsPolicy);
-app.UseHttpsRedirection();
+// app.UseHttpsRedirection();
 
 
 

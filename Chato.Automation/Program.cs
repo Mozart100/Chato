@@ -1,5 +1,8 @@
-﻿using Chato.Automation;
+﻿using System;
+using Chato.Automation;
 using Chato.Automation.Scenario;
+using Chato.Server.Startup;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -23,9 +26,23 @@ catch (Exception ex)
 
 static IHostBuilder CreateHostBuilder(string[] args)
 {
+    string baseUrl = "http://Chato-1944974610.eu-west-1.elb.amazonaws.com";
+
+    baseUrl = Environment.GetEnvironmentVariable("BASE_URL");
+    if (baseUrl == null)
+    {
+        var localEnvironment = ConfigurationLoader.GetConfigurationRoot(Directory.GetCurrentDirectory());
+        var testPlanSection = localEnvironment.GetSection(TestPlanConfig.ApiName);
+        var testPlanConfig = testPlanSection.Get<TestPlanConfig>();
+
+
+        baseUrl = testPlanConfig.BaseUrl;
+        //baseUrl = "https://localhost:7138";
+       
+    }
     var config = new ScenarioConfig
     {
-        BaseUrl = "https://localhost:7138"
+        BaseUrl = baseUrl
     };
 
     return Host.CreateDefaultBuilder(args)
