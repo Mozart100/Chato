@@ -1,4 +1,5 @@
 ﻿using Chato.Server.Infrastracture;
+using Microsoft.Extensions.Configuration;
 using System;
 
 namespace Chato.Server.Startup;
@@ -13,7 +14,7 @@ public static class ConfigureConfigExtentions
 
     }
 
-    public static IConfigurationRoot GetConfigurationRoot(string path, string environmentName)
+    public static IConfigurationRoot GetConfigurationRoot(string path, string environmentName, bool addUserSecrets)
     {
         //var environmentName = environment.EnvironmentName;
         //var path = Environment.CurrentDirectory;
@@ -30,6 +31,12 @@ public static class ConfigureConfigExtentions
 
         builder = builder.AddEnvironmentVariables();
 
+        if (addUserSecrets)
+        {
+            builder.AddUserSecrets(typeof(ConfigureConfigExtentions).Assembly, true);
+        }
+
+        //new AppZureKeyValueConfigurer().Configure(builder,builtConfig);
 
         return builder.Build();
     }
