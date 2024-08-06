@@ -4,7 +4,7 @@ using System;
 
 namespace Chato.Server.Startup;
 
-public static class ConfigureConfigExtentions
+public static class ConfigurationLoader
 {
     public static void AddConfig<TConfig>(this IServiceCollection services, IConfiguration configuration)
         where TConfig : ChatoConfigBase<TConfig>
@@ -14,11 +14,8 @@ public static class ConfigureConfigExtentions
 
     }
 
-    public static IConfigurationRoot GetConfigurationRoot(string path, string environmentName, bool addUserSecrets)
+    public static IConfigurationRoot GetConfigurationRoot(string path, string environmentName = null, bool addUserSecrets = false)
     {
-        //var environmentName = environment.EnvironmentName;
-        //var path = Environment.CurrentDirectory;
-
         var builder = new ConfigurationBuilder()
             .SetBasePath(path)
             .AddJsonFile("appsettings.json", optional: true, reloadOnChange: true);
@@ -33,7 +30,7 @@ public static class ConfigureConfigExtentions
 
         if (addUserSecrets)
         {
-            builder.AddUserSecrets(typeof(ConfigureConfigExtentions).Assembly, true);
+            builder.AddUserSecrets(typeof(ConfigurationLoader).Assembly, true);
         }
 
         //new AppZureKeyValueConfigurer().Configure(builder,builtConfig);
