@@ -13,7 +13,7 @@ internal class TestPlan
     private readonly RoomSendingReceivingScenario roomSendingReceivingScenario;
     private readonly CacheScenario _cacheScenario;
 
-    public TestPlan(ILogger<TestPlan> logger, 
+    public TestPlan(ILogger<TestPlan> logger,
         GroupHandShakeScenario groupHandShakeScenario,
         //HubStreamScenario hubStreamScenario,
         BasicScenario basicScenario,
@@ -35,14 +35,22 @@ internal class TestPlan
     public async Task RunAsync(string[] args)
     {
 
-        await _registrationValidationScenario.StartRunScenario();
-        await _basicScenario.StartRunScenario();
-        await roomSendingReceivingScenario.StartRunScenario();
-        await _groupHandShakeScenario.StartRunScenario();
+        for (int i = 0; i < 2; i++)
+        {
 
-        await _cacheScenario.StartRunScenario();
 
-        //await _hubStreamScenario.StartRunScenario();
+            await _registrationValidationScenario.StartRunScenario();
+            await _basicScenario.StartRunScenario();
+            await roomSendingReceivingScenario.StartRunScenario();
+            await _groupHandShakeScenario.StartRunScenario();
+
+            await _cacheScenario.StartRunScenario();
+
+
+            //await _hubStreamScenario.StartRunScenario();
+
+        }
+
 
         Console.WriteLine("All test passed successfully!!!!!");
         Console.WriteLine("All test passed successfully!!!!!");
