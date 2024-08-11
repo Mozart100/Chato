@@ -21,7 +21,7 @@ public interface IRoomIndexerRepository
     //Task AddToCacheAsync(string roomId)
     void Remove(string roomNameOrId);
 
-    IEnumerable<(string Key, TimeOnly UnusedTimeStamp, TimeOnly ThreshholdAbsoluteEviction )> GetAllKeyValuesSnapshot();
+    IEnumerable<(string Key, TimeOnly UnusedTimeStamp, TimeOnly ThreshholdAbsoluteEviction)> GetAllKeyValuesSnapshot();
 
 
     //Task RemoveAsync(string roomId);
@@ -29,6 +29,7 @@ public interface IRoomIndexerRepository
 
 public class RoomIndexerRepository : IRoomIndexerRepository
 {
+    private readonly SemaphoreSlim _locker = new SemaphoreSlim(1);
     private readonly ConcurrentDictionary<string, TimeOnly> _roomTimeStemps;
     private readonly ConcurrentDictionary<string, TimeOnly> _roomAbsoluteEviction;
     private readonly CacheEvictionRoomConfig _config;
@@ -42,17 +43,20 @@ public class RoomIndexerRepository : IRoomIndexerRepository
 
     public void AddToCache(string roomNameOrId)
     {
-        _roomTimeStemps.AddOrUpdate(roomNameOrId, key =>
+        _locker.Wait();
+        try
         {
-            var timeStemp = TimeOnly.FromDateTime(DateTime.UtcNow);
+            _roomTimeStemps.AddOrUpdate(roomNameOrId, key =>
+            {
+                var timeStemp = TimeOnly.FromDateTime(DateTime.UtcNow);
 
-            var timeToEvict = CacheEvictionUtility.Add(_config.TimeMeasurement, timeStemp, _config.AbsoluteEviction);
-            //var timeSpan = TimeSpan.FromSeconds(_config.AbsoluteEviction);
-            
-            _roomAbsoluteEviction.GetOrAdd(roomNameOrId, timeToEvict);
-            return timeStemp;
-        },
-        
+                var timeToEvict = CacheEvictionUtility.Add(_config.TimeMeasurement, timeStemp, _config.AbsoluteEviction);
+                //var timeSpan = TimeSpan.FromSeconds(_config.AbsoluteEviction);
+
+                _roomAbsoluteEviction.GetOrAdd(roomNameOrId, timeToEvict);
+                return timeStemp;
+            },
+
         (key, currentTimeStemp) =>
         {
 
@@ -61,17 +65,46 @@ public class RoomIndexerRepository : IRoomIndexerRepository
             return time;
         }
             );
+        }
+        finally
+        {
+            _locker.Release();
+        }
+
     }
 
     public void Remove(string roomNameOrId)
     {
-        _roomTimeStemps.Remove(roomNameOrId, out _);
+        _locker.Wait();
+
+        try
+        {
+            _roomTimeStemps.Remove(roomNameOrId, out _);
+        }
+        finally
+        {
+            _locker.Release();
+        }
+
         _roomAbsoluteEviction.Remove(roomNameOrId, out _);
     }
 
+
     public IEnumerable<(string Key, TimeOnly UnusedTimeStamp, TimeOnly ThreshholdAbsoluteEviction)> GetAllKeyValuesSnapshot()
     {
-        var snapshot = new Dictionary<string, TimeOnly>(_roomTimeStemps);
+
+        Dictionary<string, TimeOnly> snapshot = null; // new Dictionary<string, TimeOnly>(_roomTimeStemps);
+
+        _locker.Wait();
+        try
+        {
+            snapshot = new Dictionary<string, TimeOnly>(_roomTimeStemps);
+        }
+        finally
+        {
+            _locker.Release();
+        }
+
         var list = new List<(string key, TimeOnly value, TimeOnly ThreshholdAbsoluteEviction)>();
 
         foreach (var kvp in snapshot)

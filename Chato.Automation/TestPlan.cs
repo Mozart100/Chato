@@ -3,9 +3,9 @@ using Microsoft.Extensions.Logging;
 
 namespace Chato.Automation;
 
-internal class App
+internal class TestPlan
 {
-    private readonly ILogger<App> _logger;
+    private readonly ILogger<TestPlan> _logger;
     private readonly GroupHandShakeScenario _groupHandShakeScenario;
     //private readonly HubStreamScenario _hubStreamScenario;
     private readonly BasicScenario _basicScenario;
@@ -13,7 +13,7 @@ internal class App
     private readonly RoomSendingReceivingScenario roomSendingReceivingScenario;
     private readonly CacheScenario _cacheScenario;
 
-    public App(ILogger<App> logger, 
+    public TestPlan(ILogger<TestPlan> logger,
         GroupHandShakeScenario groupHandShakeScenario,
         //HubStreamScenario hubStreamScenario,
         BasicScenario basicScenario,
@@ -35,14 +35,22 @@ internal class App
     public async Task RunAsync(string[] args)
     {
 
-        await _registrationValidationScenario.StartRunScenario();
-        await _basicScenario.StartRunScenario();
-        await roomSendingReceivingScenario.StartRunScenario();
-        await _groupHandShakeScenario.StartRunScenario();
+        for (int i = 0; i < 2; i++)
+        {
 
-        await _cacheScenario.StartRunScenario();
 
-        //await _hubStreamScenario.StartRunScenario();
+            await _registrationValidationScenario.StartRunScenario();
+            await _basicScenario.StartRunScenario();
+            await roomSendingReceivingScenario.StartRunScenario();
+            await _groupHandShakeScenario.StartRunScenario();
+
+            await _cacheScenario.StartRunScenario();
+
+
+            //await _hubStreamScenario.StartRunScenario();
+
+        }
+
 
         Console.WriteLine("All test passed successfully!!!!!");
         Console.WriteLine("All test passed successfully!!!!!");

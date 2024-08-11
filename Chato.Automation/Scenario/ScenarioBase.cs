@@ -10,11 +10,18 @@ using System;
 
 namespace Chato.Automation.Scenario;
 
+public class TestPlanConfig : ChatoConfigBase<TestPlanConfig>
+{
+    public string BaseUrl { get; set; }
+}
+
 public class ScenarioConfig
 {
     public int NumberEmptyLinesBetweenMethods { get; set; } = 2;
     public string BaseUrl { get; set; }
 }
+
+
 public abstract class ScenarioBase
 {
     //private readonly DateOnlyJsonConverter _dateOnlyConverter;
