@@ -20,13 +20,7 @@ namespace Chato.Server.Controllers
             _config = config.Value;
             this._mapper = mapper;
         }
-        [FeatureGate("ControllerEnabled")]
-        [Route("deploy")]
-        [HttpGet]
-        public async Task<string> Deploy()
-        {
-            return "Its all Good";
-        }
+
         [Route(EvictionUrl)]
         [HttpGet]
         public async Task<CacheEvictionRoomConfigDto> GetEvictionConfigurationAsync()
