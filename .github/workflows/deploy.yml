@@ -38,3 +38,4 @@ jobs:
 
       - name: Print image details
         run: echo "Image pushed to ${{ steps.build-image.outputs.image }}"
+        
