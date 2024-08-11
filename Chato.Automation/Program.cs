@@ -28,23 +28,7 @@ static IHostBuilder CreateHostBuilder(string[] args)
 {
     string baseUrl = null;
 
-    //How to know in what configuration build I run this project ?????
-
-    //if (baseUrl == null)
-    //{
-    //    var localEnvironment = ConfigurationLoader.GetConfigurationRoot(Directory.GetCurrentDirectory(), "Aws");
-    //    var testPlanSection = localEnvironment.GetSection(TestPlanConfig.ApiName);
-    //    var testPlanConfig = testPlanSection.Get<TestPlanConfig>();
-
-
-    //    baseUrl = testPlanConfig.BaseUrl;
-    //    //baseUrl = "https://localhost:7138";
-
-    
-    //var config = new ScenarioConfig
-    //{
-    //    BaseUrl = baseUrl
-    //};
+   
 
     var host = Host.CreateDefaultBuilder(args)
         .ConfigureLogging(logging =>
@@ -70,8 +54,8 @@ static IHostBuilder CreateHostBuilder(string[] args)
         {
 
 
-            var localEnvironment = ConfigurationLoader.GetConfigurationRoot(Directory.GetCurrentDirectory()); 
-            //var localEnvironment = ConfigurationLoader.GetConfigurationRoot(Directory.GetCurrentDirectory(), "Aws");
+            //var localEnvironment = ConfigurationLoader.GetConfigurationRoot(Directory.GetCurrentDirectory()); 
+            var localEnvironment = ConfigurationLoader.GetConfigurationRoot(Directory.GetCurrentDirectory(), "Aws");
             var testPlanSection = localEnvironment.GetSection(TestPlanConfig.ApiName);
             var testPlanConfig = testPlanSection.Get<TestPlanConfig>();
 
