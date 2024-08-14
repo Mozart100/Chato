@@ -54,8 +54,8 @@ static IHostBuilder CreateHostBuilder(string[] args)
         {
 
 
-            //var localEnvironment = ConfigurationLoader.GetConfigurationRoot(Directory.GetCurrentDirectory()); 
-            var localEnvironment = ConfigurationLoader.GetConfigurationRoot(Directory.GetCurrentDirectory(), "Aws");
+            var localEnvironment = ConfigurationLoader.GetConfigurationRoot(Directory.GetCurrentDirectory());
+            //var localEnvironment = ConfigurationLoader.GetConfigurationRoot(Directory.GetCurrentDirectory(), "Aws");
             var testPlanSection = localEnvironment.GetSection(TestPlanConfig.ApiName);
             var testPlanConfig = testPlanSection.Get<TestPlanConfig>();
 

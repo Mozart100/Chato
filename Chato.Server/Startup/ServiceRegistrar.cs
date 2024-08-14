@@ -19,7 +19,8 @@ public static class ServiceRegistrar
     {
         services.AddCors(options =>
         {
-            options.AddPolicy(CorsPolicy, builder => builder.WithOrigins("http://localhost:4200").
+            options.AddPolicy(CorsPolicy, builder => builder.WithOrigins("http://localhost:4200", "https://localhost:4200", "http://localhost:7138", "https://localhost:7138").
+           
                                                                AllowAnyMethod().
                                                                AllowAnyHeader().
                                                                AllowCredentials());
