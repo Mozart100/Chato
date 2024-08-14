@@ -1,0 +1,139 @@
+<div class="layout-wrapper d-lg-flex">
+    <div class="side-menu flex-lg-column me-lg-1 ms-lg-0">
+        <!-- LOGO -->
+        <div class="navbar-brand-box">
+            <a (click)="navStore.selectedTab.set(2)" class="logo logo-dark">
+        <span class="logo-sm">
+          <img src="assets/images/logo.svg" alt="" height="30">
+        </span>
+            </a>
+
+            <a (click)="navStore.selectedTab.set(2)" class="logo logo-light">
+        <span class="logo-sm">
+          <img src="assets/images/logo.svg" alt="" height="30">
+        </span>
+            </a>
+        </div>
+        <!-- end navbar-brand-box -->
+
+        <!-- Start side-menu nav -->
+        <div class="flex-lg-column my-auto">
+            <ul class="nav nav-pills side-menu-nav justify-content-center" role="tablist">
+                <li class="nav-item" ngbTooltip="Profile">
+                    <a class="nav-link" id="pills-user-tab" (click)="navStore.selectedTab.set(1)"
+                       href="javascript: void(0);"
+                       [ngClass]="{'active': navStore.selectedTab() === 1}">
+                        <i class="ri-user-2-line"></i>
+                    </a>
+                </li>
+                <li class="nav-item" ngbTooltip="Chats">
+                    <a class="nav-link active" id="pills-chat-tab" (click)="openChats()"
+                       href="javascript: void(0);"
+                       [ngClass]="{'active': navStore.selectedTab() === 2}">
+                        <i class="ri-message-3-line"></i>
+                    </a>
+                </li>
+                <li class="nav-item" ngbTooltip="Groups">
+                    <a class="nav-link pills-groups-tab" id="pills-groups-tab" (click)="openRooms()"
+                       href="javascript: void(0);" [ngClass]="{'active': navStore.selectedTab() === 3}">
+                        <i class="ri-group-line"></i>
+                    </a>
+                </li>
+                <li class="nav-item" ngbTooltip="Contacts" placement="top">
+                    <a class="nav-link" id="pills-contacts-tab" (click)="navStore.selectedTab.set(4)"
+                       href="javascript: void(0);"
+                       [ngClass]="{'active': navStore.selectedTab() === 4}">
+                        <i class="ri-contacts-line"></i>
+                    </a>
+                </li>
+                <li class="nav-item" ngbTooltip="Settings">
+                    <a class="nav-link" id="pills-setting-tab" (click)="navStore.selectedTab.set(5)"
+                       href="javascript: void(0);"
+                       [ngClass]="{'active': navStore.selectedTab() === 5}">
+                        <i class="ri-settings-2-line"></i>
+                    </a>
+                </li>
+
+
+                <li class="nav-item dropdown profile-user-dropdown d-inline-block d-lg-none" ngbDropdown
+                    placement="top">
+                    <a class="nav-link dropdown-toggle" href="javascript: void(0);" role="button" data-toggle="dropdown"
+                       aria-haspopup="true" aria-expanded="false" ngbDropdownToggle>
+                        <img src="assets/images/users/avatar-1.jpg" alt="" class="profile-user rounded-circle">
+                    </a>
+                    <div class="dropdown-menu" ngbDropdownMenu>
+                        <a class="dropdown-item"
+                           href="javascript:void(0);">{{ 'chat.profiledropdown.profile' | translate }} <i
+                                class="ri-profile-line float-end text-muted"></i></a>
+                        <a class="dropdown-item"
+                           href="javascript:void(0);">{{ 'chat.profiledropdown.setting' | translate }} <i
+                                class="ri-settings-3-line float-end text-muted"></i></a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="javascript: void(0);" (click)="logout()">{{
+                                'chat.profiledropdown.logout' |
+                                    translate
+                            }} <i class="ri-logout-circle-r-line float-end text-muted"></i></a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!-- end side-menu nav -->
+
+        <div class="flex-lg-column d-none d-lg-block">
+            <ul class="nav side-menu-nav justify-content-center">
+
+                <li class="nav-item btn-group dropup profile-user-dropdown" ngbDropdown>
+                    <a class="nav-link dropdown-toggle" href="javascript:void(0);" role="button" ngbDropdownToggle
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <i class="ri-global-line"></i>
+                    </a>
+                    <div class="dropdown-menu" ngbDropdownMenu>
+                        @for (item of langService.langs; track $index) {
+                            <a class="dropdown-item" (click)="langService.setLanguage(item.lang)"
+                               [ngClass]="{'active': langService.lang === item.lang}" href="javascript: void(0);">
+                                <img src="{{item.flag}}" [alt]="item" height="12">
+                                <span class="align-middle">{{ item.text }}</span>
+                            </a>
+                        }
+                    </div>
+                </li>
+
+                <li class="nav-item">
+                    <a class="nav-link light-dark-mode" id="light-dark" href="javascript:void(0);"
+                       ngbTooltip="Light Mode">
+                        <i class="ri-sun-line theme-mode-icon layout-mode-dark" (click)="changeMode('dark')"></i>
+                        <i class="ri-sun-line theme-mode-icon layout-mode-light" (click)="changeMode('light')"></i>
+                    </a>
+                </li>
+
+                <li class="nav-item btn-group dropup profile-user-dropdown" ngbDropdown placement="top-left">
+                    <a class="nav-link dropdown-toggle" href="javascript:void(0);" role="button" ngbDropdownToggle
+                       data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        <img src="assets/images/users/avatar-1.jpg" alt="" class="profile-user rounded-circle">
+                    </a>
+                    <div class="dropdown-menu" ngbDropdownMenu>
+                        <a class="dropdown-item"
+                           href="javascript:void(0);">{{ 'chat.profiledropdown.profile' | translate }} <i
+                                class="ri-profile-line float-end text-muted"></i></a>
+                        <a class="dropdown-item"
+                           href="javascript:void(0);">{{ 'chat.profiledropdown.setting' | translate }} <i
+                                class="ri-settings-3-line float-end text-muted"></i></a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="javascript: void(0);" (click)="logout()">{{
+                                'chat.profiledropdown.logout' |
+                                    translate
+                            }} <i class="ri-logout-circle-r-line float-end text-muted"></i></a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+        <!-- Side menu user -->
+    </div>
+
+    <div class="chat-leftsidebar me-lg-1 ms-lg-0">
+        <div class="tab-content">
+            <router-outlet></router-outlet>
+        </div>
+    </div>
+
+</div>

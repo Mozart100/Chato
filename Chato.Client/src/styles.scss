@@ -1,4 +1,19 @@
 /* You can add global styles to this file, and also import other style files */
 
-html, body { height: 100%; }
-body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
+/* Importing Bootstrap SCSS file. */
+// @import '~bootstrap/scss/bootstrap';
+@import 'ngx-owl-carousel-o/lib/styles/scss/owl.carousel';
+@import 'ngx-owl-carousel-o/lib/styles/scss/owl.theme.default';
+
+@import 'ngx-toastr/toastr';
+
+
+/* Increase the width of the scrollbar track */
+.simplebar-scrollbar::before {
+    width: 7px;
+    /* Adjust the width as needed */
+}
+
+.simplebar-scrollbar::before {
+    background-color: #cbd2d9 !important;
+}

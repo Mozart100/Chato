@@ -1,39 +1,17 @@
-import { Component, OnInit } from '@angular/core';
-import { DialogBodyComponent } from './dialog-body/dialog-body.component';
-import { MatDialog } from '@angular/material/dialog';
-
-import * as signalR from "@microsoft/signalr";
-import { LoginService } from './service/login-service.service';
-import AppConsts from './Consts/AppConsts';
-import { SignalrListenerService } from './service/signalr-listener.service';
+import { Component } from '@angular/core';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent implements OnInit {
-  title = 'Chato.Client';
+export class AppComponent {
+  constructor(public translate: TranslateService) {
+    translate.addLangs(['en', 'es', 'it', 'ru', 'de']);
+    translate.setDefaultLang('en');
 
-  /**
-   *
-   */
-  constructor(private matDialog:MatDialog) {
-    
+    const browserLang = translate.getBrowserLang();
+    translate.use(browserLang.match(/en|it|es|ru|de/) ? browserLang : 'en');
   }
-
-  ngOnInit(): void {
-    // this.matDialog.open(DialogBodyComponent,{width:"350pxs"});
-
-
-
-  }
-
-
-  openDialog()
-  {
-    // this.matDialog.open(DialogBodyComponent,{width:"350pxs"});
-  }
-
-
 }
