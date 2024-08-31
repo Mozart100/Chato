@@ -53,10 +53,7 @@ namespace Chato.Server.Services.Validations
             var result = await _userService.GetUserByNameOrIdGetOrDefaultAsync(request.UserName);
             if(result is not null)
             {
-                var error = new ChatoError(nameof(request.UserName), "This userName is already taken - Please choose different.");
-                var instance = new ChatoException(error);
-                throw instance;
-
+                Validate(nameof(request.UserName), "This user name is already taken - Please choose different.");
             }
         }
     }

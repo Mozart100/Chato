@@ -28,5 +28,14 @@ namespace Chato.Server.Services.Validations
                 throw instance;
             }
         }
+
+
+        protected void Validate(string propertyName , string reason )
+        {
+            var error = new ChatoError(propertyName, reason);
+            var instance = new ChatoException(error);
+            throw instance;
+        }
+
     }
 }
