@@ -29,6 +29,13 @@ public class AuthController : ControllerBase
         this._featureManager = featureManager;
     }
 
+    [Route("status")]
+    [HttpGet]
+    public async Task<string> Status()
+    {
+        return "We are Good";
+    }
+
     [FeatureGate("ControllerEnabled")]
     [Route("xxxx")]
     [HttpGet, Authorize]
