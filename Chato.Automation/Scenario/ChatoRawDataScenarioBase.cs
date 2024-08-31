@@ -11,8 +11,8 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
     {
         HubUrl = $"{BaseUrl}/chat";
         AuthControllerUrl = $"{BaseUrl}/api/auth";
-        RegisterAuthControllerUrl = $"{AuthControllerUrl}/register";
-        UploadFilesUrl = $"{AuthControllerUrl}/upload";
+        RegisterAuthControllerUrl = $"{AuthControllerUrl}/{AuthController.RegistrationUrl}";
+        UploadFilesUrl = $"{AuthControllerUrl}/{AuthController.UploadUrl}";
 
 
         RoomsControllerUrl = $"{BaseUrl}/api/room";

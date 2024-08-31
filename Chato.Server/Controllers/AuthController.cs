@@ -18,6 +18,9 @@ public class AuthorizeRoleConsts
 [ApiController]
 public class AuthController : ControllerBase
 {
+    public const string RegistrationUrl = "register";
+    public const string UploadUrl = "upload";
+
     private readonly IUserService _userService;
     private readonly IAuthenticationService _authenticationService;
     private readonly IFeatureManager _featureManager;
@@ -45,7 +48,7 @@ public class AuthController : ControllerBase
         return "Its all Good";
     }
 
-    [Route("register")]
+    [Route(RegistrationUrl)]
     [HttpPost]
     public async Task<RegistrationResponse> Register([FromBody] RegistrationRequest request)
     {
@@ -56,7 +59,7 @@ public class AuthController : ControllerBase
         return new RegistrationResponse { Token = token, UserName = request.UserName , Description = request.Description , Age = request.Age, Gender  = request.Gender };
     }
 
-    [Route("upload")]
+    [Route(UploadUrl)]
     [HttpPost, Authorize]
     public async Task<ActionResult<UploadDocumentsResponse>> Upload(IEnumerable<IFormFile> documents)
     {
