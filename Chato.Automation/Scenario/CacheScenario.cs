@@ -89,8 +89,8 @@ internal class CacheScenario : InstructionScenarioBase
         await CountDown(amountTicks);
 
         response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
-        response.Body.Rooms.Count().Should().Be(1);
-        response.Body.Rooms.First().RoomName.Should().Be(IPersistentUsers.DefaultRoom);
+        response.Body.Rooms.Count().Should().Be(IPersistentUsers.PersistentUsers.Count());
+        response.Body.Rooms.First().RoomName.Should().Be(IPersistentUsers.AdultRoom);
 
 
     }

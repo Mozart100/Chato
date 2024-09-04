@@ -50,7 +50,7 @@ public class AuthenticationService : IAuthenticationService
     }
     public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents)
     {
-        var data = new List<byte[]>(); 
+        var data = new List<UserFileInfo>(); 
         
         foreach (var document in documents)
         {
@@ -58,7 +58,7 @@ public class AuthenticationService : IAuthenticationService
             {
                 await document.CopyToAsync(memoryStream);
                 var documentBytes = memoryStream.ToArray();
-                data.Add(documentBytes);
+                data.Add(new UserFileInfo(document.FileName, documentBytes));
             }
         }
 

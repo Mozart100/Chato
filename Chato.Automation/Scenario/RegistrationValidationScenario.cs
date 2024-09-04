@@ -44,6 +44,7 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
         var files = new[] { path, path };
         var token = Users[Anatoliy_User].RegisterResponse.Token;
 
+
         var response = await UploadFiles<ResponseWrapper<UploadDocumentsResponse>>(UploadFilesUrl, token, files);
 
         response.Body.Document1.Should().BeTrue();
@@ -53,7 +54,8 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
         response.Body.Document5.Should().BeFalse();
 
 
-        var fileContent = await Get<byte[]>(DownloadFileUrl, token);
+        var parameters = new Dictionary<string, string> { { "num", "1" } };
+        var fileContent = await Get<byte[]>(DownloadFileUrl, token,parameters);
         fileContent.Should().NotBeNull();
 
     }

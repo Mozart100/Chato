@@ -18,7 +18,7 @@ public interface IUserService
     Task<User> GetUserByNameOrIdGetOrDefaultAsync(string nameOrId);
     Task RegisterAsync(string username, string description, string gender, int age);
     Task<bool> RemoveUserByUserNameOrIdAsync(string userNameOrId);
-    Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<byte[]> files);
+    Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<UserFileInfo> files);
     Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName);
 
 }
@@ -110,7 +110,7 @@ public class UserService : IUserService
         return result;
     }
 
-    public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<byte[]> files)
+    public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<UserFileInfo> files)
     {
         var response = new UploadDocumentsResponse();
 
@@ -121,31 +121,31 @@ public class UserService : IUserService
                 var content = files.ElementAtOrDefault(0);
                 if(content is not null)
                 {
-                    user.Document1 = new UserFileInfo("xxx", content);
+                    user.Document1 = content;
                     response.Document1 = true;
 
                     content = files.ElementAtOrDefault(1);
                     if (content is not null)
                     {
-                        user.Document2 = new UserFileInfo("xxx", content);
+                        user.Document2 = content;
                         response.Document2 = true;
 
                         content = files.ElementAtOrDefault(2);
                         if (content is not null)
                         {
-                            user.Document3 = new UserFileInfo("xxx", content);
+                            user.Document3 = content;
                             response.Document3 = true;
 
                             content = files.ElementAtOrDefault(3);
                             if (content is not null)
                             {
-                                user.Document4 = new UserFileInfo("xxx", content);
+                                user.Document4 = content;
                                 response.Document4 = true;
 
                                 content = files.ElementAtOrDefault(4);
                                 if (content is not null)
                                 {
-                                    user.Document5 = new UserFileInfo("xxx", content);
+                                    user.Document5 = content;
                                     response.Document5 = true;
                                 }
                             }
