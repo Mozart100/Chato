@@ -73,11 +73,11 @@ public class AuthController : ControllerBase
 
     [Route(DownloadUrl)]
     [HttpGet, Authorize]
-    public async Task<IActionResult> Download()
+    public async Task<IActionResult> Download([FromQuery] int num)
     {
         var userName = User.Identity.Name;
         var response = await _authenticationService.DownloadFilesAsync(userName);
-        var firstFile = response.First();
+        var firstFile = response.ElementAt(num);
 
         return File(firstFile.Content, "application/octet-stream", firstFile.FileName);
     }
