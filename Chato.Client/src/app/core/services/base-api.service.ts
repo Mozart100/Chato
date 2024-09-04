@@ -1,4 +1,3 @@
-import { Inject } from '@angular/core'
 import { HttpClient } from '@angular/common/http'
 import { firstValueFrom } from 'rxjs'
 import { ToastrService } from 'ngx-toastr'
@@ -15,7 +14,7 @@ export abstract class BaseApiService {
             firstValueFrom(req)
                 .then(res => resolve(res))
                 .catch(e => {
-                    this.alert.error(e.error.title || e.error.error, 'Error', { disableTimeOut: true })
+                    this.alert.error(e.error?.body?.Reason || e.error.title || e.error.error, 'Error', { disableTimeOut: true })
                     throw e
                 })
         })
@@ -27,7 +26,7 @@ export abstract class BaseApiService {
             firstValueFrom(req)
                 .then((res: Y) => resolve(res))
                 .catch(e => {
-                    this.alert.error(e.error.title || e.error.error, 'Error', { disableTimeOut: true })
+                    this.alert.error(e.error?.body?.Reason || e.error.title || e.error.error, 'Error', { disableTimeOut: true })
                     throw e
                 })
         })

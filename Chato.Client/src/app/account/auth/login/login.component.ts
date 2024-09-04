@@ -70,7 +70,7 @@ export class LoginComponent implements OnInit {
                 Gender: this.loginForm.controls.gender.value,
                 UserName: this.loginForm.controls.username.value
             }).then(() => {
-                this.router.navigate(['/'])
+                this.router.navigate([this.returnUrl])
             })
         }
     }

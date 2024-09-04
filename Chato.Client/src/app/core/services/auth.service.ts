@@ -10,7 +10,7 @@ import { SAVED_TOKEN_KEY } from '../helpers/consts'
 import { firstValueFrom } from 'rxjs'
 
 const REGISTER_URL = '/api/Auth/Register'
-const CHECK_AUTH_URL = '/api/Auth'
+const CHECK_AUTH_URL = '/api/Auth/status'
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService extends BaseApiService {
@@ -38,13 +38,13 @@ export class AuthenticationService extends BaseApiService {
             .then(data => {
                 // set user
                 this.user.set({
-                    username: data.userName,
-                    age: data.age,
-                    gender: data.gender,
-                    description: data.description
+                    username: data.Body.userName,
+                    age: data.Body.age,
+                    gender: data.Body.gender,
+                    description: data.Body.description
                 })
                 // set token
-                sessionStorage.setItem(SAVED_TOKEN_KEY, data.token)
+                sessionStorage.setItem(SAVED_TOKEN_KEY, data.Body.token)
             })
     }
 
