@@ -36,9 +36,9 @@ public class AuthController : ControllerBase
 
     [Route("status")]
     [HttpGet]
-    public async Task<string> Status()
+    public IActionResult Status()
     {
-        return "We are Good";
+        return Ok();
     }
 
     [FeatureGate("ControllerEnabled")]

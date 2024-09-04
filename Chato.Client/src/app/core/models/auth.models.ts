@@ -13,11 +13,11 @@ export interface RegistrationRequest {
 }
 
 export interface RegistrationResponse {
-    userName: string
-    age: number
-    description: string
-    gender: string
-    token: string
-    tokenCreated: Date
-    tokenExpires: Date
+    Body: {
+        userName: string
+        token: string
+        age: number
+        description: string
+        gender: string
+    }
 }
