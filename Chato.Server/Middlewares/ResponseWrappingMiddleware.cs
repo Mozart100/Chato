@@ -28,13 +28,8 @@ namespace Chato.Server.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
-            if (context.Request.Path.StartsWithSegments("/chat/negotiate", StringComparison.OrdinalIgnoreCase))
-            {
-                await _next(context);
-                return;
-            }
-
-            if (context.Request.Path.Value.Contains($"/{AuthController.DownloadUrl}"))
+            if (context.Request.Path.StartsWithSegments("/chat/negotiate", StringComparison.OrdinalIgnoreCase) ||
+                context.Request.Path.Value.Contains($"/{AuthController.DownloadUrl}"))
             {
                 await _next(context);
                 return;
@@ -81,22 +76,7 @@ namespace Chato.Server.Middlewares
                 context.Response.ContentType = "application/json";
                 context.Response.ContentLength = wrappedResponseJson.Length;
                 await context.Response.WriteAsync(wrappedResponseJson);
-                //}
-                //catch (Exception ex)
-                //{
-                //    _logger.LogError(ex, "An error occurred while wrapping the response.");
-                //    context.Response.StatusCode = 500;
-                //    var errorResponse = new ResponseWrapper<string>
-                //    {
-                //        IsSucceeded = false,
-                //        Response = "An internal server error occurred.",
-                //        StatusCode = 500
-                //    };
-                //    var errorResponseJson = JsonSerializer.Serialize(errorResponse);
-                //    context.Response.ContentType = "application/json";
-                //    context.Response.ContentLength = errorResponseJson.Length;
-                //    await context.Response.WriteAsync(errorResponseJson);
-                //}
+               
             }
         }
     }

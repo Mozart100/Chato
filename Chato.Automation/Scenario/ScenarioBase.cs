@@ -80,21 +80,21 @@ public abstract class ScenarioBase
 
     protected async Task CountDown(int max = 10)
     {
-        for (var i =0; i< max; i++)
+        for (var i = 0; i < max; i++)
         {
             await Task.Delay(1000);
             Logger.LogInformation($"Delayed {i + 1}/{max} second.");
         }
     }
 
-    protected async Task CountDown(Func<int ,Task> callback, int max=10)
+    protected async Task CountDown(Func<int, Task> callback, int max = 10)
     {
         for (var i = 0; i < max; i++)
         {
             await callback(i);
 
             await Task.Delay(1000);
-            
+
             Logger.LogInformation($"Delayed {i + 1}/{max} second.");
         }
     }
@@ -179,7 +179,7 @@ public abstract class ScenarioBase
         }
     }
 
-    protected async Task<TDto> Get<TDto>(string url, string? token = null) where TDto:class
+    protected async Task<TDto> Get<TDto>(string url, string? token = null) where TDto : class
     {
         using (HttpClient client = new HttpClient())
         {
@@ -195,21 +195,23 @@ public abstract class ScenarioBase
             {
                 var result = default(TDto);
 
-                if(typeof(TDto) == typeof(byte[]))
+                if (typeof(TDto) == typeof(byte[]))
                 {
                     var buffer = await response.Content.ReadAsByteArrayAsync();
-                    return buffer as TDto;
+                    result = buffer as TDto;
                 }
-
-                var responseContent = await response.Content.ReadAsStringAsync();
-                if (responseContent.IsNullOrEmpty() == false)
+                else
                 {
-                    var options = new JsonSerializerOptions
+                    var responseContent = await response.Content.ReadAsStringAsync();
+                    if (responseContent.IsNullOrEmpty() == false)
                     {
-                        PropertyNameCaseInsensitive = true
-                    };
+                        var options = new JsonSerializerOptions
+                        {
+                            PropertyNameCaseInsensitive = true
+                        };
 
-                    result = JsonSerializer.Deserialize<TDto>(responseContent,options);
+                        result = JsonSerializer.Deserialize<TDto>(responseContent, options);
+                    }
                 }
 
                 return result;
