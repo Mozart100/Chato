@@ -1,4 +1,5 @@
 ﻿using Chato.Server.Controllers;
+using Chato.Server.DataAccess.Models;
 using Chato.Server.Infrastracture;
 using Chato.Server.Services.Validations;
 using Chatto.Shared;
@@ -17,6 +18,7 @@ public interface IAuthenticationService
     //Task<string> RegisterAsync(string userName, string password, string description, string gender, int age);
     Task<string> RegisterAsync(RegistrationRequest request);
     Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents);
+    Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName);
 }
 
 public class AuthenticationService : IAuthenticationService
@@ -40,7 +42,12 @@ public class AuthenticationService : IAuthenticationService
         await _registrationValidationService.RegistrationRequestValidateAsync(request);
         return await RegisterAsync(request.UserName,  request.Description, request.Gender, request.Age);
     }
+    public async Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName)
+    {
+        var files = await _userService.DownloadFilesAsync(userName);
 
+        return files;
+    }
     public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents)
     {
         var data = new List<byte[]>(); 

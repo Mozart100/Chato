@@ -11,16 +11,17 @@ namespace Chato.Server.Middlewares
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using System.IO;
+    using System.Text;
     using System.Text.Json;
     using System.Text.Json.Serialization;
     using System.Threading.Tasks;
 
-    public class ResponseWrappingMiddleware
+    public class ResponseWrappingMiddleware222
     {
         private readonly RequestDelegate _next;
         private readonly ILogger<ResponseWrappingMiddleware> _logger;
 
-        public ResponseWrappingMiddleware(RequestDelegate next, ILogger<ResponseWrappingMiddleware> logger)
+        public ResponseWrappingMiddleware222(RequestDelegate next, ILogger<ResponseWrappingMiddleware> logger)
         {
             _next = next;
             _logger = logger;
@@ -34,12 +35,12 @@ namespace Chato.Server.Middlewares
                 return;
             }
 
+            // Check if the response is a file (content type other than JSON)
             if (context.Request.Path.Value.Contains($"/{AuthController.DownloadUrl}"))
             {
                 await _next(context);
                 return;
             }
-
 
             var originalBodyStream = context.Response.Body;
             using (var newBodyStream = new MemoryStream())
@@ -50,7 +51,6 @@ namespace Chato.Server.Middlewares
 
                 if (context.Response.StatusCode >= 400)
                 {
-                    // Skip wrapping the response since it has been handled by the GlobalExceptionHandler
                     newBodyStream.Seek(0, SeekOrigin.Begin);
                     await newBodyStream.CopyToAsync(originalBodyStream);
                     return;
@@ -81,24 +81,15 @@ namespace Chato.Server.Middlewares
                 context.Response.ContentType = "application/json";
                 context.Response.ContentLength = wrappedResponseJson.Length;
                 await context.Response.WriteAsync(wrappedResponseJson);
-                //}
-                //catch (Exception ex)
-                //{
-                //    _logger.LogError(ex, "An error occurred while wrapping the response.");
-                //    context.Response.StatusCode = 500;
-                //    var errorResponse = new ResponseWrapper<string>
-                //    {
-                //        IsSucceeded = false,
-                //        Response = "An internal server error occurred.",
-                //        StatusCode = 500
-                //    };
-                //    var errorResponseJson = JsonSerializer.Serialize(errorResponse);
-                //    context.Response.ContentType = "application/json";
-                //    context.Response.ContentLength = errorResponseJson.Length;
-                //    await context.Response.WriteAsync(errorResponseJson);
-                //}
             }
         }
+
+        private bool IsJsonResponse(string contentType)
+        {
+            return !string.IsNullOrEmpty(contentType) &&
+                   contentType.Contains("application/json", StringComparison.OrdinalIgnoreCase);
+        }
     }
+
 
 }

@@ -2,6 +2,7 @@
 using Chato.Server.DataAccess.Repository;
 using Chato.Server.Infrastracture.QueueDelegates;
 using Chatto.Shared;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 
 namespace Chato.Server.Services;
@@ -16,9 +17,10 @@ public interface IUserService
     Task<User> GetUserByConnectionId(string connectionId);
     Task<User> GetUserByNameOrIdGetOrDefaultAsync(string nameOrId);
     Task RegisterAsync(string username, string description, string gender, int age);
-    //Task RegisterAsync(string username, byte[] passwordHash, string description, string gender, int age);
     Task<bool> RemoveUserByUserNameOrIdAsync(string userNameOrId);
     Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<byte[]> files);
+    Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName);
+
 }
 
 public class UserService : IUserService
@@ -46,7 +48,7 @@ public class UserService : IUserService
         return result;
     }
 
-    public async Task RegisterAsync(string username,  string description, string gender, int age)
+    public async Task RegisterAsync(string username, string description, string gender, int age)
     {
         await _delegateQueue.InvokeAsync(async () => await _userRepository.InsertAsync(new UserDb { Id = username, Description = description, Gender = gender, Age = age }));
     }
@@ -116,14 +118,57 @@ public class UserService : IUserService
         {
             await _userRepository.UpdateAsync(user => user.UserName == userName, user =>
             {
-                response.Document1 = (user.Document1 = files.ElementAtOrDefault(0)) is not null;
-                response.Document2 = (user.Document2 = files.ElementAtOrDefault(1)) is not null;
-                response.Document3 = (user.Document3 = files.ElementAtOrDefault(2)) is not null;
-                response.Document4 = (user.Document4 = files.ElementAtOrDefault(3)) is not null;
-                response.Document5 = (user.Document5 = files.ElementAtOrDefault(4)) is not null;
+                var content = files.ElementAtOrDefault(0);
+                if(content is not null)
+                {
+                    user.Document1 = new UserFileInfo("xxx", content);
+                    response.Document1 = true;
+
+                    content = files.ElementAtOrDefault(1);
+                    if (content is not null)
+                    {
+                        user.Document2 = new UserFileInfo("xxx", content);
+                        response.Document2 = true;
+
+                        content = files.ElementAtOrDefault(2);
+                        if (content is not null)
+                        {
+                            user.Document3 = new UserFileInfo("xxx", content);
+                            response.Document3 = true;
+
+                            content = files.ElementAtOrDefault(3);
+                            if (content is not null)
+                            {
+                                user.Document4 = new UserFileInfo("xxx", content);
+                                response.Document4 = true;
+
+                                content = files.ElementAtOrDefault(4);
+                                if (content is not null)
+                                {
+                                    user.Document5 = new UserFileInfo("xxx", content);
+                                    response.Document5 = true;
+                                }
+                            }
+                        }
+                    }
+                }
+
             });
+
         });
 
         return response;
+    }
+
+    public async Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName)
+    {
+        IEnumerable<UserFileInfo> files = null;
+
+        await _delegateQueue.InvokeAsync(async () =>
+        {
+            files = await _userRepository.DownloadFiles(userName);
+        });
+
+        return files;
     }
 }

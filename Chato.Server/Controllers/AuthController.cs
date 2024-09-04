@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.FeatureManagement;
 using Microsoft.FeatureManagement.Mvc;
+using System.IO;
 
 namespace Chato.Server.Controllers;
 
@@ -20,6 +21,7 @@ public class AuthController : ControllerBase
 {
     public const string RegistrationUrl = "register";
     public const string UploadUrl = "upload";
+    public const string DownloadUrl = "download";
 
     private readonly IUserService _userService;
     private readonly IAuthenticationService _authenticationService;
@@ -67,6 +69,17 @@ public class AuthController : ControllerBase
         var response = await _authenticationService.UploadFilesAsync(userName, documents);
 
         return Ok(response);
+    }
+
+    [Route(DownloadUrl)]
+    [HttpGet, Authorize]
+    public async Task<IActionResult> Download()
+    {
+        var userName = User.Identity.Name;
+        var response = await _authenticationService.DownloadFilesAsync(userName);
+        var firstFile = response.First();
+
+        return File(firstFile.Content, "application/octet-stream", firstFile.FileName);
     }
 
     #region Feature  development

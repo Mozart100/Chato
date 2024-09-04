@@ -11,8 +11,11 @@ public class User : EntityDbBase
 
 }
 
+public record UserFileInfo(string FileName, byte[] Content);
+
 public class UserDb : User
 {
+    
     public override string Id
     {
         get => UserName;
@@ -21,9 +24,9 @@ public class UserDb : User
 
     //public byte[] PasswordHash { get; init; }
 
-    public byte [] Document1 { get; set; }
-    public byte [] Document2 { get; set; }
-    public byte [] Document3 { get; set; }
-    public byte [] Document4 { get; set; }
-    public byte [] Document5 { get; set; }
+   public UserFileInfo Document1 { get; set; }
+   public UserFileInfo Document2 { get; set; }
+   public UserFileInfo Document3 { get; set; }
+   public UserFileInfo Document4 { get; set; }
+   public UserFileInfo Document5 { get; set; }
 }

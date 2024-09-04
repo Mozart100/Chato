@@ -179,7 +179,7 @@ public abstract class ScenarioBase
         }
     }
 
-    protected async Task<TDto> Get<TDto>(string url, string? token = null)
+    protected async Task<TDto> Get<TDto>(string url, string? token = null) where TDto:class
     {
         using (HttpClient client = new HttpClient())
         {
@@ -191,10 +191,15 @@ public abstract class ScenarioBase
 
             HttpResponseMessage response = await client.GetAsync(url);
 
-            // Check the response status
             if (response.IsSuccessStatusCode)
             {
                 var result = default(TDto);
+
+                if(typeof(TDto) == typeof(byte[]))
+                {
+                    var buffer = await response.Content.ReadAsByteArrayAsync();
+                    return buffer as TDto;
+                }
 
                 var responseContent = await response.Content.ReadAsStringAsync();
                 if (responseContent.IsNullOrEmpty() == false)
@@ -205,12 +210,9 @@ public abstract class ScenarioBase
                     };
 
                     result = JsonSerializer.Deserialize<TDto>(responseContent,options);
-                    //var responseData = JsonSerializer.Deserialize<TDto>(responseContent, options);
                 }
 
                 return result;
-
-                //var res = await response.Content.ReadFromJsonAsync<TDto>();
             }
 
             var errorResponse = await response.Content.ReadFromJsonAsync<ErrorResponse>();

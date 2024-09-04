@@ -13,6 +13,7 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
         AuthControllerUrl = $"{BaseUrl}/api/auth";
         RegisterAuthControllerUrl = $"{AuthControllerUrl}/{AuthController.RegistrationUrl}";
         UploadFilesUrl = $"{AuthControllerUrl}/{AuthController.UploadUrl}";
+        DownloadFileUrl = $"{AuthControllerUrl}/{AuthController.DownloadUrl}";
 
 
         RoomsControllerUrl = $"{BaseUrl}/api/room";
@@ -32,8 +33,9 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
     protected string HubUrl { get; }
     protected string AuthControllerUrl { get; }
     protected string RegisterAuthControllerUrl { get; }
+    protected string DownloadFileUrl { get; }
     protected string UploadFilesUrl { get; }
-
+    
 
     protected string RoomsControllerUrl { get; }
     protected string SpecificRoomTemplatesUrl { get; }

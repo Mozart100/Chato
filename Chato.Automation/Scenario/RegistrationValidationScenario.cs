@@ -53,6 +53,8 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
         response.Body.Document5.Should().BeFalse();
 
 
+        var fileContent = await Get<byte[]>(DownloadFileUrl, token);
+        fileContent.Should().NotBeNull();
 
     }
 
