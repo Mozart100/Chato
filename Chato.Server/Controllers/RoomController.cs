@@ -25,7 +25,7 @@ public class RoomController : ControllerBase
 
 
     [HttpGet]
-    [Route(All_Rooms_Route), Authorize]
+    [Route(All_Rooms_Route)]
     public async Task<GetAllRoomResponse> GetAllRooms()
     {
         var result = await _roomService.GetAllRoomAsync();
@@ -46,7 +46,7 @@ public class RoomController : ControllerBase
 
 
     [HttpGet]
-    [Route("users"), Authorize]
+    [Route("users")]
     public async Task<GetAllUserResponse> GetAllUsers()
     {
         var result = await _userService.GetAllUsersAsync();
