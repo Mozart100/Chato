@@ -19,7 +19,7 @@ export interface CacheEvictionRoomConfigDto {
 
 export interface ChatRoomDto {
     roomName?: string | undefined;
-    senderInfo?: SenderInfo[] | undefined;
+    messages?: SenderInfo[] | undefined;
     users?: string[] | undefined;
 }
 

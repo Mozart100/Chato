@@ -16,18 +16,17 @@ public class ChatRoomDb : EntityDbBase
     }
     public string RoomName { get; private set; }
 
-    public List<SenderInfo> SenderInfo { get; set; } = new List<SenderInfo>();
+    public List<SenderInfo> Messages { get; set; } = new List<SenderInfo>();
     public HashSet<string> Users { get;  } = new HashSet<string>();
 
 }
-
 
 
 public static class ChatRoomDbExtensions
 {
     public static  ChatRoomDto ToChatRoomDto(this ChatRoomDb chatRoomDb)
     {
-        return new ChatRoomDto(chatRoomDb.RoomName, chatRoomDb.SenderInfo.SafeToArray(), chatRoomDb.Users.SafeToArray());
+        return new ChatRoomDto(chatRoomDb.RoomName, chatRoomDb.Messages.SafeToArray(), chatRoomDb.Users.SafeToArray());
     }
 }
 

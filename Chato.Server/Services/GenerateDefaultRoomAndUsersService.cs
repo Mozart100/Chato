@@ -5,15 +5,19 @@ namespace Chato.Server.Services;
 public interface IPreloadDataLoader
 {
     Task ExecuteAsync();
-    static string[] StaticRooms { get; } = { IPersistentUsers.DefaultRoom,"To_Remove" };
-
 }
 
-public interface IPersistentUsers 
+public interface IPersistentUsers
 {
-    public const string DefaultRoom = "Adults";
+    public const string AdultRoom = "Adults";
+    public const string OnlyGirlsRoom = "OnlyGrils";
+    public const string SchoolRoom = "School";
+    
+    
+    public const string ToRemoveRoom = "ToRemove";
 
-    static string[] PersistentUsers { get; } = { IPersistentUsers.DefaultRoom };
+
+    static string[] PersistentUsers { get; } = { AdultRoom, OnlyGirlsRoom, SchoolRoom };
 }
 
 
@@ -28,20 +32,62 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
 
     public async Task ExecuteAsync()
     {
-        foreach (var room in IPreloadDataLoader.StaticRooms)
+        var room = IPersistentUsers.AdultRoom;
+        for (int j = 0; j < 3; j++)
         {
-            for (int j = 0; j < 3; j++)
+            var request = new RegistrationRequest()
             {
-                var request = new RegistrationRequest()
-                {
-                    UserName = $"{room}__User{j + 1}",
-                    Description = $"Description_{room}",
-                    Gender = "male",
-                    Age = 20,
-                };
+                UserName = $"{room}__User{j + 1}",
+                Description = $"Description_{room}",
+                Gender = "male",
+                Age = 20,
+            };
 
-                var token = await _assignmentService.RegisterUserAndAssignToRoom(request, room);
-            }
+            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, room);
+        }
+
+
+        room = IPersistentUsers.OnlyGirlsRoom;
+        for (int j = 0; j < 5; j++)
+        {
+            var request = new RegistrationRequest()
+            {
+                UserName = $"{room}__User{j + 1}",
+                Description = $"{room}=> I love roses.",
+                Gender = "female",
+                Age = 20,
+            };
+
+            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, room);
+        }
+
+
+        room = IPersistentUsers.SchoolRoom;
+        for (int j = 0; j < 7; j++)
+        {
+            var request = new RegistrationRequest()
+            {
+                UserName = $"{room}__User{j + 1}",
+                Description = $"{room}=> I hate school.",
+                Gender = "male",
+                Age = 20,
+            };
+
+            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, room);
+        }
+
+        room = IPersistentUsers.ToRemoveRoom;
+        for (int j = 0; j < 10; j++)
+        {
+            var request = new RegistrationRequest()
+            {
+                UserName = $"{room}__User{j + 1}",
+                Description = $"{room}=> I hate school.",
+                Gender = "male",
+                Age = 20,
+            };
+
+            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, room);
         }
 
     }

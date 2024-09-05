@@ -17,17 +17,17 @@ public class ChatRoomDto
     [JsonPropertyName("roomName")]
     public string RoomName { get; init; }
 
-    [JsonPropertyName("senderInfo")]
-    public SenderInfo[] SenderInfo { get; set; }
+    [JsonPropertyName("messages")]
+    public SenderInfo[] Messages { get; set; }
 
     [JsonPropertyName("users")]
     public string[] Users { get; init; }
 
     [JsonConstructor]
-    public ChatRoomDto(string roomName, SenderInfo[] senderInfo, string[] users)
+    public ChatRoomDto(string roomName, SenderInfo[] messages, string[] users)
     {
         RoomName = roomName;
-        SenderInfo = senderInfo;
+        Messages = messages;
         Users = users;
     }
 

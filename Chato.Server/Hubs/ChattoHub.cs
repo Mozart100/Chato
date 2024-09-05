@@ -82,7 +82,7 @@ public class ChattoHub : Hub<IChatHub>
     public async Task JoinGroup(string roomName)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
-        await _userRoomService.JoinGroupByConnectionId(Context.User.Identity.Name, roomName);
+        await _userRoomService.JoinGroup(Context.User.Identity.Name, roomName);
     }
 
     public async Task LeaveGroup(string groupName)

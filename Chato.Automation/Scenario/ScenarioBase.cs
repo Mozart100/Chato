@@ -179,7 +179,7 @@ public abstract class ScenarioBase
         }
     }
 
-    protected async Task<TDto> Get<TDto>(string url, string? token = null) where TDto : class
+    protected async Task<TDto> Get<TDto>(string url, string? token = null, Dictionary<string, string> parameters = null) where TDto : class
     {
         using (HttpClient client = new HttpClient())
         {
@@ -188,6 +188,14 @@ public abstract class ScenarioBase
             {
                 client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
             }
+
+            if (parameters is not null)
+            {
+                var encoder = new FormUrlEncodedContent(parameters);
+                var queryString = await encoder.ReadAsStringAsync();
+                url = $"{url}?{queryString}";
+            }
+
 
             HttpResponseMessage response = await client.GetAsync(url);
 
@@ -198,6 +206,16 @@ public abstract class ScenarioBase
                 if (typeof(TDto) == typeof(byte[]))
                 {
                     var buffer = await response.Content.ReadAsByteArrayAsync();
+                    if (response.Content.Headers.ContentDisposition != null)
+                    {
+                       var fileName = response.Content.Headers.ContentDisposition.FileName?.Trim('\"');
+                    }
+                    else
+                    {
+                        // Handle cases where Content-Disposition header is missing or malformed
+                       var fileName = "unknown_filename";
+                    }
+
                     result = buffer as TDto;
                 }
                 else
