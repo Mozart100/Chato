@@ -93,7 +93,7 @@ public class RoomService : IRoomService
             var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
             if (room is not null)
             {
-                result = room.SenderInfo.SafeToArray();
+                result = room.Messages.SafeToArray();
             }
         });
 
@@ -138,7 +138,7 @@ public class RoomService : IRoomService
             var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
             if (room is not null)
             {
-                room.SenderInfo.Clear();
+                room.Messages.Clear();
             }
         });
     }
@@ -150,7 +150,7 @@ public class RoomService : IRoomService
             var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
             if (room is not null)
             {
-                room.SenderInfo.Add(new SenderInfo(fromUser, ptr));
+                room.Messages.Add(new SenderInfo(fromUser, ptr));
             }
         });
     }

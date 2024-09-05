@@ -5,8 +5,6 @@ namespace Chato.Server.Services;
 public interface IPreloadDataLoader
 {
     Task ExecuteAsync();
-    static string[] StaticRooms { get; } = { IPersistentUsers.AdultRoom, "To_Remove" };
-
 }
 
 public interface IPersistentUsers

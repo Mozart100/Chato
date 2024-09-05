@@ -6,7 +6,7 @@ namespace Chato.Server.Services;
 
 public interface IAssignmentService
 {
-    Task JoinGroupByConnectionId(string nameOrId, string roomName);
+    Task JoinGroup(string nameOrId, string roomName);
     Task<string> RegisterUserAndAssignToRoom(RegistrationRequest request, string defaultRoom);
     Task RemoveUserByConnectionIdAsync(string connectionId);
     Task RemoveUserByUserNameOrIdAsync(string userNameOrId);
@@ -54,7 +54,7 @@ public class AssignmentService : IAssignmentService
         }
     }
 
-    public async Task JoinGroupByConnectionId(string nameOrId, string roomName)
+    public async Task JoinGroup(string nameOrId, string roomName)
     {
         var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(nameOrId);
         if (user is not null)
@@ -68,7 +68,7 @@ public class AssignmentService : IAssignmentService
     {
         var token = await _authenticationService.RegisterAsync(request);
 
-        await JoinGroupByConnectionId(request.UserName, roomName);
+        await JoinGroup(request.UserName, roomName);
 
         return token;
     }
