@@ -1,4 +1,8 @@
 ﻿using Chatto.Shared;
+using Microsoft.AspNetCore.SignalR.Client;
+using System.Data.Common;
+using System;
+using System.Text;
 
 namespace Chato.Server.Services;
 
@@ -24,15 +28,20 @@ public interface IPersistentUsers
 public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
 {
     private readonly IAssignmentService _assignmentService;
+    private readonly IRoomService _roomService;
 
-    public GenerateDefaultRoomAndUsersService(IAssignmentService assignmentService)
+    public GenerateDefaultRoomAndUsersService(IAssignmentService assignmentService,
+        IRoomService  roomService
+        )
     {
         _assignmentService = assignmentService;
+        this._roomService = roomService;
     }
 
     public async Task ExecuteAsync()
     {
         var room = IPersistentUsers.AdultRoom;
+        var requests = new List<(string UserName, string Token)>();
         for (int j = 0; j < 3; j++)
         {
             var request = new RegistrationRequest()
@@ -43,8 +52,18 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
                 Age = 20,
             };
 
+
+            var message = Encoding.UTF8.GetBytes($"{request.UserName} has registered");
             var token = await _assignmentService.RegisterUserAndAssignToRoom(request, room);
+            await _roomService.SendMessageAsync(room, request.UserName, message);
+        
+            requests.Add((request.UserName, token));
         }
+        var hi = Encoding.UTF8.GetBytes($"{requests[1].UserName} say hi");
+        await _roomService.SendMessageAsync(room, requests[1].UserName, hi);
+
+        hi = Encoding.UTF8.GetBytes($"{requests[2].UserName} say hi back");
+        await _roomService.SendMessageAsync(room, requests[2].UserName, hi);
 
 
         room = IPersistentUsers.OnlyGirlsRoom;
