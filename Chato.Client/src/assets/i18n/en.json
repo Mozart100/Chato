@@ -40,6 +40,10 @@
             }
         }
     },
+    "rooms": {
+        "title": "Rooms",
+        "searchRooms": "Search rooms..."
+    },
     "signup": {
         "title": "Sign up",
         "message": "Get your Chat account now.",

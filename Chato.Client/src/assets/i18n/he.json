@@ -1,28 +1,48 @@
 {
     "login": {
-        "title": "הירשם",
-        "message": "אנחנו לא מאחסנים נתוני משתמש. המשתמש שלך יהיה פעיל עד שתסגור את לשונית הדפדפן",
+        "title": "Sign up",
+        "message": "We don't store any user data. Your user will be active until you close the browser tab",
         "form": {
-            "email": {
-                "label": "שם משתמש",
-                "placeholder": "הכנס שם משתמש",
+            "username": {
+                "label": "Username",
+                "placeholder": "Enter your username",
                 "validation": {
-                    "required": "שם משתמש הוא חובה",
-                    "invalid": "שם משתמש לא חוקי. זה צריך להכיל לפחות 3 אותיות"
+                    "required": "Username is mandatory",
+                    "invalid": "Username is invalid. It should contain it least 3 letters"
                 }
             },
             "description": {
-                "label": "תיאור",
-                "placeholder": "הזן כמה פרטים על עצמך",
+                "label": "Description",
+                "placeholder": "Enter a few details about yourself",
                 "validation": {
-                    "required": "התיאור הוא חובה",
-                    "invalid": "התיאור אינו חוקי. זה צריך להכיל לפחות 3 אותיות"
+                    "required": "Description is mandatory",
+                    "invalid": "Description is invalid. It should contain it least 3 letters"
+                }
+            },
+            "gender": {
+                "label": "Gender",
+                "placeholder": "Select",
+                "options": {
+                    "male": "Male",
+                    "female": "Female",
+                    "undefined": "Undefined"
+                }
+            },
+            "age": {
+                "label": "Age",
+                "placeholder": "Enter your age",
+                "validation": {
+                    "invalid": "Minimum 18 years old"
                 }
             },
             "button": {
-                "text": "הירשם"
+                "text": "Sign up"
             }
         }
+    },
+    "rooms": {
+        "title": "Rooms",
+        "searchRooms": "Search rooms..."
     },
     "signup": {
         "title": "Sign up",
@@ -154,11 +174,11 @@
                 }
             },
             "chats": {
-                "title": "צ'אטים",
-                "typing": "הקלדה",
-                "recentChats": "אחרונים",
+                "title": "Chats",
+                "typing": "typing",
+                "recentChats": "Recent",
                 "search": {
-                    "placeholder": "חפש הודעות או משתמשים"
+                    "placeholder": "Search messages or users"
                 },
                 "users": {
                     "1": "Patrick",
@@ -168,7 +188,7 @@
                     "5": "Teresa"
                 },
                 "recent": {
-
+                    "title": "Recent",
                     "userslist": {
                         "user1": {
                             "name": "Patrick Hendricks",
@@ -202,7 +222,7 @@
                         },
                         "user7": {
                             "name": "Albert Rodarte",
-                            "message": "הקלדה...",
+                            "message": "typing...",
                             "time": "04:56 PM"
                         },
                         "user8": {
@@ -511,88 +531,88 @@
             },
             "7": {
                 "name": "Doris Brown",
-                "message": "הקלדה"
+                "message": "typing"
             },
             "8": {
-              "name": "Dorsin Brown",
-              "message": "Hello",
-              "time": "10:00"
+                "name": "Dorsin Brown",
+                "message": "Hello",
+                "time": "10:00"
             },
             "9": {
-              "message": "Hello send project images",
-              "time": "10:00"
+                "message": "Hello send project images",
+                "time": "10:00"
             },
             "10": {
-              "message": "Good Afternoon everyone !",
-              "time": "2:05"
+                "message": "Good Afternoon everyone !",
+                "time": "2:05"
             },
             "11": {
-              "message": "This theme is Awesome!",
-              "time": "2:06"
+                "message": "This theme is Awesome!",
+                "time": "2:06"
             },
             "12": {
-              "message": "@Doris Brown please review this code, and give me feedback asap",
-              "time": "2:05"
+                "message": "@Doris Brown please review this code, and give me feedback asap",
+                "time": "2:05"
             },
             "13": {
-              "message": "Okay 👍, let me check it and get back to you soon",
-              "time": "1:16"
+                "message": "Okay 👍, let me check it and get back to you soon",
+                "time": "1:16"
             },
             "14": {
-              "message": "hi",
-              "time": "1:05"
+                "message": "hi",
+                "time": "1:05"
             },
             "15": {
-              "message": "Hello, how can i help you",
-              "time": "1:05"
+                "message": "Hello, how can i help you",
+                "time": "1:05"
             },
             "16": {
-              "message": "hi...Good Morning!",
-              "time": "09:05"
+                "message": "hi...Good Morning!",
+                "time": "09:05"
             },
             "17": {
-              "message": "please, save this pictures to your file and give it to me after you have done with editing!",
-              "time": "10:31"
+                "message": "please, save this pictures to your file and give it to me after you have done with editing!",
+                "time": "10:31"
             },
             "18": {
-              "message": "Yeah, Everything is fine👍",
-              "time": "02:50"
+                "message": "Yeah, Everything is fine👍",
+                "time": "02:50"
             },
             "19": {
-              "message": "Good Morning😄",
-              "time": "02:50"
+                "message": "Good Morning😄",
+                "time": "02:50"
             },
             "20": {
-              "message": "hello Admin",
-              "time": "08:00"
+                "message": "hello Admin",
+                "time": "08:00"
             },
             "21": {
-              "message": "Good morning",
-              "time": "08:00"
+                "message": "Good morning",
+                "time": "08:00"
             },
             "22": {
-              "message": "is everything is fine ?",
-              "time": "08:00"
+                "message": "is everything is fine ?",
+                "time": "08:00"
             },
             "23": {
-              "message": "i can help you😊",
-              "time": "08:00"
+                "message": "i can help you😊",
+                "time": "08:00"
             },
             "24": {
-              "message": "Hi, How are You?",
-              "time": "08:00"
+                "message": "Hi, How are You?",
+                "time": "08:00"
             },
             "25": {
-              "message": "Did you finished it?",
-              "time": "12:00"
+                "message": "Did you finished it?",
+                "time": "12:00"
             },
             "26": {
-              "message": "hi yana",
-              "time": "12:00"
+                "message": "hi yana",
+                "time": "12:00"
             },
             "27": {
-              "message": "Wow that's great",
-              "time": "12:00"
+                "message": "Wow that's great",
+                "time": "12:00"
             },
             "dropdown": {
                 "reply": "Reply",
