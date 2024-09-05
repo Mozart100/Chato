@@ -29,7 +29,7 @@ public class RoomRepository : RepositoryBase<ChatRoomDb>, IRoomRepository
             chatRoom = Insert(new ChatRoomDb { Id = groupName });
         }
 
-        chatRoom.SenderInfo.Add(new SenderInfo(user, ptr));
+        chatRoom.Messages.Add(new SenderInfo(user, ptr));
 
     }
 
