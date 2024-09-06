@@ -11,8 +11,10 @@ import { PickerComponent } from '@ctrl/ngx-emoji-mart'
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { SimplebarAngularModule } from 'simplebar-angular'
 import { TranslateModule } from '@ngx-translate/core'
-import { DatePipe, NgClass } from '@angular/common'
+import { DatePipe, NgClass, NgIf } from '@angular/common'
 import { Lightbox } from 'ngx-lightbox'
+import { ChatStore } from '../../core/store/chat.store'
+import { AuthenticationService } from '../../core/services/auth.service'
 
 @Component({
     selector: 'chat-window',
@@ -30,7 +32,8 @@ import { Lightbox } from 'ngx-lightbox'
         ReactiveFormsModule,
         SimplebarAngularModule,
         TranslateModule,
-        NgClass
+        NgClass,
+        NgIf
     ],
     templateUrl: './chat-window.component.html',
     styleUrl: './chat-window.component.scss'
@@ -64,7 +67,9 @@ export class ChatWindowComponent implements OnInit {
     constructor(private modalService: NgbModal,
                 private lightbox: Lightbox,
                 public formBuilder: FormBuilder,
-                private datePipe: DatePipe) {
+                private datePipe: DatePipe,
+                public chatStore: ChatStore,
+                public auth: AuthenticationService) {
     }
 
     ngOnInit() {
@@ -87,7 +92,7 @@ export class ChatWindowComponent implements OnInit {
     }
 
     onChatInfoClicked() {
-        (document.querySelector('.user-profile-sidebar') as HTMLElement).style.display = 'block'
+        // (document.querySelector('.user-profile-sidebar') as HTMLElement).style.display = 'block'
     }
 
     MessageSearch() {
@@ -171,42 +176,61 @@ export class ChatWindowComponent implements OnInit {
      * Save the message in chat
      */
     messageSave() {
-        var groupMsg = document.querySelector('.pills-groups-tab.active')
         const message = this.formData.get('message')!.value
         if (message) {
-            if (!groupMsg) {
-                document.querySelector('.chat-user-list li.active .chat-user-message').innerHTML = message ? message : this.img
-            }
-            var img = this.img ? this.img : ''
-            var status = this.img ? true : ''
-            var dateTime = this.datePipe.transform(new Date(), 'h:mm a')
-            var chatReplyUser = this.isreplyMessage == true ? (document.querySelector('.replyCard .replymessage-block .flex-grow-1 .conversation-name') as HTMLAreaElement).innerHTML : ''
-            var chatReplyMessage = this.isreplyMessage == true ? (document.querySelector('.replyCard .replymessage-block .flex-grow-1 .mb-0') as HTMLAreaElement).innerText : ''
-            this.message.push({
-                id: 1,
-                message: message,
-                name: this.senderName,
-                profile: this.senderProfile,
-                time: dateTime,
-                align: 'right',
-                isimage: status,
-                imageContent: [img],
-                replayName: chatReplyUser,
-                replaymsg: chatReplyMessage,
+            this.chatStore.selectedRoom.update(room => {
+                room.messages.push({
+                    message: message,
+                    userName: this.auth.user()?.username
+                })
+                return JSON.parse(JSON.stringify(room))
             })
+
             this.onListScroll()
 
             // Set Form Data Reset
             this.formData = this.formBuilder.group({
                 message: null,
             })
-            this.isreplyMessage = false
-            this.emoji = ''
-            this.img = ''
-            chatReplyUser = ''
-            chatReplyMessage = ''
-            document.querySelector('.replyCard')?.classList.remove('show')
         }
+
+
+        // var groupMsg = document.querySelector('.pills-groups-tab.active')
+        // const message = this.formData.get('message')!.value
+        // if (message) {
+        //     if (!groupMsg) {
+        //         document.querySelector('.chat-user-list li.active .chat-user-message').innerHTML = message ? message : this.img
+        //     }
+        //     var img = this.img ? this.img : ''
+        //     var status = this.img ? true : ''
+        //     var dateTime = this.datePipe.transform(new Date(), 'h:mm a')
+        //     var chatReplyUser = this.isreplyMessage == true ? (document.querySelector('.replyCard .replymessage-block .flex-grow-1 .conversation-name') as HTMLAreaElement).innerHTML : ''
+        //     var chatReplyMessage = this.isreplyMessage == true ? (document.querySelector('.replyCard .replymessage-block .flex-grow-1 .mb-0') as HTMLAreaElement).innerText : ''
+        //     this.message.push({
+        //         id: 1,
+        //         message: message,
+        //         name: this.senderName,
+        //         profile: this.senderProfile,
+        //         time: dateTime,
+        //         align: 'right',
+        //         isimage: status,
+        //         imageContent: [img],
+        //         replayName: chatReplyUser,
+        //         replaymsg: chatReplyMessage,
+        //     })
+        //     this.onListScroll()
+        //
+        //     // Set Form Data Reset
+        //     this.formData = this.formBuilder.group({
+        //         message: null,
+        //     })
+        //     this.isreplyMessage = false
+        //     this.emoji = ''
+        //     this.img = ''
+        //     chatReplyUser = ''
+        //     chatReplyMessage = ''
+        //     document.querySelector('.replyCard')?.classList.remove('show')
+        // }
     }
 
     onBlur() {
@@ -243,7 +267,7 @@ export class ChatWindowComponent implements OnInit {
         if (this.scrollRef !== undefined) {
             setTimeout(() => {
                 this.scrollRef.SimpleBar.getScrollElement().scrollTop = this.scrollRef.SimpleBar.getScrollElement().scrollHeight
-            }, 500)
+            }, 100)
         }
     }
 

@@ -316,7 +316,8 @@
             <ngx-simplebar class="p-4 chat-message-list chat-group-list" data-simplebar>
                 <ul class="list-unstyled chat-list">
                     @for (item of chatStore.allRooms(); track $index) {
-                        <li (click)="showGroupChat(item)">
+                        <li (click)="showGroupChat(item)"
+                            [ngClass]="{'active': item.roomName == chatStore.selectedRoom()?.roomName}">
                             <a href="javascript:void(0);">
                                 <div class="d-flex align-items-center">
                                     <div class="chat-user-img me-3 ms-0">
