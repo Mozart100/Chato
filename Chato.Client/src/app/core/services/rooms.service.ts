@@ -22,6 +22,9 @@ export class RoomsService extends BaseApiService {
 
     loadAllRooms() {
         this.sendGet<RoomsDto>(this.apiUrl + LOAD_ROOMS_URL)
-            .then(data => this.chatStore.allRooms.set(data.Body.rooms))
+            .then(data => {
+                console.log('Rooms response', data.Body.rooms)
+                this.chatStore.allRooms.set(data.Body.rooms)
+            })
     }
 }

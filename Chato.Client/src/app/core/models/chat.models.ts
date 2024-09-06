@@ -1,6 +1,6 @@
 export interface Room {
     roomName: string
-    senderInfo: { 'userName': 'string', 'message': 'string' }[],
+    messages: { 'userName': string, 'message': string }[],
     users: string[]
 }
 
@@ -12,4 +12,10 @@ export interface User {
     gender: string
     rooms: string[],
     connectionId: string
+}
+
+export interface ChatMessage {
+    userName: string
+    message: string
+    isSelf: boolean
 }

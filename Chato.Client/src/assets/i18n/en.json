@@ -118,6 +118,11 @@
         "signinlink": "Signin"
     },
     "chat": {
+       "placeHolder": {
+           "startConversation": "Start or select chat"
+       },
+
+
         "tabs": {
             "profile": {
                 "title": "My Profile",

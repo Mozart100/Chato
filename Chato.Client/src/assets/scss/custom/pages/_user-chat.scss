@@ -120,7 +120,7 @@
             &:before {
                 content: "";
                 position: absolute;
-                border: 5px solid transparent;
+                border: 6px solid transparent;
                 border-left-color: $chat-primary-bg;
                 border-top-color: $chat-primary-bg;                
                 left: 0/*rtl:auto*/;                
@@ -223,7 +223,7 @@
                     border-radius: 8px 8px 0px 8px;
 
                     &:before {
-                        border: 5px solid transparent;
+                        border: 6px solid transparent;
                         border-top-color: $chat-secondary-bg;
                         border-right-color: $chat-secondary-bg;
                         left: auto;

@@ -17,6 +17,7 @@ import { RoomsService } from '../../core/services/rooms.service'
 import { ChatStore } from '../../core/store/chat.store'
 import { Room } from '../../core/models/chat.models'
 import { ChatWindowComponent } from '../chat-window/chat-window.component'
+import { AuthenticationService } from '../../core/services/auth.service'
 
 @Component({
     selector: 'app-rooms',
@@ -48,7 +49,8 @@ export class RoomsComponent implements OnInit {
     constructor(private navStore: NavStore,
                 private modalService: NgbModal,
                 private roomsService: RoomsService,
-                public chatStore: ChatStore) {
+                public chatStore: ChatStore,
+                public authService: AuthenticationService) {
         this.navStore.selectedTab.set(3)
     }
 
