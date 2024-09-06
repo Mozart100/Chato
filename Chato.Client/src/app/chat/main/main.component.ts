@@ -10,6 +10,7 @@ import { SimplebarAngularModule } from 'simplebar-angular'
 import { TabsModule } from '../tabs/tabs.module'
 import { Router, RouterOutlet } from '@angular/router'
 import { NavStore } from '../../core/store/nav.store'
+import { ChatWindowComponent } from '../chat-window/chat-window.component'
 
 @Component({
     selector: 'app-main',
@@ -26,7 +27,8 @@ import { NavStore } from '../../core/store/nav.store'
         ReactiveFormsModule,
         SimplebarAngularModule,
         TabsModule,
-        RouterOutlet
+        RouterOutlet,
+        ChatWindowComponent
     ],
     templateUrl: './main.component.html',
     styleUrl: './main.component.scss'

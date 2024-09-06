@@ -14,6 +14,9 @@ import { SimplebarAngularModule } from 'simplebar-angular'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { PickerComponent } from '@ctrl/ngx-emoji-mart'
 import { RoomsService } from '../../core/services/rooms.service'
+import { ChatStore } from '../../core/store/chat.store'
+import { Room } from '../../core/models/chat.models'
+import { ChatWindowComponent } from '../chat-window/chat-window.component'
 
 @Component({
     selector: 'app-rooms',
@@ -32,20 +35,20 @@ import { RoomsService } from '../../core/services/rooms.service'
         NgbDropdownToggle,
         NgbTooltip,
         PickerComponent,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        ChatWindowComponent
     ],
     templateUrl: './rooms.component.html',
     styleUrl: './rooms.component.scss'
 })
 export class RoomsComponent implements OnInit {
 
-    groups = groups
-
     public isCollapsed = true
 
     constructor(private navStore: NavStore,
                 private modalService: NgbModal,
-                private roomsService: RoomsService) {
+                private roomsService: RoomsService,
+                public chatStore: ChatStore) {
         this.navStore.selectedTab.set(3)
     }
 
@@ -57,18 +60,21 @@ export class RoomsComponent implements OnInit {
         this.modalService.open(content, { centered: true })
     }
 
-    showGroupChat(event: any, id: any) {
-        var removeClass = document.querySelectorAll('.chat-list li')
-        removeClass.forEach((element: any) => {
-            element.classList.remove('active')
-        })
-        document.querySelector('.user-chat').classList.add('user-chat-show')
-        document.querySelector('.chat-welcome-section').classList.add('d-none')
-        document.querySelector('.user-chat').classList.remove('d-none')
-        event.target.closest('li').classList.add('active')
-        var data = this.groups.filter((group: any) => {
-            return group.id === id
-        })
+    showGroupChat(room: Room) {
+
+        this.chatStore.selectedRoom.set(room)
+
+        // var removeClass = document.querySelectorAll('.chat-list li')
+        // removeClass.forEach((element: any) => {
+        //     element.classList.remove('active')
+        // })
+        // document.querySelector('.user-chat').classList.add('user-chat-show')
+        // document.querySelector('.chat-welcome-section').classList.add('d-none')
+        // document.querySelector('.user-chat').classList.remove('d-none')
+        // event.target.closest('li').classList.add('active')
+        // var data = this.groups.filter((group: any) => {
+        //     return group.id === id
+        // })
         // this.userName = data[0].name
         // this.userProfile = ''
         // this.message = data[0].messages
