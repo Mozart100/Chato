@@ -63,9 +63,8 @@ public class ChattoHub : Hub<IChatHub>
 
     public async Task SendMessageToOthersInGroup(string group, string fromUser, string message)
     {
-        //var message = Encoding.UTF8.GetkckString(ptr);
-        var ptr = Encoding.UTF8.GetBytes(message);
-        await _roomService.SendMessageAsync(group, fromUser, ptr);
+        //var ptr = Encoding.UTF8.GetBytes(message);
+        await _roomService.SendMessageAsync(group, fromUser, message);
         await Clients.OthersInGroup(group).SendText(fromUser, message);
     }
 

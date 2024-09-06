@@ -6,7 +6,7 @@ namespace Chato.Server.DataAccess.Repository;
 
 public interface IRoomRepository : IRepositoryBase<ChatRoomDb>
 {
-    Task SendMessageAsync(string group, string user, byte[] ptr);
+    Task SendMessageAsync(string group, string user, string message);
 }
 
 public class RoomRepository : RepositoryBase<ChatRoomDb>, IRoomRepository
@@ -20,7 +20,7 @@ public class RoomRepository : RepositoryBase<ChatRoomDb>, IRoomRepository
         this._roomIndexerRepository = roomIndexerRepository;
     }
 
-    public async Task SendMessageAsync(string groupName, string user, byte[] ptr)
+    public async Task SendMessageAsync(string groupName, string user, string message)
     {
         var chatRoom = await GetOrDefaultAsync(x => x.Id == groupName);
 
@@ -29,7 +29,7 @@ public class RoomRepository : RepositoryBase<ChatRoomDb>, IRoomRepository
             chatRoom = Insert(new ChatRoomDb { Id = groupName });
         }
 
-        chatRoom.Messages.Add(new SenderInfo(user, ptr));
+        chatRoom.Messages.Add(new SenderInfo(user, message));
 
     }
 
