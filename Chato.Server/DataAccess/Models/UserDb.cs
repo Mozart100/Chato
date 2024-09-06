@@ -1,6 +1,8 @@
-﻿namespace Chato.Server.DataAccess.Models;
+﻿using Chatto.Shared;
 
-public class User : EntityDbBase 
+namespace Chato.Server.DataAccess.Models;
+
+public class User : EntityDbBase , IUserEnittyMapper
 {
     public string UserName { get; set; }
     public int Age { get; set; }
@@ -10,6 +12,7 @@ public class User : EntityDbBase
     public string ConnectionId { get; set; }
 
 }
+
 
 public record UserFileInfo(string FileName, byte[] Content);
 

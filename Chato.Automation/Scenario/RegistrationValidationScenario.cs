@@ -13,7 +13,12 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
     public RegistrationValidationScenario(ILogger<RegistrationValidationScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
-        BusinessLogicCallbacks.Add(SetupGroupStep);
+        BusinessLogicCallbacks.Add(RegistrationValidationStep);
+        BusinessLogicCallbacks.Add(async () => await UsersCleanup(Anatoliy_User));
+
+
+
+        BusinessLogicCallbacks.Add(RegistrationAndGetUserByTokenStep);
         BusinessLogicCallbacks.Add(async () => await UsersCleanup(Anatoliy_User));
     }
 
@@ -23,7 +28,7 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
     public override string Description => "Ensuring mandatory fields are inserted during registration.";
 
 
-    private async Task SetupGroupStep()
+    private async Task RegistrationValidationStep()
     {
         var request = new RegistrationRequest { UserName = Anatoliy_User, Age = 20, Description = $"Description_{Anatoliy_User}" };
         await RegisterUser(request);
@@ -55,8 +60,21 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
 
 
         var parameters = new Dictionary<string, string> { { "num", "1" } };
-        var fileContent = await Get<byte[]>(DownloadFileUrl, token,parameters);
+        var fileContent = await Get<byte[]>(DownloadFileUrl, token, parameters);
         fileContent.Should().NotBeNull();
+
+    }
+
+
+    private async Task RegistrationAndGetUserByTokenStep()
+    {
+        //var request = new RegistrationRequest { UserName = Anatoliy_User, Age = 20, Description = $"Description_{Anatoliy_User}", Gender = "male" };
+        await RegisterUsers(Anatoliy_User);
+
+        var token = Users[Anatoliy_User].RegisterResponse.Token;
+
+        var dto = await Get< ResponseWrapper<UserResponse>>(UserControllerUrl, token);
+        dto.Should().NotBeNull();
 
     }
 

@@ -41,15 +41,6 @@ public class AuthController : ControllerBase
         return Ok();
     }
 
-    [FeatureGate("ControllerEnabled")]
-    [Route("xxxx")]
-    [HttpGet, Authorize]
-    public async Task<string> GetMe()
-    {
-        var userName = _userService.GetMyName();
-        return "Its all Good";
-    }
-
     [Route(RegistrationUrl)]
     [HttpPost]
     public async Task<RegistrationResponse> Register([FromBody] RegistrationRequest request)
@@ -60,6 +51,8 @@ public class AuthController : ControllerBase
         var token = await _authenticationService.RegisterAsync(request);
         return new RegistrationResponse { Token = token, UserName = request.UserName , Description = request.Description , Age = request.Age, Gender  = request.Gender };
     }
+
+
 
     [Route(UploadUrl)]
     [HttpPost, Authorize]
