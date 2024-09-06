@@ -16,7 +16,7 @@ export class ChatStore {
             .map(roomMsg => ({
                 userName: roomMsg.userName,
                 message: roomMsg.message,
-                isSelf: roomMsg.userName == this.auth.user()?.username
+                isSelf: roomMsg.userName == this.auth.user()?.userName
             }))
     })
 }

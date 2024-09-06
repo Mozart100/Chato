@@ -15,7 +15,7 @@ export const authGuard: CanActivateFn = (route, state) => {
 
     // if we have token, check its validity
     const authService = inject(AuthenticationService)
-    return authService.checkAuth()
+    return authService.loadUser()
         .then(isAuth => {
             if (!isAuth) {
                 router.navigate(['/account/login'], { queryParams: { returnUrl: state.url } })
