@@ -18,6 +18,7 @@ import { ChatStore } from '../../core/store/chat.store'
 import { Room } from '../../core/models/chat.models'
 import { ChatWindowComponent } from '../chat-window/chat-window.component'
 import { AuthenticationService } from '../../core/services/auth.service'
+import { NgClass } from '@angular/common'
 
 @Component({
     selector: 'app-rooms',
@@ -37,7 +38,8 @@ import { AuthenticationService } from '../../core/services/auth.service'
         NgbTooltip,
         PickerComponent,
         ReactiveFormsModule,
-        ChatWindowComponent
+        ChatWindowComponent,
+        NgClass
     ],
     templateUrl: './rooms.component.html',
     styleUrl: './rooms.component.scss'
@@ -66,11 +68,7 @@ export class RoomsComponent implements OnInit {
 
         this.chatStore.selectedRoom.set(room)
 
-        // var removeClass = document.querySelectorAll('.chat-list li')
-        // removeClass.forEach((element: any) => {
-        //     element.classList.remove('active')
-        // })
-        // document.querySelector('.user-chat').classList.add('user-chat-show')
+        document.querySelector('.user-chat').classList.add('user-chat-show')
         // document.querySelector('.chat-welcome-section').classList.add('d-none')
         // document.querySelector('.user-chat').classList.remove('d-none')
         // event.target.closest('li').classList.add('active')
