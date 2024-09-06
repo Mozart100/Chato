@@ -18,7 +18,7 @@ public interface IRoomService
     Task RemoveRoomByNameOrIdAsync(string nameOrId);
     Task RemoveUserAndRoomFromRoom(string roomName, string username);
     Task RemoveHistoryByRoomNameAsync(string roomName);
-    Task SendMessageAsync(string group, string fromUser, byte[] ptr);
+    Task SendMessageAsync(string group, string fromUser, string message);
 }
 
 
@@ -143,14 +143,14 @@ public class RoomService : IRoomService
         });
     }
 
-    public async Task SendMessageAsync(string roomName, string fromUser, byte[] ptr)
+    public async Task SendMessageAsync(string roomName, string fromUser, string message)
     {
         await _lockerQueue.InvokeAsync(async () =>
         {
             var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
             if (room is not null)
             {
-                room.Messages.Add(new SenderInfo(fromUser, ptr));
+                room.Messages.Add(new SenderInfo(fromUser, message));
             }
         });
     }

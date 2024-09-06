@@ -104,7 +104,8 @@ public class UserInstructionExecuter
 
         await foreach (var senderInfo in _connection.StreamAsync<SenderInfo>(Hub_GetGroupHistory_Topic, groupName))
         {
-            await ExpectedMessages(senderInfo.UserName, senderInfo.Message);
+            var ptr = Encoding.UTF8.GetBytes(senderInfo.Message);
+            await ExpectedMessages(senderInfo.UserName, ptr);
         }
     }
 

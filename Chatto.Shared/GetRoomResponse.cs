@@ -9,7 +9,7 @@ public class GetRoomResponse
     public ChatRoomDto Room { get; set; }
 }
 
-public record SenderInfo(string UserName, byte[] Message);
+public record SenderInfo(string UserName, string Message);
 
 
 public class ChatRoomDto
