@@ -9,7 +9,7 @@ namespace Chato.Server.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class RoomController : ControllerBase
+public class ChatController : ControllerBase
 {
     public const string All_Chat_Route = "all";
     public const string Chat_Route = "{room}";
@@ -17,7 +17,7 @@ public class RoomController : ControllerBase
     private readonly IChatService _roomService;
     private readonly IUserService _userService;
 
-    public RoomController(IChatService roomService, IUserService userService)
+    public ChatController(IChatService roomService, IUserService userService)
     {
         this._roomService = roomService;
         this._userService = userService;
