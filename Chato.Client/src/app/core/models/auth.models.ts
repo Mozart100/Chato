@@ -1,9 +1,16 @@
+export interface UserResponse {
+    Body: {
+        user: User
+    }
+}
+
 export class User {
-    username: string
+    userName: string
     age: number
     gender: string
     description: string
 }
+
 
 export interface RegistrationRequest {
     UserName: string

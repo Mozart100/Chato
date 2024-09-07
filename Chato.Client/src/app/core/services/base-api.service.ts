@@ -1,5 +1,5 @@
 import { HttpClient } from '@angular/common/http'
-import { firstValueFrom } from 'rxjs'
+import { firstValueFrom, throwError } from 'rxjs'
 import { ToastrService } from 'ngx-toastr'
 
 export abstract class BaseApiService {
@@ -9,25 +9,25 @@ export abstract class BaseApiService {
     }
 
     protected sendGet<T>(url: string): Promise<T> {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             const req = this.http.get<T>(url)
             firstValueFrom(req)
                 .then(res => resolve(res))
                 .catch(e => {
                     this.alert.error(e.error?.body?.Reason || e.error.title || e.error.error, 'Error', { disableTimeOut: true })
-                    throw e
+                    reject(e)
                 })
         })
     }
 
     protected sendPost<T, Y>(url: string, data: T): Promise<Y> {
-        return new Promise(resolve => {
+        return new Promise((resolve, reject) => {
             const req = this.http.post(url, data)
             firstValueFrom(req)
                 .then((res: Y) => resolve(res))
                 .catch(e => {
                     this.alert.error(e.error?.body?.Reason || e.error.title || e.error.error, 'Error', { disableTimeOut: true })
-                    throw e
+                    reject(e)
                 })
         })
     }

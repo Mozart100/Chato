@@ -1,6 +1,6 @@
 import { Inject, Injectable, signal, WritableSignal } from '@angular/core'
 
-import { RegistrationRequest, RegistrationResponse, User } from '../models/auth.models'
+import { RegistrationRequest, RegistrationResponse, User, UserResponse } from '../models/auth.models'
 import { environment } from '../../../environments/environment'
 import { BaseApiService } from './base-api.service'
 import { HttpClient } from '@angular/common/http'
@@ -11,6 +11,7 @@ import { firstValueFrom } from 'rxjs'
 
 const REGISTER_URL = '/api/Auth/Register'
 const CHECK_AUTH_URL = '/api/Auth/status'
+const LOAD_USER_URL = '/api/User'
 
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService extends BaseApiService {
@@ -38,7 +39,7 @@ export class AuthenticationService extends BaseApiService {
             .then(data => {
                 // set user
                 this.user.set({
-                    username: data.Body.userName,
+                    userName: data.Body.userName,
                     age: data.Body.age,
                     gender: data.Body.gender,
                     description: data.Body.description
@@ -46,6 +47,15 @@ export class AuthenticationService extends BaseApiService {
                 // set token
                 sessionStorage.setItem(SAVED_TOKEN_KEY, data.Body.token)
             })
+    }
+
+    public loadUser(): Promise<boolean> {
+        return this.sendGet<UserResponse>(this.apiUrl + LOAD_USER_URL)
+            .then(data => {
+                this.user.set(data.Body.user)
+                return true
+            })
+            .catch(() => false)
     }
 
     /**

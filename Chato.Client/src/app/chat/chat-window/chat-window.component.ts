@@ -181,7 +181,7 @@ export class ChatWindowComponent implements OnInit {
             this.chatStore.selectedRoom.update(room => {
                 room.messages.push({
                     message: message,
-                    userName: this.auth.user()?.username
+                    userName: this.auth.user()?.userName
                 })
                 return JSON.parse(JSON.stringify(room))
             })
