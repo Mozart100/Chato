@@ -4,17 +4,17 @@ using System.Reflection;
 
 namespace Chato.Server.DataAccess.Repository;
 
-public interface IRoomRepository : IRepositoryBase<ChatRoomDb>
+public interface IChatRepository : IRepositoryBase<ChatDb>
 {
     Task SendMessageAsync(string group, string user, string message);
 }
 
-public class RoomRepository : RepositoryBase<ChatRoomDb>, IRoomRepository
+public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
 {
-    private readonly ILogger<RoomRepository> _logger;
+    private readonly ILogger<ChatRepository> _logger;
     private readonly IRoomIndexerRepository _roomIndexerRepository;
 
-    public RoomRepository(ILogger<RoomRepository> logger, IRoomIndexerRepository roomIndexerRepository)
+    public ChatRepository(ILogger<ChatRepository> logger, IRoomIndexerRepository roomIndexerRepository)
     {
         _logger = logger;
         this._roomIndexerRepository = roomIndexerRepository;
@@ -26,14 +26,14 @@ public class RoomRepository : RepositoryBase<ChatRoomDb>, IRoomRepository
 
         if (chatRoom is null)
         {
-            chatRoom = Insert(new ChatRoomDb { Id = groupName });
+            chatRoom = Insert(new ChatDb { Id = groupName });
         }
 
         chatRoom.Messages.Add(new SenderInfo(user, message));
 
     }
 
-    public override IEnumerable<ChatRoomDb> GetAll()
+    public override IEnumerable<ChatDb> GetAll()
     {
         var rooms = base.GetAll();
         foreach (var item in rooms)
@@ -45,7 +45,7 @@ public class RoomRepository : RepositoryBase<ChatRoomDb>, IRoomRepository
         return rooms;
     }
 
-    public override ChatRoomDb Insert(ChatRoomDb instance)
+    public override ChatDb Insert(ChatDb instance)
     {
         if (Models.Add(instance) == true)
         {
@@ -57,7 +57,7 @@ public class RoomRepository : RepositoryBase<ChatRoomDb>, IRoomRepository
 
     }
 
-    protected override ChatRoomDb CoreGet(Predicate<ChatRoomDb> selector)
+    protected override ChatDb CoreGet(Predicate<ChatDb> selector)
     {
         var result =  base.CoreGet(selector);
     
@@ -70,7 +70,7 @@ public class RoomRepository : RepositoryBase<ChatRoomDb>, IRoomRepository
     }
 
 
-    public async override Task<bool> RemoveAsync(Predicate<ChatRoomDb> selector)
+    public async override Task<bool> RemoveAsync(Predicate<ChatDb> selector)
     {
         var result = false;
         foreach (var model in Models)

@@ -15,11 +15,11 @@ public interface IAssignmentService
 public class AssignmentService : IAssignmentService
 {
     private readonly IUserService _userService;
-    private readonly IRoomService _roomService;
+    private readonly IChatService _roomService;
     private readonly IAuthenticationService _authenticationService;
 
     public AssignmentService(IUserService userService,
-        IRoomService roomService,
+        IChatService roomService,
         IAuthenticationService authenticationService)
     {
         this._userService = userService;

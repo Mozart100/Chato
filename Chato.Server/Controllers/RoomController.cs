@@ -14,10 +14,10 @@ public class RoomController : ControllerBase
     public const string All_Rooms_Route = "all";
     public const string Room_Route = "{room}";
 
-    private readonly IRoomService _roomService;
+    private readonly IChatService _roomService;
     private readonly IUserService _userService;
 
-    public RoomController(IRoomService roomService, IUserService userService)
+    public RoomController(IChatService roomService, IUserService userService)
     {
         this._roomService = roomService;
         this._userService = userService;

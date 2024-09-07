@@ -7,7 +7,7 @@ using Chatto.Shared;
 namespace Chato.Server.Services;
 
 
-public interface IRoomService
+public interface IChatService
 {
     Task AddUserAsync(string roomName, string userName);
     Task<ChatRoomDto> CreateRoomAsync(string roomName);
@@ -22,12 +22,12 @@ public interface IRoomService
 }
 
 
-public class RoomService : IRoomService
+public class ChatService : IChatService
 {
-    private readonly IRoomRepository _chatRoomRepository;
+    private readonly IChatRepository _chatRoomRepository;
     private readonly ILockerDelegateQueue _lockerQueue;
 
-    public RoomService(IRoomRepository chatRoomRepository,
+    public ChatService(IChatRepository chatRoomRepository,
         ILockerDelegateQueue lockerQueue)
     {
         this._chatRoomRepository = chatRoomRepository;
@@ -42,7 +42,7 @@ public class RoomService : IRoomService
         });
     }
 
-    private async Task<ChatRoomDb> AddUserCoreAsync(string roomName, string userName)
+    private async Task<ChatDb> AddUserCoreAsync(string roomName, string userName)
     {
         var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
 
@@ -55,7 +55,7 @@ public class RoomService : IRoomService
 
     public async Task<ChatRoomDto> CreateRoomAsync(string roomName)
     {
-        var result = default(ChatRoomDb);
+        var result = default(ChatDb);
 
         await _lockerQueue.InvokeAsync(async () =>
         {
@@ -65,16 +65,16 @@ public class RoomService : IRoomService
         return result.ToChatRoomDto();
     }
 
-    private async Task<ChatRoomDb> CreateRoomCoreAsync(string roomName)
+    private async Task<ChatDb> CreateRoomCoreAsync(string roomName)
     {
-        var result = await _chatRoomRepository.InsertAsync(new ChatRoomDb { Id = roomName });
+        var result = await _chatRoomRepository.InsertAsync(new ChatDb { Id = roomName });
         return result;
     }
 
     
     public async Task<ChatRoomDto[]> GetAllRoomAsync()
     {
-        ChatRoomDb[] result = null;
+        ChatDb[] result = null;
 
         await _lockerQueue.InvokeAsync(async () =>
         {
@@ -102,7 +102,7 @@ public class RoomService : IRoomService
 
     public async Task<ChatRoomDto> GetRoomByNameOrIdAsync(string nameOrId)
     {
-        var result = default(ChatRoomDb);
+        var result = default(ChatDb);
 
         await _lockerQueue.InvokeAsync(async () =>
         {
@@ -113,7 +113,7 @@ public class RoomService : IRoomService
         return result?.ToChatRoomDto();
     }
 
-    private async Task<ChatRoomDb> GetRoomByNameOrIdCoreAsync(string nameOrId)
+    private async Task<ChatDb> GetRoomByNameOrIdCoreAsync(string nameOrId)
     {
         return await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == nameOrId);
     }

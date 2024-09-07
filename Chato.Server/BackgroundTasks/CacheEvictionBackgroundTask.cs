@@ -60,7 +60,7 @@ public class CacheEvictionBackgroundTask : BackgroundService
                         _logger.LogInformation($"UnusedTimeoutSeconds Timestamp for room '{roomName}': Minute = {currentTime.Minute}  Scecond = {currentTime.Second} and MilliSecond {currentTime.Millisecond}");
 
 
-                        var roomService = scope.ServiceProvider.GetRequiredService<IRoomService>();
+                        var roomService = scope.ServiceProvider.GetRequiredService<IChatService>();
                         await roomService.RemoveRoomByNameOrIdAsync(roomName);
 
                         _logger.LogInformation($"UnusedTimeoutSeconds Room {roomName} was evicted!!!.");
@@ -73,7 +73,7 @@ public class CacheEvictionBackgroundTask : BackgroundService
                             _logger.LogInformation($"AbsoluteEvictionInSeconds Timestamp for room '{roomName}': Minute = {currentTime.Minute}  Scecond = {currentTime.Second} and MilliSecond {currentTime.Millisecond}");
 
 
-                            var roomService = scope.ServiceProvider.GetRequiredService<IRoomService>();
+                            var roomService = scope.ServiceProvider.GetRequiredService<IChatService>();
                             await roomService.RemoveRoomByNameOrIdAsync(roomName);
 
                             _logger.LogInformation($"AbsoluteEvictionInSeconds Room {roomName} was evicted!!!.");

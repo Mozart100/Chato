@@ -24,12 +24,12 @@ public interface IChatHub
 public class ChattoHub : Hub<IChatHub>
 {
     private readonly IUserService _userService;
-    private readonly IRoomService _roomService;
+    private readonly IChatService _roomService;
     private readonly IAssignmentService _userRoomService;
 
     public ChattoHub(
         IUserService userService,
-        IRoomService roomService,
+        IChatService roomService,
         IAssignmentService userRoomService)
     {
         this._userService = userService;
