@@ -20,7 +20,7 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
 
 
         RoomsControllerUrl = $"{BaseUrl}/api/room";
-        GetAllRoomsUrl = $"{RoomsControllerUrl}/{RoomController.All_Rooms_Route}";
+        GetAllRoomsUrl = $"{RoomsControllerUrl}/{RoomController.All_Chat_Route}";
         GetAllUsersUrl = $"{RoomsControllerUrl}/users";
 
 
