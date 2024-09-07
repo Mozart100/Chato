@@ -14,6 +14,8 @@ public record HubDownloadInfo(int Amount);
 
 public interface IChatHub
 {
+
+    Task SendTextToGroup(string chat, string fromUser, string message);
     Task SendText(string fromUser, string message);
     Task SelfReplay(string message);
 }
@@ -65,7 +67,7 @@ public class ChattoHub : Hub<IChatHub>
     {
         //var ptr = Encoding.UTF8.GetBytes(message);
         await _roomService.SendMessageAsync(group, fromUser, message);
-        await Clients.OthersInGroup(group).SendText(fromUser, message);
+        await Clients.OthersInGroup(group).SendTextToGroup(group, fromUser, message);
     }
 
     public async Task SendMessageToOtherUser(string fromUser, string toUser, string ptr)
@@ -90,7 +92,6 @@ public class ChattoHub : Hub<IChatHub>
 
         await _userRoomService.RemoveUserByUserNameOrIdAsync(Context.User.Identity.Name);
     }
-
 
     public async Task UserDisconnectAsync()
     {

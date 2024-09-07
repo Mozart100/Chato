@@ -78,7 +78,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
     private async Task SendPeerToPeerMessage(UserInstructionExecuter userExecuter, string userNameFrom, string toUser, byte[] message)
     {
         //var message2 = Encoding.UTF8.GetString(message);
-        await userExecuter.SendMessageFromUserToUserUsers(userNameFrom: userNameFrom, toUser: toUser, ptr: message);
+        await userExecuter.SendMessageToOtherUser(userNameFrom: userNameFrom, toUser: toUser, ptr: message);
     }
 
     private async Task SendMessageToOthersInGroup(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte[] message)
