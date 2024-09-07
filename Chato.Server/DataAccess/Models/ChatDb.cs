@@ -7,7 +7,7 @@ using System.Text.Json.Serialization;
 namespace Chato.Server.DataAccess.Models;
 
 
-public class ChatRoomDb : EntityDbBase
+public class ChatDb : EntityDbBase
 {
     public override string Id
     {
@@ -24,7 +24,7 @@ public class ChatRoomDb : EntityDbBase
 
 public static class ChatRoomDbExtensions
 {
-    public static  ChatRoomDto ToChatRoomDto(this ChatRoomDb chatRoomDb)
+    public static  ChatRoomDto ToChatRoomDto(this ChatDb chatRoomDb)
     {
         return new ChatRoomDto(chatRoomDb.RoomName, chatRoomDb.Messages.SafeToArray(), chatRoomDb.Users.SafeToArray());
     }

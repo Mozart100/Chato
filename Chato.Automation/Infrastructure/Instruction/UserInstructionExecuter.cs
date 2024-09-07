@@ -76,11 +76,11 @@ public class UserInstructionExecuter
         //LoginResponse = loginResponse;
     }
 
-    public async Task InitializeAsync()
-    {
-        await _connection.StartAsync();
-        await Listen();
-    }
+    //public async Task InitializeAsync()
+    //{
+    //    await _connection.StartAsync();
+    //    await Listen();
+    //}
 
     public async Task RegisterAsync()
     {
@@ -116,7 +116,7 @@ public class UserInstructionExecuter
         await _connection.SendAsync(Hub_Send_Message_To_Others_Topic, userNameFrom, message);
     }
 
-    public async Task SendMessageFromUserToUserUsers(string userNameFrom, string toUser, byte[] ptr)
+    public async Task SendMessageToOtherUser(string userNameFrom, string toUser, byte[] ptr)
     {
         var message = Encoding.UTF8.GetString(ptr);
         _logger.LogInformation($"{userNameFrom} sending message to user [{toUser}] this message [{message}].");
@@ -209,6 +209,16 @@ public class UserInstructionExecuter
             var ptr = Encoding.UTF8.GetBytes(message);
             await ExpectedMessages(UserName, ptr);
         });
+
+
+        _connection.On<string, string, string>(nameof(IChatHub.SendTextToGroup), async (chat, fromUser, message) =>
+        {
+            var ptr = Encoding.UTF8.GetBytes(message);
+            await ExpectedMessages(fromUser, ptr);
+
+            _logger.LogWarning($"From user {fromUser} in chat {chat} received message [{message}].");
+        });
+
 
     }
 

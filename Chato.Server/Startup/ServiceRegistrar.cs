@@ -26,7 +26,7 @@ public static class ServiceRegistrar
                                                                AllowCredentials());
         });
 
-        services.AddSingleton<IRoomRepository, RoomRepository>();
+        services.AddSingleton<IChatRepository, ChatRepository>();
         services.AddSingleton<IUserRepository, UserRepository>();
         services.AddSingleton<IRoomIndexerRepository, RoomIndexerRepository>();
         //services.AddSingleton<IPreloadDataLoader, GenerateDefaultRoomAndUsersService>();
@@ -89,7 +89,7 @@ public static class ServiceRegistrar
         });
 
         services.AddScoped<IUserService, UserService>();
-        services.AddScoped<IRoomService, RoomService>();
+        services.AddScoped<IChatService, ChatService>();
         services.AddScoped<IAssignmentService, AssignmentService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IRegistrationValidationService, RegistrationValidationService>();

@@ -28,10 +28,10 @@ public interface IPersistentUsers
 public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
 {
     private readonly IAssignmentService _assignmentService;
-    private readonly IRoomService _roomService;
+    private readonly IChatService _roomService;
 
     public GenerateDefaultRoomAndUsersService(IAssignmentService assignmentService,
-        IRoomService  roomService
+        IChatService  roomService
         )
     {
         _assignmentService = assignmentService;

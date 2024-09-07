@@ -19,8 +19,8 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
         DownloadFileUrl = $"{AuthControllerUrl}/{AuthController.DownloadUrl}";
 
 
-        RoomsControllerUrl = $"{BaseUrl}/api/room";
-        GetAllRoomsUrl = $"{RoomsControllerUrl}/{RoomController.All_Rooms_Route}";
+        RoomsControllerUrl = $"{BaseUrl}/api/chat";
+        GetAllRoomsUrl = $"{RoomsControllerUrl}/{ChatController.All_Chat_Route}";
         GetAllUsersUrl = $"{RoomsControllerUrl}/users";
 
 
