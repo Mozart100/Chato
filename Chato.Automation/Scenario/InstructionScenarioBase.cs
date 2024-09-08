@@ -66,7 +66,8 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         //var message2 = Encoding.UTF8.GetString(message);
         if (groupName == null)
         {
-            await userExecuter.SendMessageToAllUsers(userNameFrom: userNameFrom, message: message);
+            //await userExecuter.SendMessageToAllUsers(userNameFrom: userNameFrom, message: message);
+            throw new NotImplementedException("SendMessageToAllUsers");
         }
         else
         {

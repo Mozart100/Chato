@@ -19,7 +19,7 @@ public class UserInstructionExecuter
 {
     public const string Hub_From_Server = "server";
 
-    private const string Hub_Send_Message_To_Others_Topic = nameof(ChattoHub.BroadcastMessage);
+    //private const string Hub_Send_Message_To_Others_Topic = nameof(ChattoHub.BroadcastMessage);
 
     private const string Hub_Send_Other_In_Group_Topic = nameof(ChattoHub.SendMessageToOthersInGroup);
     private const string Hub_Leave_Group_Topic = nameof(ChattoHub.LeaveGroup);
@@ -109,12 +109,12 @@ public class UserInstructionExecuter
         }
     }
 
-    public async Task SendMessageToAllUsers(string userNameFrom, byte[] message)
-    {
-        _logger.LogInformation($"{userNameFrom} sending message [{message}].");
+    //public async Task SendMessageToAllUsers(string userNameFrom, byte[] message)
+    //{
+    //    _logger.LogInformation($"{userNameFrom} sending message [{message}].");
 
-        await _connection.SendAsync(Hub_Send_Message_To_Others_Topic, userNameFrom, message);
-    }
+    //    await _connection.SendAsync(Hub_Send_Message_To_Others_Topic, userNameFrom, message);
+    //}
 
     public async Task SendMessageToOtherUser(string userNameFrom, string toUser, byte[] ptr)
     {
@@ -216,8 +216,16 @@ public class UserInstructionExecuter
             var ptr = Encoding.UTF8.GetBytes(message);
             await ExpectedMessages(fromUser, ptr);
 
-            _logger.LogWarning($"From user {fromUser} in chat {chat} received message [{message}].");
+            _logger.LogWarning($"{nameof(IChatHub.SendTextToGroup)} -- From user {fromUser} in chat {chat} received message [{message}].");
         });
+
+        //_connection.On<TextMessage>(nameof(IChatHub.SendTextToGroup), async (textMesage) =>
+        //{
+        //    var ptr = Encoding.UTF8.GetBytes(textMesage.Message);
+        //    await ExpectedMessages(textMesage.FromUser, ptr);
+
+        //    _logger.LogWarning($"From user {textMesage.FromUser} in chat {textMesage.Chat} received message [{textMesage.Message}].");
+        //});
 
 
     }

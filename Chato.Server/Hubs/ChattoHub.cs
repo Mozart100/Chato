@@ -6,15 +6,38 @@ using Microsoft.AspNetCore.SignalR;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Chato.Server.Hubs;
 
 public record HubDownloadInfo(int Amount);
 
+//public class TextMessage
+//{
+//    [JsonPropertyName("chat")]
+//    public string Chat { get; set; }
+
+//    [JsonPropertyName("fromUser")]
+//    public string FromUser { get; set; }
+
+//    [JsonPropertyName("message")]
+//    public string Message { get; set; }
+
+//    public TextMessage(string chat, string fromUser, string message)
+//    {
+//        Chat = chat;
+//        FromUser = fromUser;
+//        Message = message;
+//    }
+//}
+
+
+
 
 public interface IChatHub
 {
 
+    //Task SendTextToGroup(TextMessage textMessage);
     Task SendTextToGroup(string chat, string fromUser, string message);
     Task SendText(string fromUser, string message);
     Task SelfReplay(string message);
@@ -63,11 +86,12 @@ public class ChattoHub : Hub<IChatHub>
         return Clients.Others.SendText(fromUser, message);
     }
 
-    public async Task SendMessageToOthersInGroup(string group, string fromUser, string message)
+    public async Task SendMessageToOthersInGroup(string chat, string fromUser, string message)
     {
         //var ptr = Encoding.UTF8.GetBytes(message);
-        await _roomService.SendMessageAsync(group, fromUser, message);
-        await Clients.OthersInGroup(group).SendTextToGroup(group, fromUser, message);
+        await _roomService.SendMessageAsync(chat, fromUser, message);
+        await Clients.OthersInGroup(chat).SendTextToGroup(chat,fromUser,message);
+        //await Clients.OthersInGroup(chat).SendTextToGroup(new TextMessage(chat,fromUser,message));
     }
 
     public async Task SendMessageToOtherUser(string fromUser, string toUser, string ptr)
