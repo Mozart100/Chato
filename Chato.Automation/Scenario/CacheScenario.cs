@@ -69,8 +69,8 @@ internal class CacheScenario : InstructionScenarioBase
         await CountDown(async (int tick) =>
         {
             var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
-            var cacheScenarioRoom = response.Body.Rooms.FirstOrDefault(x => x.RoomName == nameof(CacheScenario));
-            cacheScenarioRoom.RoomName.Should().NotBeNull();
+            var cacheScenarioRoom = response.Body.Rooms.FirstOrDefault(x => x.ChatName == nameof(CacheScenario));
+            cacheScenarioRoom.ChatName.Should().NotBeNull();
         }, amountTicks);
 
 
@@ -80,7 +80,7 @@ internal class CacheScenario : InstructionScenarioBase
     {
         var token = Users[Anatoliy_User].RegisterResponse.Token;
         var response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
-        var cacheScenarioRoom = response.Body.Rooms.FirstOrDefault(x => x.RoomName == nameof(CacheScenario));
+        var cacheScenarioRoom = response.Body.Rooms.FirstOrDefault(x => x.ChatName == nameof(CacheScenario));
 
 
         var tolerence = CacheEvictionUtility.ConvertToTimeSpan(_evictionConfig.TimeMeasurement, _evictionConfig.UnusedTimeout + Forgiveness);
@@ -90,7 +90,7 @@ internal class CacheScenario : InstructionScenarioBase
 
         response = await Get<ResponseWrapper<GetAllRoomResponse>>(GetAllRoomsUrl, token);
         response.Body.Rooms.Count().Should().Be(IPersistentUsers.PersistentUsers.Count());
-        response.Body.Rooms.First().RoomName.Should().Be(IPersistentUsers.AdultRoom);
+        response.Body.Rooms.First().ChatName.Should().Be(IPersistentUsers.AdultRoom);
 
 
     }
