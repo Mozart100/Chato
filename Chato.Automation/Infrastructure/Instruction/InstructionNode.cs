@@ -99,18 +99,18 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode SendingBroadcast(this InstructionNode info, string userName)
-    {
-        var @new = info with
-        {
-            UserName = userName,
-            Instruction = new UserBroadcastInstruction(),
-            Children = new(),
+    //public static InstructionNode SendingBroadcast(this InstructionNode info, string userName)
+    //{
+    //    var @new = info with
+    //    {
+    //        UserName = userName,
+    //        Instruction = new UserBroadcastInstruction(),
+    //        Children = new(),
 
-        };
+    //    };
 
-        return @new;
-    }
+    //    return @new;
+    //}
 
     public static InstructionNode SendingToRestRoom(this InstructionNode info, string userName)
     {

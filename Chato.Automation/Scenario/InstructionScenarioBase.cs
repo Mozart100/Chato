@@ -94,16 +94,16 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
     private void Initialize()
     {
 
-        _actionMapper.Add(UserInstructions.Publish_Broadcasting_Instruction, async (userExecuter, instruction) =>
-        {
-            await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstructionName != UserInstructions.Not_Received_Instruction).Count());
-            await SendBroadcastingMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
+        //_actionMapper.Add(UserInstructions.Publish_Broadcasting_Instruction, async (userExecuter, instruction) =>
+        //{
+        //    await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstructionName != UserInstructions.Not_Received_Instruction).Count());
+        //    await SendBroadcastingMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
 
-            if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
-            {
-                throw new Exception("Not all users received their messages");
-            }
-        });
+        //    if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
+        //    {
+        //        throw new Exception("Not all users received their messages");
+        //    }
+        //});
 
 
         _actionMapper.Add(UserInstructions.Publish_PeerToPeer_Instruction, async (userExecuter, instruction) =>

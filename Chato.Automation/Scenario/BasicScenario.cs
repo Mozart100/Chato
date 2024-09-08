@@ -77,8 +77,8 @@ internal class BasicScenario : InstructionScenarioBase
         var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
 
-        var anatoliySender = firstGroup.SendingBroadcast(Anatoliy_User);
-        var olessyaSender = firstGroup.SendingBroadcast(Olessya_User);
+        var anatoliySender = firstGroup.SendingToRestRoom(Anatoliy_User);
+        var olessyaSender = firstGroup.SendingToRestRoom(Olessya_User);
         var maxReceiver1 = firstGroup.ReceivingFrom(Max_User, olessyaSender.UserName);
 
         anatoliySender.Connect(olessyaSender)

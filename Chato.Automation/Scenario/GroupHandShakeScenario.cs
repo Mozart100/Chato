@@ -45,7 +45,7 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
         var message_1 = "Hello";
         var groupRoot = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
-        var anatoliySender = groupRoot.SendingBroadcast(Anatoliy_User);
+        var anatoliySender = groupRoot.SendingToRestRoom(Anatoliy_User);
         var olessyaReceive = groupRoot.ReceivingFrom(Olessya_User, anatoliySender.UserName);
 
 
@@ -54,7 +54,7 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
         var message_2 = "Hello to you too";
         var secondRoot = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_2);
 
-        var olessyaSender = secondRoot.SendingBroadcast(Olessya_User);
+        var olessyaSender = secondRoot.SendingToRestRoom(Olessya_User);
         var anatoliyReceiver = secondRoot.ReceivingFrom(Anatoliy_User, olessyaSender.UserName);
 
 
@@ -72,7 +72,7 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
 
 
 
-        var anatoliySender = firstGroup.SendingBroadcast(Anatoliy_User);
+        var anatoliySender = firstGroup.SendingToRestRoom(Anatoliy_User);
         var olessyaReceive1 = firstGroup.ReceivingFrom(Olessya_User, anatoliySender.UserName);
         var nathanReceive1 = firstGroup.ReceivingFrom(Nathan_User, anatoliySender.UserName);
         var nataliRecevier = secondtGroup.Is_Not_Received(Natali_User);
@@ -82,7 +82,7 @@ internal class GroupHandShakeScenario : InstructionScenarioBase
         var secondRoot = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_2);
 
 
-        var olessyaSender = secondRoot.SendingBroadcast(Olessya_User);
+        var olessyaSender = secondRoot.SendingToRestRoom(Olessya_User);
         var anatoliyReceiver = secondRoot.ReceivingFrom(Anatoliy_User, olessyaSender.UserName);
         var nathanReceiver2 = secondRoot.ReceivingFrom(Nathan_User, olessyaSender.UserName);
         var maxReceiver1 = secondRoot.ReceivingFrom(Max_User, olessyaSender.UserName);

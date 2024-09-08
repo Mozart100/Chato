@@ -5,7 +5,7 @@ public static class UserInstructions
 
     public const string Received_Instruction = "received";//done
     public const string Not_Received_Instruction = "not_received";//done
-    public const string Publish_Broadcasting_Instruction = "send_Everyone"; // done
+    //public const string Publish_Broadcasting_Instruction = "send_Everyone"; // done
     public const string Publish_PeerToPeer_Instruction = "peer_to_peer";//done
     public const string Publish_ToRestRoom_Instruction = "send_Rest_Room";//done
 
@@ -32,10 +32,10 @@ public class UserSendStringMessageRestRoomInstruction : UserInstructionBase
 }
 
 
-public class UserBroadcastInstruction : UserInstructionBase
-{
-    public override string InstructionName => UserInstructions.Publish_Broadcasting_Instruction;
-}
+//public class UserBroadcastInstruction : UserInstructionBase
+//{
+//    public override string InstructionName => UserInstructions.Publish_Broadcasting_Instruction;
+//}
 
 public class UserPeerToPeerInstruction : UserInstructionBase
 {
