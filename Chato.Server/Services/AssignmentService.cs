@@ -47,7 +47,7 @@ public class AssignmentService : IAssignmentService
     {
         if (user is not null)
         {
-            foreach (var roomName in user.Rooms.SafeToArray())
+            foreach (var roomName in user.Chats.SafeToArray())
             {
                 await _roomService.RemoveUserAndRoomFromRoom(roomName, user.UserName);
             }

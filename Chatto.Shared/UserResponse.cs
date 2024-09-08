@@ -11,7 +11,7 @@ public interface IUserEnittyMapper : IAutomapperEntities
     int Age { get; set; }
     string Description { get; set; }
     string Gender { get; set; }
-    string[] Rooms { get; set; }
+    string[] Chats { get; set; }
     string ConnectionId { get; set; }
 }
 
@@ -22,7 +22,7 @@ public class UserDto : IUserEnittyMapper
     public int Age { get; set; }
     public string Description { get; set; }
     public string Gender { get; set; }
-    public string[] Rooms { get; set; }
+    public string[] Chats { get; set; }
     public string ConnectionId { get; set; }
 
 }

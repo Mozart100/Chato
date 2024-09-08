@@ -8,7 +8,7 @@ public class User : EntityDbBase , IUserEnittyMapper
     public int Age { get; set; }
     public string Description { get; set; }
     public string Gender { get; set; }
-    public string[] Rooms { get; set; }
+    public string[] Chats { get; set; }
     public string ConnectionId { get; set; }
 
 }

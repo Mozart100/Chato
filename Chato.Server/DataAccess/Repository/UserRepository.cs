@@ -28,9 +28,9 @@ public class UserRepository : AutoRepositoryBase<UserDb, User>, IUserRepository
     {
         await UpdateAsync(u => u.UserName == userNameOrId, user =>
         {
-            var rooms = user.Rooms.SafeToList();
+            var rooms = user.Chats.SafeToList();
             rooms.Add(roomName);
-            user.Rooms = rooms.ToArray();
+            user.Chats = rooms.ToArray();
         });
 
     }
