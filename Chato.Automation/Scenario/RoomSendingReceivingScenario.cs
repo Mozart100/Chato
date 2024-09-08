@@ -81,7 +81,7 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
 
                 token = user.RegistrationResponse.Token;    
                 response = await Get<ResponseWrapper<GetRoomResponse>>(url,token);
-                response.Body.Room.Should().NotBeNull();
+                response.Body.Chat.Should().NotBeNull();
             }).LeaveRoom( Anatoliy_User,Olessya_User,Nathan_User) ;
 
 
@@ -89,7 +89,7 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
         await InstructionExecuter(graph);
 
         response = await Get<ResponseWrapper<GetRoomResponse>>(url,token);
-        response.Body.Room.Should().BeNull();
+        response.Body.Chat.Should().BeNull();
     }
 
     private async Task Setup_SendingInsideTheRoom_Step()

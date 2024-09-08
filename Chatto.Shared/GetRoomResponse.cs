@@ -6,7 +6,7 @@ public class GetRoomResponse
 {
     [JsonPropertyName("room")]
 
-    public ChatRoomDto Room { get; set; }
+    public ChatRoomDto Chat { get; set; }
 }
 
 public record SenderInfo(string UserName, string Message);
