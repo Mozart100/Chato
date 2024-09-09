@@ -9,6 +9,7 @@ namespace Chato.Server.Services;
 
 public interface IChatService
 {
+    static string GetChatName(string fromUser,string toUser)=> $"{fromUser}__{toUser}";
     Task AddUserAsync(string roomName, string userName);
     Task<ChatRoomDto> CreateRoomAsync(string roomName);
     Task<ChatRoomDto[]> GetAllRoomAsync();

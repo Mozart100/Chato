@@ -40,79 +40,79 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
 
     public async Task ExecuteAsync()
     {
-        var room = IPersistentUsers.AdultRoom;
+        var chat = IPersistentUsers.AdultRoom;
         var requests = new List<(string UserName, string Token)>();
         for (int j = 0; j < 3; j++)
         {
             var request = new RegistrationRequest()
             {
-                UserName = $"{room}__User{j + 1}",
-                Description = $"Description_{room}",
+                UserName = $"{chat}__User{j + 1}",
+                Description = $"Description_{chat}",
                 Gender = "male",
                 Age = 20,
             };
 
 
             var message = $"{request.UserName} has registered";
-            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, room);
-            await _roomService.SendMessageAsync(room, request.UserName, message);
+            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, chat);
+            await _roomService.SendMessageAsync(chat, request.UserName, message);
         
             requests.Add((request.UserName, token));
         }
         var hi = $"{requests[1].UserName} say hi";
-        await _roomService.SendMessageAsync(room, requests[1].UserName, hi);
+        await _roomService.SendMessageAsync(chat, requests[1].UserName, hi);
 
         hi = $"{requests[2].UserName} say hi back";
-        await _roomService.SendMessageAsync(room, requests[2].UserName, hi);
+        await _roomService.SendMessageAsync(chat, requests[2].UserName, hi);
 
 
         requests.Clear();
 
-        room = IPersistentUsers.OnlyGirlsRoom;
+        chat = IPersistentUsers.OnlyGirlsRoom;
         for (int j = 0; j < 5; j++)
         {
             var request = new RegistrationRequest()
             {
-                UserName = $"{room}__User{j + 1}",
-                Description = $"{room}=> I love roses.",
+                UserName = $"{chat}__User{j + 1}",
+                Description = $"{chat}=> I love roses.",
                 Gender = "female",
                 Age = 20,
             };
 
-            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, room);
+            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, chat);
             requests.Add((request.UserName, token));
         }
 
         var talk = $"{requests[3].UserName} say hello you";
-        await _roomService.SendMessageAsync(room, requests[3].UserName, talk);
+        await _roomService.SendMessageAsync(chat, requests[3].UserName, talk);
 
         talk = $"{requests[4].UserName} say whats up";
-        await _roomService.SendMessageAsync(room, requests[4].UserName, talk);
+        await _roomService.SendMessageAsync(chat, requests[4].UserName, talk);
 
 
 
 
         requests.Clear();
-        room = IPersistentUsers.SchoolRoom;
+        chat = IPersistentUsers.SchoolRoom;
         for (int j = 0; j < 7; j++)
         {
             var request = new RegistrationRequest()
             {
-                UserName = $"{room}__User{j + 1}",
-                Description = $"{room}=> I hate school.",
+                UserName = $"{chat}__User{j + 1}",
+                Description = $"{chat}=> I hate school.",
                 Gender = "male",
                 Age = 20,
             };
 
-            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, room);
+            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, chat);
             requests.Add((request.UserName, token));
         }
 
         talk = $"{requests[3].UserName} when school starts";
-        await _roomService.SendMessageAsync(room, requests[3].UserName, talk);
+        await _roomService.SendMessageAsync(chat, requests[3].UserName, talk);
 
         talk = $"{requests[4].UserName} say tomorrow";
-        await _roomService.SendMessageAsync(room, requests[4].UserName, talk);
+        await _roomService.SendMessageAsync(chat, requests[4].UserName, talk);
 
 
 
