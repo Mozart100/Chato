@@ -48,16 +48,16 @@ public class ChattoHub : Hub<IChatHub>
 {
     private readonly IUserService _userService;
     private readonly IChatService _roomService;
-    private readonly IAssignmentService _userRoomService;
+    private readonly IAssignmentService _assignmentService;
 
     public ChattoHub(
         IUserService userService,
         IChatService roomService,
-        IAssignmentService userRoomService)
+        IAssignmentService assignmentService)
     {
         this._userService = userService;
         this._roomService = roomService;
-        this._userRoomService = userRoomService;
+        this._assignmentService = assignmentService;
     }
 
 
@@ -107,14 +107,14 @@ public class ChattoHub : Hub<IChatHub>
     public async Task JoinGroup(string roomName)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
-        await _userRoomService.JoinGroup(Context.User.Identity.Name, roomName);
+        await _assignmentService.JoinGroup(Context.User.Identity.Name, roomName);
     }
 
     public async Task LeaveGroup(string groupName)
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
 
-        await _userRoomService.RemoveUserByUserNameOrIdAsync(Context.User.Identity.Name);
+        await _assignmentService.RemoveUserByUserNameOrIdAsync(Context.User.Identity.Name);
     }
 
     public async Task UserDisconnectAsync()
@@ -125,7 +125,7 @@ public class ChattoHub : Hub<IChatHub>
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         await base.OnDisconnectedAsync(exception);
-        await _userRoomService.RemoveUserByUserNameOrIdAsync(Context.User.Identity.Name);
+        await _assignmentService.RemoveUserByUserNameOrIdAsync(Context.User.Identity.Name);
     }
 
 
