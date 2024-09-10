@@ -211,12 +211,12 @@ public class UserInstructionExecuter
         });
 
 
-        _connection.On<string, string, string,string>(nameof(IChatHub.SendTextToGroup), async (chat, fromUser,toUser, message) =>
+        _connection.On<string, string, string,string>(nameof(IChatHub.SendTextToChat), async (chat, fromUser,toUser, message) =>
         {
             var ptr = Encoding.UTF8.GetBytes(message);
             await ExpectedMessages(fromUser, ptr);
 
-            _logger.LogWarning($"{nameof(IChatHub.SendTextToGroup)} -- From user {fromUser} in chat {chat} received message [{message}].");
+            _logger.LogWarning($"{nameof(IChatHub.SendTextToChat)} -- From user {fromUser} in chat {chat} received message [{message}].");
         });
 
         //_connection.On<TextMessage>(nameof(IChatHub.SendTextToGroup), async (textMesage) =>
