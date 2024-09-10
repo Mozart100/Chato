@@ -1,4 +1,5 @@
 ﻿using Chato.Server.DataAccess.Models;
+using Chato.Server.Infrastracture;
 using Chato.Server.Services;
 using Chatto.Shared;
 using Microsoft.AspNetCore.Authorization;
@@ -37,8 +38,7 @@ public record HubDownloadInfo(int Amount);
 public interface IChatHub
 {
 
-    //Task SendTextToGroup(TextMessage textMessage);
-    Task SendTextToGroup(string chat, string fromUser, string toUser,string message);
+    Task SendTextToChat(string chat, string fromUser, string toUser,string message);
     Task SendText(string fromUser, string message);
     Task SelfReplay(string message);
 }
@@ -89,14 +89,20 @@ public class ChattoHub : Hub<IChatHub>
     public async Task SendMessageToOthersInGroup(string chat, string fromUser,string toUser, string message)
     {
         //var ptr = Encoding.UTF8.GetBytes(message);
-        await _roomService.SendMessageAsync(chat, fromUser, message);
-        await Clients.OthersInGroup(chat).SendTextToGroup(chat,fromUser,toUser,message);
-        //await Clients.OthersInGroup(chat).SendTextToGroup(new TextMessage(chat,fromUser,message));
+        if(chat.IsNullOrEmpty())
+        {
+            chat = IChatService.GetChatName(fromUser, toUser);
+            await JoinGroup2222(chat);
+        }
+        else
+        {
+            await _roomService.SendMessageAsync(chat, fromUser, message);
+            await Clients.OthersInGroup(chat).SendTextToChat(chat, fromUser, toUser, message);
+        }
     }
 
     public async Task SendMessageToOtherUser(string fromUser, string toUser, string ptr)
     {
-        //var user = await _userRepository.GetAsync(x => x.UserName == toUser);
         var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
         if (user is not null)
         {
@@ -105,6 +111,12 @@ public class ChattoHub : Hub<IChatHub>
     }
 
     public async Task JoinGroup(string roomName)
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
+        await _assignmentService.JoinGroup(Context.User.Identity.Name, roomName);
+    }
+
+    public async Task JoinGroup2222(string roomName)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
         await _assignmentService.JoinGroup(Context.User.Identity.Name, roomName);
