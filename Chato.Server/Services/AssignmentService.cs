@@ -6,7 +6,10 @@ namespace Chato.Server.Services;
 
 public interface IAssignmentService
 {
+    public const string Lobi = "lobi";
+
     Task JoinGroup(string nameOrId, string roomName);
+    Task JoinLobi(string nameOrId);
     Task<string> RegisterUserAndAssignToRoom(RegistrationRequest request, string defaultRoom);
     Task RemoveUserByConnectionIdAsync(string connectionId);
     Task RemoveUserByUserNameOrIdAsync(string userNameOrId);
@@ -14,6 +17,7 @@ public interface IAssignmentService
 
 public class AssignmentService : IAssignmentService
 {
+
     private readonly IUserService _userService;
     private readonly IChatService _roomService;
     private readonly IAuthenticationService _authenticationService;
@@ -26,6 +30,8 @@ public class AssignmentService : IAssignmentService
         this._roomService = roomService;
         this._authenticationService = authenticationService;
     }
+
+    public string Enterence => IAssignmentService.Lobi;
 
     public async Task RemoveUserByConnectionIdAsync(string connectionId)
     {
@@ -54,13 +60,23 @@ public class AssignmentService : IAssignmentService
         }
     }
 
-    public async Task JoinGroup(string nameOrId, string roomName)
+    public async Task JoinGroup(string nameOrId, string chatName)
     {
         var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(nameOrId);
         if (user is not null)
         {
-            await _userService.AssignRoomNameAsync(user.UserName, roomName);
-            await _roomService.JoinOrCreateRoom(roomName, user.UserName);
+            await _userService.AssignRoomNameAsync(user.UserName, chatName);
+            await _roomService.JoinOrCreateRoom(chatName, user.UserName);
+        }
+    }
+
+    public async Task JoinLobi(string nameOrId)
+    {
+        var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(nameOrId);
+        if (user is not null)
+        {
+            await _userService.AssignRoomNameAsync(user.UserName, Enterence);
+            await _roomService.JoinOrCreateRoom(Enterence, user.UserName);
         }
     }
 

@@ -38,7 +38,7 @@ public interface IChatHub
 {
 
     //Task SendTextToGroup(TextMessage textMessage);
-    Task SendTextToGroup(string chat, string fromUser, string message);
+    Task SendTextToGroup(string chat, string fromUser, string toUser,string message);
     Task SendText(string fromUser, string message);
     Task SelfReplay(string message);
 }
@@ -86,11 +86,11 @@ public class ChattoHub : Hub<IChatHub>
         return Clients.Others.SendText(fromUser, message);
     }
 
-    public async Task SendMessageToOthersInGroup(string chat, string fromUser, string message)
+    public async Task SendMessageToOthersInGroup(string chat, string fromUser,string toUser, string message)
     {
         //var ptr = Encoding.UTF8.GetBytes(message);
         await _roomService.SendMessageAsync(chat, fromUser, message);
-        await Clients.OthersInGroup(chat).SendTextToGroup(chat,fromUser,message);
+        await Clients.OthersInGroup(chat).SendTextToGroup(chat,fromUser,toUser,message);
         //await Clients.OthersInGroup(chat).SendTextToGroup(new TextMessage(chat,fromUser,message));
     }
 
@@ -109,6 +109,20 @@ public class ChattoHub : Hub<IChatHub>
         await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
         await _assignmentService.JoinGroup(Context.User.Identity.Name, roomName);
     }
+
+
+    /// <summary>
+    /// After registration.
+    /// </summary>
+    /// <param name="roomName"></param>
+    /// <returns></returns>
+    public async Task JoinLobi()
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, IAssignmentService.Lobi);
+        await _assignmentService.JoinLobi(Context.User.Identity.Name);
+    }
+
+
 
     public async Task LeaveGroup(string groupName)
     {

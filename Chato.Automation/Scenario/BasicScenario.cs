@@ -53,7 +53,10 @@ internal class BasicScenario : InstructionScenarioBase
     private async Task SendingToSpecificPerson()
     {
         var message_1 = "Shalom";
+        //var users = InstructionNodeFluentApi.StartWithLobi(Anatoliy_User,Olessya_User,Nathan_User);
         var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
+
+        //var sending = users[Anatoliy_User].SendingTo(Anatoliy_User, Nathan_User);
 
         var anatoliySender = firstGroup.SendingTo(Anatoliy_User, Nathan_User);
         var nathanReceive1 = firstGroup.ReceivingFrom(Nathan_User, anatoliySender.UserName);

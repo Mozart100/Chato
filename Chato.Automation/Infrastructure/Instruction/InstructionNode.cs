@@ -1,4 +1,5 @@
-﻿using Chatto.Shared;
+﻿using Chato.Server.Services;
+using Chatto.Shared;
 using System.Text;
 
 namespace Chato.Automation.Infrastructure.Instruction;
@@ -27,6 +28,25 @@ public static class InstructionNodeFluentApi
     {
         var byteArray = Encoding.UTF8.GetBytes(message);
         var info = new InstructionNode(userName: null, groupName: groupName, instruction: null, message: byteArray, fromArrived: null);
+        return info;
+    }
+
+    public static Dictionary<string, InstructionNode> StartWithLobi(params string[] users )
+    {
+        var instructions = new Dictionary<string, InstructionNode>();
+        foreach (var user in users)
+        {
+            var info = new InstructionNode(userName: null, groupName: IAssignmentService.Lobi, instruction: new UserEnterLobiInstruction(), message: null, fromArrived: null);
+            instructions[user] = info;
+        }        
+
+        return instructions;
+    }
+
+    public static InstructionNode EnterLobi( string message,string user )
+    {
+        var byteArray = Encoding.UTF8.GetBytes(message);
+        var info = new InstructionNode(userName: user, groupName: IAssignmentService.Lobi, instruction: new UserEnterLobiInstruction(), message: byteArray, fromArrived: null);
         return info;
     }
 
