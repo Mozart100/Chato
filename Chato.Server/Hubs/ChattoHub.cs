@@ -38,7 +38,7 @@ public record HubDownloadInfo(int Amount);
 public interface IChatHub
 {
 
-    Task SendTextToChat(string chat, string fromUser, string toUser,string message);
+    Task SendTextToChat(string chat, string fromUser, string toUser, string message);
     Task SendText(string fromUser, string message);
     Task SelfReplay(string message);
 }
@@ -46,6 +46,8 @@ public interface IChatHub
 [Authorize]
 public class ChattoHub : Hub<IChatHub>
 {
+    public const string User_Connected_Message =  $"You are connected to {IChatService.Lobi} chat";
+
     private readonly IUserService _userService;
     private readonly IChatService _roomService;
     private readonly IAssignmentService _assignmentService;
@@ -69,8 +71,9 @@ public class ChattoHub : Hub<IChatHub>
         var user = Context.User;
 
         await _userService.AssignConnectionId(user.Identity.Name, connectionId);
+        await JoinLobiChat();
 
-        await ReplyMessage("server", "You are connected");
+        await ReplyMessage("server", User_Connected_Message);
         await base.OnConnectedAsync();
     }
 
@@ -86,16 +89,25 @@ public class ChattoHub : Hub<IChatHub>
         return Clients.Others.SendText(fromUser, message);
     }
 
-    public async Task SendMessageToOthersInGroup(string chat, string fromUser,string toUser, string message)
+
+    public async Task SendMessageToOthersInGroup(string chat, string fromUser, string toUser, string message)
     {
         //var ptr = Encoding.UTF8.GetBytes(message);
-        if(chat.IsNullOrEmpty())
+        if (chat.IsNullOrEmpty())
         {
+            //peer to peer
             chat = IChatService.GetChatName(fromUser, toUser);
-            await JoinGroup2222(chat);
+            await JoinGroup2222(Context.ConnectionId, fromUser, chat);
+            var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
+            if (user is not null)
+            {
+                await JoinGroup2222(user.ConnectionId, toUser, chat);
+                await Clients.OthersInGroup(chat).SendTextToChat(chat, fromUser, toUser, message);
+            }
         }
         else
         {
+
             await _roomService.SendMessageAsync(chat, fromUser, message);
             await Clients.OthersInGroup(chat).SendTextToChat(chat, fromUser, toUser, message);
         }
@@ -110,31 +122,23 @@ public class ChattoHub : Hub<IChatHub>
         }
     }
 
+    public async Task JoinLobiChat()
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, IChatService.Lobi);
+        await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, IChatService.Lobi);
+    }
+
     public async Task JoinGroup(string roomName)
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
-        await _assignmentService.JoinGroup(Context.User.Identity.Name, roomName);
+        await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, roomName);
     }
 
-    public async Task JoinGroup2222(string roomName)
+    public async Task JoinGroup2222(string connectionId, string userName, string roomName)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
-        await _assignmentService.JoinGroup(Context.User.Identity.Name, roomName);
+        await Groups.AddToGroupAsync(connectionId, roomName);
+        await _assignmentService.JoinOrCreateRoom(userName, roomName);
     }
-
-
-    /// <summary>
-    /// After registration.
-    /// </summary>
-    /// <param name="roomName"></param>
-    /// <returns></returns>
-    public async Task JoinLobi()
-    {
-        await Groups.AddToGroupAsync(Context.ConnectionId, IAssignmentService.Lobi);
-        await _assignmentService.JoinLobi(Context.User.Identity.Name);
-    }
-
-
 
     public async Task LeaveGroup(string groupName)
     {

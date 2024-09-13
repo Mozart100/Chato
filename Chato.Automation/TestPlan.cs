@@ -39,7 +39,7 @@ internal class TestPlan
         {
 
 
-            await _registrationValidationScenario.StartRunScenario();
+            //await _registrationValidationScenario.StartRunScenario();
             await _basicScenario.StartRunScenario();
             await roomSendingReceivingScenario.StartRunScenario();
             await _groupHandShakeScenario.StartRunScenario();

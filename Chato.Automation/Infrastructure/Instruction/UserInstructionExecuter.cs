@@ -2,6 +2,7 @@
 using Chato.Server.DataAccess.Models;
 using Chato.Server.Hubs;
 using Chato.Server.Infrastracture;
+using Chato.Server.Services;
 using Chatto.Shared;
 using FluentAssertions;
 using Microsoft.AspNetCore.SignalR.Client;
@@ -12,7 +13,8 @@ namespace Chato.Automation.Infrastructure.Instruction;
 
 public record HubMessageRecievedBase(string From);
 //public record HubMessageStringRecieved(string From, string Message) : HubMessageRecievedBase(From);
-public record HubMessageByteRecieved(string From, byte[] Data) : HubMessageRecievedBase(From);
+public record HubMessageByteRecieved(string From, string Data) : HubMessageRecievedBase(From);
+public record HubMessageByteRecieved2222(string ChatNAme, string From, string Data);
 
 
 public class UserInstructionExecuter
@@ -38,6 +40,7 @@ public class UserInstructionExecuter
     private readonly CounterSignal _signal;
     private readonly HubConnection _connection;
     private readonly Queue<HubMessageRecievedBase> _receivedMessages;
+    private readonly Queue<HubMessageByteRecieved2222> _receivedMessages2222;
     private readonly HashSet<string> _ignoreUsers;
 
 
@@ -50,6 +53,7 @@ public class UserInstructionExecuter
         _ignoreUsers.Add(Hub_From_Server);
 
         _receivedMessages = new Queue<HubMessageRecievedBase>();
+        _receivedMessages2222 = new Queue<HubMessageByteRecieved2222>();
 
         _connection = new HubConnectionBuilder()
        .WithUrl(url, options =>
@@ -81,16 +85,26 @@ public class UserInstructionExecuter
     //    await _connection.StartAsync();
     //    await Listen();
     //}
-
+    //TODO: toli!!!!
     public async Task RegisterAsync()
     {
         await _connection.StartAsync();
         await Listen();
     }
 
+    public async Task RegisterAsync2222()
+    {
+        await _connection.StartAsync();
+        await Listen2222();
+
+
+        //var ptr = Encoding.UTF8.GetBytes(ChattoHub.User_Connected_Message);
+        //ExpectedMessages(UserName, ptr);
+    }
+
     public async Task InitializeWithGroupAsync(string groupName)
     {
-        await JoinGroup(groupName);
+        await JoinOrCreateChat2222(groupName);
         await DownloadGroupHistory(groupName);
     }
 
@@ -143,11 +157,12 @@ public class UserInstructionExecuter
     }
 
 
-    public async Task JoinGroup(string groupName)
+    public async Task JoinOrCreateChat2222(string groupName)
     {
         _logger.LogInformation($"{UserName} joins group.");
 
         await _connection.InvokeAsync(Hub_Join_Group_Topic, groupName);
+        await _signal.ReleaseAsync();
     }
 
 
@@ -169,15 +184,29 @@ public class UserInstructionExecuter
         }
     }
 
-    public async Task ListenToStringCheckAsync(string fromArrived, byte[] ptr)
+    public async Task ListenToStringCheckAsync2222( string chatName ,  string fromArrived, string message)
     {
-        var message = Encoding.UTF8.GetString(ptr);
-        var messageReceived = _receivedMessages.Dequeue();
+        var messageReceived = _receivedMessages2222 .Dequeue();
 
-        if (messageReceived is HubMessageByteRecieved stringMessage)
+        if (messageReceived is HubMessageByteRecieved2222 stringMessage)
         {
             stringMessage.From.Should().Be(fromArrived);
-            stringMessage.Data.IsEqualsShould(ptr);
+            stringMessage.Data.Should().Be(message);
+            stringMessage.ChatNAme.Should().Be(chatName);
+        }
+    }
+
+
+    public async Task ListenToStringCheckAsync(string chatName, string fromArrived, byte[] ptr)
+    {
+        var message = Encoding.UTF8.GetString(ptr);
+        var messageReceived = _receivedMessages2222.Dequeue();
+
+        if (messageReceived is HubMessageByteRecieved2222 stringMessage)
+        {
+            stringMessage.From.Should().Be(fromArrived);
+            stringMessage.Data.Should().Be(message);
+            stringMessage.ChatNAme.Should().Be(chatName);
         }
     }
 
@@ -195,6 +224,7 @@ public class UserInstructionExecuter
             {
                 var ptr = Encoding.UTF8.GetBytes(message);
                 await ExpectedMessages(user, ptr);
+
             }
             else
             {
@@ -211,7 +241,7 @@ public class UserInstructionExecuter
         });
 
 
-        _connection.On<string, string, string,string>(nameof(IChatHub.SendTextToChat), async (chat, fromUser,toUser, message) =>
+        _connection.On<string, string, string, string>(nameof(IChatHub.SendTextToChat), async (chat, fromUser, toUser, message) =>
         {
             var ptr = Encoding.UTF8.GetBytes(message);
             await ExpectedMessages(fromUser, ptr);
@@ -229,6 +259,51 @@ public class UserInstructionExecuter
 
 
     }
+
+    protected async Task Listen2222()
+    {
+        _connection.On<string, string>(nameof(IChatHub.SendText), async (user, message) =>
+        {
+            var ptr = Encoding.UTF8.GetBytes(message);
+            await ExpectedMessages2222(IChatService.Lobi, user, message);
+            await _signal.ReleaseAsync();
+        });
+
+
+        _connection.On<string>(nameof(IChatHub.SelfReplay), async (message) =>
+        {
+            var ptr = Encoding.UTF8.GetBytes(message);
+            await ExpectedMessages(UserName, ptr);
+        });
+
+
+        _connection.On<string, string, string, string>(nameof(IChatHub.SendTextToChat), async (chat, fromUser, toUser, message) =>
+        {
+            var ptr = Encoding.UTF8.GetBytes(message);
+            await ExpectedMessages2222(chat, fromUser, message);
+
+            _logger.LogWarning($"{nameof(IChatHub.SendTextToChat)} -- From user {fromUser} in chat {chat} received message [{message}].");
+        });
+
+        //_connection.On<TextMessage>(nameof(IChatHub.SendTextToGroup), async (textMesage) =>
+        //{
+        //    var ptr = Encoding.UTF8.GetBytes(textMesage.Message);
+        //    await ExpectedMessages(textMesage.FromUser, ptr);
+
+        //    _logger.LogWarning($"From user {textMesage.FromUser} in chat {textMesage.Chat} received message [{textMesage.Message}].");
+        //});
+
+
+    }
+
+    private async Task ExpectedMessages2222(string chatName, string user, string message)
+    {
+        _logger.LogInformation($"{UserName} received message [{message}] from [{user}].");
+
+        _receivedMessages2222.Enqueue(new HubMessageByteRecieved2222(chatName, user, message));
+        await _signal.ReleaseAsync();
+    }
+
 
     private async Task ExpectedMessages(string user, byte[] ptr)
     {
@@ -249,7 +324,7 @@ public class UserInstructionExecuter
             _logger.LogInformation($"{UserName} received message image from [{user}].");
         }
 
-        _receivedMessages.Enqueue(new HubMessageByteRecieved(user, ptr));
+        _receivedMessages.Enqueue(new HubMessageByteRecieved(user, templateMessage));
         await _signal.ReleaseAsync();
     }
 
@@ -268,6 +343,7 @@ public class UserInstructionExecuter
     public async Task UserDisconnectingAsync()
     {
         await _connection.InvokeAsync(Hub_OnDisconnectedAsync_Topic);
+        await _signal.ReleaseAsync();
     }
 
     public async Task KillConnectionAsync()

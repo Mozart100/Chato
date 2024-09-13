@@ -16,12 +16,12 @@ public interface IPersistentUsers
     public const string AdultRoom = "Adults";
     public const string OnlyGirlsRoom = "OnlyGrils";
     public const string SchoolRoom = "School";
-    
-    
+
+
     public const string ToRemoveRoom = "ToRemove";
 
 
-    static string[] PersistentUsers { get; } = { AdultRoom, OnlyGirlsRoom, SchoolRoom };
+    static string[] PersistentUsers { get; } = { IChatService.Lobi, AdultRoom, OnlyGirlsRoom, SchoolRoom };
 }
 
 
@@ -31,7 +31,7 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
     private readonly IChatService _roomService;
 
     public GenerateDefaultRoomAndUsersService(IAssignmentService assignmentService,
-        IChatService  roomService
+        IChatService roomService
         )
     {
         _assignmentService = assignmentService;
@@ -40,6 +40,9 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
 
     public async Task ExecuteAsync()
     {
+        await _assignmentService.CreateLobi();
+
+
         var chat = IPersistentUsers.AdultRoom;
         var requests = new List<(string UserName, string Token)>();
         for (int j = 0; j < 3; j++)
@@ -56,7 +59,7 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
             var message = $"{request.UserName} has registered";
             var token = await _assignmentService.RegisterUserAndAssignToRoom(request, chat);
             await _roomService.SendMessageAsync(chat, request.UserName, message);
-        
+
             requests.Add((request.UserName, token));
         }
         var hi = $"{requests[1].UserName} say hi";

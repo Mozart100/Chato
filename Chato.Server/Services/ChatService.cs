@@ -9,6 +9,8 @@ namespace Chato.Server.Services;
 
 public interface IChatService
 {
+    public const string Lobi = "lobi";
+
     static string GetChatName(string fromUser,string toUser)=> $"{fromUser}__{toUser}";
     Task AddUserAsync(string roomName, string userName);
     Task<ChatRoomDto> CreateRoomAsync(string roomName);
@@ -16,6 +18,7 @@ public interface IChatService
     Task<IEnumerable<SenderInfo>> GetGroupHistoryAsync(string roomName);
     Task<ChatRoomDto?> GetRoomByNameOrIdAsync(string nameOrId);
     Task JoinOrCreateRoom(string roomName, string userName);
+    Task CreateLobi();
     Task RemoveRoomByNameOrIdAsync(string nameOrId);
     Task RemoveUserAndRoomFromRoom(string roomName, string username);
     Task RemoveHistoryByRoomNameAsync(string roomName);
@@ -186,6 +189,18 @@ public class ChatService : IChatService
             {
                 var createRoom = await CreateRoomCoreAsync(roomName);
                 createRoom.Users.Add(userName);
+            }
+        });
+    }
+
+    public async Task CreateLobi()
+    {
+        await _lockerQueue.InvokeAsync(async () =>
+        {
+            var room = await GetRoomByNameOrIdCoreAsync(IChatService.Lobi);
+            if (room is  null)
+            {
+                await CreateRoomCoreAsync(IChatService.Lobi);
             }
         });
     }
