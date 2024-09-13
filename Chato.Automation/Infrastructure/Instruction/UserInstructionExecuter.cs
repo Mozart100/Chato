@@ -210,6 +210,11 @@ public class UserInstructionExecuter
         }
     }
 
+    public async Task NotReceivedCheckAsync2222()
+    {
+        _receivedMessages2222.Any().Should().BeFalse();
+    }
+
 
     public async Task NotReceivedCheckAsync()
     {

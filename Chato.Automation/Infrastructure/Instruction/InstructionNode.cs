@@ -77,10 +77,11 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode ReceivingFrom2222(this InstructionNode info, string arrivedFrom, string message)
+    public static InstructionNode ReceivingFrom2222(this InstructionNode info, string chatName, string arrivedFrom, string message)
     {
         var @new = info with
         {
+            GroupName = chatName,
             Instruction = new UserReceivedInstruction(),
             FromArrived = arrivedFrom,
             Message = Encoding.UTF8.GetBytes(message),
@@ -94,7 +95,7 @@ public static class InstructionNodeFluentApi
     {
         var @new = info with
         {
-            FromArrived=null,
+            FromArrived = null,
             Instruction = new LogoutInstruction(),
             Message = null,
             Children = new(),
@@ -103,7 +104,7 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode JoinOrCreateChat(this InstructionNode info,  string chatName)
+    public static InstructionNode JoinOrCreateChat(this InstructionNode info, string chatName)
     {
         var @new = info with
         {
@@ -181,20 +182,20 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode SendingToRestRoom222(this InstructionNode info, string userName,string message , string chatName)
-    {
-        var @new = info with
-        {
-            GroupName = chatName,
-            UserName = userName,
-            Instruction = new UserSendStringMessageRestRoomInstruction(),
-            Message = Encoding.UTF8.GetBytes(message),
-            Children = new(),
+    //public static InstructionNode SendingToRestRoom222(this InstructionNode info, string userName,string message , string chatName)
+    //{
+    //    var @new = info with
+    //    {
+    //        GroupName = chatName,
+    //        UserName = userName,
+    //        Instruction = new UserSendStringMessageRestRoomInstruction(),
+    //        Message = Encoding.UTF8.GetBytes(message),
+    //        Children = new(),
 
-        };
+    //    };
 
-        return @new;
-    }
+    //    return @new;
+    //}
 
     public static InstructionNode SendingToRestRoom222(this InstructionNode info, string message, string chatName)
     {
@@ -259,10 +260,11 @@ public static class InstructionNodeFluentApi
     }
 
 
-    public static InstructionNode Is_Not_Received2222(this InstructionNode info)
+    public static InstructionNode Is_Not_Received2222(this InstructionNode info, string chatame)
     {
         var @new = info with
         {
+            GroupName = chatame,
             Instruction = new UserNotReceivedInstruction(),
             Message = null,
             FromArrived = "none",

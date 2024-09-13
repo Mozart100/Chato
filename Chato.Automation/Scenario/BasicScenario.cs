@@ -22,24 +22,9 @@ internal class BasicScenario : InstructionScenarioBase
     public BasicScenario(ILogger<BasicScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
-        //BusinessLogicCallbacks.Add(SetupGroup);
         BusinessLogicCallbacks.Add(SendingWithinLobi);
         BusinessLogicCallbacks.Add(SendingWithinLobi_UserMovedChat);
-        //BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
-
-        
-
-
-        BusinessLogicCallbacks.Add(SetupGroup);
-        BusinessLogicCallbacks.Add(VerificationStep);
-        BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
-
-
-        BusinessLogicCallbacks.Add(Setup_SendingOnlyToRoomStep_Step);
-        BusinessLogicCallbacks.Add(SendingOnlyToRoomStep);
-        BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
-
-
+        BusinessLogicCallbacks.Add(VerificationStep2222);
 
         //SummaryLogicCallback.Add(CheckAllCleaned);
 
@@ -64,8 +49,8 @@ internal class BasicScenario : InstructionScenarioBase
 
         users[Anatoliy_User].Connect(users[Nathan_User]).Connect(users[Olessya_User])
             .Connect(users[Anatoliy_User].SendingToRestRoom222(message_1, IChatService.Lobi))
-            .Connect(users[Nathan_User].ReceivingFrom2222(Anatoliy_User, message_1))
-            .Connect(users[Olessya_User].ReceivingFrom2222(Anatoliy_User, message_1))
+            .Connect(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
+            .Connect(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
             .Connect(users[Anatoliy_User].Logout())
             .Connect(users[Olessya_User].Logout())
             .Connect(users[Nathan_User].Logout());
@@ -90,20 +75,22 @@ internal class BasicScenario : InstructionScenarioBase
 
 
         users[Anatoliy_User].Connect(users[Nathan_User]).Connect(users[Olessya_User])
-            .Connect(users[Anatoliy_User].SendingToRestRoom222(Anatoliy_User, message_1, IChatService.Lobi))
-            .Connect(users[Nathan_User].ReceivingFrom2222(Anatoliy_User, message_1))
-            .Connect(users[Olessya_User].ReceivingFrom2222(Anatoliy_User, message_1))
+            .Connect(users[Anatoliy_User].SendingToRestRoom222(message_1, IChatService.Lobi))
+            .Connect(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
+            .Connect(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
+
             .Connect(users[Olessya_User].JoinOrCreateChat(chat2))
             .Connect(users[Nathan_User].JoinOrCreateChat(chat2))
 
-            .Connect(users[Anatoliy_User].SendingToRestRoom222(Anatoliy_User, message_1, IChatService.Lobi))
-            .Connect(users[Olessya_User].ReceivingFrom2222(Anatoliy_User, message_1))
+            .Connect(users[Olessya_User].SendingToRestRoom222(message_2, chat2))
+            .Connect(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_2))
+            .Connect(users[Anatoliy_User].Is_Not_Received2222(IChatService.Lobi))
 
-            .Connect(users[Nathan_User].SendingToRestRoom222(message_2, chat2))
-            .Connect(users[Olessya_User].ReceivingFrom2222(Nathan_User, message_1))
+            .Connect(users[Anatoliy_User].Logout())
+            .Connect(users[Olessya_User].Logout())
+            .Connect(users[Nathan_User].Logout());
 
-
-            ;
+        ;
 
 
         var graph = new InstructionGraph(users[Anatoliy_User]);
@@ -111,14 +98,53 @@ internal class BasicScenario : InstructionScenarioBase
         await InstructionExecuter(graph);
 
     }
+    private async Task VerificationStep2222()
+    {
+        await RegisterUsers2222(Anatoliy_User, Olessya_User, Nathan_User);
+
+        const string chat2 = "university_chat";
+
+        const string  message_1 = $"{nameof(message_1)}";
+        const string  message_2 = $"{nameof(message_2)}";
+        const string  message_3 = $"{nameof(message_3)}";
+
+        var users = InstructionNodeFluentApi.RegisterInLoLobi(Anatoliy_User, Olessya_User, Nathan_User);
+
+
+        users[Anatoliy_User].Connect(users[Nathan_User]).Connect(users[Olessya_User])
+            .Connect(users[Anatoliy_User].SendingToRestRoom222(message_1, IChatService.Lobi))
+            .Connect(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
+            .Connect(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
+
+            .Connect(users[Olessya_User].JoinOrCreateChat(chat2))
+            .Connect(users[Nathan_User].JoinOrCreateChat(chat2))
+
+            .Connect(users[Olessya_User].SendingToRestRoom222(message_2, chat2))
+            .Connect(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_2))
+            
+            .Connect(users[Anatoliy_User].JoinOrCreateChat(chat2))
+            
+            .Connect(users[Olessya_User].SendingToRestRoom222(message_3, chat2))
+            .Connect(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_3))
+            .Connect(users[Anatoliy_User].ReceivingFrom2222(chat2, Olessya_User, message_3))
+
+
+            .Connect(users[Anatoliy_User].Logout())
+            .Connect(users[Olessya_User].Logout())
+            .Connect(users[Nathan_User].Logout());
+        
+        ;
+
+
+        var graph = new InstructionGraph(users[Anatoliy_User]);
+
+        await InstructionExecuter(graph);
+    }
+
+
 
     private async Task VerificationStep()
     {
-
-        //var roomInfo = await Get<GetAllRoomResponse>(RoomsControllerUrl);
-        //roomInfo.Rooms.Should().HaveCount(0);
-
-
         var message_1 = "Shalom";
         var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
 
