@@ -25,7 +25,7 @@ public class UserInstructionExecuter
 
     private const string Hub_Send_Other_In_Group_Topic = nameof(ChattoHub.SendMessageToOthersInGroup);
     private const string Hub_Leave_Group_Topic = nameof(ChattoHub.LeaveGroup);
-    private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinGroup);
+    private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinOrCreateGroup);
     //private const string Hub_Get_Group_Info_Topic = nameof(ChattoHub.GetGroupInfo);
 
     private const string Hub_Download_Topic = nameof(ChattoHub.Downloads);

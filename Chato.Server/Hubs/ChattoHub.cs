@@ -128,13 +128,15 @@ public class ChattoHub : Hub<IChatHub>
         await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, IChatService.Lobi);
     }
 
-    public async Task JoinGroup(string roomName)
+    public async Task JoinOrCreateGroup(string chatName)
     {
-        await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
-        await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, roomName);
+        //await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
+        //await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, roomName);
+
+        await JoinGroup2222(Context.ConnectionId, Context.User.Identity.Name, chatName);
     }
 
-    public async Task JoinGroup2222(string connectionId, string userName, string roomName)
+    private async Task JoinGroup2222(string connectionId, string userName, string roomName)
     {
         await Groups.AddToGroupAsync(connectionId, roomName);
         await _assignmentService.JoinOrCreateRoom(userName, roomName);

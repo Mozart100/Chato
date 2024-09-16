@@ -211,6 +211,18 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
+    public static InstructionNode LeaveRoom222(this InstructionNode info, string chat)
+    {
+        var @new = info with
+        {
+            GroupName = chat,
+            Instruction = new LeaveRoomInstruction(),
+            Children = new(),
+        };
+
+        return @new;
+    }
+
 
     public static InstructionNode LeaveRoom(this InstructionNode info, params string[] userNames)
     {
@@ -229,6 +241,20 @@ public static class InstructionNodeFluentApi
 
         return ptr;
     }
+
+    public static InstructionNode Do2222(this InstructionNode info, Func<IUserInfo, Task> operation)
+    {
+        var @new = info with
+        {
+            Instruction = new UserRunOperationInstruction() { Tag = operation },//parameter = token
+            FromArrived = null,
+            Message = null,
+            Children = new(),
+        };
+
+        return @new;
+    }
+
 
     public static InstructionNode Do(this InstructionNode info, InstructionNode target, Func<IUserInfo, Task> operation)
     {
