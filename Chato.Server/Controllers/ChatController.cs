@@ -15,12 +15,10 @@ public class ChatController : ControllerBase
     public const string Chat_Route = "{chat}";
 
     private readonly IChatService _roomService;
-    private readonly IUserService _userService;
 
-    public ChatController(IChatService roomService, IUserService userService)
+    public ChatController(IChatService roomService)
     {
         this._roomService = roomService;
-        this._userService = userService;
     }
 
 
@@ -43,17 +41,6 @@ public class ChatController : ControllerBase
 
         return new GetRoomResponse { Chat = room };
     }
-
-
-    [HttpGet]
-    [Route("users")]
-    public async Task<GetAllUserResponse> GetAllUsers()
-    {
-        var result = await _userService.GetAllUsersAsync();
-
-        return new GetAllUserResponse { Users = result.ToArray() };
-    }
-
 
 
 }

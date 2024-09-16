@@ -1,6 +1,7 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
 using Chato.Server.Hubs;
 using Chato.Server.Services;
+using Chatto.Shared;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 
@@ -42,18 +43,39 @@ internal class BasicScenario : InstructionScenarioBase
 
     private async Task SendingWithinLobi()
     {
-        await RegisterUsers2222(Anatoliy_User, Olessya_User, Nathan_User);
+        var supervisor = nameof(SendingWithinLobi);
+        var activeUsers = new string[] { supervisor,Anatoliy_User, Olessya_User, Nathan_User };
+
+        await RegisterUsers2222(activeUsers);
 
         var message_1 = "Shalom";
-        var users = InstructionNodeFluentApi.RegisterInLoLobi(Anatoliy_User, Olessya_User, Nathan_User);
+        var users = InstructionNodeFluentApi.RegisterInLoLobi(supervisor, Anatoliy_User, Olessya_User, Nathan_User);
 
-        users[Anatoliy_User].Connect(users[Nathan_User]).Connect(users[Olessya_User])
+        users[Anatoliy_User].Connect(users[Nathan_User]).Connect(users[Olessya_User]).Connect(users[supervisor])
             .Connect(users[Anatoliy_User].SendingToRestRoom222(message_1, IChatService.Lobi))
             .Connect(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
             .Connect(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
             .Connect(users[Anatoliy_User].Logout())
             .Connect(users[Olessya_User].Logout())
-            .Connect(users[Nathan_User].Logout());
+            .Connect(users[Nathan_User].Logout())
+
+            .Connect(users[supervisor].Do2222(async user =>
+                  {
+                      var token = user.RegistrationResponse.Token;
+                      var response = await Get<ResponseWrapper<GetAllUserResponse>>(GetAllUsersUrl, token);
+                      foreach (var activeUser in activeUsers.Skip(1))
+                      {
+                          foreach (var item in response.Body.Users)
+                          {
+                              if(item.Equals(activeUser))
+                              {
+                                  throw new Exception($"This user should have been logout!!!");
+                              }
+                          }
+                      }
+                  }))
+            .Connect(users[supervisor].Logout())
+            ;
 
 
         var graph = new InstructionGraph(users[Anatoliy_User]);
@@ -98,15 +120,17 @@ internal class BasicScenario : InstructionScenarioBase
         await InstructionExecuter(graph);
 
     }
+
+
     private async Task VerificationStep2222()
     {
         await RegisterUsers2222(Anatoliy_User, Olessya_User, Nathan_User);
 
         const string chat2 = "university_chat";
 
-        const string  message_1 = $"{nameof(message_1)}";
-        const string  message_2 = $"{nameof(message_2)}";
-        const string  message_3 = $"{nameof(message_3)}";
+        const string message_1 = $"{nameof(message_1)}";
+        const string message_2 = $"{nameof(message_2)}";
+        const string message_3 = $"{nameof(message_3)}";
 
         var users = InstructionNodeFluentApi.RegisterInLoLobi(Anatoliy_User, Olessya_User, Nathan_User);
 
@@ -121,9 +145,9 @@ internal class BasicScenario : InstructionScenarioBase
 
             .Connect(users[Olessya_User].SendingToRestRoom222(message_2, chat2))
             .Connect(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_2))
-            
+
             .Connect(users[Anatoliy_User].JoinOrCreateChat(chat2))
-            
+
             .Connect(users[Olessya_User].SendingToRestRoom222(message_3, chat2))
             .Connect(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_3))
             .Connect(users[Anatoliy_User].ReceivingFrom2222(chat2, Olessya_User, message_3))
@@ -132,7 +156,7 @@ internal class BasicScenario : InstructionScenarioBase
             .Connect(users[Anatoliy_User].Logout())
             .Connect(users[Olessya_User].Logout())
             .Connect(users[Nathan_User].Logout());
-        
+
         ;
 
 
