@@ -83,6 +83,12 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
             response.Body.Document4.Should().BeFalse();
             response.Body.Document5.Should().BeFalse();
 
+
+
+            var parameters = new Dictionary<string, string> { { "num", "1" } };
+            var fileContent = await Get<byte[]>(DownloadFileUrl, token, parameters);
+            fileContent.Should().NotBeNull();
+
         }))
             .Step(users[Anatoliy_User].Logout())
             ;
