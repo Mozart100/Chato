@@ -51,7 +51,7 @@ public static class ServiceRegistrar
 
         services.AddHostedService<PreloadBackgroundTask>();
         services.AddHostedService<DelegateQueueBackgroundTask>();
-        services.AddHostedService<CacheEvictionBackgroundTask>();
+        //services.AddHostedService<CacheEvictionkkBackgroundTask>();
 
 
 

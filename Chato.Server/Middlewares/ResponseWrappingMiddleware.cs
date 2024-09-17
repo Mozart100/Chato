@@ -4,16 +4,13 @@ using System.IO;
 using System.Text.Json;
 using System.Threading.Tasks;
 
-
 namespace Chato.Server.Middlewares
 {
     using Chato.Server.Controllers;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
-    using System.IO;
     using System.Text.Json;
     using System.Text.Json.Serialization;
-    using System.Threading.Tasks;
 
     public class ResponseWrappingMiddleware
     {
@@ -28,13 +25,14 @@ namespace Chato.Server.Middlewares
 
         public async Task InvokeAsync(HttpContext context)
         {
+            // Skip middleware for SignalR negotiate and hub paths, or for specific download URLs
             if (context.Request.Path.StartsWithSegments("/chat/negotiate", StringComparison.OrdinalIgnoreCase) ||
+                context.Request.Path.StartsWithSegments("/hub", StringComparison.OrdinalIgnoreCase) || // Assuming "/hub" is your SignalR hub path
                 context.Request.Path.Value.Contains($"/{AuthController.DownloadUrl}"))
             {
                 await _next(context);
                 return;
             }
-
 
             var originalBodyStream = context.Response.Body;
             using (var newBodyStream = new MemoryStream())
@@ -43,9 +41,18 @@ namespace Chato.Server.Middlewares
 
                 await _next(context);
 
+                // Check if the response has already started (i.e., headers have been sent)
+                if (context.Response.HasStarted)
+                {
+                    _logger.LogWarning("Response has already started, skipping wrapping.");
+                    newBodyStream.Seek(0, SeekOrigin.Begin);
+                    await newBodyStream.CopyToAsync(originalBodyStream);
+                    return;
+                }
+
+                // Handle non-success responses (e.g., 4xx, 5xx)
                 if (context.Response.StatusCode >= 400)
                 {
-                    // Skip wrapping the response since it has been handled by the GlobalExceptionHandler
                     newBodyStream.Seek(0, SeekOrigin.Begin);
                     await newBodyStream.CopyToAsync(originalBodyStream);
                     return;
@@ -63,7 +70,7 @@ namespace Chato.Server.Middlewares
                 var wrappedResponse = new ResponseWrapper<object>
                 {
                     IsSucceeded = context.Response.StatusCode >= 200 && context.Response.StatusCode < 400,
-                    Body = responseObject as object,
+                    Body = responseObject,
                     StatusCode = context.Response.StatusCode
                 };
 
@@ -76,9 +83,7 @@ namespace Chato.Server.Middlewares
                 context.Response.ContentType = "application/json";
                 context.Response.ContentLength = wrappedResponseJson.Length;
                 await context.Response.WriteAsync(wrappedResponseJson);
-               
             }
         }
     }
-
 }

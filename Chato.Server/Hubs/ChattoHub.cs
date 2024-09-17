@@ -40,7 +40,7 @@ public interface IChatHub
 
     Task SendTextToChat(string chat, string fromUser, string toUser, string message);
     Task SendText(string fromUser, string message);
-    Task SelfReplay(string message);
+    //Task SelfReplay(string message);
 }
 
 [Authorize]

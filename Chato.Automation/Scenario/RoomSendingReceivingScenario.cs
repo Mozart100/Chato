@@ -23,7 +23,7 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
 
     public RoomSendingReceivingScenario(ILogger<BasicScenario> logger, ScenarioConfig config) : base(logger, config)
     {
-        BusinessLogicCallbacks.Add(SendingWithinLobi_UserMovedChat);
+        BusinessLogicCallbacks.Add(ClosingChat);
         //BusinessLogicCallbacks.Add(SendingInsideTheRoom);
         //BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
 
@@ -38,7 +38,7 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
     public override string ScenarioName => "Room behaviour";
     public override string Description => "Sending and receiving messages in the room";
 
-    private async Task SendingWithinLobi_UserMovedChat()
+    private async Task ClosingChat()
     {
         await RegisterUsers2222(Anatoliy_User, Olessya_User, Nathan_User);
 
@@ -52,14 +52,14 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
         var url = string.Format(SpecificRoomTemplatesUrl, chat2);
 
         users[Anatoliy_User].Connect(users[Nathan_User]).Connect(users[Olessya_User])
-            .Connect(users[Anatoliy_User].SendingToRestRoom222(message_1, IChatService.Lobi))
+            .Connect(users[Anatoliy_User].SendingToRestRoom222(message_1, IChatService.Lobi,2))
             .Connect(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
             .Connect(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
 
             .Connect(users[Olessya_User].JoinOrCreateChat(chat2))
             .Connect(users[Nathan_User].JoinOrCreateChat(chat2))
 
-            .Connect(users[Olessya_User].SendingToRestRoom222(message_2, chat2))
+            .Connect(users[Olessya_User].SendingToRestRoom222(message_2, chat2,1))
             .Connect(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_2))
             .Connect(users[Anatoliy_User].Do2222(async user =>
             {
@@ -92,44 +92,9 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
     }
 
 
-    private async Task RoomIsRemovedAfterEveryoneLeft()
-    {
-        var message_1 = "Shalom";
-        var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
-
-
-        var anatoliySender = firstGroup.SendingToRestRoom(Anatoliy_User);
-        var olessyaSender = firstGroup.ReceivingFrom(Olessya_User, anatoliySender.UserName);
-        var nathanReceiver = firstGroup.ReceivingFrom(Nathan_User, anatoliySender.UserName);
-
-        var maxReceiver = firstGroup.Is_Not_Received(Max_User);
-
-
-        var url = string.Format(SpecificRoomTemplatesUrl, First_Group);
-        var response = default(ResponseWrapper<GetRoomResponse>);
-
-        string token = string.Empty;
-
-        anatoliySender.Connect(olessyaSender, nathanReceiver, maxReceiver)
-            .Do(maxReceiver, async user =>
-            {
-
-                token = user.RegistrationResponse.Token;
-                response = await Get<ResponseWrapper<GetRoomResponse>>(url, token);
-                response.Body.Chat.Should().NotBeNull();
-            }).LeaveRoom(Anatoliy_User, Olessya_User, Nathan_User);
-
-
-        var graph = new InstructionGraph(anatoliySender);
-        await InstructionExecuter(graph);
-
-        response = await Get<ResponseWrapper<GetRoomResponse>>(url, token);
-        response.Body.Chat.Should().BeNull();
-    }
-
-    private async Task Setup_SendingInsideTheRoom_Step()
-    {
-        await RegisterUsers(Anatoliy_User, Olessya_User, Nathan_User, Max_User);
-        await AssignUserToGroupAsync(First_Group, Anatoliy_User, Olessya_User, Nathan_User);
-    }
+    //private async Task Setup_SendingInsideTheRoom_Step()
+    //{
+    //    await RegisterUsers(Anatoliy_User, Olessya_User, Nathan_User, Max_User);
+    //    await AssignUserToGroupAsync(First_Group, Anatoliy_User, Olessya_User, Nathan_User);
+    //}
 }

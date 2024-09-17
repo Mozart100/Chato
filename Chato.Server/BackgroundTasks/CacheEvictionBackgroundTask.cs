@@ -35,7 +35,7 @@ public class CacheEvictionBackgroundTask : BackgroundService
         var unusedTimeout = CacheEvictionUtility.ConvertToTimeSpan(_config.TimeMeasurement, _config.UnusedTimeout);
 
 
-        var persistentUsers = new HashSet<string>(IPersistentUsers.PersistentUsers);
+        var persistentUsers = new HashSet<string>(IPersistentChatAndUsers.PersistentChats);
 
         while (!stoppingToken.IsCancellationRequested)
         {

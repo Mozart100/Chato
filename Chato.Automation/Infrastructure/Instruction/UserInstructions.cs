@@ -24,6 +24,7 @@ public abstract class UserInstructionBase
 {
     public abstract string InstructionName { get; }
     public object Tag { get; set; } = null;
+    public int AmountAwaits { get; init; } = 1;
 
     public virtual async Task Execute(Func<Task> callback)
     {

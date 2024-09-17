@@ -30,20 +30,6 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
     }
 
-    public virtual async Task RegisterUsers(params string[] users)
-    {
-        foreach (var user in users)
-        {
-            var registrationRequest = new RegistrationRequest { UserName = user, Age = 20, Description = $"Description_{user}", Gender = "male" };
-            var registrationInfo = await RunPostCommand<RegistrationRequest, ResponseWrapper<RegistrationResponse>>(RegisterAuthControllerUrl, registrationRequest);
-
-            var executer = new UserInstructionExecuter(registrationInfo.Body, HubUrl, Logger, _counterSignal);
-            await executer.RegisterAsync();
-
-            Users.Add(user, executer);
-        }
-    }
-
     public virtual async Task RegisterUsers2222(params string[] users)
     {
         foreach (var user in users)
@@ -59,23 +45,23 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
     }
 
 
-    public async Task AssignUserToGroupAsync(string groupName, params string[] users)
-    {
-        var stacked = default(HashSet<string>);
-        if (_groupUsers.TryGetValue(groupName, out stacked) == false)
-        {
-            _groupUsers[groupName] = stacked ??= new HashSet<string>();
-        }
+    //public async Task AssignUserToGroupAsync(string groupName, params string[] users)
+    //{
+    //    var stacked = default(HashSet<string>);
+    //    if (_groupUsers.TryGetValue(groupName, out stacked) == false)
+    //    {
+    //        _groupUsers[groupName] = stacked ??= new HashSet<string>();
+    //    }
 
 
-        foreach (var user in users)
-        {
-            var executer = Users[user]; ;// new UserInstructionExecuter(registrationInfo, tokenResponse, HubUrl, Logger, _counterSignal);
-            await executer.InitializeWithGroupAsync(groupName);
+    //    foreach (var user in users)
+    //    {
+    //        var executer = Users[user]; ;// new UserInstructionExecuter(registrationInfo, tokenResponse, HubUrl, Logger, _counterSignal);
+    //        await executer.InitializeWithGroupAsync(groupName);
 
-            stacked.Add(user);
-        }
-    }
+    //        stacked.Add(user);
+    //    }
+    //}
 
 
     private async Task SendBroadcastingMessage(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte[] message)
@@ -96,7 +82,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
     {
         //var message2 = Encoding.UTF8.GetString(message);
         await userExecuter.RegisterAsync2222();
-       
+
     }
 
 
@@ -148,7 +134,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         _actionMapper.Add(UserInstructions.JoinOrCreate_Chat_Instruction, async (userExecuter, instruction) =>
         {
             await _counterSignal.SetThrasholdAsync(1);
-            
+
             await userExecuter.JoinOrCreateChat2222(instruction.GroupName);
 
 
@@ -168,33 +154,22 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             await StartSignalR(userExecuter: userExecuter);
 
 
-            if (await _counterSignal.WaitAsync(timeoutInSecond:5) == false)
-            {
-                throw new Exception("Not all users received their messages");
-            }
-
-
-            await userExecuter.ListenToStringCheckAsync2222(IChatService.Lobi,"server", ChattoHub.User_Connected_Message);
-        });
-
-
-        _actionMapper.Add(UserInstructions.Publish_PeerToPeer_Instruction, async (userExecuter, instruction) =>
-        {
-            var toUser = instruction.Instruction.Tag as string ?? throw new ArgumentNullException("Should be user name");
-
-            await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstructionName != UserInstructions.Not_Received_Instruction).Count());
-            await SendPeerToPeerMessage(userExecuter: userExecuter, userNameFrom: instruction.UserName, toUser: toUser, message: instruction.Message);
-
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
             {
                 throw new Exception("Not all users received their messages");
             }
 
+
+            await userExecuter.ListenToStringCheckAsync2222(IChatService.Lobi, instruction.UserName, "server", ChattoHub.User_Connected_Message);
         });
+
+
+
 
         _actionMapper.Add(UserInstructions.Publish_ToRestRoom_Instruction, async (userExecuter, instruction) =>
         {
-            await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstructionName != UserInstructions.Not_Received_Instruction).Count());
+            //await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstructionName != UserInstructions.Not_Received_Instruction).Count());
+            await _counterSignal.SetThrasholdAsync(instruction.Instruction.AmountAwaits);
             await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
@@ -204,7 +179,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         });
 
 
-        _actionMapper.Add(UserInstructions.Received_Instruction, async (userExecuter, instruction) => await userExecuter.ListenToStringCheckAsync( instruction.GroupName, instruction.FromArrived, instruction.Message));
+        _actionMapper.Add(UserInstructions.Received_Instruction, async (userExecuter, instruction) => await userExecuter.ListenToStringCheckAsync2222(instruction.GroupName, instruction.UserName, instruction.FromArrived, instruction.Message));
         _actionMapper.Add(UserInstructions.Not_Received_Instruction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync2222());
         _actionMapper.Add(UserInstructions.Run_Download_Instruction, async (userExecuter, instruction) => await userExecuter.DownloadStream(instruction.Message));
         _actionMapper.Add(UserInstructions.Leave_Room_Instruction, async (userExecuter, instruction) => await userExecuter.LeaveGroupInfo(instruction.GroupName));
@@ -224,11 +199,11 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
                     if (instruction.Instruction.Tag is Func<IUserInfo, Task> callback)
                     {
                         var registerInfo = default(RegistrationResponse);
-                        if( Users.TryGetValue(instruction.UserName,out var ins))
+                        if (Users.TryGetValue(instruction.UserName, out var ins))
                         {
                             registerInfo = ins.RegisterResponse;
                         }
-                        await callback(new  UserInfo(instruction, registerInfo));
+                        await callback(new UserInfo(instruction, registerInfo));
                     }
 
                     continue;

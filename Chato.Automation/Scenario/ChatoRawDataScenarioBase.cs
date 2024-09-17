@@ -41,7 +41,7 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
     protected string RegisterAuthControllerUrl { get; }
     protected string DownloadFileUrl { get; }
     protected string UploadFilesUrl { get; }
-    
+
 
     protected string RoomsControllerUrl { get; }
     protected string SpecificRoomTemplatesUrl { get; }

@@ -11,17 +11,21 @@ public interface IPreloadDataLoader
     Task ExecuteAsync();
 }
 
-public interface IPersistentUsers
+public interface IPersistentChatAndUsers
 {
     public const string AdultRoom = "Adults";
     public const string OnlyGirlsRoom = "OnlyGrils";
     public const string SchoolRoom = "School";
 
 
+    public const string Supervisor = "supervisor";
+      
+
+
     public const string ToRemoveRoom = "ToRemove";
 
 
-    static string[] PersistentUsers { get; } = { IChatService.Lobi, AdultRoom, OnlyGirlsRoom, SchoolRoom };
+    static string[] PersistentChats { get; } = { IChatService.Lobi, AdultRoom, OnlyGirlsRoom, SchoolRoom };
 }
 
 
@@ -43,7 +47,18 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
         await _assignmentService.CreateLobi();
 
 
-        var chat = IPersistentUsers.AdultRoom;
+        //var registrationRequest = new RegistrationRequest()
+        //{
+        //    UserName = $"{IPersistentChatAndUsers.Supervisor}",
+        //    Description = $"I am the supervisor",
+        //    Gender = "male",
+        //    Age = 20,
+        //};
+
+        //var token = await _assignmentService.RegisterUserAndAssignToRoom(registrationRequest, IChatService.Lobi);
+
+
+        var chat = IPersistentChatAndUsers.AdultRoom;
         var requests = new List<(string UserName, string Token)>();
         for (int j = 0; j < 3; j++)
         {
@@ -71,7 +86,7 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
 
         requests.Clear();
 
-        chat = IPersistentUsers.OnlyGirlsRoom;
+        chat = IPersistentChatAndUsers.OnlyGirlsRoom;
         for (int j = 0; j < 5; j++)
         {
             var request = new RegistrationRequest()
@@ -96,7 +111,7 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
 
 
         requests.Clear();
-        chat = IPersistentUsers.SchoolRoom;
+        chat = IPersistentChatAndUsers.SchoolRoom;
         for (int j = 0; j < 7; j++)
         {
             var request = new RegistrationRequest()

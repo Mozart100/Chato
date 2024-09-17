@@ -197,12 +197,12 @@ public static class InstructionNodeFluentApi
     //    return @new;
     //}
 
-    public static InstructionNode SendingToRestRoom222(this InstructionNode info, string message, string chatName)
+    public static InstructionNode SendingToRestRoom222(this InstructionNode info, string message, string chatName,int amountAwait2)
     {
         var @new = info with
         {
             GroupName = chatName,
-            Instruction = new UserSendStringMessageRestRoomInstruction(),
+            Instruction = new UserSendStringMessageRestRoomInstruction { AmountAwaits = amountAwait2 },
             Message = Encoding.UTF8.GetBytes(message),
             Children = new(),
 
