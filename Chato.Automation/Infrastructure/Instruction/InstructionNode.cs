@@ -24,13 +24,6 @@ public record InstructionNode(string UserName, string? GroupName, UserInstructio
 
 public static class InstructionNodeFluentApi
 {
-    public static InstructionNode StartWithGroup(string groupName, string message)
-    {
-        var byteArray = Encoding.UTF8.GetBytes(message);
-        var info = new InstructionNode(userName: null, groupName: groupName, instruction: null, message: byteArray, fromArrived: null);
-        return info;
-    }
-
     public static Dictionary<string, InstructionNode> RegisterInLoLobi(params string[] users)
     {
         var instructions = new Dictionary<string, InstructionNode>();
@@ -41,40 +34,6 @@ public static class InstructionNodeFluentApi
         }
 
         return instructions;
-    }
-
-    public static InstructionNode StartWithGroup(string groupName, byte[] message)
-    {
-        var info = new InstructionNode(userName: null, groupName: groupName, instruction: null, message: message, fromArrived: null);
-        return info;
-    }
-
-    public static InstructionNode SendingTo(this InstructionNode info, string userName, string toPerson)
-    {
-        var chat = IChatService.GetChatName(userName, toPerson);
-        var @new = info with
-        {
-            UserName = userName,
-            Instruction = new UserPeerToPeerInstruction() { Tag = toPerson },
-            FromArrived = null,
-            Children = new(),
-        };
-
-        return @new;
-    }
-
-    public static InstructionNode ReceivingFrom(this InstructionNode info, string userName, string arrivedFrom)
-    {
-        var @new = info with
-        {
-            UserName = userName,
-            Instruction = new UserReceivedInstruction(),
-            FromArrived = arrivedFrom,
-            Children = new(),
-
-        };
-
-        return @new;
     }
 
     public static InstructionNode ReceivingFrom2222(this InstructionNode info, string chatName, string arrivedFrom, string message)
@@ -135,7 +94,7 @@ public static class InstructionNodeFluentApi
                 Message = instruction.Message
             };
 
-            current = current.Connect(@new);
+            current = current.Step(@new);
         }
 
         return current;
@@ -155,47 +114,6 @@ public static class InstructionNodeFluentApi
 
         return @new;
     }
-
-    //public static InstructionNode SendingBroadcast(this InstructionNode info, string userName)
-    //{
-    //    var @new = info with
-    //    {
-    //        UserName = userName,
-    //        Instruction = new UserBroadcastInstruction(),
-    //        Children = new(),
-
-    //    };
-
-    //    return @new;
-    //}
-
-    public static InstructionNode SendingToRestRoom(this InstructionNode info, string userName)
-    {
-        var @new = info with
-        {
-            UserName = userName,
-            Instruction = new UserSendStringMessageRestRoomInstruction(),
-            Children = new(),
-
-        };
-
-        return @new;
-    }
-
-    //public static InstructionNode SendingToRestRoom222(this InstructionNode info, string userName,string message , string chatName)
-    //{
-    //    var @new = info with
-    //    {
-    //        GroupName = chatName,
-    //        UserName = userName,
-    //        Instruction = new UserSendStringMessageRestRoomInstruction(),
-    //        Message = Encoding.UTF8.GetBytes(message),
-    //        Children = new(),
-
-    //    };
-
-    //    return @new;
-    //}
 
     public static InstructionNode SendingToRestRoom222(this InstructionNode info, string message, string chatName,int amountAwait2)
     {
@@ -223,25 +141,6 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-
-    public static InstructionNode LeaveRoom(this InstructionNode info, params string[] userNames)
-    {
-        var ptr = info;
-        foreach (var userName in userNames)
-        {
-            var @new = info with
-            {
-                UserName = userName,
-                Instruction = new LeaveRoomInstruction(),
-                Children = new(),
-            };
-
-            ptr = Connect(ptr, @new);
-        }
-
-        return ptr;
-    }
-
     public static InstructionNode Do2222(this InstructionNode info, Func<IUserInfo, Task> operation)
     {
         var @new = info with
@@ -254,37 +153,6 @@ public static class InstructionNodeFluentApi
 
         return @new;
     }
-
-
-    public static InstructionNode Do(this InstructionNode info, InstructionNode target, Func<IUserInfo, Task> operation)
-    {
-        var @new = info with
-        {
-            UserName = target.UserName,
-            Instruction = new UserRunOperationInstruction() { Tag = operation },//parameter = token
-            FromArrived = null,
-            Message = null,
-            Children = new(),
-        };
-
-        var result = Connect(info, @new);
-        return result;
-    }
-
-    public static InstructionNode Is_Not_Received(this InstructionNode info, string userName)
-    {
-        var @new = info with
-        {
-            UserName = userName,
-            Instruction = new UserNotReceivedInstruction(),
-            Message = null,
-            FromArrived = "none",
-            Children = new(),
-        };
-
-        return @new;
-    }
-
 
     public static InstructionNode Is_Not_Received2222(this InstructionNode info, string chatame)
     {
@@ -302,7 +170,7 @@ public static class InstructionNodeFluentApi
 
 
 
-    public static InstructionNode Connect(this InstructionNode source, params InstructionNode[] targets)
+    public static InstructionNode Step(this InstructionNode source, params InstructionNode[] targets)
     {
         InstructionNode node = null;
         foreach (var target in targets)

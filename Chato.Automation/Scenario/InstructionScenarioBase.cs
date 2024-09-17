@@ -30,7 +30,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
     }
 
-    public virtual async Task RegisterUsers2222(params string[] users)
+    public virtual async Task RegisterUsers(params string[] users)
     {
         foreach (var user in users)
         {
@@ -44,53 +44,11 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         }
     }
 
-
-    //public async Task AssignUserToGroupAsync(string groupName, params string[] users)
-    //{
-    //    var stacked = default(HashSet<string>);
-    //    if (_groupUsers.TryGetValue(groupName, out stacked) == false)
-    //    {
-    //        _groupUsers[groupName] = stacked ??= new HashSet<string>();
-    //    }
-
-
-    //    foreach (var user in users)
-    //    {
-    //        var executer = Users[user]; ;// new UserInstructionExecuter(registrationInfo, tokenResponse, HubUrl, Logger, _counterSignal);
-    //        await executer.InitializeWithGroupAsync(groupName);
-
-    //        stacked.Add(user);
-    //    }
-    //}
-
-
-    private async Task SendBroadcastingMessage(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte[] message)
-    {
-        //var message2 = Encoding.UTF8.GetString(message);
-        if (groupName == null)
-        {
-            //await userExecuter.SendMessageToAllUsers(userNameFrom: userNameFrom, message: message);
-            throw new NotImplementedException("SendMessageToAllUsers");
-        }
-        else
-        {
-            await userExecuter.SendMessageToOthersInGroup(groupName: groupName, userNameFrom: userNameFrom, ptr: message);
-        }
-    }
-
     private async Task StartSignalR(UserInstructionExecuter userExecuter)
     {
         //var message2 = Encoding.UTF8.GetString(message);
         await userExecuter.RegisterAsync2222();
 
-    }
-
-
-
-    private async Task SendPeerToPeerMessage(UserInstructionExecuter userExecuter, string userNameFrom, string toUser, byte[] message)
-    {
-        //var message2 = Encoding.UTF8.GetString(message);
-        await userExecuter.SendMessageToOtherUser(userNameFrom: userNameFrom, toUser: toUser, ptr: message);
     }
 
     private async Task SendMessageToOthersInGroup(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte[] message)
@@ -104,17 +62,6 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
     private void Initialize()
     {
-
-        //_actionMapper.Add(UserInstructions.Publish_Broadcasting_Instruction, async (userExecuter, instruction) =>
-        //{
-        //    await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstructionName != UserInstructions.Not_Received_Instruction).Count());
-        //    await SendBroadcastingMessage(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
-
-        //    if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
-        //    {
-        //        throw new Exception("Not all users received their messages");
-        //    }
-        //});
 
         _actionMapper.Add(UserInstructions.logout_Chat_Instruction, async (userExecuter, instruction) =>
         {
@@ -180,7 +127,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
 
         _actionMapper.Add(UserInstructions.Received_Instruction, async (userExecuter, instruction) => await userExecuter.ListenToStringCheckAsync2222(instruction.GroupName, instruction.UserName, instruction.FromArrived, instruction.Message));
-        _actionMapper.Add(UserInstructions.Not_Received_Instruction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync2222());
+        _actionMapper.Add(UserInstructions.Not_Received_Instruction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync());
         _actionMapper.Add(UserInstructions.Run_Download_Instruction, async (userExecuter, instruction) => await userExecuter.DownloadStream(instruction.Message));
         _actionMapper.Add(UserInstructions.Leave_Room_Instruction, async (userExecuter, instruction) => await userExecuter.LeaveGroupInfo(instruction.GroupName));
     }

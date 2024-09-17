@@ -39,23 +39,23 @@ internal class BasicScenario : InstructionScenarioBase
     private async Task SendingWithinLobi()
     {
         var message_1 = "Shalom";
-        var supervisor = nameof(SendingWithinLobi);
+        var supervisor = $"User_{nameof(SendingWithinLobi)}";
 
         var activeUsers = new string[] { supervisor, Anatoliy_User, Olessya_User, Nathan_User };
-        await RegisterUsers2222(activeUsers);
+        await RegisterUsers(activeUsers);
         var users = InstructionNodeFluentApi.RegisterInLoLobi(supervisor, Anatoliy_User, Olessya_User, Nathan_User);
 
-        users[Anatoliy_User].Connect(users[Nathan_User]).Connect(users[Olessya_User])
-            .Connect(users[Anatoliy_User].SendingToRestRoom222(message_1, IChatService.Lobi, 2))
-            .Connect(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
-            .Connect(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
+        users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
+            .Step(users[Anatoliy_User].SendingToRestRoom222(message_1, IChatService.Lobi, 2))
+            .Step(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
+            .Step(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
 
-            .Connect(users[Anatoliy_User].Logout())
-            .Connect(users[Olessya_User].Logout())
-            .Connect(users[Nathan_User].Logout())
+            .Step(users[Anatoliy_User].Logout())
+            .Step(users[Olessya_User].Logout())
+            .Step(users[Nathan_User].Logout())
 
-            .Connect(users[supervisor])
-            .Connect(users[supervisor].Do2222(async user =>
+            .Step(users[supervisor])
+            .Step(users[supervisor].Do2222(async user =>
                   {
                       var token = user.RegistrationResponse.Token;
                       var response = await Get<ResponseWrapper<GetAllUserResponse>>(GetAllUsersUrl, token);
@@ -70,7 +70,7 @@ internal class BasicScenario : InstructionScenarioBase
                           }
                       }
                   }))
-            .Connect(users[supervisor].Logout())
+            .Step(users[supervisor].Logout())
             ;
 
 
@@ -86,31 +86,31 @@ internal class BasicScenario : InstructionScenarioBase
         var message_1 = "Shalom";
         var message_2 = "hello";
 
-        var supervisor = nameof(SendingWithinLobi_UserMovedChat);
+        var supervisor = $"User_{nameof(SendingWithinLobi_UserMovedChat)}";
         var activeUsers = new string[] { supervisor, Anatoliy_User, Olessya_User, Nathan_User };
-        await RegisterUsers2222(activeUsers);
+        await RegisterUsers(activeUsers);
         var users = InstructionNodeFluentApi.RegisterInLoLobi(supervisor, Anatoliy_User, Olessya_User, Nathan_User);
 
 
-        users[Anatoliy_User].Connect(users[Nathan_User]).Connect(users[Olessya_User])
-            .Connect(users[Anatoliy_User].SendingToRestRoom222(message_1, IChatService.Lobi, 2))
-            .Connect(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
-            .Connect(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
+        users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
+            .Step(users[Anatoliy_User].SendingToRestRoom222(message_1, IChatService.Lobi, 2))
+            .Step(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
+            .Step(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
 
-            .Connect(users[Olessya_User].JoinOrCreateChat(chat2))
-            .Connect(users[Nathan_User].JoinOrCreateChat(chat2))
+            .Step(users[Olessya_User].JoinOrCreateChat(chat2))
+            .Step(users[Nathan_User].JoinOrCreateChat(chat2))
 
-            .Connect(users[Olessya_User].SendingToRestRoom222(message_2, chat2, 1))
-            .Connect(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_2))
-            .Connect(users[Anatoliy_User].Is_Not_Received2222(IChatService.Lobi))
+            .Step(users[Olessya_User].SendingToRestRoom222(message_2, chat2, 1))
+            .Step(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_2))
+            .Step(users[Anatoliy_User].Is_Not_Received2222(IChatService.Lobi))
 
-            .Connect(users[Anatoliy_User].Logout())
-            .Connect(users[Olessya_User].Logout())
-            .Connect(users[Nathan_User].Logout())
+            .Step(users[Anatoliy_User].Logout())
+            .Step(users[Olessya_User].Logout())
+            .Step(users[Nathan_User].Logout())
 
 
-            .Connect(users[supervisor])
-            .Connect(users[supervisor].Do2222(async user =>
+            .Step(users[supervisor])
+            .Step(users[supervisor].Do2222(async user =>
               {
                   var token = user.RegistrationResponse.Token;
                   var response = await Get<ResponseWrapper<GetAllUserResponse>>(GetAllUsersUrl, token);
@@ -125,7 +125,7 @@ internal class BasicScenario : InstructionScenarioBase
                       }
                   }
               }))
-            .Connect(users[supervisor].Logout())
+            .Step(users[supervisor].Logout())
 
         ;
 
@@ -139,7 +139,7 @@ internal class BasicScenario : InstructionScenarioBase
 
     private async Task VerificationStep2222()
     {
-        await RegisterUsers2222(Anatoliy_User, Olessya_User, Nathan_User);
+        await RegisterUsers(Anatoliy_User, Olessya_User, Nathan_User);
 
         const string chat2 = "university_chat";
 
@@ -150,27 +150,27 @@ internal class BasicScenario : InstructionScenarioBase
         var users = InstructionNodeFluentApi.RegisterInLoLobi(Anatoliy_User, Olessya_User, Nathan_User);
 
 
-        users[Anatoliy_User].Connect(users[Nathan_User]).Connect(users[Olessya_User])
-            .Connect(users[Anatoliy_User].SendingToRestRoom222(message_1, IChatService.Lobi, 2))
-            .Connect(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
-            .Connect(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
+        users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
+            .Step(users[Anatoliy_User].SendingToRestRoom222(message_1, IChatService.Lobi, 2))
+            .Step(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
+            .Step(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
 
-            .Connect(users[Olessya_User].JoinOrCreateChat(chat2))
-            .Connect(users[Nathan_User].JoinOrCreateChat(chat2))
+            .Step(users[Olessya_User].JoinOrCreateChat(chat2))
+            .Step(users[Nathan_User].JoinOrCreateChat(chat2))
 
-            .Connect(users[Olessya_User].SendingToRestRoom222(message_2, chat2, 1))
-            .Connect(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_2))
+            .Step(users[Olessya_User].SendingToRestRoom222(message_2, chat2, 1))
+            .Step(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_2))
 
-            .Connect(users[Anatoliy_User].JoinOrCreateChat(chat2))
+            .Step(users[Anatoliy_User].JoinOrCreateChat(chat2))
 
-            .Connect(users[Olessya_User].SendingToRestRoom222(message_3, chat2, 2))
-            .Connect(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_3))
-            .Connect(users[Anatoliy_User].ReceivingFrom2222(chat2, Olessya_User, message_3))
+            .Step(users[Olessya_User].SendingToRestRoom222(message_3, chat2, 2))
+            .Step(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_3))
+            .Step(users[Anatoliy_User].ReceivingFrom2222(chat2, Olessya_User, message_3))
 
 
-            .Connect(users[Anatoliy_User].Logout())
-            .Connect(users[Olessya_User].Logout())
-            .Connect(users[Nathan_User].Logout());
+            .Step(users[Anatoliy_User].Logout())
+            .Step(users[Olessya_User].Logout())
+            .Step(users[Nathan_User].Logout());
 
         ;
 
@@ -179,63 +179,4 @@ internal class BasicScenario : InstructionScenarioBase
 
         await InstructionExecuter(graph);
     }
-
-
-
-    //private async Task VerificationStep()
-    //{
-    //    var message_1 = "Shalom";
-    //    var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
-
-
-    //    var anatoliySender = firstGroup.SendingToRestRoom(Anatoliy_User);
-    //    var olessyaSender = firstGroup.SendingToRestRoom(Olessya_User);
-    //    var maxReceiver1 = firstGroup.ReceivingFrom(Max_User, olessyaSender.UserName);
-
-    //    anatoliySender.Connect(olessyaSender)
-    //        .Do(maxReceiver1, async user =>
-    //        {
-    //            await RegisterUsers(Max_User);
-    //            await AssignUserToGroupAsync(First_Group, Max_User);
-    //        })
-    //        .ReceivedVerification(Max_User, anatoliySender, olessyaSender);
-
-    //    var graph = new InstructionGraph(anatoliySender);
-    //    await InstructionExecuter(graph);
-    //}
-
-
-    //private async Task SendingOnlyToRoomStep()
-    //{
-    //    var message_1 = "Shalom";
-    //    var firstGroup = InstructionNodeFluentApi.StartWithGroup(groupName: First_Group, message_1);
-
-
-    //    var anatoliySender = firstGroup.SendingToRestRoom(Anatoliy_User);
-    //    var olessyaSender = firstGroup.ReceivingFrom(Olessya_User, anatoliySender.UserName);
-    //    var nathanReceiver = firstGroup.ReceivingFrom(Nathan_User, anatoliySender.UserName);
-
-    //    var maxReceiver = firstGroup.Is_Not_Received(Max_User);
-
-
-
-    //    anatoliySender.Connect(olessyaSender, nathanReceiver, maxReceiver);
-
-    //    var graph = new InstructionGraph(anatoliySender);
-    //    await InstructionExecuter(graph);
-    //}
-
-
-    //private async Task SetupGroup()
-    //{
-    //    await RegisterUsers(Anatoliy_User, Olessya_User, Nathan_User);
-    //    await AssignUserToGroupAsync(First_Group, Anatoliy_User, Olessya_User, Nathan_User);
-    //}
-
-    //private async Task Setup_SendingOnlyToRoomStep_Step()
-    //{
-    //    await RegisterUsers(Anatoliy_User, Olessya_User, Nathan_User, Max_User);
-    //    await AssignUserToGroupAsync(First_Group, Anatoliy_User, Olessya_User, Nathan_User);
-    //}
-
 }

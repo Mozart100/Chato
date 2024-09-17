@@ -18,7 +18,7 @@ export interface CacheEvictionRoomConfigDto {
 }
 
 export interface ChatRoomDto {
-    roomName?: string | undefined;
+    chatName?: string | undefined;
     messages?: SenderInfo[] | undefined;
     users?: string[] | undefined;
 }
@@ -69,8 +69,21 @@ export interface User {
     age?: number;
     description?: string | undefined;
     gender?: string | undefined;
-    rooms?: string[] | undefined;
+    chats?: string[] | undefined;
     connectionId?: string | undefined;
+}
+
+export interface UserDto {
+    userName?: string | undefined;
+    age?: number;
+    description?: string | undefined;
+    gender?: string | undefined;
+    chats?: string[] | undefined;
+    connectionId?: string | undefined;
+}
+
+export interface UserResponse {
+    user?: UserDto;
 }
 
 export interface FileParameter {

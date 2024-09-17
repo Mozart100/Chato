@@ -1,4 +1,6 @@
-﻿using Chatto.Shared;
+﻿using Chato.Automation.Infrastructure.Instruction;
+using Chato.Server.Services;
+using Chatto.Shared;
 using FluentAssertions;
 using Microsoft.Extensions.Logging;
 
@@ -13,13 +15,9 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
     public RegistrationValidationScenario(ILogger<RegistrationValidationScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
-        BusinessLogicCallbacks.Add(RegistrationValidationStep);
-        BusinessLogicCallbacks.Add(async () => await UsersCleanup(Anatoliy_User));
+        BusinessLogicCallbacks.Add(InvaliRegistrationValidationStep);
+        BusinessLogicCallbacks.Add(UploadingFiles);
 
-
-
-        BusinessLogicCallbacks.Add(RegistrationAndGetUserByTokenStep);
-        BusinessLogicCallbacks.Add(async () => await UsersCleanup(Anatoliy_User));
     }
 
 
@@ -28,17 +26,14 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
     public override string Description => "Ensuring mandatory fields are inserted during registration.";
 
 
-    private async Task RegistrationValidationStep()
+    private async Task InvaliRegistrationValidationStep()
     {
-        //var request = new RegistrationRequest { UserName = Anatoliy_User, Age = 20, Description = $"Description_{Anatoliy_User}" };
-        //await RegisterUser(request);
+        var request = new RegistrationRequest { UserName = Anatoliy_User, Age = 20, Description = $"Description_{Anatoliy_User}" };
+        await RegisterUser(request);
 
 
-        //request = new RegistrationRequest { UserName = Anatoliy_User, Age = 10, Description = $"Description_{Anatoliy_User}", Gender = "male" };
-        //await RegisterUser(request);
-
-
-        //await RegisterUsers(Anatoliy_User);
+        request = new RegistrationRequest { UserName = Anatoliy_User, Age = 10, Description = $"Description_{Anatoliy_User}", Gender = "male" };
+        await RegisterUser(request);
 
 
         //request = new RegistrationRequest { UserName = Anatoliy_User, Age = 20, Description = $"Description_{Anatoliy_User}", Gender = "male" };
@@ -66,16 +61,47 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
     }
 
 
-    private async Task RegistrationAndGetUserByTokenStep()
+    private async Task UploadingFiles()
     {
-        //await RegisterUsers(Anatoliy_User);
+        var message_1 = "Shalom";
+        var supervisor = $"User_{nameof(UploadingFiles)}";
 
-        //var token = Users[Anatoliy_User].RegisterResponse.Token;
+        await RegisterUsers(Anatoliy_User);
+        var users = InstructionNodeFluentApi.RegisterInLoLobi(Anatoliy_User);
 
-        //var dto = await Get< ResponseWrapper<UserResponse>>(UserControllerUrl, token);
-        //dto.Should().NotBeNull();
+        users[Anatoliy_User].Step(users[Anatoliy_User].Do2222(async user =>
+        {
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "test.jpeg");
+            var files = new[] { path, path };
+            var token = Users[Anatoliy_User].RegisterResponse.Token;
+
+
+            var response = await UploadFiles<ResponseWrapper<UploadDocumentsResponse>>(UploadFilesUrl, token, files);
+            response.Body.Document1.Should().BeTrue();
+            response.Body.Document2.Should().BeTrue();
+            response.Body.Document3.Should().BeFalse();
+            response.Body.Document4.Should().BeFalse();
+            response.Body.Document5.Should().BeFalse();
+
+
+
+            var parameters = new Dictionary<string, string> { { "num", "1" } };
+            var fileContent = await Get<byte[]>(DownloadFileUrl, token, parameters);
+            fileContent.Should().NotBeNull();
+
+        }))
+            .Step(users[Anatoliy_User].Logout())
+            ;
+
+
+        var graph = new InstructionGraph(users[Anatoliy_User]);
+
+        await InstructionExecuter(graph);
 
     }
+
+
+
 
     private async Task RegisterUser(RegistrationRequest request)
     {
