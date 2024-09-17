@@ -6,14 +6,18 @@ namespace Chato.Server.Services;
 
 public interface IAssignmentService
 {
-    Task JoinGroup(string nameOrId, string roomName);
+
+
+    Task JoinOrCreateRoom(string nameOrId, string roomName);
     Task<string> RegisterUserAndAssignToRoom(RegistrationRequest request, string defaultRoom);
     Task RemoveUserByConnectionIdAsync(string connectionId);
     Task RemoveUserByUserNameOrIdAsync(string userNameOrId);
+    Task CreateLobi();
 }
 
 public class AssignmentService : IAssignmentService
 {
+
     private readonly IUserService _userService;
     private readonly IChatService _roomService;
     private readonly IAuthenticationService _authenticationService;
@@ -26,6 +30,8 @@ public class AssignmentService : IAssignmentService
         this._roomService = roomService;
         this._authenticationService = authenticationService;
     }
+
+    public string Enterence => IChatService.Lobi;
 
     public async Task RemoveUserByConnectionIdAsync(string connectionId)
     {
@@ -47,28 +53,35 @@ public class AssignmentService : IAssignmentService
     {
         if (user is not null)
         {
-            foreach (var roomName in user.Rooms.SafeToArray())
+            foreach (var roomName in user.Chats.SafeToArray())
             {
                 await _roomService.RemoveUserAndRoomFromRoom(roomName, user.UserName);
             }
         }
     }
 
-    public async Task JoinGroup(string nameOrId, string roomName)
+    public async Task JoinOrCreateRoom(string nameOrId, string chatName)
     {
         var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(nameOrId);
         if (user is not null)
         {
-            await _userService.AssignRoomNameAsync(user.UserName, roomName);
-            await _roomService.JoinOrCreateRoom(roomName, user.UserName);
+            await _userService.AssignRoomNameAsync(user.UserName, chatName);
+            await _roomService.JoinOrCreateRoom(chatName, user.UserName);
         }
+    }
+
+    public async Task CreateLobi()
+    {
+
+        await _roomService.CreateLobi();
+        
     }
 
     public async Task<string> RegisterUserAndAssignToRoom(RegistrationRequest request, string roomName)
     {
         var token = await _authenticationService.RegisterAsync(request);
 
-        await JoinGroup(request.UserName, roomName);
+        await JoinOrCreateRoom(request.UserName, roomName);
 
         return token;
     }

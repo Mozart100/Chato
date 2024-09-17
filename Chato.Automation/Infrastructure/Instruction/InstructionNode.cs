@@ -1,12 +1,13 @@
-﻿using Chatto.Shared;
+﻿using Chato.Server.Services;
+using Chatto.Shared;
 using System.Text;
 
 namespace Chato.Automation.Infrastructure.Instruction;
 
 public interface IUserInfo
 {
-    public InstructionNode Instruction { get;  }
-    public RegistrationResponse RegistrationResponse { get;  }
+    public InstructionNode Instruction { get; }
+    public RegistrationResponse RegistrationResponse { get; }
 }
 
 
@@ -30,6 +31,18 @@ public static class InstructionNodeFluentApi
         return info;
     }
 
+    public static Dictionary<string, InstructionNode> RegisterInLoLobi(params string[] users)
+    {
+        var instructions = new Dictionary<string, InstructionNode>();
+        foreach (var user in users)
+        {
+            var info = new InstructionNode(userName: user, groupName: IChatService.Lobi, instruction: new UserRegisterLobiInstruction(), message: null, fromArrived: null);
+            instructions[user] = info;
+        }
+
+        return instructions;
+    }
+
     public static InstructionNode StartWithGroup(string groupName, byte[] message)
     {
         var info = new InstructionNode(userName: null, groupName: groupName, instruction: null, message: message, fromArrived: null);
@@ -38,6 +51,7 @@ public static class InstructionNodeFluentApi
 
     public static InstructionNode SendingTo(this InstructionNode info, string userName, string toPerson)
     {
+        var chat = IChatService.GetChatName(userName, toPerson);
         var @new = info with
         {
             UserName = userName,
@@ -62,6 +76,49 @@ public static class InstructionNodeFluentApi
 
         return @new;
     }
+
+    public static InstructionNode ReceivingFrom2222(this InstructionNode info, string chatName, string arrivedFrom, string message)
+    {
+        var @new = info with
+        {
+            GroupName = chatName,
+            Instruction = new UserReceivedInstruction(),
+            FromArrived = arrivedFrom,
+            Message = Encoding.UTF8.GetBytes(message),
+            Children = new(),
+        };
+
+        return @new;
+    }
+
+    public static InstructionNode Logout(this InstructionNode info)
+    {
+        var @new = info with
+        {
+            FromArrived = null,
+            Instruction = new LogoutInstruction(),
+            Message = null,
+            Children = new(),
+        };
+
+        return @new;
+    }
+
+    public static InstructionNode JoinOrCreateChat(this InstructionNode info, string chatName)
+    {
+        var @new = info with
+        {
+            GroupName = chatName,
+            Instruction = new JoinOrCreateChatInstruction(),
+            FromArrived = null,
+            Message = null,
+            Children = new(),
+        };
+
+        return @new;
+    }
+
+
 
     internal static InstructionNode ReceivedVerification(this InstructionNode info, string userName, params InstructionNode[] fromInstructions)
     {
@@ -99,18 +156,18 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode SendingBroadcast(this InstructionNode info, string userName)
-    {
-        var @new = info with
-        {
-            UserName = userName,
-            Instruction = new UserBroadcastInstruction(),
-            Children = new(),
+    //public static InstructionNode SendingBroadcast(this InstructionNode info, string userName)
+    //{
+    //    var @new = info with
+    //    {
+    //        UserName = userName,
+    //        Instruction = new UserBroadcastInstruction(),
+    //        Children = new(),
 
-        };
+    //    };
 
-        return @new;
-    }
+    //    return @new;
+    //}
 
     public static InstructionNode SendingToRestRoom(this InstructionNode info, string userName)
     {
@@ -120,6 +177,47 @@ public static class InstructionNodeFluentApi
             Instruction = new UserSendStringMessageRestRoomInstruction(),
             Children = new(),
 
+        };
+
+        return @new;
+    }
+
+    //public static InstructionNode SendingToRestRoom222(this InstructionNode info, string userName,string message , string chatName)
+    //{
+    //    var @new = info with
+    //    {
+    //        GroupName = chatName,
+    //        UserName = userName,
+    //        Instruction = new UserSendStringMessageRestRoomInstruction(),
+    //        Message = Encoding.UTF8.GetBytes(message),
+    //        Children = new(),
+
+    //    };
+
+    //    return @new;
+    //}
+
+    public static InstructionNode SendingToRestRoom222(this InstructionNode info, string message, string chatName,int amountAwait2)
+    {
+        var @new = info with
+        {
+            GroupName = chatName,
+            Instruction = new UserSendStringMessageRestRoomInstruction { AmountAwaits = amountAwait2 },
+            Message = Encoding.UTF8.GetBytes(message),
+            Children = new(),
+
+        };
+
+        return @new;
+    }
+
+    public static InstructionNode LeaveRoom222(this InstructionNode info, string chat)
+    {
+        var @new = info with
+        {
+            GroupName = chat,
+            Instruction = new LeaveRoomInstruction(),
+            Children = new(),
         };
 
         return @new;
@@ -143,6 +241,20 @@ public static class InstructionNodeFluentApi
 
         return ptr;
     }
+
+    public static InstructionNode Do2222(this InstructionNode info, Func<IUserInfo, Task> operation)
+    {
+        var @new = info with
+        {
+            Instruction = new UserRunOperationInstruction() { Tag = operation },//parameter = token
+            FromArrived = null,
+            Message = null,
+            Children = new(),
+        };
+
+        return @new;
+    }
+
 
     public static InstructionNode Do(this InstructionNode info, InstructionNode target, Func<IUserInfo, Task> operation)
     {
@@ -172,6 +284,23 @@ public static class InstructionNodeFluentApi
 
         return @new;
     }
+
+
+    public static InstructionNode Is_Not_Received2222(this InstructionNode info, string chatame)
+    {
+        var @new = info with
+        {
+            GroupName = chatame,
+            Instruction = new UserNotReceivedInstruction(),
+            Message = null,
+            FromArrived = "none",
+            Children = new(),
+        };
+
+        return @new;
+    }
+
+
 
     public static InstructionNode Connect(this InstructionNode source, params InstructionNode[] targets)
     {

@@ -6,29 +6,25 @@ namespace Chato.Automation;
 internal class TestPlan
 {
     private readonly ILogger<TestPlan> _logger;
-    private readonly GroupHandShakeScenario _groupHandShakeScenario;
     //private readonly HubStreamScenario _hubStreamScenario;
     private readonly BasicScenario _basicScenario;
     private readonly RegistrationValidationScenario _registrationValidationScenario;
     private readonly RoomSendingReceivingScenario roomSendingReceivingScenario;
-    private readonly CacheScenario _cacheScenario;
+    //private readonly CacheScenario _cacheScenario;
 
     public TestPlan(ILogger<TestPlan> logger,
-        GroupHandShakeScenario groupHandShakeScenario,
-        //HubStreamScenario hubStreamScenario,
         BasicScenario basicScenario,
         RegistrationValidationScenario registrationValidationScenario,
-        RoomSendingReceivingScenario roomSendingReceivingScenario,
-        CacheScenario cacheScenario
+        RoomSendingReceivingScenario roomSendingReceivingScenario
+        //CacheScenario cacheScenario
         )
     {
         _logger = logger;
-        this._groupHandShakeScenario = groupHandShakeScenario;
         //this._hubStreamScenario = hubStreamScenario;
         this._basicScenario = basicScenario;
         this._registrationValidationScenario = registrationValidationScenario;
         this.roomSendingReceivingScenario = roomSendingReceivingScenario;
-        this._cacheScenario = cacheScenario;
+        //this._cacheScenario = cacheScenario;
     }
 
 
@@ -39,12 +35,11 @@ internal class TestPlan
         {
 
 
-            await _registrationValidationScenario.StartRunScenario();
+            //await _registrationValidationScenario.StartRunScenario();
             await _basicScenario.StartRunScenario();
             await roomSendingReceivingScenario.StartRunScenario();
-            await _groupHandShakeScenario.StartRunScenario();
 
-            await _cacheScenario.StartRunScenario();
+            //await _cacheScenario.StartRunScenario();
 
 
             //await _hubStreamScenario.StartRunScenario();

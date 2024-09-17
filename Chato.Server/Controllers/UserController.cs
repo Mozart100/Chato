@@ -12,24 +12,26 @@ namespace Chato.Server.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
+        public const string All_Users_Route = "all";
+
         private readonly IMapper _mapper;
-        public readonly IUserService _UserService;
+        public readonly IUserService _userService;
 
         public UserController(IMapper mapper,
             IUserService userService)
         {
             this._mapper = mapper;
-            _UserService = userService;
+            _userService = userService;
         }
 
 
         [HttpGet, Authorize]
-        public async Task<UserResponse> Get()
+        public async Task<UserResponse> GetSelf()
         {
             var result = default(UserResponse);
 
             var userName = User.Identity.Name;
-            User user = await _UserService.GetUserByNameOrIdGetOrDefaultAsync(userName);
+            User user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(userName);
             if (user is not null)
             {
                 var dto = _mapper.Map<UserDto>(user);
@@ -37,6 +39,15 @@ namespace Chato.Server.Controllers
             }
 
             return result;
+        }
+
+        [HttpGet]
+        [Route(All_Users_Route)]
+        public async Task<GetAllUserResponse> GetAllUsers()
+        {
+            var result = await _userService.GetAllUsersAsync();
+
+            return new GetAllUserResponse { Users = result.ToArray() };
         }
     }
 }

@@ -12,15 +12,13 @@ namespace Chato.Server.Controllers;
 public class ChatController : ControllerBase
 {
     public const string All_Chat_Route = "all";
-    public const string Chat_Route = "{room}";
+    public const string Chat_Route = "{chat}";
 
     private readonly IChatService _roomService;
-    private readonly IUserService _userService;
 
-    public ChatController(IChatService roomService, IUserService userService)
+    public ChatController(IChatService roomService)
     {
         this._roomService = roomService;
-        this._userService = userService;
     }
 
 
@@ -36,24 +34,13 @@ public class ChatController : ControllerBase
 
 
     [HttpGet]
-    [Route("{roomName}"),Authorize]
-    public async Task<GetRoomResponse> GetRoom(string roomName)
+    [Route("{chatName}"),Authorize]
+    public async Task<GetRoomResponse> GetRoom(string chatName)
     {
-        var room = await _roomService.GetRoomByNameOrIdAsync(roomName);
+        var room = await _roomService.GetRoomByNameOrIdAsync(chatName);
 
-        return new GetRoomResponse { Room = room };
+        return new GetRoomResponse { Chat = room };
     }
-
-
-    [HttpGet]
-    [Route("users")]
-    public async Task<GetAllUserResponse> GetAllUsers()
-    {
-        var result = await _userService.GetAllUsersAsync();
-
-        return new GetAllUserResponse { Users = result.ToArray() };
-    }
-
 
 
 }

@@ -11,7 +11,6 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
     {
         HubUrl = $"{BaseUrl}/chat";
         AuthControllerUrl = $"{BaseUrl}/api/auth";
-        UserControllerUrl = $"{BaseUrl}/api/user";
 
 
         RegisterAuthControllerUrl = $"{AuthControllerUrl}/{AuthController.RegistrationUrl}";
@@ -21,7 +20,11 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
 
         RoomsControllerUrl = $"{BaseUrl}/api/chat";
         GetAllRoomsUrl = $"{RoomsControllerUrl}/{ChatController.All_Chat_Route}";
-        GetAllUsersUrl = $"{RoomsControllerUrl}/users";
+
+
+        ///User
+        UserControllerUrl = $"{BaseUrl}/api/user";
+        GetAllUsersUrl = $"{UserControllerUrl}/all";
 
 
         var argument = "{0}";
@@ -35,15 +38,18 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
 
     protected string HubUrl { get; }
     protected string AuthControllerUrl { get; }
-    protected string UserControllerUrl { get; }
     protected string RegisterAuthControllerUrl { get; }
     protected string DownloadFileUrl { get; }
     protected string UploadFilesUrl { get; }
-    
+
 
     protected string RoomsControllerUrl { get; }
     protected string SpecificRoomTemplatesUrl { get; }
     protected string GetAllRoomsUrl { get; }
+
+
+
+    protected string UserControllerUrl { get; }
     protected string GetAllUsersUrl { get; }
 
 

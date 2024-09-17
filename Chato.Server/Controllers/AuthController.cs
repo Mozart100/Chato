@@ -27,7 +27,8 @@ public class AuthController : ControllerBase
     private readonly IAuthenticationService _authenticationService;
     private readonly IFeatureManager _featureManager;
 
-    public AuthController(IUserService userService, IAuthenticationService authenticationService, IFeatureManager  featureManager)
+    public AuthController(IUserService userService, IAuthenticationService authenticationService, 
+        IFeatureManager  featureManager)
     {
         _userService = userService;
         this._authenticationService = authenticationService;
@@ -47,7 +48,6 @@ public class AuthController : ControllerBase
     {
         var flag = await _featureManager.IsEnabledAsync(FeatureFlagConsts.ClipArticale);
 
-        //throw new Exception("xxxx");
         var token = await _authenticationService.RegisterAsync(request);
         return new RegistrationResponse { Token = token, UserName = request.UserName , Description = request.Description , Age = request.Age, Gender  = request.Gender };
     }
