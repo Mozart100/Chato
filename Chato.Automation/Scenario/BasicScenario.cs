@@ -42,7 +42,7 @@ internal class BasicScenario : InstructionScenarioBase
         var supervisor = $"User_{nameof(SendingWithinLobi)}";
 
         var activeUsers = new string[] { supervisor, Anatoliy_User, Olessya_User, Nathan_User };
-        await RegisterUsers2222(activeUsers);
+        await RegisterUsers(activeUsers);
         var users = InstructionNodeFluentApi.RegisterInLoLobi(supervisor, Anatoliy_User, Olessya_User, Nathan_User);
 
         users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
@@ -88,7 +88,7 @@ internal class BasicScenario : InstructionScenarioBase
 
         var supervisor = $"User_{nameof(SendingWithinLobi_UserMovedChat)}";
         var activeUsers = new string[] { supervisor, Anatoliy_User, Olessya_User, Nathan_User };
-        await RegisterUsers2222(activeUsers);
+        await RegisterUsers(activeUsers);
         var users = InstructionNodeFluentApi.RegisterInLoLobi(supervisor, Anatoliy_User, Olessya_User, Nathan_User);
 
 
@@ -139,7 +139,7 @@ internal class BasicScenario : InstructionScenarioBase
 
     private async Task VerificationStep2222()
     {
-        await RegisterUsers2222(Anatoliy_User, Olessya_User, Nathan_User);
+        await RegisterUsers(Anatoliy_User, Olessya_User, Nathan_User);
 
         const string chat2 = "university_chat";
 

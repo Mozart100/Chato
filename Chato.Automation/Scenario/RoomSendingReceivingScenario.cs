@@ -40,7 +40,7 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
 
     private async Task ClosingChat()
     {
-        await RegisterUsers2222(Anatoliy_User, Olessya_User, Nathan_User);
+        await RegisterUsers(Anatoliy_User, Olessya_User, Nathan_User);
 
         const string chat2 = "beach_chat";
 

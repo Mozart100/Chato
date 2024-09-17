@@ -30,7 +30,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
     }
 
-    public virtual async Task RegisterUsers2222(params string[] users)
+    public virtual async Task RegisterUsers(params string[] users)
     {
         foreach (var user in users)
         {

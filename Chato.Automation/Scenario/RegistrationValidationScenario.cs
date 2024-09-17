@@ -66,7 +66,7 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
         var message_1 = "Shalom";
         var supervisor = $"User_{nameof(UploadingFiles)}";
 
-        await RegisterUsers2222(Anatoliy_User);
+        await RegisterUsers(Anatoliy_User);
         var users = InstructionNodeFluentApi.RegisterInLoLobi(Anatoliy_User);
 
         users[Anatoliy_User].Step(users[Anatoliy_User].Do2222(async user =>
