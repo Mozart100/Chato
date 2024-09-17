@@ -26,7 +26,7 @@ namespace Chato.Server.Controllers
 
 
         [HttpGet, Authorize]
-        public async Task<UserResponse> Get()
+        public async Task<UserResponse> GetSelf()
         {
             var result = default(UserResponse);
 
