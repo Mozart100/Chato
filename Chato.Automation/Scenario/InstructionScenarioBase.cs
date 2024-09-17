@@ -47,7 +47,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
     private async Task StartSignalR(UserInstructionExecuter userExecuter)
     {
         //var message2 = Encoding.UTF8.GetString(message);
-        await userExecuter.RegisterAsync2222();
+        await userExecuter.RegisterAsync();
 
     }
 

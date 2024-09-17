@@ -41,7 +41,7 @@ public class UserInstructionExecuter
     private readonly CounterSignal _signal;
     private readonly HubConnection _connection;
     //private readonly Queue<HubMessageRecievedBase> _receivedMessages;
-    private readonly Queue<HubMessageByteRecieved2222> _receivedMessages2222;
+    private readonly Queue<HubMessageByteRecieved2222> _receivedMessages;
     private readonly HashSet<string> _ignoreUsers;
 
 
@@ -54,7 +54,7 @@ public class UserInstructionExecuter
         _ignoreUsers.Add(Hub_From_Server);
 
         //_receivedMessages = new Queue<HubMessageRecievedBase>();
-        _receivedMessages2222 = new Queue<HubMessageByteRecieved2222>();
+        _receivedMessages = new Queue<HubMessageByteRecieved2222>();
 
         _connection = new HubConnectionBuilder()
        .WithUrl(url, options =>
@@ -82,7 +82,7 @@ public class UserInstructionExecuter
     }
 
     
-    public async Task RegisterAsync2222()
+    public async Task RegisterAsync()
     {
         await _connection.StartAsync();
         await ListenAsync();
@@ -166,7 +166,7 @@ public class UserInstructionExecuter
     {
         _logger.LogWarning($"In {chatName} -- From user {user} hould be [{message}].");
 
-        var messageReceived = _receivedMessages2222.Dequeue();
+        var messageReceived = _receivedMessages.Dequeue();
 
         if (messageReceived is HubMessageByteRecieved2222 stringMessage)
         {
@@ -178,7 +178,7 @@ public class UserInstructionExecuter
 
     public async Task NotReceivedCheckAsync()
     {
-        _receivedMessages2222.Any().Should().BeFalse();
+        _receivedMessages.Any().Should().BeFalse();
         await _signal.ReleaseAsync();
     }
 
@@ -208,7 +208,7 @@ public class UserInstructionExecuter
     {
         _logger.LogWarning($"In {chatName} -- From user {fromUser}  received message [{message}].");
 
-        _receivedMessages2222.Enqueue(new HubMessageByteRecieved2222(chatName, fromUser, message));
+        _receivedMessages.Enqueue(new HubMessageByteRecieved2222(chatName, fromUser, message));
     }
 
 
