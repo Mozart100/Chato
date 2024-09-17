@@ -16,6 +16,7 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
     {
 
         BusinessLogicCallbacks.Add(InvaliRegistrationValidationStep);
+        BusinessLogicCallbacks.Add(UploadingFiles);
 
     }
 
@@ -59,6 +60,39 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
 
     }
 
+
+    private async Task UploadingFiles()
+    {
+        var message_1 = "Shalom";
+        var supervisor = $"User_{nameof(UploadingFiles)}";
+
+        await RegisterUsers2222(Anatoliy_User);
+        var users = InstructionNodeFluentApi.RegisterInLoLobi(Anatoliy_User);
+
+        users[Anatoliy_User].Step(users[Anatoliy_User].Do2222(async user =>
+        {
+            var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "test.jpeg");
+            var files = new[] { path, path };
+            var token = Users[Anatoliy_User].RegisterResponse.Token;
+
+
+            var response = await UploadFiles<ResponseWrapper<UploadDocumentsResponse>>(UploadFilesUrl, token, files);
+            response.Body.Document1.Should().BeTrue();
+            response.Body.Document2.Should().BeTrue();
+            response.Body.Document3.Should().BeFalse();
+            response.Body.Document4.Should().BeFalse();
+            response.Body.Document5.Should().BeFalse();
+
+        }))
+            .Step(users[Anatoliy_User].Logout())
+            ;
+
+
+        var graph = new InstructionGraph(users[Anatoliy_User]);
+
+        await InstructionExecuter(graph);
+
+    }
 
 
 

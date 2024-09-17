@@ -39,7 +39,7 @@ internal class BasicScenario : InstructionScenarioBase
     private async Task SendingWithinLobi()
     {
         var message_1 = "Shalom";
-        var supervisor = nameof(SendingWithinLobi);
+        var supervisor = $"User_{nameof(SendingWithinLobi)}";
 
         var activeUsers = new string[] { supervisor, Anatoliy_User, Olessya_User, Nathan_User };
         await RegisterUsers2222(activeUsers);
@@ -86,7 +86,7 @@ internal class BasicScenario : InstructionScenarioBase
         var message_1 = "Shalom";
         var message_2 = "hello";
 
-        var supervisor = nameof(SendingWithinLobi_UserMovedChat);
+        var supervisor = $"User_{nameof(SendingWithinLobi_UserMovedChat)}";
         var activeUsers = new string[] { supervisor, Anatoliy_User, Olessya_User, Nathan_User };
         await RegisterUsers2222(activeUsers);
         var users = InstructionNodeFluentApi.RegisterInLoLobi(supervisor, Anatoliy_User, Olessya_User, Nathan_User);
