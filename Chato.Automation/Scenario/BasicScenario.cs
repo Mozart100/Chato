@@ -16,14 +16,15 @@ internal class BasicScenario : InstructionScenarioBase
     private const string Nathan_User = "nathan";
 
 
-    private const string Natali_User = "natali";
-    private const string Max_User = "max";
-    private const string Idan_User = "itan";
+    //private const string Natali_User = "natali";
+    //private const string Max_User = "max";
+    //private const string Idan_User = "itan";
 
     public BasicScenario(ILogger<BasicScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
         BusinessLogicCallbacks.Add(SendingWithinLobi);
+        BusinessLogicCallbacks.Add(SendingOnlyBetweenTwoPeople);
         BusinessLogicCallbacks.Add(SendingWithinLobi_UserMovedChat);
         BusinessLogicCallbacks.Add(VerificationStep2222);
 
@@ -78,6 +79,29 @@ internal class BasicScenario : InstructionScenarioBase
 
         await InstructionExecuter(graph);
 
+    }
+
+    private async Task SendingOnlyBetweenTwoPeople()
+    {
+        var message_1 = "Shalom";
+        var chat2 = IChatService.GetChatName(Anatoliy_User, Nathan_User);
+
+        var activeUsers = new string[] {  Anatoliy_User,  Nathan_User };
+        await RegisterUsers(activeUsers);
+        var users = InstructionNodeFluentApi.RegisterInLoLobi( Anatoliy_User,  Nathan_User);
+
+        users[Anatoliy_User].Step(users[Nathan_User])
+
+            .Step(users[Anatoliy_User].SendingToRestRoom(message_1,chat2 , 1))
+            .Step(users[Nathan_User].ReceivingFrom2222(chat2, Anatoliy_User, message_1))
+
+            .Step(users[Anatoliy_User].Logout())
+            .Step(users[Nathan_User].Logout())
+
+;
+
+        var graph = new InstructionGraph(users[Anatoliy_User]);
+        await InstructionExecuter(graph);
     }
 
     private async Task SendingWithinLobi_UserMovedChat()

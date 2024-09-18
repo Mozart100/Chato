@@ -80,7 +80,7 @@ public class ChattoHub : Hub<IChatHub>
 
             var toUser = IChatService.GetToUser(chatName);
             var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
-            if (user is not null)
+            if (user is null)
             {
                 throw new ArgumentNullException($"{toUser} doesnt exists.");
             }
