@@ -82,7 +82,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         {
             await _counterSignal.SetThrasholdAsync(1);
 
-            await userExecuter.JoinOrCreateChat(instruction.GroupName);
+            await userExecuter.JoinOrCreateChat(instruction.ChatName);
 
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
@@ -117,7 +117,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         {
             //await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstructionName != UserInstructions.Not_Received_Instruction).Count());
             await _counterSignal.SetThrasholdAsync(instruction.Instruction.AmountAwaits);
-            await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName: instruction.GroupName, userNameFrom: instruction.UserName, message: instruction.Message);
+            await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName: instruction.ChatName, userNameFrom: instruction.UserName, message: instruction.Message);
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
             {
@@ -126,10 +126,10 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         });
 
 
-        _actionMapper.Add(UserInstructions.Received_Instruction, async (userExecuter, instruction) => await userExecuter.ReceivedMessage(instruction.GroupName, instruction.UserName, instruction.FromArrived, instruction.Message));
+        _actionMapper.Add(UserInstructions.Received_Instruction, async (userExecuter, instruction) => await userExecuter.ReceivedMessage(instruction.ChatName, instruction.UserName, instruction.FromArrived, instruction.Message));
         _actionMapper.Add(UserInstructions.Not_Received_Instruction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync());
         _actionMapper.Add(UserInstructions.Run_Download_Instruction, async (userExecuter, instruction) => await userExecuter.DownloadStream(instruction.Message));
-        _actionMapper.Add(UserInstructions.Leave_Room_Instruction, async (userExecuter, instruction) => await userExecuter.LeaveChatInfo(instruction.GroupName));
+        _actionMapper.Add(UserInstructions.Leave_Room_Instruction, async (userExecuter, instruction) => await userExecuter.LeaveChatInfo(instruction.ChatName));
     }
 
 

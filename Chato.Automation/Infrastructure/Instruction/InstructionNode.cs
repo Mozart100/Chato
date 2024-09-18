@@ -13,7 +13,7 @@ public interface IUserInfo
 
 public record UserInfo(InstructionNode Instruction, RegistrationResponse RegistrationResponse) : IUserInfo;
 
-public record InstructionNode(string UserName, string? GroupName, UserInstructionBase Instruction, byte[] Message, string? FromArrived,
+public record InstructionNode(string UserName, string? ChatName, UserInstructionBase Instruction, byte[] Message, string? FromArrived,
     HashSet<InstructionNode> Children)
 {
     public InstructionNode(string userName, string? groupName, UserInstructionBase instruction, byte[] message, string? fromArrived)
@@ -40,7 +40,7 @@ public static class InstructionNodeFluentApi
     {
         var @new = info with
         {
-            GroupName = chatName,
+            ChatName = chatName,
             Instruction = new UserReceivedInstruction(),
             FromArrived = arrivedFrom,
             Message = Encoding.UTF8.GetBytes(message),
@@ -67,7 +67,7 @@ public static class InstructionNodeFluentApi
     {
         var @new = info with
         {
-            GroupName = chatName,
+            ChatName = chatName,
             Instruction = new JoinOrCreateChatInstruction(),
             FromArrived = null,
             Message = null,
@@ -90,7 +90,7 @@ public static class InstructionNodeFluentApi
                 Instruction = new UserReceivedInstruction(),
                 FromArrived = instruction.UserName,
                 Children = new(),
-                GroupName = instruction.GroupName,
+                ChatName = instruction.ChatName,
                 Message = instruction.Message
             };
 
@@ -119,7 +119,7 @@ public static class InstructionNodeFluentApi
     {
         var @new = info with
         {
-            GroupName = chatName,
+            ChatName = chatName,
             Instruction = new UserSendStringMessageRestRoomInstruction { AmountAwaits = amountAwait2 },
             Message = Encoding.UTF8.GetBytes(message),
             Children = new(),
@@ -133,7 +133,7 @@ public static class InstructionNodeFluentApi
     {
         var @new = info with
         {
-            GroupName = chat,
+            ChatName = chat,
             Instruction = new LeaveRoomInstruction(),
             Children = new(),
         };
@@ -158,7 +158,7 @@ public static class InstructionNodeFluentApi
     {
         var @new = info with
         {
-            GroupName = chatame,
+            ChatName = chatame,
             Instruction = new UserNotReceivedInstruction(),
             Message = null,
             FromArrived = "none",
