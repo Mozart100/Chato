@@ -84,6 +84,8 @@ internal class BasicScenario : InstructionScenarioBase
     private async Task SendingOnlyBetweenTwoPeople()
     {
         var message_1 = "Shalom";
+        var message_2 = $"message 2";
+
         var chat2 = IChatService.GetChatName(Anatoliy_User, Nathan_User);
 
         var activeUsers = new string[] {  Anatoliy_User,  Nathan_User };
@@ -94,6 +96,9 @@ internal class BasicScenario : InstructionScenarioBase
 
             .Step(users[Anatoliy_User].SendingToRestRoom(message_1,chat2 , 1))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Anatoliy_User, message_1))
+
+            .Step(users[Nathan_User].SendingToRestRoom(message_2, chat2, 1))
+            .Step(users[Anatoliy_User].ReceivingMessage(chat2, Nathan_User, message_2))
 
             .Step(users[Anatoliy_User].Logout())
             .Step(users[Nathan_User].Logout())

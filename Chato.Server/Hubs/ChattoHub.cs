@@ -90,22 +90,14 @@ public class ChattoHub : Hub<IChatHub>
         }
     }
 
-    public async Task JoinLobiChat()
-    {
-        await Groups.AddToGroupAsync(Context.ConnectionId, IChatService.Lobi);
-        await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, IChatService.Lobi);
-    }
+ 
 
     public async Task JoinOrCreateGroup(string chatName)
     {
         await JoinOrCreateChat(Context.ConnectionId, Context.User.Identity.Name, chatName);
     }
 
-    private async Task JoinOrCreateChat(string connectionId, string userName, string roomName)
-    {
-        await Groups.AddToGroupAsync(connectionId, roomName);
-        await _assignmentService.JoinOrCreateRoom(userName, roomName);
-    }
+
 
     public async Task LeaveGroup(string groupName)
     {
@@ -154,5 +146,19 @@ public class ChattoHub : Hub<IChatHub>
             await Task.Delay(200);
         }
     }
+
+
+
+    private async Task JoinLobiChat()
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, IChatService.Lobi);
+        await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, IChatService.Lobi);
+    }
+    private async Task JoinOrCreateChat(string connectionId, string userName, string roomName)
+    {
+        await Groups.AddToGroupAsync(connectionId, roomName);
+        await _assignmentService.JoinOrCreateRoom(userName, roomName);
+    }
+
 
 }
