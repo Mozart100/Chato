@@ -48,8 +48,8 @@ internal class BasicScenario : InstructionScenarioBase
 
         users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
             .Step(users[Anatoliy_User].SendingToRestRoom(message_1, IChatService.Lobi, 2))
-            .Step(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
-            .Step(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
+            .Step(users[Nathan_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
+            .Step(users[Olessya_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
 
             .Step(users[Anatoliy_User].Logout())
             .Step(users[Olessya_User].Logout())
@@ -93,7 +93,7 @@ internal class BasicScenario : InstructionScenarioBase
         users[Anatoliy_User].Step(users[Nathan_User])
 
             .Step(users[Anatoliy_User].SendingToRestRoom(message_1,chat2 , 1))
-            .Step(users[Nathan_User].ReceivingFrom2222(chat2, Anatoliy_User, message_1))
+            .Step(users[Nathan_User].ReceivingMessage(chat2, Anatoliy_User, message_1))
 
             .Step(users[Anatoliy_User].Logout())
             .Step(users[Nathan_User].Logout())
@@ -118,15 +118,15 @@ internal class BasicScenario : InstructionScenarioBase
 
         users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
             .Step(users[Anatoliy_User].SendingToRestRoom(message_1, IChatService.Lobi, 2))
-            .Step(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
-            .Step(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
+            .Step(users[Nathan_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
+            .Step(users[Olessya_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
 
             .Step(users[Olessya_User].JoinOrCreateChat(chat2))
             .Step(users[Nathan_User].JoinOrCreateChat(chat2))
 
             .Step(users[Olessya_User].SendingToRestRoom(message_2, chat2, 1))
-            .Step(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_2))
-            .Step(users[Anatoliy_User].Is_Not_Received2222(IChatService.Lobi))
+            .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_2))
+            .Step(users[Anatoliy_User].Is_Not_ReceivedMessage(IChatService.Lobi))
 
             .Step(users[Anatoliy_User].Logout())
             .Step(users[Olessya_User].Logout())
@@ -176,20 +176,20 @@ internal class BasicScenario : InstructionScenarioBase
 
         users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
             .Step(users[Anatoliy_User].SendingToRestRoom(message_1, IChatService.Lobi, 2))
-            .Step(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
-            .Step(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
+            .Step(users[Nathan_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
+            .Step(users[Olessya_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
 
             .Step(users[Olessya_User].JoinOrCreateChat(chat2))
             .Step(users[Nathan_User].JoinOrCreateChat(chat2))
 
             .Step(users[Olessya_User].SendingToRestRoom(message_2, chat2, 1))
-            .Step(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_2))
+            .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_2))
 
             .Step(users[Anatoliy_User].JoinOrCreateChat(chat2))
 
             .Step(users[Olessya_User].SendingToRestRoom(message_3, chat2, 2))
-            .Step(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_3))
-            .Step(users[Anatoliy_User].ReceivingFrom2222(chat2, Olessya_User, message_3))
+            .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_3))
+            .Step(users[Anatoliy_User].ReceivingMessage(chat2, Olessya_User, message_3))
 
 
             .Step(users[Anatoliy_User].Logout())

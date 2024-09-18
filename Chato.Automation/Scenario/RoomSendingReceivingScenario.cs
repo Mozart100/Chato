@@ -53,14 +53,14 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
 
         users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
             .Step(users[Anatoliy_User].SendingToRestRoom(message_1, IChatService.Lobi,2))
-            .Step(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
-            .Step(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
+            .Step(users[Nathan_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
+            .Step(users[Olessya_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
 
             .Step(users[Olessya_User].JoinOrCreateChat(chat2))
             .Step(users[Nathan_User].JoinOrCreateChat(chat2))
 
             .Step(users[Olessya_User].SendingToRestRoom(message_2, chat2,1))
-            .Step(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_2))
+            .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_2))
             .Step(users[Anatoliy_User].Do(async user =>
             {
                 var token = user.RegistrationResponse.Token;

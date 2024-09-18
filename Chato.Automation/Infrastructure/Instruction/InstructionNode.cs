@@ -36,7 +36,7 @@ public static class InstructionNodeFluentApi
         return instructions;
     }
 
-    public static InstructionNode ReceivingFrom2222(this InstructionNode info, string chatName, string arrivedFrom, string message)
+    public static InstructionNode ReceivingMessage(this InstructionNode info, string chatName, string arrivedFrom, string message)
     {
         var @new = info with
         {
@@ -75,29 +75,6 @@ public static class InstructionNodeFluentApi
         };
 
         return @new;
-    }
-
-
-
-    internal static InstructionNode ReceivedVerification(this InstructionNode info, string userName, params InstructionNode[] fromInstructions)
-    {
-        var current = info;
-        foreach (var instruction in fromInstructions)
-        {
-            var @new = info with
-            {
-                UserName = userName,
-                Instruction = new UserReceivedInstruction(),
-                FromArrived = instruction.UserName,
-                Children = new(),
-                ChatName = instruction.ChatName,
-                Message = instruction.Message
-            };
-
-            current = current.Step(@new);
-        }
-
-        return current;
     }
 
     public static InstructionNode IsToDownload(this InstructionNode info, string userName, byte[] data)
@@ -154,7 +131,7 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode Is_Not_Received2222(this InstructionNode info, string chatame)
+    public static InstructionNode Is_Not_ReceivedMessage(this InstructionNode info, string chatame)
     {
         var @new = info with
         {
