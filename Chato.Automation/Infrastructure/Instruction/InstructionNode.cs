@@ -115,7 +115,7 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode SendingToRestRoom222(this InstructionNode info, string message, string chatName,int amountAwait2)
+    public static InstructionNode SendingToRestRoom(this InstructionNode info, string message, string chatName,int amountAwait2)
     {
         var @new = info with
         {
@@ -129,7 +129,7 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode LeaveRoom222(this InstructionNode info, string chat)
+    public static InstructionNode LeaveRoom(this InstructionNode info, string chat)
     {
         var @new = info with
         {
@@ -141,7 +141,7 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode Do2222(this InstructionNode info, Func<IUserInfo, Task> operation)
+    public static InstructionNode Do(this InstructionNode info, Func<IUserInfo, Task> operation)
     {
         var @new = info with
         {

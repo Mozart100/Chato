@@ -52,16 +52,16 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
         var url = string.Format(SpecificRoomTemplatesUrl, chat2);
 
         users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
-            .Step(users[Anatoliy_User].SendingToRestRoom222(message_1, IChatService.Lobi,2))
+            .Step(users[Anatoliy_User].SendingToRestRoom(message_1, IChatService.Lobi,2))
             .Step(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
             .Step(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
 
             .Step(users[Olessya_User].JoinOrCreateChat(chat2))
             .Step(users[Nathan_User].JoinOrCreateChat(chat2))
 
-            .Step(users[Olessya_User].SendingToRestRoom222(message_2, chat2,1))
+            .Step(users[Olessya_User].SendingToRestRoom(message_2, chat2,1))
             .Step(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_2))
-            .Step(users[Anatoliy_User].Do2222(async user =>
+            .Step(users[Anatoliy_User].Do(async user =>
             {
                 var token = user.RegistrationResponse.Token;
                 var response = await Get<ResponseWrapper<GetRoomResponse>>(url, token);
@@ -69,9 +69,9 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
             }))
 
 
-            .Step(users[Olessya_User].LeaveRoom222(chat2))
-            .Step(users[Nathan_User].LeaveRoom222(chat2))
-            .Step(users[Anatoliy_User].Do2222(async user =>
+            .Step(users[Olessya_User].LeaveRoom(chat2))
+            .Step(users[Nathan_User].LeaveRoom(chat2))
+            .Step(users[Anatoliy_User].Do(async user =>
             {
                 var token = user.RegistrationResponse.Token;
                 var response = await Get<ResponseWrapper<GetRoomResponse>>(url, token);

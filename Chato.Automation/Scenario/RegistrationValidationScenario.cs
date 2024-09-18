@@ -69,7 +69,7 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
         await RegisterUsers(Anatoliy_User);
         var users = InstructionNodeFluentApi.RegisterInLoLobi(Anatoliy_User);
 
-        users[Anatoliy_User].Step(users[Anatoliy_User].Do2222(async user =>
+        users[Anatoliy_User].Step(users[Anatoliy_User].Do(async user =>
         {
             var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "test.jpeg");
             var files = new[] { path, path };

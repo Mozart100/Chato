@@ -46,7 +46,7 @@ internal class BasicScenario : InstructionScenarioBase
         var users = InstructionNodeFluentApi.RegisterInLoLobi(supervisor, Anatoliy_User, Olessya_User, Nathan_User);
 
         users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
-            .Step(users[Anatoliy_User].SendingToRestRoom222(message_1, IChatService.Lobi, 2))
+            .Step(users[Anatoliy_User].SendingToRestRoom(message_1, IChatService.Lobi, 2))
             .Step(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
             .Step(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
 
@@ -55,7 +55,7 @@ internal class BasicScenario : InstructionScenarioBase
             .Step(users[Nathan_User].Logout())
 
             .Step(users[supervisor])
-            .Step(users[supervisor].Do2222(async user =>
+            .Step(users[supervisor].Do(async user =>
                   {
                       var token = user.RegistrationResponse.Token;
                       var response = await Get<ResponseWrapper<GetAllUserResponse>>(GetAllUsersUrl, token);
@@ -93,14 +93,14 @@ internal class BasicScenario : InstructionScenarioBase
 
 
         users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
-            .Step(users[Anatoliy_User].SendingToRestRoom222(message_1, IChatService.Lobi, 2))
+            .Step(users[Anatoliy_User].SendingToRestRoom(message_1, IChatService.Lobi, 2))
             .Step(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
             .Step(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
 
             .Step(users[Olessya_User].JoinOrCreateChat(chat2))
             .Step(users[Nathan_User].JoinOrCreateChat(chat2))
 
-            .Step(users[Olessya_User].SendingToRestRoom222(message_2, chat2, 1))
+            .Step(users[Olessya_User].SendingToRestRoom(message_2, chat2, 1))
             .Step(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_2))
             .Step(users[Anatoliy_User].Is_Not_Received2222(IChatService.Lobi))
 
@@ -110,7 +110,7 @@ internal class BasicScenario : InstructionScenarioBase
 
 
             .Step(users[supervisor])
-            .Step(users[supervisor].Do2222(async user =>
+            .Step(users[supervisor].Do(async user =>
               {
                   var token = user.RegistrationResponse.Token;
                   var response = await Get<ResponseWrapper<GetAllUserResponse>>(GetAllUsersUrl, token);
@@ -151,19 +151,19 @@ internal class BasicScenario : InstructionScenarioBase
 
 
         users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
-            .Step(users[Anatoliy_User].SendingToRestRoom222(message_1, IChatService.Lobi, 2))
+            .Step(users[Anatoliy_User].SendingToRestRoom(message_1, IChatService.Lobi, 2))
             .Step(users[Nathan_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
             .Step(users[Olessya_User].ReceivingFrom2222(IChatService.Lobi, Anatoliy_User, message_1))
 
             .Step(users[Olessya_User].JoinOrCreateChat(chat2))
             .Step(users[Nathan_User].JoinOrCreateChat(chat2))
 
-            .Step(users[Olessya_User].SendingToRestRoom222(message_2, chat2, 1))
+            .Step(users[Olessya_User].SendingToRestRoom(message_2, chat2, 1))
             .Step(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_2))
 
             .Step(users[Anatoliy_User].JoinOrCreateChat(chat2))
 
-            .Step(users[Olessya_User].SendingToRestRoom222(message_3, chat2, 2))
+            .Step(users[Olessya_User].SendingToRestRoom(message_3, chat2, 2))
             .Step(users[Nathan_User].ReceivingFrom2222(chat2, Olessya_User, message_3))
             .Step(users[Anatoliy_User].ReceivingFrom2222(chat2, Olessya_User, message_3))
 
