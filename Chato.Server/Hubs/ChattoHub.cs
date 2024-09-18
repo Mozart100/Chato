@@ -16,7 +16,7 @@ public record HubDownloadInfo(int Amount);
 public interface IChatHub
 {
 
-    Task SendTextToChat(string chat, string fromUser, string toUser, string message);
+    Task SendTextToChat(string chat, string fromUser, string message);
     Task SendText(string fromUser, string message);
     //Task SelfReplay(string message);
 }
@@ -60,26 +60,33 @@ public class ChattoHub : Hub<IChatHub>
         return Clients.Caller.SendText(fromUser, message);
     }
 
-    public async Task SendMessageToOthersInGroup(string chat, string fromUser, string toUser, string message)
+    public async Task SendMessageToOthersInGroup(string chatName, string fromUser, string message)
     {
         //var ptr = Encoding.UTF8.GetBytes(message);
-        if (chat.IsNullOrEmpty())
+        if (chatName.IsNullOrEmpty())
         {
-            //peer to peer
-            chat = IChatService.GetChatName(fromUser, toUser);
-            await JoinOrCreateChat(Context.ConnectionId, fromUser, chat);
-            var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
-            if (user is not null)
-            {
-                await JoinOrCreateChat(user.ConnectionId, toUser, chat);
-                await Clients.OthersInGroup(chat).SendTextToChat(chat, fromUser, toUser, message);
-            }
+            throw new ArgumentNullException("Chat cannot be empty");
+        }
+
+        var isExists = await _roomService.IsChatExists(chatName);
+        if (isExists)
+        {
+            await _roomService.SendMessageAsync(chatName, fromUser, message);
+            await Clients.OthersInGroup(chatName).SendTextToChat(chatName, fromUser, message);
         }
         else
         {
+            await JoinOrCreateChat(Context.ConnectionId, fromUser, chatName);
 
-            await _roomService.SendMessageAsync(chat, fromUser, message);
-            await Clients.OthersInGroup(chat).SendTextToChat(chat, fromUser, toUser, message);
+            var toUser = IChatService.GetToUser(chatName);
+            var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
+            if (user is not null)
+            {
+                throw new ArgumentNullException($"{toUser} doesnt exists.");
+            }
+
+            await JoinOrCreateChat(user.ConnectionId, toUser, chatName);
+            await Clients.OthersInGroup(chatName).SendTextToChat(chatName, fromUser, message);
         }
     }
 

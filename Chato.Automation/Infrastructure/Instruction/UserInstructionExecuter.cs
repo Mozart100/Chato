@@ -106,7 +106,7 @@ public class UserInstructionExecuter
 
 
         //var ptr = Encoding.UTF8.GetBytes(message);
-        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, chatName, userNameFrom, UserName, message);
+        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, chatName, userNameFrom,  message);
     }
 
 
@@ -174,7 +174,7 @@ public class UserInstructionExecuter
         });
 
 
-        _connection.On<string, string, string, string>(nameof(IChatHub.SendTextToChat), async (chat, fromUser, toUser, message) =>
+        _connection.On<string, string, string>(nameof(IChatHub.SendTextToChat), async (chat, fromUser,  message) =>
         {
             var ptr = Encoding.UTF8.GetBytes(message);
             await ExpectedMessagesAsync(chat, fromUser, message);

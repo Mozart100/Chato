@@ -3,6 +3,7 @@ using Chato.Server.DataAccess.Repository;
 using Chato.Server.Infrastracture;
 using Chato.Server.Infrastracture.QueueDelegates;
 using Chatto.Shared;
+using System.Net.NetworkInformation;
 
 namespace Chato.Server.Services;
 
@@ -10,6 +11,7 @@ namespace Chato.Server.Services;
 public interface IChatService
 {
     public const string Lobi = "lobi";
+    public static string GetToUser(string chatName) => chatName.Split("__").LastOrDefault();
 
     static string GetChatName(string fromUser,string toUser)=> $"{fromUser}__{toUser}";
     Task AddUserAsync(string roomName, string userName);
@@ -23,6 +25,8 @@ public interface IChatService
     Task RemoveUserAndRoomFromRoom(string roomName, string username);
     Task RemoveHistoryByRoomNameAsync(string roomName);
     Task SendMessageAsync(string group, string fromUser, string message);
+
+    Task<bool> IsChatExists(string chatName);
 }
 
 
@@ -203,5 +207,20 @@ public class ChatService : IChatService
                 await CreateRoomCoreAsync(IChatService.Lobi);
             }
         });
+    }
+
+    public async Task<bool> IsChatExists(string chatName)
+    {
+        var result = true;
+
+        await _lockerQueue.InvokeAsync(async () =>
+        {
+            var chat = await GetRoomByNameOrIdCoreAsync(chatName);
+
+            result = chat != null;
+           
+        });
+
+        return result;
     }
 }
