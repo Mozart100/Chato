@@ -113,15 +113,6 @@ public class ChattoHub : Hub<IChatHub>
         }
     }
 
-    public async Task SendMessageToOtherUser(string fromUser, string toUser, string ptr)
-    {
-        var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
-        if (user is not null)
-        {
-            await Clients.Client(user.ConnectionId).SendText(fromUser, ptr);
-        }
-    }
-
     public async Task JoinLobiChat()
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, IChatService.Lobi);

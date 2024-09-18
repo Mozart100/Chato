@@ -12,9 +12,7 @@ using System.Text;
 
 namespace Chato.Automation.Infrastructure.Instruction;
 
-public record HubMessageRecievedBase(string From);
-//public record HubMessageStringRecieved(string From, string Message) : HubMessageRecievedBase(From);
-public record HubMessageByteRecieved(string From, string Data) : HubMessageRecievedBase(From);
+
 public record HubMessageByteRecieved2222(string ChatNAme, string From, string Data);
 
 
@@ -32,7 +30,6 @@ public class UserInstructionExecuter
     private const string Hub_Download_Topic = nameof(ChattoHub.Downloads);
     private const string Hub_GetGroupHistory_Topic = nameof(ChattoHub.GetGroupHistory);
     private const string Hub_RemoveGroupHistory_Topic = nameof(ChattoHub.RemoveChatHistory);
-    private const string Hub_SendMessageToOtherUser_Topic = nameof(ChattoHub.SendMessageToOtherUser);
     private const string Hub_OnDisconnectedAsync_Topic = nameof(ChattoHub.UserDisconnectAsync);
 
 
@@ -102,30 +99,14 @@ public class UserInstructionExecuter
         }
     }
 
-    public async Task SendMessageToOtherUser(string userNameFrom, string toUser, byte[] ptr)
+    public async Task SendMessageToOthersInGroup(string chatName, string userNameFrom, byte[] ptr)
     {
         var message = Encoding.UTF8.GetString(ptr);
-        _logger.LogInformation($"{userNameFrom} sending message to user [{toUser}] this message [{message}].");
-
-        await _connection.SendAsync(Hub_SendMessageToOtherUser_Topic, userNameFrom, toUser, message);
-    }
-
-
-    public async Task SendMessageToOthersInGroup(string groupName, string userNameFrom, byte[] ptr)
-    {
-        var isStringFile = FileHelper.IsFileText(ptr);
-        var templateMessage = "image";
-
-        if (isStringFile)
-        {
-            templateMessage = Encoding.UTF8.GetString(ptr);
-        }
-
-        _logger.LogInformation($"{userNameFrom} sending in group [{groupName}] message [{templateMessage}].");
+        _logger.LogInformation($"{userNameFrom} sending in group [{chatName}] message [{message}].");
 
 
         //var ptr = Encoding.UTF8.GetBytes(message);
-        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, groupName, userNameFrom, UserName, templateMessage);
+        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, chatName, userNameFrom, UserName, message);
     }
 
 
