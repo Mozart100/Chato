@@ -60,14 +60,6 @@ public class ChattoHub : Hub<IChatHub>
         return Clients.Caller.SendText(fromUser, message);
     }
 
-
-    //public Task BroadcastMessage(string fromUser, string message)
-    //{
-    //    //var str = Encoding.UTF8.GetString(message);
-    //    return Clients.Others.SendText(fromUser, message);
-    //}
-
-
     public async Task SendMessageToOthersInGroup(string chat, string fromUser, string toUser, string message)
     {
         //var ptr = Encoding.UTF8.GetBytes(message);

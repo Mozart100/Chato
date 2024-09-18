@@ -110,16 +110,16 @@ public class UserInstructionExecuter
     }
 
 
-    public async Task JoinOrCreateChat(string groupName)
+    public async Task JoinOrCreateChat(string chatName)
     {
-        _logger.LogInformation($"{UserName} joins group.");
+        _logger.LogInformation($"{UserName} joins chat.");
 
-        await _connection.InvokeAsync(Hub_Join_Group_Topic, groupName);
+        await _connection.InvokeAsync(Hub_Join_Group_Topic, chatName);
         await _signal.ReleaseAsync();
     }
 
 
-    public async Task LeaveGroupInfo(string groupName)
+    public async Task LeaveChatInfo(string groupName)
     {
         _logger.LogInformation($"Getting {UserName} info.");
 
@@ -137,13 +137,13 @@ public class UserInstructionExecuter
         }
     }
 
-    public async Task ListenToStringCheckAsync2222(string chatName, string user , string fromArrived, byte[] ptr)
+    public async Task ReceivedMessage(string chatName, string user , string fromArrived, byte[] ptr)
     {
             var message = Encoding.UTF8.GetString(ptr);
-            await ListenToStringCheckAsync2222(chatName,user, fromArrived, message);
+            await ShouldBe(chatName,user, fromArrived, message);
     }
 
-    public async Task ListenToStringCheckAsync2222(string chatName, string user, string fromArrived, string message)
+    public async Task ShouldBe(string chatName, string user, string fromArrived, string message)
     {
         _logger.LogWarning($"In {chatName} -- From user {user} hould be [{message}].");
 
