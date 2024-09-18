@@ -110,7 +110,7 @@ public class UserInstructionExecuter
     }
 
 
-    public async Task JoinOrCreateChat2222(string groupName)
+    public async Task JoinOrCreateChat(string groupName)
     {
         _logger.LogInformation($"{UserName} joins group.");
 

@@ -82,7 +82,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         {
             await _counterSignal.SetThrasholdAsync(1);
 
-            await userExecuter.JoinOrCreateChat2222(instruction.GroupName);
+            await userExecuter.JoinOrCreateChat(instruction.GroupName);
 
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)

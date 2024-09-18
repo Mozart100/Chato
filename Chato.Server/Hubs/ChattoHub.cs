@@ -13,28 +13,6 @@ namespace Chato.Server.Hubs;
 
 public record HubDownloadInfo(int Amount);
 
-//public class TextMessage
-//{
-//    [JsonPropertyName("chat")]
-//    public string Chat { get; set; }
-
-//    [JsonPropertyName("fromUser")]
-//    public string FromUser { get; set; }
-
-//    [JsonPropertyName("message")]
-//    public string Message { get; set; }
-
-//    public TextMessage(string chat, string fromUser, string message)
-//    {
-//        Chat = chat;
-//        FromUser = fromUser;
-//        Message = message;
-//    }
-//}
-
-
-
-
 public interface IChatHub
 {
 
@@ -83,11 +61,11 @@ public class ChattoHub : Hub<IChatHub>
     }
 
 
-    public Task BroadcastMessage(string fromUser, string message)
-    {
-        //var str = Encoding.UTF8.GetString(message);
-        return Clients.Others.SendText(fromUser, message);
-    }
+    //public Task BroadcastMessage(string fromUser, string message)
+    //{
+    //    //var str = Encoding.UTF8.GetString(message);
+    //    return Clients.Others.SendText(fromUser, message);
+    //}
 
 
     public async Task SendMessageToOthersInGroup(string chat, string fromUser, string toUser, string message)
@@ -97,11 +75,11 @@ public class ChattoHub : Hub<IChatHub>
         {
             //peer to peer
             chat = IChatService.GetChatName(fromUser, toUser);
-            await JoinGroup2222(Context.ConnectionId, fromUser, chat);
+            await JoinOrCreateChat(Context.ConnectionId, fromUser, chat);
             var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
             if (user is not null)
             {
-                await JoinGroup2222(user.ConnectionId, toUser, chat);
+                await JoinOrCreateChat(user.ConnectionId, toUser, chat);
                 await Clients.OthersInGroup(chat).SendTextToChat(chat, fromUser, toUser, message);
             }
         }
@@ -121,13 +99,10 @@ public class ChattoHub : Hub<IChatHub>
 
     public async Task JoinOrCreateGroup(string chatName)
     {
-        //await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
-        //await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, roomName);
-
-        await JoinGroup2222(Context.ConnectionId, Context.User.Identity.Name, chatName);
+        await JoinOrCreateChat(Context.ConnectionId, Context.User.Identity.Name, chatName);
     }
 
-    private async Task JoinGroup2222(string connectionId, string userName, string roomName)
+    private async Task JoinOrCreateChat(string connectionId, string userName, string roomName)
     {
         await Groups.AddToGroupAsync(connectionId, roomName);
         await _assignmentService.JoinOrCreateRoom(userName, roomName);
