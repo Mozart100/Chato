@@ -78,11 +78,13 @@ public class UserInstructionExecuter
         //LoginResponse = loginResponse;
     }
 
-    
-    public async Task RegisterAsync()
+
+    public async Task StartSignalRAsync(int amountMessages)
     {
         await _connection.StartAsync();
         await ListenAsync();
+
+        await JoinOrCreateChat(IChatService.Lobi, amountMessages);
     }
 
     public RegistrationResponse RegisterResponse { get; }
@@ -95,7 +97,7 @@ public class UserInstructionExecuter
 
         await foreach (var senderInfo in _connection.StreamAsync<SenderInfo>(Hub_GetGroupHistory_Topic, groupName))
         {
-            await ExpectedMessagesAsync( groupName, senderInfo.UserName, senderInfo.Message);
+            await ExpectedMessagesAsync(groupName, senderInfo.UserName, senderInfo.Message);
         }
     }
 
@@ -106,19 +108,24 @@ public class UserInstructionExecuter
 
 
         //var ptr = Encoding.UTF8.GetBytes(message);
-        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, chatName, userNameFrom,  message);
+        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, chatName, userNameFrom, message);
     }
 
 
-    public async Task JoinOrCreateChat(string chatName)
+    public async Task JoinOrCreateChat(string chatName, int amountMessages = -1)
     {
-        _logger.LogInformation($"{UserName} joins chat.");
+        _logger.LogInformation($"{UserName} joins or create a chat.");
 
-        _logger.LogInformation($"{UserName} downloading history of the group.");
 
+        var isToVerify = amountMessages > 0;
         await foreach (var senderInfo in _connection.StreamAsync<SenderInfo>(Hub_Join_Group_Topic, chatName))
         {
-            //await ExpectedMessagesAsync(groupame, senderInfo.UserName, senderInfo.Message);
+            amountMessages--;
+        }
+
+        if (isToVerify)
+        {
+            amountMessages.Should().Be(0);
         }
 
 
@@ -154,10 +161,10 @@ public class UserInstructionExecuter
         }
     }
 
-    public async Task ReceivedMessage(string chatName, string user , string fromArrived, byte[] ptr)
+    public async Task ReceivedMessage(string chatName, string user, string fromArrived, byte[] ptr)
     {
-            var message = Encoding.UTF8.GetString(ptr);
-            await ShouldBe(chatName,user, fromArrived, message);
+        var message = Encoding.UTF8.GetString(ptr);
+        await ShouldBe(chatName, user, fromArrived, message);
     }
 
     public async Task ShouldBe(string chatName, string user, string fromArrived, string message)
@@ -191,7 +198,7 @@ public class UserInstructionExecuter
         });
 
 
-        _connection.On<string, string, string>(nameof(IChatHub.SendTextToChat), async (chat, fromUser,  message) =>
+        _connection.On<string, string, string>(nameof(IChatHub.SendTextToChat), async (chat, fromUser, message) =>
         {
             var ptr = Encoding.UTF8.GetBytes(message);
             await ExpectedMessagesAsync(chat, fromUser, message);

@@ -29,12 +29,18 @@ public static class InstructionNodeFluentApi
         var instructions = new Dictionary<string, InstructionNode>();
         foreach (var user in users)
         {
-            var info = new InstructionNode(userName: user, groupName: IChatService.Lobi, instruction: new UserRegisterLobiInstruction(), message: null, fromArrived: null);
+            var info = RegisterSingleUserInLoLobi(user);  // new InstructionNode(userName: user, groupName: IChatService.Lobi, instruction: new UserRegisterLobiInstruction(), message: null, fromArrived: null);
             instructions[user] = info;
         }
 
         return instructions;
     }
+
+    public static InstructionNode RegisterSingleUserInLoLobi(string user)
+    {
+        return new InstructionNode(userName: user, groupName: IChatService.Lobi, instruction: new UserRegisterLobiInstruction() { Tag = -1 }, message: null, fromArrived: null);
+    }
+
 
     public static InstructionNode ReceivingMessage(this InstructionNode info, string chatName, string arrivedFrom, string message)
     {
@@ -63,12 +69,12 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode JoinOrCreateChat(this InstructionNode info, string chatName)
+    public static InstructionNode JoinOrCreateChat(this InstructionNode info, string chatName, int amountMessages = -1)
     {
         var @new = info with
         {
             ChatName = chatName,
-            Instruction = new JoinOrCreateChatInstruction(),
+            Instruction = new JoinOrCreateChatInstruction() { Tag = amountMessages },
             FromArrived = null,
             Message = null,
             Children = new(),
@@ -92,7 +98,7 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode SendingToRestRoom(this InstructionNode info, string message, string chatName,int amountAwait2)
+    public static InstructionNode SendingToRestRoom(this InstructionNode info, string message, string chatName, int amountAwait2)
     {
         var @new = info with
         {

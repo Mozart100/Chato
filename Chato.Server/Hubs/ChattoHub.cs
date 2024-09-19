@@ -97,7 +97,6 @@ public class ChattoHub : Hub<IChatHub>
         var isExists = await _roomService.IsChatExists(chatName);
         if (isExists)
         {
-            
             await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName);
 
             var list = await _roomService.GetGroupHistoryAsync(chatName);
@@ -138,8 +137,6 @@ public class ChattoHub : Hub<IChatHub>
         await _roomService.RemoveHistoryByRoomNameAsync(groupName);
 
     }
-
-
 
     public async IAsyncEnumerable<SenderInfo> GetGroupHistory(string chatName, [EnumeratorCancellation] CancellationToken cancellationToken)
     {

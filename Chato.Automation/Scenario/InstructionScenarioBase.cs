@@ -44,10 +44,10 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         }
     }
 
-    private async Task StartSignalR(UserInstructionExecuter userExecuter)
+    private async Task StartSignalR(UserInstructionExecuter userExecuter,int amountMessages)
     {
         //var message2 = Encoding.UTF8.GetString(message);
-        await userExecuter.RegisterAsync();
+        await userExecuter.StartSignalRAsync(amountMessages);
 
     }
 
@@ -81,8 +81,9 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         _actionMapper.Add(UserInstructions.JoinOrCreate_Chat_Instruction, async (userExecuter, instruction) =>
         {
             await _counterSignal.SetThrasholdAsync(1);
+            var amountMessages = (int)instruction.Instruction.Tag;
 
-            await userExecuter.JoinOrCreateChat(instruction.ChatName);
+            await userExecuter.JoinOrCreateChat(instruction.ChatName, amountMessages);
 
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
@@ -98,7 +99,9 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         _actionMapper.Add(UserInstructions.User_RegisterLobi_Instruction, async (userExecuter, instruction) =>
         {
             await _counterSignal.SetThrasholdAsync(1);
-            await StartSignalR(userExecuter: userExecuter);
+            var amountMessages = (int)instruction.Instruction.Tag;
+
+            await StartSignalR(userExecuter: userExecuter,amountMessages:amountMessages);
 
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
