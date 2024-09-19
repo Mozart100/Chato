@@ -3,13 +3,13 @@ import { BaseApiService } from './base-api.service'
 import { HttpClient } from '@angular/common/http'
 import { ToastrService } from 'ngx-toastr'
 import { environment } from '../../../environments/environment'
-import { RoomsDto } from '../models/dto'
+import { ChatsDto } from '../models/dto'
 import { ChatStore } from '../store/chat.store'
 
-const LOAD_ROOMS_URL = '/api/Room/all'
+const LOAD_ROOMS_URL = '/api/Chat/all'
 
 @Injectable({ providedIn: 'root' })
-export class RoomsService extends BaseApiService {
+export class ChatService extends BaseApiService {
 
     private readonly apiUrl: string
 
@@ -21,9 +21,9 @@ export class RoomsService extends BaseApiService {
     }
 
     loadAllRooms() {
-        this.sendGet<RoomsDto>(this.apiUrl + LOAD_ROOMS_URL)
+        this.sendGet<ChatsDto>(this.apiUrl + LOAD_ROOMS_URL)
             .then(data => {
-                console.log('Rooms response', data.Body.rooms)
+                console.log('Chats response', data.Body.rooms)
                 this.chatStore.allRooms.set(data.Body.rooms)
             })
     }

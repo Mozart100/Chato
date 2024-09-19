@@ -317,19 +317,19 @@
                 <ul class="list-unstyled chat-list">
                     @for (item of chatStore.allRooms(); track $index) {
                         <li (click)="showGroupChat(item)"
-                            [ngClass]="{'active': item.roomName == chatStore.selectedRoom()?.roomName}">
+                            [ngClass]="{'active': item.chatName == chatStore.selectedRoom()?.chatName}">
                             <a href="javascript:void(0);">
                                 <div class="d-flex align-items-center">
                                     <div class="chat-user-img me-3 ms-0">
                                         <div class="avatar-xs">
                         <span class="avatar-title rounded-circle bg-primary-subtle text-primary">
-                          {{ item.roomName.charAt(0) }}
+                          {{ item.chatName.charAt(0) }}
                         </span>
                                         </div>
                                     </div>
                                     <div class="flex-grow-1 overflow-hidden">
                                         <h5 class="text-truncate font-size-14 mb-0">
-                                            #{{ item.roomName }}
+                                            #{{ item.chatName }}
                                             <span
                                                     class="badge badge-soft-danger rounded-pill float-end">{{ 3 }}</span>
                                         </h5>

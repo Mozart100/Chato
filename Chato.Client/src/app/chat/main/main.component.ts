@@ -1,4 +1,4 @@
-import { Component } from '@angular/core'
+import { Component, OnInit } from '@angular/core'
 import { NgbDropdown, NgbDropdownMenu, NgbDropdownToggle, NgbTooltip } from '@ng-bootstrap/ng-bootstrap'
 import { TranslateModule } from '@ngx-translate/core'
 import { AuthenticationService } from '../../core/services/auth.service'
@@ -11,6 +11,7 @@ import { TabsModule } from '../tabs/tabs.module'
 import { Router, RouterOutlet } from '@angular/router'
 import { NavStore } from '../../core/store/nav.store'
 import { ChatWindowComponent } from '../chat-window/chat-window.component'
+import { ChattoHubService } from '../../core/services/realtime.service'
 
 @Component({
     selector: 'app-main',
@@ -33,12 +34,17 @@ import { ChatWindowComponent } from '../chat-window/chat-window.component'
     templateUrl: './main.component.html',
     styleUrl: './main.component.scss'
 })
-export class MainComponent {
+export class MainComponent implements OnInit {
 
     constructor(private auth: AuthenticationService,
                 public langService: LangService,
                 public navStore: NavStore,
-                private router: Router) {
+                private router: Router,
+                private realtime: ChattoHubService) {
+    }
+
+    ngOnInit(): void {
+        this.realtime.startConnection();
     }
 
     logout() {

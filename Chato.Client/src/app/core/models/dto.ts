@@ -1,7 +1,7 @@
-import { Room } from './chat.models'
+import { Chat } from './chat.models'
 
-export interface RoomsDto {
+export interface ChatsDto {
     Body: {
-        rooms: Room[]
+        rooms: Chat[]
     }
 }
