@@ -13,32 +13,10 @@ namespace Chato.Server.Hubs;
 
 public record HubDownloadInfo(int Amount);
 
-//public class TextMessage
-//{
-//    [JsonPropertyName("chat")]
-//    public string Chat { get; set; }
-
-//    [JsonPropertyName("fromUser")]
-//    public string FromUser { get; set; }
-
-//    [JsonPropertyName("message")]
-//    public string Message { get; set; }
-
-//    public TextMessage(string chat, string fromUser, string message)
-//    {
-//        Chat = chat;
-//        FromUser = fromUser;
-//        Message = message;
-//    }
-//}
-
-
-
-
 public interface IChatHub
 {
 
-    Task SendTextToChat(string chat, string fromUser, string toUser, string message);
+    Task SendTextToChat(string chat, string fromUser, string message);
     Task SendText(string fromUser, string message);
     //Task SelfReplay(string message);
 }
@@ -71,7 +49,7 @@ public class ChattoHub : Hub<IChatHub>
         var user = Context.User;
 
         await _userService.AssignConnectionId(user.Identity.Name, connectionId);
-        await JoinLobiChat();
+        await JoinLobiChatInternal();
 
         await ReplyMessage("server", User_Connected_Message);
         await base.OnConnectedAsync();
@@ -82,64 +60,57 @@ public class ChattoHub : Hub<IChatHub>
         return Clients.Caller.SendText(fromUser, message);
     }
 
-
-    public Task BroadcastMessage(string fromUser, string message)
-    {
-        //var str = Encoding.UTF8.GetString(message);
-        return Clients.Others.SendText(fromUser, message);
-    }
-
-
-    public async Task SendMessageToOthersInGroup(string chat, string fromUser, string toUser, string message)
+    public async Task SendMessageToOthersInGroup(string chatName, string fromUser, string message)
     {
         //var ptr = Encoding.UTF8.GetBytes(message);
-        if (chat.IsNullOrEmpty())
+        if (chatName.IsNullOrEmpty())
         {
-            //peer to peer
-            chat = IChatService.GetChatName(fromUser, toUser);
-            await JoinGroup2222(Context.ConnectionId, fromUser, chat);
+            throw new ArgumentNullException("Chat cannot be empty");
+        }
+
+        var isExists = await _roomService.IsChatExists(chatName);
+        if (isExists)
+        {
+            await _roomService.SendMessageAsync(chatName, fromUser, message);
+            await Clients.OthersInGroup(chatName).SendTextToChat(chatName, fromUser, message);
+        }
+        else
+        {
+            await JoinOrCreateChatInternal(Context.ConnectionId, fromUser, chatName);
+
+            var toUser = IChatService.GetToUser(chatName);
             var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
-            if (user is not null)
+            if (user is null)
             {
-                await JoinGroup2222(user.ConnectionId, toUser, chat);
-                await Clients.OthersInGroup(chat).SendTextToChat(chat, fromUser, toUser, message);
+                throw new ArgumentNullException($"{toUser} doesnt exists.");
+            }
+
+            await JoinOrCreateChatInternal(user.ConnectionId, toUser, chatName);
+            await Clients.OthersInGroup(chatName).SendTextToChat(chatName, fromUser, message);
+        }
+    }
+
+    public async IAsyncEnumerable<SenderInfo> JoinOrCreateChat(string chatName)
+    {
+        var userName = Context.User.Identity.Name;
+
+        var isExists = await _roomService.IsChatExists(chatName);
+        if (isExists)
+        {
+            await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName);
+
+            var list = await _roomService.GetGroupHistoryAsync(chatName);
+
+            foreach (var senderInfo in list)
+            {
+                yield return senderInfo;
+                await Task.Delay(50);
             }
         }
         else
         {
-
-            await _roomService.SendMessageAsync(chat, fromUser, message);
-            await Clients.OthersInGroup(chat).SendTextToChat(chat, fromUser, toUser, message);
+            await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName);
         }
-    }
-
-    public async Task SendMessageToOtherUser(string fromUser, string toUser, string ptr)
-    {
-        var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
-        if (user is not null)
-        {
-            await Clients.Client(user.ConnectionId).SendText(fromUser, ptr);
-        }
-    }
-
-    public async Task JoinLobiChat()
-    {
-        await Groups.AddToGroupAsync(Context.ConnectionId, IChatService.Lobi);
-        await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, IChatService.Lobi);
-    }
-
-    public async Task JoinOrCreateGroup(string chatName)
-    {
-        //await Groups.AddToGroupAsync(Context.ConnectionId, roomName);
-        //await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, roomName);
-
-        await JoinGroup2222(Context.ConnectionId, Context.User.Identity.Name, chatName);
-    }
-
-    private async Task JoinGroup2222(string connectionId, string userName, string roomName)
-    {
-        await Groups.AddToGroupAsync(connectionId, roomName);
-        await _assignmentService.JoinOrCreateRoom(userName, roomName);
     }
 
     public async Task LeaveGroup(string groupName)
@@ -167,14 +138,14 @@ public class ChattoHub : Hub<IChatHub>
 
     }
 
-    public async IAsyncEnumerable<SenderInfo> GetGroupHistory(string roomName, [EnumeratorCancellation] CancellationToken cancellationToken)
+    public async IAsyncEnumerable<SenderInfo> GetGroupHistory(string chatName, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var list = await _roomService.GetGroupHistoryAsync(roomName);
+        var list = await _roomService.GetGroupHistoryAsync(chatName);
 
         foreach (var senderInfo in list)
         {
             yield return senderInfo;
-            await Task.Delay(200);
+            await Task.Delay(50);
         }
     }
 
@@ -189,5 +160,19 @@ public class ChattoHub : Hub<IChatHub>
             await Task.Delay(200);
         }
     }
+
+
+
+    private async Task JoinLobiChatInternal()
+    {
+        await Groups.AddToGroupAsync(Context.ConnectionId, IChatService.Lobi);
+        await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, IChatService.Lobi);
+    }
+    private async Task JoinOrCreateChatInternal(string connectionId, string userName, string roomName)
+    {
+        await Groups.AddToGroupAsync(connectionId, roomName);
+        await _assignmentService.JoinOrCreateRoom(userName, roomName);
+    }
+
 
 }

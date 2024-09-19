@@ -13,7 +13,7 @@ public interface IUserInfo
 
 public record UserInfo(InstructionNode Instruction, RegistrationResponse RegistrationResponse) : IUserInfo;
 
-public record InstructionNode(string UserName, string? GroupName, UserInstructionBase Instruction, byte[] Message, string? FromArrived,
+public record InstructionNode(string UserName, string? ChatName, UserInstructionBase Instruction, byte[] Message, string? FromArrived,
     HashSet<InstructionNode> Children)
 {
     public InstructionNode(string userName, string? groupName, UserInstructionBase instruction, byte[] message, string? fromArrived)
@@ -29,18 +29,24 @@ public static class InstructionNodeFluentApi
         var instructions = new Dictionary<string, InstructionNode>();
         foreach (var user in users)
         {
-            var info = new InstructionNode(userName: user, groupName: IChatService.Lobi, instruction: new UserRegisterLobiInstruction(), message: null, fromArrived: null);
+            var info = RegisterSingleUserInLoLobi(user);  // new InstructionNode(userName: user, groupName: IChatService.Lobi, instruction: new UserRegisterLobiInstruction(), message: null, fromArrived: null);
             instructions[user] = info;
         }
 
         return instructions;
     }
 
-    public static InstructionNode ReceivingFrom2222(this InstructionNode info, string chatName, string arrivedFrom, string message)
+    public static InstructionNode RegisterSingleUserInLoLobi(string user)
+    {
+        return new InstructionNode(userName: user, groupName: IChatService.Lobi, instruction: new UserRegisterLobiInstruction() { Tag = -1 }, message: null, fromArrived: null);
+    }
+
+
+    public static InstructionNode ReceivingMessage(this InstructionNode info, string chatName, string arrivedFrom, string message)
     {
         var @new = info with
         {
-            GroupName = chatName,
+            ChatName = chatName,
             Instruction = new UserReceivedInstruction(),
             FromArrived = arrivedFrom,
             Message = Encoding.UTF8.GetBytes(message),
@@ -63,41 +69,18 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode JoinOrCreateChat(this InstructionNode info, string chatName)
+    public static InstructionNode JoinOrCreateChat(this InstructionNode info, string chatName, int amountMessages = -1)
     {
         var @new = info with
         {
-            GroupName = chatName,
-            Instruction = new JoinOrCreateChatInstruction(),
+            ChatName = chatName,
+            Instruction = new JoinOrCreateChatInstruction() { Tag = amountMessages },
             FromArrived = null,
             Message = null,
             Children = new(),
         };
 
         return @new;
-    }
-
-
-
-    internal static InstructionNode ReceivedVerification(this InstructionNode info, string userName, params InstructionNode[] fromInstructions)
-    {
-        var current = info;
-        foreach (var instruction in fromInstructions)
-        {
-            var @new = info with
-            {
-                UserName = userName,
-                Instruction = new UserReceivedInstruction(),
-                FromArrived = instruction.UserName,
-                Children = new(),
-                GroupName = instruction.GroupName,
-                Message = instruction.Message
-            };
-
-            current = current.Step(@new);
-        }
-
-        return current;
     }
 
     public static InstructionNode IsToDownload(this InstructionNode info, string userName, byte[] data)
@@ -115,11 +98,11 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode SendingToRestRoom222(this InstructionNode info, string message, string chatName,int amountAwait2)
+    public static InstructionNode SendingToRestRoom(this InstructionNode info, string message, string chatName, int amountAwait2)
     {
         var @new = info with
         {
-            GroupName = chatName,
+            ChatName = chatName,
             Instruction = new UserSendStringMessageRestRoomInstruction { AmountAwaits = amountAwait2 },
             Message = Encoding.UTF8.GetBytes(message),
             Children = new(),
@@ -129,11 +112,11 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode LeaveRoom222(this InstructionNode info, string chat)
+    public static InstructionNode LeaveRoom(this InstructionNode info, string chat)
     {
         var @new = info with
         {
-            GroupName = chat,
+            ChatName = chat,
             Instruction = new LeaveRoomInstruction(),
             Children = new(),
         };
@@ -141,7 +124,7 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode Do2222(this InstructionNode info, Func<IUserInfo, Task> operation)
+    public static InstructionNode Do(this InstructionNode info, Func<IUserInfo, Task> operation)
     {
         var @new = info with
         {
@@ -154,11 +137,11 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode Is_Not_Received2222(this InstructionNode info, string chatame)
+    public static InstructionNode Is_Not_ReceivedMessage(this InstructionNode info, string chatame)
     {
         var @new = info with
         {
-            GroupName = chatame,
+            ChatName = chatame,
             Instruction = new UserNotReceivedInstruction(),
             Message = null,
             FromArrived = "none",
