@@ -49,7 +49,7 @@ public class ChattoHub : Hub<IChatHub>
         var user = Context.User;
 
         await _userService.AssignConnectionId(user.Identity.Name, connectionId);
-        await JoinLobiChat();
+        await JoinLobiChatInternal();
 
         await ReplyMessage("server", User_Connected_Message);
         await base.OnConnectedAsync();
@@ -76,7 +76,7 @@ public class ChattoHub : Hub<IChatHub>
         }
         else
         {
-            await JoinOrCreateChat(Context.ConnectionId, fromUser, chatName);
+            await JoinOrCreateChatInternal(Context.ConnectionId, fromUser, chatName);
 
             var toUser = IChatService.GetToUser(chatName);
             var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
@@ -85,19 +85,34 @@ public class ChattoHub : Hub<IChatHub>
                 throw new ArgumentNullException($"{toUser} doesnt exists.");
             }
 
-            await JoinOrCreateChat(user.ConnectionId, toUser, chatName);
+            await JoinOrCreateChatInternal(user.ConnectionId, toUser, chatName);
             await Clients.OthersInGroup(chatName).SendTextToChat(chatName, fromUser, message);
         }
     }
 
- 
-
-    public async Task JoinOrCreateGroup(string chatName)
+    public async IAsyncEnumerable<SenderInfo> JoinOrCreateChat(string chatName)
     {
-        await JoinOrCreateChat(Context.ConnectionId, Context.User.Identity.Name, chatName);
+        var userName = Context.User.Identity.Name;
+
+        var isExists = await _roomService.IsChatExists(chatName);
+        if (isExists)
+        {
+            
+            await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName);
+
+            var list = await _roomService.GetGroupHistoryAsync(chatName);
+
+            foreach (var senderInfo in list)
+            {
+                yield return senderInfo;
+                await Task.Delay(50);
+            }
+        }
+        else
+        {
+            await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName);
+        }
     }
-
-
 
     public async Task LeaveGroup(string groupName)
     {
@@ -124,14 +139,16 @@ public class ChattoHub : Hub<IChatHub>
 
     }
 
-    public async IAsyncEnumerable<SenderInfo> GetGroupHistory(string roomName, [EnumeratorCancellation] CancellationToken cancellationToken)
+
+
+    public async IAsyncEnumerable<SenderInfo> GetGroupHistory(string chatName, [EnumeratorCancellation] CancellationToken cancellationToken)
     {
-        var list = await _roomService.GetGroupHistoryAsync(roomName);
+        var list = await _roomService.GetGroupHistoryAsync(chatName);
 
         foreach (var senderInfo in list)
         {
             yield return senderInfo;
-            await Task.Delay(200);
+            await Task.Delay(50);
         }
     }
 
@@ -149,12 +166,12 @@ public class ChattoHub : Hub<IChatHub>
 
 
 
-    private async Task JoinLobiChat()
+    private async Task JoinLobiChatInternal()
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, IChatService.Lobi);
         await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, IChatService.Lobi);
     }
-    private async Task JoinOrCreateChat(string connectionId, string userName, string roomName)
+    private async Task JoinOrCreateChatInternal(string connectionId, string userName, string roomName)
     {
         await Groups.AddToGroupAsync(connectionId, roomName);
         await _assignmentService.JoinOrCreateRoom(userName, roomName);

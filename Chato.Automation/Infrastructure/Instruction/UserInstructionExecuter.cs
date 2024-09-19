@@ -24,8 +24,8 @@ public class UserInstructionExecuter
 
     private const string Hub_Send_Other_In_Group_Topic = nameof(ChattoHub.SendMessageToOthersInGroup);
     private const string Hub_Leave_Group_Topic = nameof(ChattoHub.LeaveGroup);
-    private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinOrCreateGroup);
-    //private const string Hub_Get_Group_Info_Topic = nameof(ChattoHub.GetGroupInfo);
+    private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinOrCreateChat);
+    //private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinOrCreateGroup);
 
     private const string Hub_Download_Topic = nameof(ChattoHub.Downloads);
     private const string Hub_GetGroupHistory_Topic = nameof(ChattoHub.GetGroupHistory);
@@ -114,9 +114,26 @@ public class UserInstructionExecuter
     {
         _logger.LogInformation($"{UserName} joins chat.");
 
-        await _connection.InvokeAsync(Hub_Join_Group_Topic, chatName);
+        _logger.LogInformation($"{UserName} downloading history of the group.");
+
+        await foreach (var senderInfo in _connection.StreamAsync<SenderInfo>(Hub_Join_Group_Topic, chatName))
+        {
+            //await ExpectedMessagesAsync(groupame, senderInfo.UserName, senderInfo.Message);
+        }
+
+
         await _signal.ReleaseAsync();
     }
+
+
+
+    //public async Task JoinOrCreateChat(string chatName)
+    //{
+    //    _logger.LogInformation($"{UserName} joins chat.");
+
+    //    await _connection.InvokeAsync(Hub_Join_Group_Topic, chatName);
+    //    await _signal.ReleaseAsync();
+    //}
 
 
     public async Task LeaveChatInfo(string groupName)
