@@ -27,7 +27,7 @@ namespace Chato.Server.Middlewares
         public async Task InvokeAsync(HttpContext context)
         {
             // Skip middleware for SignalR negotiate and hub paths, or for specific download URLs
-            if (context.Request.Path.StartsWithSegments($"{ChattoHub.HubMapUrl}/negotiate", StringComparison.OrdinalIgnoreCase) ||
+            if (context.Request.Path.StartsWithSegments($"{ChattoHub.HubMapUrl}", StringComparison.OrdinalIgnoreCase) ||
                 context.Request.Path.StartsWithSegments("/hub", StringComparison.OrdinalIgnoreCase) || // Assuming "/hub" is your SignalR hub path
                 context.Request.Path.Value.Contains($"/{AuthController.DownloadUrl}"))
             {
