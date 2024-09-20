@@ -14,7 +14,7 @@ export class ChattoHubService {
 
     public startConnection() {
         this.hubConnection = new signalR.HubConnectionBuilder()
-            .withUrl('https://localhost:7138/chat', {
+            .withUrl('https://localhost:7138/rtxrazgavor', {
                 withCredentials: true,
                 accessTokenFactory: () => {
                     const token =sessionStorage.getItem(SAVED_TOKEN_KEY)
