@@ -1,5 +1,6 @@
 ﻿using Chato.Server.Configuration;
 using Chato.Server.Controllers;
+using Chato.Server.Hubs;
 using Chatto.Shared;
 using Microsoft.Extensions.Logging;
 
@@ -9,7 +10,7 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
 {
     protected ChatoRawDataScenarioBase(ILogger logger, ScenarioConfig config) : base(logger, config)
     {
-        HubUrl = $"{BaseUrl}/chat";
+        HubUrl = $"{BaseUrl}{ChattoHub.HubMapUrl}";
         AuthControllerUrl = $"{BaseUrl}/api/auth";
 
 
@@ -18,8 +19,8 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
         DownloadFileUrl = $"{AuthControllerUrl}/{AuthController.DownloadUrl}";
 
 
-        RoomsControllerUrl = $"{BaseUrl}/api/chat";
-        GetAllRoomsUrl = $"{RoomsControllerUrl}/{ChatController.All_Chat_Route}";
+        ChatsControllerUrl = $"{BaseUrl}/api/chat";
+        GetAllRoomsUrl = $"{ChatsControllerUrl}/{ChatController.All_Chat_Route}";
 
 
         ///User
@@ -28,7 +29,7 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
 
 
         var argument = "{0}";
-        SpecificRoomTemplatesUrl = $"{RoomsControllerUrl}/{argument}";
+        SpecificRoomTemplatesUrl = $"{ChatsControllerUrl}/{argument}";
 
 
         ConfigurationControllerUrl = $"{BaseUrl}/api/configuration";
@@ -43,7 +44,7 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
     protected string UploadFilesUrl { get; }
 
 
-    protected string RoomsControllerUrl { get; }
+    protected string ChatsControllerUrl { get; }
     protected string SpecificRoomTemplatesUrl { get; }
     protected string GetAllRoomsUrl { get; }
 

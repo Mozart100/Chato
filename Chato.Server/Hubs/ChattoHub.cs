@@ -24,7 +24,9 @@ public interface IChatHub
 [Authorize]
 public class ChattoHub : Hub<IChatHub>
 {
-    public const string User_Connected_Message =  $"You are connected to {IChatService.Lobi} chat";
+    public const string HubMapUrl = "/rtxrazgavor";
+
+    public const string User_Connected_Message = $"You are connected to {IChatService.Lobi} chat";
 
     private readonly IUserService _userService;
     private readonly IChatService _roomService;

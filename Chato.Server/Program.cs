@@ -74,7 +74,7 @@ app.UseCors(ServiceRegistrar.CorsPolicy);
 
 
 
-app.MapHub<ChattoHub>("/chat");
+app.MapHub<ChattoHub>(ChattoHub.HubMapUrl);
 
 
 app.UseAuthentication();
