@@ -38,7 +38,7 @@
                                 } @else {
                                     <div class="avatar-xs">
                     <span class="avatar-title rounded-circle bg-primary-subtle text-primary">
-                      {{ chatStore.selectedRoom().roomName.charAt(0) }}
+                      {{ chatStore.selectedRoom().chatName.charAt(0) }}
                     </span>
                                     </div>
                                 }
@@ -46,7 +46,7 @@
                             <div class="flex-grow-1 overflow-hidden">
                                 <h5 class="font-size-16 mb-0 text-truncate">
                                     <a href="javascript:void(0);" class="text-reset user-profile-show username"
-                                       (click)="onChatInfoClicked()">{{ chatStore.selectedRoom().roomName }}</a>
+                                       (click)="onChatInfoClicked()">{{ chatStore.selectedRoom().chatName }}</a>
                                     <i class="ri-record-circle-fill font-size-10 d-inline-block ms-1"
                                        [ngClass]=" {'text-success': userStatus === 'online','text-warning': userStatus === 'away'}"></i>
                                 </h5>

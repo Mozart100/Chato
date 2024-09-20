@@ -1,5 +1,5 @@
-export interface Room {
-    roomName: string
+export interface Chat {
+    chatName: string
     messages: { 'userName': string, 'message': string }[],
     users: string[]
 }

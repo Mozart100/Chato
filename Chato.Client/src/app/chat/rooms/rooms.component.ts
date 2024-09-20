@@ -13,9 +13,9 @@ import { groups } from '../index/data'
 import { SimplebarAngularModule } from 'simplebar-angular'
 import { FormsModule, ReactiveFormsModule } from '@angular/forms'
 import { PickerComponent } from '@ctrl/ngx-emoji-mart'
-import { RoomsService } from '../../core/services/rooms.service'
+import { ChatService } from '../../core/services/chat.service'
 import { ChatStore } from '../../core/store/chat.store'
-import { Room } from '../../core/models/chat.models'
+import { Chat } from '../../core/models/chat.models'
 import { ChatWindowComponent } from '../chat-window/chat-window.component'
 import { AuthenticationService } from '../../core/services/auth.service'
 import { NgClass } from '@angular/common'
@@ -50,7 +50,7 @@ export class RoomsComponent implements OnInit {
 
     constructor(private navStore: NavStore,
                 private modalService: NgbModal,
-                private roomsService: RoomsService,
+                private roomsService: ChatService,
                 public chatStore: ChatStore,
                 public authService: AuthenticationService) {
         this.navStore.selectedTab.set(3)
@@ -64,11 +64,11 @@ export class RoomsComponent implements OnInit {
         this.modalService.open(content, { centered: true })
     }
 
-    showGroupChat(room: Room) {
+    showGroupChat(room: Chat) {
 
         this.chatStore.selectedRoom.set(room)
 
-        document.querySelector('.user-chat').classList.add('user-chat-show')
+        // document.querySelector('.user-chat').classList.add('user-chat-show')
         // document.querySelector('.chat-welcome-section').classList.add('d-none')
         // document.querySelector('.user-chat').classList.remove('d-none')
         // event.target.closest('li').classList.add('active')

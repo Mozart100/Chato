@@ -15,6 +15,7 @@ import { DatePipe, NgClass, NgIf } from '@angular/common'
 import { Lightbox } from 'ngx-lightbox'
 import { ChatStore } from '../../core/store/chat.store'
 import { AuthenticationService } from '../../core/services/auth.service'
+import { ChattoHubService } from '../../core/services/realtime.service'
 
 @Component({
     selector: 'chat-window',
@@ -69,7 +70,8 @@ export class ChatWindowComponent implements OnInit {
                 public formBuilder: FormBuilder,
                 private datePipe: DatePipe,
                 public chatStore: ChatStore,
-                public auth: AuthenticationService) {
+                public auth: AuthenticationService,
+                private realtime: ChattoHubService) {
     }
 
     ngOnInit() {
@@ -178,13 +180,19 @@ export class ChatWindowComponent implements OnInit {
     messageSave() {
         const message = this.formData.get('message')!.value
         if (message) {
-            this.chatStore.selectedRoom.update(room => {
-                room.messages.push({
-                    message: message,
-                    userName: this.auth.user()?.userName
-                })
-                return JSON.parse(JSON.stringify(room))
-            })
+            // this.chatStore.selectedRoom.update(room => {
+            //     room.messages.push({
+            //         message: message,
+            //         userName: this.auth.user()?.userName
+            //     })
+            //     return JSON.parse(JSON.stringify(room))
+            // })
+
+            this.realtime.sendMessageToOthersInGroup(
+                this.chatStore.selectedRoom().chatName,
+                this.auth.user()?.userName,
+                message
+            )
 
             this.onListScroll()
 
