@@ -14,7 +14,7 @@ public interface IPreloadDataLoader
 public interface IPersistentChatAndUsers
 {
     public const string AdultRoom = "Adults";
-    public const string OnlyGirlsRoom = "OnlyGrils";
+    public const string OnlyGirlsRoom = "OnlyGirls";
     public const string SchoolRoom = "School";
 
 
