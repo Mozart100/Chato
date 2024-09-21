@@ -10,7 +10,7 @@ public class GetRoomResponse
 }
 
 public record SenderInfo(string UserName, string Message);
-
+public record HistoryMessageInfo(string ChatName, string UserName, string Message) : SenderInfo(UserName, Message);
 
 public class ChatRoomDto
 {

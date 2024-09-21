@@ -92,26 +92,42 @@ public class ChattoHub : Hub<IChatHub>
         }
     }
 
-    public async IAsyncEnumerable<SenderInfo> JoinOrCreateChat(string chatName)
+    public async Task JoinOrCreateChat(string chatName)
     {
         var userName = Context.User.Identity.Name;
+        await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName);
 
+        //var isExists = await _roomService.IsChatExists(chatName);
+        //if (isExists)
+        //{
+        //    await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName);
+
+        //    var list = await _roomService.GetGroupHistoryAsync(chatName);
+
+        //    foreach (var senderInfo in list)
+        //    {
+        //        yield return senderInfo;
+        //        await Task.Delay(50);
+        //    }
+        //}
+        //else
+        //{
+        //    await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName);
+        //}
+    }
+
+    public async IAsyncEnumerable<HistoryMessageInfo> GetHistory(string chatName)
+    {
         var isExists = await _roomService.IsChatExists(chatName);
         if (isExists)
         {
-            await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName);
-
             var list = await _roomService.GetGroupHistoryAsync(chatName);
 
             foreach (var senderInfo in list)
             {
-                yield return senderInfo;
+                yield return new HistoryMessageInfo(chatName,senderInfo.UserName,senderInfo.Message);
                 await Task.Delay(50);
             }
-        }
-        else
-        {
-            await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName);
         }
     }
 
