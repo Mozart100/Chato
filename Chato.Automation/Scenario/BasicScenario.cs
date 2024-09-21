@@ -26,7 +26,10 @@ internal class BasicScenario : InstructionScenarioBase
         BusinessLogicCallbacks.Add(SendingWithinLobi);
         BusinessLogicCallbacks.Add(SendingOnlyBetweenTwoPeople);
         BusinessLogicCallbacks.Add(SendingWithinLobi_UserMovedChat);
-        BusinessLogicCallbacks.Add(VerificationStep2222);
+        BusinessLogicCallbacks.Add(VerificationStep);
+        BusinessLogicCallbacks.Add(GetHistoryWithoutJoin);
+
+        
 
         //SummaryLogicCallback.Add(CheckAllCleaned);
 
@@ -203,7 +206,7 @@ internal class BasicScenario : InstructionScenarioBase
     }
 
 
-    private async Task VerificationStep2222()
+    private async Task VerificationStep()
     {
         await RegisterUsers(Anatoliy_User, Olessya_User, Nathan_User);
 
@@ -243,6 +246,47 @@ internal class BasicScenario : InstructionScenarioBase
 
         var graph = new InstructionGraph(users[Anatoliy_User]);
 
+        await InstructionExecuter(graph);
+    }
+
+    private async Task GetHistoryWithoutJoin()
+    {
+        await RegisterUsers(Anatoliy_User, Olessya_User, Nathan_User);
+
+        const string chat2 = "second_chat";
+
+        const string message_1 = $"{nameof(message_1)}";
+        const string message_2 = $"{nameof(message_2)}";
+        const string message_3 = $"{nameof(message_3)}";
+
+        var users = InstructionNodeFluentApi.RegisterInLoLobi(Anatoliy_User, Olessya_User, Nathan_User);
+
+
+        users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
+            .Step(users[Anatoliy_User].SendingToRestRoom(message_1, IChatService.Lobi, 2))
+            .Step(users[Nathan_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
+            .Step(users[Olessya_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
+
+            .Step(users[Olessya_User].JoinOrCreateChat(chat2))
+            .Step(users[Nathan_User].JoinOrCreateChat(chat2))
+
+            .Step(users[Olessya_User].SendingToRestRoom(message_2, chat2, 1))
+            .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_2))
+
+
+            .Step(users[Nathan_User].SendingToRestRoom(message_3, chat2, 1))
+            .Step(users[Olessya_User].ReceivingMessage(chat2, Nathan_User, message_3))
+
+            .Step(users[Anatoliy_User].GetHistoryChat(chat2, 2))
+
+            .Step(users[Anatoliy_User].Logout())
+            .Step(users[Olessya_User].Logout())
+            .Step(users[Nathan_User].Logout());
+
+        ;
+
+
+        var graph = new InstructionGraph(users[Anatoliy_User]);
         await InstructionExecuter(graph);
     }
 }

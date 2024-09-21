@@ -17,6 +17,7 @@ public static class UserInstructions
 
     public const string logout_Chat_Instruction = "logout";
     public const string JoinOrCreate_Chat_Instruction = "join_or_create_chat";
+    public const string GetHistory_Chat_Instruction = "get_history_chat";
 }
 
 
@@ -48,11 +49,6 @@ public class UserRegisterLobiInstruction : UserInstructionBase
     public override string InstructionName => UserInstructions.User_RegisterLobi_Instruction;
 }
 
-
-public class UserPeerToPeerInstruction : UserInstructionBase
-{
-    public override string InstructionName => UserInstructions.Publish_PeerToPeer_Instruction;
-}
 
 public class UserReceivedInstruction : UserInstructionBase
 {
@@ -92,13 +88,7 @@ public class JoinOrCreateChatInstruction : UserInstructionBase
     public override string InstructionName => UserInstructions.JoinOrCreate_Chat_Instruction;
 }
 
-
-
-
-
-
-//public class GetRoomInfoInstruction : UserInstractionBase
-//{
-//    public override string InstractionName => UserInstructions.Get_Group_Info_Instrauction;
-//}
-
+public class GetHistoryChatInstruction : UserInstructionBase
+{
+    public override string InstructionName => UserInstructions.GetHistory_Chat_Instruction;
+}
