@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using System.Text.Json.Serialization;
 
 namespace Chatto.Shared;
 
@@ -9,8 +10,8 @@ public class GetRoomResponse
     public ChatRoomDto Chat { get; set; }
 }
 
-public record SenderInfo(string UserName, string Message,byte[] Image );
-public record HistoryMessageInfo(string ChatName, string UserName, string Message) : SenderInfo(UserName, Message,null);
+public record SenderInfo(string UserName, byte [] Message,bool IsText);
+public record HistoryMessageInfo(string ChatName, string UserName, string Message);
 
 public class ChatRoomDto
 {

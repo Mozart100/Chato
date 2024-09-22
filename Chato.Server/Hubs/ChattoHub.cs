@@ -97,23 +97,6 @@ public class ChattoHub : Hub<IChatHub>
         var userName = Context.User.Identity.Name;
         await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName);
 
-        //var isExists = await _roomService.IsChatExists(chatName);
-        //if (isExists)
-        //{
-        //    await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName);
-
-        //    var list = await _roomService.GetGroupHistoryAsync(chatName);
-
-        //    foreach (var senderInfo in list)
-        //    {
-        //        yield return senderInfo;
-        //        await Task.Delay(50);
-        //    }
-        //}
-        //else
-        //{
-        //    await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName);
-        //}
     }
 
     public async IAsyncEnumerable<HistoryMessageInfo> DownLoadHistory(string chatName)
@@ -125,8 +108,9 @@ public class ChattoHub : Hub<IChatHub>
 
             foreach (var senderInfo in list)
             {
-                yield return new HistoryMessageInfo(chatName,senderInfo.UserName,senderInfo.Message);
-                await Task.Delay(50);
+                var message = Encoding.UTF8.GetString(senderInfo.Message);
+                yield return new HistoryMessageInfo(chatName, senderInfo.UserName, message);
+                await Task.Delay(20);
             }
         }
     }
