@@ -25,7 +25,7 @@ public class UserInstructionExecuter
     private const string Hub_Send_Other_In_Group_Topic = nameof(ChattoHub.SendMessageToOthersInGroup);
     private const string Hub_Leave_Group_Topic = nameof(ChattoHub.LeaveGroup);
     private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinOrCreateChat);
-    private const string Hub_History_Topic = nameof(ChattoHub.GetHistory);
+    private const string Hub_History_Topic = nameof(ChattoHub.DownHistory);
     //private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinOrCreateGroup);
 
     private const string Hub_Download_Topic = nameof(ChattoHub.Downloads);
@@ -86,22 +86,12 @@ public class UserInstructionExecuter
         await ListenAsync();
 
         await JoinOrCreateChat(IChatService.Lobi);
-        await GetHistory(IChatService.Lobi, amountMessages);
+        await DownloadHistory(IChatService.Lobi, amountMessages);
     }
 
     public RegistrationResponse RegisterResponse { get; }
 
     public string UserName => RegisterResponse.UserName;
-
-    public async Task DownloadGroupHistory(string groupName)
-    {
-        _logger.LogInformation($"{UserName} downloading history of the group.");
-
-        await foreach (var senderInfo in _connection.StreamAsync<SenderInfo>(Hub_GetGroupHistory_Topic, groupName))
-        {
-            await ExpectedMessagesAsync(groupName, senderInfo.UserName, senderInfo.Message);
-        }
-    }
 
     public async Task SendMessageToOthersInGroup(string chatName, string userNameFrom, byte[] ptr)
     {
@@ -136,7 +126,7 @@ public class UserInstructionExecuter
         //await _signal.ReleaseAsync();
     }
 
-    public async Task GetHistory(string chatName, int amountMessages = -1)
+    public async Task DownloadHistory(string chatName, int amountMessages = -1)
     {
         _logger.LogInformation($"{UserName} get history of the chat.");
 

@@ -84,7 +84,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             var amountMessages = (int)instruction.Instruction.Tag;
 
             await userExecuter.JoinOrCreateChat(instruction.ChatName);
-            await userExecuter.GetHistory(instruction.ChatName, amountMessages);
+            await userExecuter.DownloadHistory(instruction.ChatName, amountMessages);
 
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
@@ -99,7 +99,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             await _counterSignal.SetThrasholdAsync(1);
             var amountMessages = (int)instruction.Instruction.Tag;
 
-            await userExecuter.GetHistory(instruction.ChatName, amountMessages);
+            await userExecuter.DownloadHistory(instruction.ChatName, amountMessages);
 
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
