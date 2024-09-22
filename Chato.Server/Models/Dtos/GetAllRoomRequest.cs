@@ -2,10 +2,7 @@
 using Chatto.Shared;
 using System.Text.Json.Serialization;
 
-//public class GetAllRoomRequest
-//{
 
-//}
 
 public class GetAllRoomResponse
 {

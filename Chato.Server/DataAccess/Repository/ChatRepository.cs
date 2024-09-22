@@ -20,16 +20,16 @@ public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
         this._roomIndexerRepository = roomIndexerRepository;
     }
 
-    public async Task SendMessageAsync(string groupName, string user, string message)
+    public async Task SendMessageAsync(string chatName, string user, string message)
     {
-        var chatRoom = await GetOrDefaultAsync(x => x.Id == groupName);
+        var chatRoom = await GetOrDefaultAsync(x => x.Id == chatName);
 
         if (chatRoom is null)
         {
-            chatRoom = Insert(new ChatDb { Id = groupName });
+            chatRoom = Insert(new ChatDb { Id = chatName });
         }
 
-        chatRoom.Messages.Add(new SenderInfo(user, message));
+        chatRoom.Messages.Add(new SenderInfo(user, message,null));
 
     }
 

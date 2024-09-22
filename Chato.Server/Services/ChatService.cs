@@ -159,7 +159,7 @@ public class ChatService : IChatService
             var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
             if (room is not null)
             {
-                room.Messages.Add(new SenderInfo(fromUser, message));
+                room.Messages.Add(new SenderInfo(fromUser, message,null));
             }
         });
     }

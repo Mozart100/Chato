@@ -26,7 +26,7 @@ public static class ChatRoomDbExtensions
 {
     public static  ChatRoomDto ToChatRoomDto(this ChatDb chatRoomDb)
     {
-        return new ChatRoomDto(chatRoomDb.RoomName, chatRoomDb.Messages.SafeToArray(), chatRoomDb.Users.SafeToArray());
+        return new ChatRoomDto(chatRoomDb.RoomName, chatRoomDb.Users.SafeToArray());
     }
 }
 
