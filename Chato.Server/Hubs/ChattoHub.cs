@@ -108,7 +108,7 @@ public class ChattoHub : Hub<IChatHub>
 
             foreach (var senderInfo in list)
             {
-                var message = Encoding.UTF8.GetString(senderInfo.Message);
+                var message = Encoding.UTF8.GetString(senderInfo.MessageInfo.Message);
                 yield return new HistoryMessageInfo(chatName, senderInfo.UserName, message);
                 await Task.Delay(20);
             }

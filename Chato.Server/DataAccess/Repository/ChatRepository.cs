@@ -31,7 +31,7 @@ public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
         }
 
         var ptr = Encoding.UTF8.GetBytes(message);
-        chatRoom.Messages.Add(new SenderInfo(user, ptr, IsText: true));
+        chatRoom.Messages.Add(new SenderInfo(user, MessageInfo: new UserMessageInfo(ptr, UserMessageType.String)));
 
     }
 

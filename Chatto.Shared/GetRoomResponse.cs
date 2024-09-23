@@ -10,7 +10,20 @@ public class GetRoomResponse
     public ChatRoomDto Chat { get; set; }
 }
 
-public record SenderInfo(string UserName, byte [] Message,bool IsText);
+public enum UserMessageType
+{
+    String,
+    png,
+    Jepg
+}
+
+public record UserMessageInfo(byte[] Message, UserMessageType UserMessageType)
+{
+    public bool IsText => UserMessageType == UserMessageType.String;
+}
+
+
+public record SenderInfo(string UserName, UserMessageInfo MessageInfo);
 public record HistoryMessageInfo(string ChatName, string UserName, string Message);
 
 public class ChatRoomDto

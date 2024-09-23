@@ -161,7 +161,7 @@ public class ChatService : IChatService
             if (room is not null)
             {
                 var ptr = Encoding.UTF8.GetBytes(message);
-                room.Messages.Add(new SenderInfo(fromUser, ptr, IsText: true));
+                room.Messages.Add(new SenderInfo(fromUser, MessageInfo: new UserMessageInfo(ptr, UserMessageType.String)));
             }
         });
     }
