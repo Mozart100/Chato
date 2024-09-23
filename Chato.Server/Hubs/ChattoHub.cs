@@ -99,7 +99,7 @@ public class ChattoHub : Hub<IChatHub>
 
     }
 
-    public async IAsyncEnumerable<HistoryMessageInfo> DownLoadHistory(string chatName)
+    public async IAsyncEnumerable<HistoryMessageInfo> DownloadHistory(string chatName)
     {
         var isExists = await _roomService.IsChatExists(chatName);
         if (isExists)
