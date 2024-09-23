@@ -1,4 +1,5 @@
 ﻿using Chato.Server.DataAccess.Models;
+using Chato.Server.Services;
 using Chatto.Shared;
 using System.Reflection;
 using System.Text;
@@ -30,7 +31,7 @@ public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
             chatRoom = Insert(new ChatDb { Id = chatName });
         }
 
-        var ptr = Encoding.UTF8.GetBytes(message);
+        var ptr = AuthenticationService.GetBytes(message);
         chatRoom.Messages.Add(new SenderInfo(user, MessageInfo: new UserMessageInfo(ptr, UserMessageType.String)));
 
     }
