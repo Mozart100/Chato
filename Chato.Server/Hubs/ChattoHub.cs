@@ -108,8 +108,7 @@ public class ChattoHub : Hub<IChatHub>
 
             foreach (var senderInfo in list)
             {
-                var  message = AuthenticationService.GetMessage(senderInfo.MessageInfo.Message);
-                yield return new HistoryMessageInfo(chatName, senderInfo.UserName, message);
+                yield return new HistoryMessageInfo(chatName, senderInfo.FromUser,senderInfo.TextMessage,senderInfo.Image);
                 await Task.Delay(20);
             }
         }
@@ -139,31 +138,6 @@ public class ChattoHub : Hub<IChatHub>
         await _roomService.RemoveHistoryByRoomNameAsync(groupName);
 
     }
-
-    public async IAsyncEnumerable<SenderInfo> GetGroupHistory(string chatName, [EnumeratorCancellation] CancellationToken cancellationToken)
-    {
-        var list = await _roomService.GetGroupHistoryAsync(chatName);
-
-        foreach (var senderInfo in list)
-        {
-            yield return senderInfo;
-            await Task.Delay(50);
-        }
-    }
-
-    public async IAsyncEnumerable<byte[]> Downloads(HubDownloadInfo downloadInfo, [EnumeratorCancellation] CancellationToken cancellationToken)
-    {
-        var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "test.jpeg");
-        var bytes = File.ReadAllBytes(path);
-
-        for (var i = 0; i < downloadInfo.Amount && cancellationToken.IsCancellationRequested == false; i++)
-        {
-            yield return bytes;
-            await Task.Delay(200);
-        }
-    }
-
-
 
     private async Task JoinLobiChatInternal()
     {

@@ -28,8 +28,6 @@ public class UserInstructionExecuter
     private const string Hub_History_Topic = nameof(ChattoHub.DownloadHistory);
     //private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinOrCreateGroup);
 
-    private const string Hub_Download_Topic = nameof(ChattoHub.Downloads);
-    private const string Hub_GetGroupHistory_Topic = nameof(ChattoHub.GetGroupHistory);
     private const string Hub_RemoveGroupHistory_Topic = nameof(ChattoHub.RemoveChatHistory);
     private const string Hub_OnDisconnectedAsync_Topic = nameof(ChattoHub.UserDisconnectAsync);
 
@@ -164,15 +162,15 @@ public class UserInstructionExecuter
     }
 
 
-    public async Task DownloadStream(byte[] message)
-    {
-        _logger.LogInformation($"{UserName} download.");
+    //public async Task DownloadStream(byte[] message)
+    //{
+    //    _logger.LogInformation($"{UserName} download.");
 
-        await foreach (var item in _connection.StreamAsync<byte[]>(Hub_Download_Topic, new HubDownloadInfo(1)))
-        {
-            item.Count().Should().Be(message.Length);
-        }
-    }
+    //    await foreach (var item in _connection.StreamAsync<byte[]>(Hub_Download_Topic, new HubDownloadInfo(1)))
+    //    {
+    //        item.Count().Should().Be(message.Length);
+    //    }
+    //}
 
     public async Task ReceivedMessage(string chatName, string user, string fromArrived, byte[] ptr)
     {
