@@ -11,7 +11,7 @@ public class GetRoomResponse
 }
 
 public record SenderInfo(string FromUser, string ? TextMessage, string ? Image);
-public record HistoryMessageInfo(string ChatName, string FromUser, string? TextMessage, string? Image) : SenderInfo(FromUser,TextMessage,Image);
+public record MessageInfo(string ChatName, string FromUser, string? TextMessage, string? Image) : SenderInfo(FromUser,TextMessage,Image);
 
 public class ChatRoomDto
 {
