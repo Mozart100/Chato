@@ -11,7 +11,6 @@ public static class UserInstructions
     public const string Publish_ToRestRoom_Instruction = "send_Rest_Room";//done
 
     public const string Run_Operation_Instruction = "do_operation";//done
-    public const string Run_Download_Instruction = "do_download";
     public const string Leave_Room_Instruction = "leave_room";
 
 
@@ -65,12 +64,6 @@ public class UserRunOperationInstruction : UserInstructionBase
 {
     public override string InstructionName => UserInstructions.Run_Operation_Instruction;
 }
-
-public class UserDownloadInstruction : UserInstructionBase
-{
-    public override string InstructionName => UserInstructions.Run_Download_Instruction;
-}
-
 
 public class LeaveRoomInstruction : UserInstructionBase
 {

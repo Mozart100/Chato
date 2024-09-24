@@ -8,7 +8,6 @@ namespace Chato.Server.DataAccess.Repository;
 
 public interface IChatRepository : IRepositoryBase<ChatDb>
 {
-    Task SendMessageAsync(string group, string user, string message);
 }
 
 public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
@@ -20,20 +19,6 @@ public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
     {
         _logger = logger;
         this._roomIndexerRepository = roomIndexerRepository;
-    }
-
-    public async Task SendMessageAsync(string chatName, string user, string message)
-    {
-        var chatRoom = await GetOrDefaultAsync(x => x.Id == chatName);
-
-        if (chatRoom is null)
-        {
-            chatRoom = Insert(new ChatDb { Id = chatName });
-        }
-
-        var ptr = AuthenticationService.GetBytes(message);
-        chatRoom.Messages.Add(new SenderInfo(user, MessageInfo: new UserMessageInfo(ptr, UserMessageType.String)));
-
     }
 
     public override IEnumerable<ChatDb> GetAll()

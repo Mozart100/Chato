@@ -97,22 +97,6 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-
-    public static InstructionNode IsToDownload(this InstructionNode info, string userName, byte[] data)
-    {
-        var @new = info with
-        {
-            UserName = userName,
-            Instruction = new UserDownloadInstruction(),
-            FromArrived = UserInstructionExecuter.Hub_From_Server,
-            Children = new(),
-            Message = data
-
-        };
-
-        return @new;
-    }
-
     public static InstructionNode SendingToRestRoom(this InstructionNode info, string message, string chatName, int amountAwait2)
     {
         var @new = info with
