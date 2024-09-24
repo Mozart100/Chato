@@ -62,9 +62,10 @@ public class ChattoHub : Hub<IChatHub>
         return Clients.Caller.SendText(fromUser, message);
     }
 
-    public async Task SendMessageToOthersInGroup(string chatName, string fromUser, string message)
+    public async Task SendMessageToOthersInChat( MessageInfo messageInfo)
     {
         //var ptr = Encoding.UTF8.GetBytes(message);
+        var (chatName, fromUser, message, _) = messageInfo;
         if (chatName.IsNullOrEmpty())
         {
             throw new ArgumentNullException("Chat cannot be empty");
@@ -99,7 +100,7 @@ public class ChattoHub : Hub<IChatHub>
 
     }
 
-    public async IAsyncEnumerable<HistoryMessageInfo> DownloadHistory(string chatName)
+    public async IAsyncEnumerable<MessageInfo> DownloadHistory(string chatName)
     {
         var isExists = await _roomService.IsChatExists(chatName);
         if (isExists)
@@ -108,7 +109,7 @@ public class ChattoHub : Hub<IChatHub>
 
             foreach (var senderInfo in list)
             {
-                yield return new HistoryMessageInfo(chatName, senderInfo.FromUser,senderInfo.TextMessage,senderInfo.Image);
+                yield return new MessageInfo(chatName, senderInfo.FromUser,senderInfo.TextMessage,senderInfo.Image);
                 await Task.Delay(20);
             }
         }

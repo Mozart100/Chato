@@ -22,7 +22,7 @@ public class UserInstructionExecuter
 
     //private const string Hub_Send_Message_To_Others_Topic = nameof(ChattoHub.BroadcastMessage);
 
-    private const string Hub_Send_Other_In_Group_Topic = nameof(ChattoHub.SendMessageToOthersInGroup);
+    private const string Hub_Send_Other_In_Group_Topic = nameof(ChattoHub.SendMessageToOthersInChat);
     private const string Hub_Leave_Group_Topic = nameof(ChattoHub.LeaveGroup);
     private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinOrCreateChat);
     private const string Hub_History_Topic = nameof(ChattoHub.DownloadHistory);
@@ -98,7 +98,7 @@ public class UserInstructionExecuter
 
 
         //var ptr = Encoding.UTF8.GetBytes(message);
-        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, chatName, userNameFrom, message);
+        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, new MessageInfo( chatName, userNameFrom, message,null));
     }
 
 
@@ -107,21 +107,6 @@ public class UserInstructionExecuter
         _logger.LogInformation($"{UserName} joins or create a chat.");
 
         await _connection.InvokeAsync(Hub_Join_Group_Topic, chatName);
-
-
-        //var isToVerify = amountMessages > 0;
-        //await foreach (var senderInfo in _connection.StreamAsync<HistsoryMessageInfo>(Hub_Join_Group_Topic, chatName))
-        //{
-        //    amountMessages--;
-        //}
-
-        //if (isToVerify)
-        //{
-        //    amountMessages.Should().Be(0);
-        //}
-
-
-        //await _signal.ReleaseAsync();
     }
 
     public async Task DownloadHistory(string chatName, int amountMessages = -1)
@@ -130,7 +115,7 @@ public class UserInstructionExecuter
 
 
         var isToVerify = amountMessages > 0;
-        await foreach (var senderInfo in _connection.StreamAsync<HistoryMessageInfo>(Hub_History_Topic, chatName))
+        await foreach (var senderInfo in _connection.StreamAsync<MessageInfo>(Hub_History_Topic, chatName))
         {
             amountMessages--;
         }
@@ -143,34 +128,12 @@ public class UserInstructionExecuter
         await _signal.ReleaseAsync();
     }
 
-
-
-    //public async Task JoinOrCreateChat(string chatName)
-    //{
-    //    _logger.LogInformation($"{UserName} joins chat.");
-
-    //    await _connection.InvokeAsync(Hub_Join_Group_Topic, chatName);
-    //    await _signal.ReleaseAsync();
-    //}
-
-
     public async Task LeaveChatInfo(string groupName)
     {
         _logger.LogInformation($"Getting {UserName} info.");
 
         await _connection.InvokeAsync(Hub_Leave_Group_Topic, groupName);
     }
-
-
-    //public async Task DownloadStream(byte[] message)
-    //{
-    //    _logger.LogInformation($"{UserName} download.");
-
-    //    await foreach (var item in _connection.StreamAsync<byte[]>(Hub_Download_Topic, new HubDownloadInfo(1)))
-    //    {
-    //        item.Count().Should().Be(message.Length);
-    //    }
-    //}
 
     public async Task ReceivedMessage(string chatName, string user, string fromArrived, byte[] ptr)
     {
