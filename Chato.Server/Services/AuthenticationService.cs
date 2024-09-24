@@ -98,8 +98,12 @@ public class AuthenticationService : IAuthenticationService
 
     public static byte[] GetBytes(string secret)
     {
-
         return System.Text.Encoding.UTF32.GetBytes(secret);
+    }
+
+    public static string GetMessage(byte[] ptr)
+    {
+        return System.Text.Encoding.UTF32.GetString(ptr);
     }
 
 

@@ -1,4 +1,5 @@
-﻿using System.Text.Json.Serialization;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Binders;
+using System.Text.Json.Serialization;
 
 namespace Chatto.Shared;
 
@@ -9,29 +10,41 @@ public class GetRoomResponse
     public ChatRoomDto Chat { get; set; }
 }
 
-public record SenderInfo(string UserName, string Message);
+public enum UserMessageType
+{
+    String,
+    png,
+    Jepg
+}
 
+public record UserMessageInfo(byte[] Message, UserMessageType UserMessageType)
+{
+    public bool IsText => UserMessageType == UserMessageType.String;
+}
+
+
+public record SenderInfo(string UserName, UserMessageInfo MessageInfo);
+public record HistoryMessageInfo(string ChatName, string UserName, string Message);
 
 public class ChatRoomDto
 {
     [JsonPropertyName("chatName")]
     public string ChatName { get; init; }
 
-    [JsonPropertyName("messages")]
-    public SenderInfo[] Messages { get; set; }
+    //[JsonPropertyName("messages")]
+    //public SenderInfo[] Messages { get; set; }
 
     [JsonPropertyName("users")]
     public string[] Users { get; init; }
 
     [JsonConstructor]
-    public ChatRoomDto(string chatName, SenderInfo[] messages, string[] users)
+    public ChatRoomDto(string chatName, string[] users)
     {
         ChatName = chatName;
-        Messages = messages;
         Users = users;
     }
 
-    public static ChatRoomDto Empty() => new ChatRoomDto("", Array.Empty<SenderInfo>(), Array.Empty<string>());
+    public static ChatRoomDto Empty() => new ChatRoomDto("", Array.Empty<string>());
 
     public override int GetHashCode() => ChatName.GetHashCode();
 

@@ -1,6 +1,8 @@
 ﻿using Chato.Server.DataAccess.Models;
+using Chato.Server.Services;
 using Chatto.Shared;
 using System.Reflection;
+using System.Text;
 
 namespace Chato.Server.DataAccess.Repository;
 
@@ -20,16 +22,17 @@ public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
         this._roomIndexerRepository = roomIndexerRepository;
     }
 
-    public async Task SendMessageAsync(string groupName, string user, string message)
+    public async Task SendMessageAsync(string chatName, string user, string message)
     {
-        var chatRoom = await GetOrDefaultAsync(x => x.Id == groupName);
+        var chatRoom = await GetOrDefaultAsync(x => x.Id == chatName);
 
         if (chatRoom is null)
         {
-            chatRoom = Insert(new ChatDb { Id = groupName });
+            chatRoom = Insert(new ChatDb { Id = chatName });
         }
 
-        chatRoom.Messages.Add(new SenderInfo(user, message));
+        var ptr = AuthenticationService.GetBytes(message);
+        chatRoom.Messages.Add(new SenderInfo(user, MessageInfo: new UserMessageInfo(ptr, UserMessageType.String)));
 
     }
 

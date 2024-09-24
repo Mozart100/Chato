@@ -4,6 +4,7 @@ using Chato.Server.Infrastracture;
 using Chato.Server.Infrastracture.QueueDelegates;
 using Chatto.Shared;
 using System.Net.NetworkInformation;
+using System.Text;
 
 namespace Chato.Server.Services;
 
@@ -12,7 +13,7 @@ public interface IChatService
 {
     public const string Lobi = "lobi";
     public static string GetToUser(string chatName) => chatName.Split("__").LastOrDefault();
-    static string GetChatName(string fromUser,string toUser)=> $"{fromUser}__{toUser}";
+    static string GetChatName(string fromUser, string toUser) => $"{fromUser}__{toUser}";
 
 
     Task AddUserAsync(string roomName, string userName);
@@ -80,7 +81,7 @@ public class ChatService : IChatService
         return result;
     }
 
-    
+
     public async Task<ChatRoomDto[]> GetAllRoomAsync()
     {
         ChatDb[] result = null;
@@ -159,7 +160,8 @@ public class ChatService : IChatService
             var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
             if (room is not null)
             {
-                room.Messages.Add(new SenderInfo(fromUser, message));
+                var ptr = AuthenticationService.GetBytes(message);
+                room.Messages.Add(new SenderInfo(fromUser, MessageInfo: new UserMessageInfo(ptr, UserMessageType.String)));
             }
         });
     }
@@ -203,7 +205,7 @@ public class ChatService : IChatService
         await _lockerQueue.InvokeAsync(async () =>
         {
             var room = await GetRoomByNameOrIdCoreAsync(IChatService.Lobi);
-            if (room is  null)
+            if (room is null)
             {
                 await CreateRoomCoreAsync(IChatService.Lobi);
             }
@@ -219,7 +221,7 @@ public class ChatService : IChatService
             var chat = await GetRoomByNameOrIdCoreAsync(chatName);
 
             result = chat != null;
-           
+
         });
 
         return result;

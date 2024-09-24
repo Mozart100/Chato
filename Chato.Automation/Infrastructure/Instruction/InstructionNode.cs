@@ -83,6 +83,21 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
+    public static InstructionNode GetHistoryChat(this InstructionNode info, string chatName, int amountMessages = -1)
+    {
+        var @new = info with
+        {
+            ChatName = chatName,
+            Instruction = new GetHistoryChatInstruction() { Tag = amountMessages },
+            FromArrived = null,
+            Message = null,
+            Children = new(),
+        };
+
+        return @new;
+    }
+
+
     public static InstructionNode IsToDownload(this InstructionNode info, string userName, byte[] data)
     {
         var @new = info with

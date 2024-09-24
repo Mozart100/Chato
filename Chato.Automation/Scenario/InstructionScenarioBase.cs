@@ -83,7 +83,8 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             await _counterSignal.SetThrasholdAsync(1);
             var amountMessages = (int)instruction.Instruction.Tag;
 
-            await userExecuter.JoinOrCreateChat(instruction.ChatName, amountMessages);
+            await userExecuter.JoinOrCreateChat(instruction.ChatName);
+            await userExecuter.DownloadHistory(instruction.ChatName, amountMessages);
 
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
@@ -93,7 +94,20 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
         });
 
+        _actionMapper.Add(UserInstructions.GetHistory_Chat_Instruction, async (userExecuter, instruction) =>
+        {
+            await _counterSignal.SetThrasholdAsync(1);
+            var amountMessages = (int)instruction.Instruction.Tag;
 
+            await userExecuter.DownloadHistory(instruction.ChatName, amountMessages);
+
+
+            if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
+            {
+                throw new Exception("Not all users received their messages");
+            }
+
+        });
 
 
         _actionMapper.Add(UserInstructions.User_RegisterLobi_Instruction, async (userExecuter, instruction) =>
@@ -118,7 +132,6 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
         _actionMapper.Add(UserInstructions.Publish_ToRestRoom_Instruction, async (userExecuter, instruction) =>
         {
-            //await _counterSignal.SetThrasholdAsync(instruction.Children.Where(x => x.Instruction.InstructionName != UserInstructions.Not_Received_Instruction).Count());
             await _counterSignal.SetThrasholdAsync(instruction.Instruction.AmountAwaits);
             await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName: instruction.ChatName, userNameFrom: instruction.UserName, message: instruction.Message);
 

@@ -25,6 +25,7 @@ public class UserInstructionExecuter
     private const string Hub_Send_Other_In_Group_Topic = nameof(ChattoHub.SendMessageToOthersInGroup);
     private const string Hub_Leave_Group_Topic = nameof(ChattoHub.LeaveGroup);
     private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinOrCreateChat);
+    private const string Hub_History_Topic = nameof(ChattoHub.DownloadHistory);
     //private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinOrCreateGroup);
 
     private const string Hub_Download_Topic = nameof(ChattoHub.Downloads);
@@ -84,22 +85,13 @@ public class UserInstructionExecuter
         await _connection.StartAsync();
         await ListenAsync();
 
-        await JoinOrCreateChat(IChatService.Lobi, amountMessages);
+        await JoinOrCreateChat(IChatService.Lobi);
+        await DownloadHistory(IChatService.Lobi, amountMessages);
     }
 
     public RegistrationResponse RegisterResponse { get; }
 
     public string UserName => RegisterResponse.UserName;
-
-    public async Task DownloadGroupHistory(string groupName)
-    {
-        _logger.LogInformation($"{UserName} downloading history of the group.");
-
-        await foreach (var senderInfo in _connection.StreamAsync<SenderInfo>(Hub_GetGroupHistory_Topic, groupName))
-        {
-            await ExpectedMessagesAsync(groupName, senderInfo.UserName, senderInfo.Message);
-        }
-    }
 
     public async Task SendMessageToOthersInGroup(string chatName, string userNameFrom, byte[] ptr)
     {
@@ -112,13 +104,35 @@ public class UserInstructionExecuter
     }
 
 
-    public async Task JoinOrCreateChat(string chatName, int amountMessages = -1)
+    public async Task JoinOrCreateChat(string chatName)
     {
         _logger.LogInformation($"{UserName} joins or create a chat.");
 
+        await _connection.InvokeAsync(Hub_Join_Group_Topic, chatName);
+
+
+        //var isToVerify = amountMessages > 0;
+        //await foreach (var senderInfo in _connection.StreamAsync<HistsoryMessageInfo>(Hub_Join_Group_Topic, chatName))
+        //{
+        //    amountMessages--;
+        //}
+
+        //if (isToVerify)
+        //{
+        //    amountMessages.Should().Be(0);
+        //}
+
+
+        //await _signal.ReleaseAsync();
+    }
+
+    public async Task DownloadHistory(string chatName, int amountMessages = -1)
+    {
+        _logger.LogInformation($"{UserName} get history of the chat.");
+
 
         var isToVerify = amountMessages > 0;
-        await foreach (var senderInfo in _connection.StreamAsync<SenderInfo>(Hub_Join_Group_Topic, chatName))
+        await foreach (var senderInfo in _connection.StreamAsync<HistoryMessageInfo>(Hub_History_Topic, chatName))
         {
             amountMessages--;
         }
@@ -127,7 +141,6 @@ public class UserInstructionExecuter
         {
             amountMessages.Should().Be(0);
         }
-
 
         await _signal.ReleaseAsync();
     }
