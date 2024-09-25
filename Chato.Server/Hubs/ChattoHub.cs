@@ -65,31 +65,32 @@ public class ChattoHub : Hub<IChatHub>
     public async Task SendMessageToOthersInChat(MessageInfo messageInfo)
     {
         //var ptr = Encoding.UTF8.GetBytes(message);
-        var (chatName, fromUser, message, image) = messageInfo;
-        if (chatName.IsNullOrEmpty())
+        //var (chatName, fromUser, message, image) = messageInfo;
+
+        if (messageInfo.ChatName.IsNullOrEmpty())
         {
             throw new ArgumentNullException("Chat cannot be empty");
         }
 
-        var isExists = await _roomService.IsChatExists(chatName);
+        var isExists = await _roomService.IsChatExists(messageInfo.ChatName);
         if (isExists)
         {
-            await _roomService.SendMessageAsync(chatName, fromUser, message);
-            await Clients.OthersInGroup(chatName).SendTextToChat( new MessageInfo(chatName, fromUser, message,image));
+            await _roomService.SendMessageAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image);
+            await Clients.OthersInGroup(messageInfo.ChatName).SendTextToChat(messageInfo);
         }
         else
         {
-            await JoinOrCreateChatInternal(Context.ConnectionId, fromUser, chatName);
+            await JoinOrCreateChatInternal(Context.ConnectionId, messageInfo.FromUser, messageInfo.ChatName);
 
-            var toUser = IChatService.GetToUser(chatName);
+            var toUser = IChatService.GetToUser(messageInfo.ChatName);
             var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
             if (user is null)
             {
                 throw new ArgumentNullException($"{toUser} doesnt exists.");
             }
 
-            await JoinOrCreateChatInternal(user.ConnectionId, toUser, chatName);
-            await Clients.OthersInGroup(chatName).SendTextToChat(new MessageInfo(chatName, fromUser, message, image));
+            await JoinOrCreateChatInternal(user.ConnectionId, toUser, messageInfo.ChatName);
+            await Clients.OthersInGroup(messageInfo.ChatName).SendTextToChat(messageInfo);
         }
     }
 
