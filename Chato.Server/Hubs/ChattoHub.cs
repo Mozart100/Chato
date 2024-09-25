@@ -16,9 +16,9 @@ public record HubDownloadInfo(int Amount);
 public interface IChatHub
 {
 
-    Task SendTextToChat(string chat, string fromUser, string message);
+    Task SendTextToChat(MessageInfo messageInfo);
+    //Task SendTextToChat(string chat, string fromUser, string message);
     Task SendText(string fromUser, string message);
-    //Task SelfReplay(string message);
 }
 
 [Authorize]
@@ -62,10 +62,10 @@ public class ChattoHub : Hub<IChatHub>
         return Clients.Caller.SendText(fromUser, message);
     }
 
-    public async Task SendMessageToOthersInChat( MessageInfo messageInfo)
+    public async Task SendMessageToOthersInChat(MessageInfo messageInfo)
     {
         //var ptr = Encoding.UTF8.GetBytes(message);
-        var (chatName, fromUser, message, _) = messageInfo;
+        var (chatName, fromUser, message, image) = messageInfo;
         if (chatName.IsNullOrEmpty())
         {
             throw new ArgumentNullException("Chat cannot be empty");
@@ -75,7 +75,7 @@ public class ChattoHub : Hub<IChatHub>
         if (isExists)
         {
             await _roomService.SendMessageAsync(chatName, fromUser, message);
-            await Clients.OthersInGroup(chatName).SendTextToChat(chatName, fromUser, message);
+            await Clients.OthersInGroup(chatName).SendTextToChat( new MessageInfo(chatName, fromUser, message,image));
         }
         else
         {
@@ -89,7 +89,7 @@ public class ChattoHub : Hub<IChatHub>
             }
 
             await JoinOrCreateChatInternal(user.ConnectionId, toUser, chatName);
-            await Clients.OthersInGroup(chatName).SendTextToChat(chatName, fromUser, message);
+            await Clients.OthersInGroup(chatName).SendTextToChat(new MessageInfo(chatName, fromUser, message, image));
         }
     }
 
@@ -109,7 +109,7 @@ public class ChattoHub : Hub<IChatHub>
 
             foreach (var senderInfo in list)
             {
-                yield return new MessageInfo(chatName, senderInfo.FromUser,senderInfo.TextMessage,senderInfo.Image);
+                yield return new MessageInfo(chatName, senderInfo.FromUser, senderInfo.TextMessage, senderInfo.Image);
                 await Task.Delay(20);
             }
         }
