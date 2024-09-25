@@ -172,15 +172,12 @@ public class UserInstructionExecuter
         });
 
 
-        _connection.On<string, string, string>(nameof(IChatHub.SendTextToChat), async (chat, fromUser, message) =>
+        _connection.On<MessageInfo>(nameof(IChatHub.SendTextToChat), async (messageInfo) =>
         {
-            var ptr = Encoding.UTF8.GetBytes(message);
-            await ExpectedMessagesAsync(chat, fromUser, message);
+            var ptr = Encoding.UTF8.GetBytes(messageInfo.TextMessage);
+            await ExpectedMessagesAsync(messageInfo.ChatName, messageInfo.FromUser , messageInfo.TextMessage);
             await _signal.ReleaseAsync();
         });
-
-
-
     }
 
     private async Task ExpectedMessagesAsync(string chatName, string fromUser, string message)
