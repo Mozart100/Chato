@@ -19,6 +19,7 @@ import { Chat } from '../../core/models/chat.models'
 import { ChatWindowComponent } from '../chat-window/chat-window.component'
 import { AuthenticationService } from '../../core/services/auth.service'
 import { NgClass } from '@angular/common'
+import { ChattoHubService } from '../../core/services/realtime.service'
 
 @Component({
     selector: 'app-rooms',
@@ -52,7 +53,8 @@ export class RoomsComponent implements OnInit {
                 private modalService: NgbModal,
                 private roomsService: ChatService,
                 public chatStore: ChatStore,
-                public authService: AuthenticationService) {
+                public authService: AuthenticationService,
+                private realtime: ChattoHubService) {
         this.navStore.selectedTab.set(3)
     }
 
@@ -66,9 +68,15 @@ export class RoomsComponent implements OnInit {
 
     showGroupChat(room: Chat) {
 
-        this.chatStore.selectedRoom.set(room)
+        this.chatStore.selectedChat.set(room)
 
-        // document.querySelector('.user-chat').classList.add('user-chat-show')
+        if (!room.messages || room.messages.length == 0) {
+
+            this.realtime.downloadHistory(this.chatStore.selectedChat())
+
+        }
+
+        document.querySelector('.user-chat').classList.add('user-chat-show')
         // document.querySelector('.chat-welcome-section').classList.add('d-none')
         // document.querySelector('.user-chat').classList.remove('d-none')
         // event.target.closest('li').classList.add('active')

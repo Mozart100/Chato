@@ -137,11 +137,11 @@ export class ChatWindowComponent implements OnInit {
     /**
      * Open lightbox
      */
-    openImage(index: number, i: number): void {
+    openImage(src: string): void {
         // open lightbox
-        this.lightbox.open(this.message[index].imageContent, i, {
-            showZoom: true
-        })
+        // this.lightbox.open([src], 0, {
+        //     showZoom: true
+        // })
 
     }
 
@@ -178,21 +178,26 @@ export class ChatWindowComponent implements OnInit {
      * Save the message in chat
      */
     messageSave() {
-        const message = this.formData.get('message')!.value
-        if (message) {
-            // this.chatStore.selectedRoom.update(room => {
-            //     room.messages.push({
-            //         message: message,
-            //         userName: this.auth.user()?.userName
-            //     })
-            //     return JSON.parse(JSON.stringify(room))
-            // })
+        const text = this.formData.get('message')!.value as string
+        if (text) {
 
-            this.realtime.sendMessageToOthersInGroup(
-                this.chatStore.selectedRoom().chatName,
-                this.auth.user()?.userName,
-                message
-            )
+            const message = {
+                chatName: this.chatStore.selectedChat().chatName,
+                fromUser: this.auth.user().userName,
+                textMessage: text,
+                isSelf: true
+            }
+
+            this.chatStore.selectedChat.update(chat => {
+                if (!chat.messages) {
+                    chat.messages = []
+                }
+
+                chat.messages.push(message)
+                return chat
+            })
+
+            this.realtime.sendMessageToOthersInChat(message)
 
             this.onListScroll()
 
@@ -239,6 +244,10 @@ export class ChatWindowComponent implements OnInit {
         //     chatReplyMessage = ''
         //     document.querySelector('.replyCard')?.classList.remove('show')
         // }
+    }
+
+    joinCurrentChat() {
+        this.realtime.joinOnCreateChat(this.chatStore.selectedChat().chatName)
     }
 
     onBlur() {

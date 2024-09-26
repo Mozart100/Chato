@@ -1,4 +1,4 @@
-<div class="chat-welcome-section" *ngIf="chatStore.selectedRoom() == null">
+<div class="chat-welcome-section" *ngIf="chatStore.selectedChat() == null">
     <div class="row w-100 justify-content-center">
         <div class="col-xxl-5 col-md-7">
             <div class="p-4 text-center">
@@ -20,7 +20,7 @@
 </div>
 
 <!-- Start User chat -->
-<div class="user-chat w-100 overflow-hidden user-chat-show" id="chat-room" *ngIf="chatStore.selectedRoom() != null">
+<div class="user-chat w-100 overflow-hidden user-chat-show" id="chat-room" *ngIf="chatStore.selectedChat() != null">
     <div class="d-lg-flex">
         <!-- start chat conversation section -->
         <div class="w-100 overflow-hidden position-relative">
@@ -38,7 +38,7 @@
                                 } @else {
                                     <div class="avatar-xs">
                     <span class="avatar-title rounded-circle bg-primary-subtle text-primary">
-                      {{ chatStore.selectedRoom().chatName.charAt(0) }}
+                      {{ chatStore.selectedChat().chatName.charAt(0) }}
                     </span>
                                     </div>
                                 }
@@ -46,7 +46,7 @@
                             <div class="flex-grow-1 overflow-hidden">
                                 <h5 class="font-size-16 mb-0 text-truncate">
                                     <a href="javascript:void(0);" class="text-reset user-profile-show username"
-                                       (click)="onChatInfoClicked()">{{ chatStore.selectedRoom().chatName }}</a>
+                                       (click)="onChatInfoClicked()">{{ chatStore.selectedChat().chatName }}</a>
                                     <i class="ri-record-circle-fill font-size-10 d-inline-block ms-1"
                                        [ngClass]=" {'text-success': userStatus === 'online','text-warning': userStatus === 'away'}"></i>
                                 </h5>
@@ -189,7 +189,7 @@
             <!-- start chat conversation -->
             <ngx-simplebar class="chat-conversation p-3 p-lg-4" #scrollRef>
                 <ul class="list-unstyled mb-0" id="users-conversation">
-                    @for (msg of chatStore.currentMessages(); track $index) {
+                    @for (msg of chatStore.selectedChat()?.messages; track $index) {
                         <li class="chats" [ngClass]="{'right': msg.isSelf}">
                             @if (false) {
                                 <div class="chat-day-title">
@@ -210,7 +210,7 @@
                                             } @else {
                                                 <div class="avatar-xs">
                                                     <span class="avatar-title rounded-circle bg-primary-subtle text-primary">
-                                                      {{ msg.userName.charAt(0) }}
+                                                      {{ msg.fromUser.charAt(0) }}
                                                     </span>
                                                 </div>
                                             }
@@ -236,66 +236,67 @@
                                                 <!--                                                    </div>-->
                                                 <!--                                                }-->
                                                 <p class="mb-0 messageText">
-                                                    {{ msg.message }}
+                                                    {{ msg.textMessage }}
                                                 </p>
-                                                <!--                                                @if (data.isimage) {-->
-                                                <!--                                                    <ul class="list-inline message-img mb-0">-->
-                                                <!--                                                        @for (item of data.imageContent; track item.id; let x = $index) {-->
-                                                <!--                                                            <li class="list-inline-item message-img-list">-->
-                                                <!--                                                                <div>-->
-                                                <!--                                                                    <a class="popup-img d-inline-block m-1 p-0"-->
-                                                <!--                                                                       href="javascript:void(0);" title="Project 1">-->
-                                                <!--                                                                        <img :src="{{item.src}}" alt=""-->
-                                                <!--                                                                             class="rounded border"-->
-                                                <!--                                                                             (click)="openImage($index,x)">-->
-                                                <!--                                                                    </a>-->
-                                                <!--                                                                </div>-->
-                                                <!--                                                                <div class="message-img-link">-->
-                                                <!--                                                                    <ul class="list-inline mb-0">-->
-                                                <!--                                                                        <li class="list-inline-item">-->
-                                                <!--                                                                            <a href="javascript:void(0);">-->
-                                                <!--                                                                                <i class="ri-download-2-line"></i>-->
-                                                <!--                                                                            </a>-->
-                                                <!--                                                                        </li>-->
-                                                <!--                                                                        <li class="list-inline-item dropdown"-->
-                                                <!--                                                                            ngbDropdown>-->
-                                                <!--                                                                            <a class="dropdown-toggle"-->
-                                                <!--                                                                               href="javascript:void(0);"-->
-                                                <!--                                                                               role="button" ngbDropdownToggle-->
-                                                <!--                                                                               data-toggle="dropdown"-->
-                                                <!--                                                                               aria-haspopup="true"-->
-                                                <!--                                                                               aria-expanded="false">-->
-                                                <!--                                                                                <i class="ri-more-fill"></i>-->
-                                                <!--                                                                            </a>-->
-                                                <!--                                                                            <div class="dropdown-menu"-->
-                                                <!--                                                                                 ngbDropdownMenu>-->
-                                                <!--                                                                                <a class="dropdown-item"-->
-                                                <!--                                                                                   href="javascript:void(0);">{{-->
-                                                <!--                                                                                        'chat.messages.dropdown.copy'-->
-                                                <!--                                                                                            | translate-->
-                                                <!--                                                                                    }} <i-->
-                                                <!--                                                                                            class="ri-file-copy-line float-end text-muted"></i></a>-->
-                                                <!--                                                                                <a class="dropdown-item"-->
-                                                <!--                                                                                   href="javascript:void(0);">{{-->
-                                                <!--                                                                                        'chat.messages.dropdown.save'-->
-                                                <!--                                                                                            | translate-->
-                                                <!--                                                                                    }} <i-->
-                                                <!--                                                                                            class="ri-save-line float-end text-muted"></i></a>-->
-                                                <!--                                                                                <a class="dropdown-item"-->
-                                                <!--                                                                                   href="javascript:void(0);">{{ 'chat.messages.dropdown.forward' | translate }}-->
-                                                <!--                                                                                    <i class="ri-chat-forward-line float-end text-muted"></i></a>-->
-                                                <!--                                                                                <a class="dropdown-item"-->
-                                                <!--                                                                                   href="javascript:void(0);"-->
-                                                <!--                                                                                   (click)="deleteMessage($event)">{{ 'chat.messages.dropdown.delete' | translate }}-->
-                                                <!--                                                                                    <i class="ri-delete-bin-line float-end text-muted"></i></a>-->
-                                                <!--                                                                            </div>-->
-                                                <!--                                                                        </li>-->
-                                                <!--                                                                    </ul>-->
-                                                <!--                                                                </div>-->
-                                                <!--                                                            </li>-->
-                                                <!--                                                        }-->
-                                                <!--                                                    </ul>-->
-                                                <!--                                                }-->
+
+                                                @if (msg.image) {
+                                                    <ul class="list-inline message-img mb-0">
+                                                        @for (imageSrc of [msg.image]; track imageSrc; let x = $index) {
+                                                            <li class="list-inline-item message-img-list">
+                                                                <div>
+                                                                    <a class="popup-img d-inline-block m-1 p-0"
+                                                                       href="javascript:void(0);" title="Project 1">
+                                                                        <img :src="{{imageSrc}}" alt=""
+                                                                             class="rounded border"
+                                                                             (click)="openImage($index,x)">
+                                                                    </a>
+                                                                </div>
+                                                                <div class="message-img-link">
+                                                                    <ul class="list-inline mb-0">
+                                                                        <li class="list-inline-item">
+                                                                            <a href="javascript:void(0);">
+                                                                                <i class="ri-download-2-line"></i>
+                                                                            </a>
+                                                                        </li>
+                                                                        <li class="list-inline-item dropdown"
+                                                                            ngbDropdown>
+                                                                            <a class="dropdown-toggle"
+                                                                               href="javascript:void(0);"
+                                                                               role="button" ngbDropdownToggle
+                                                                               data-toggle="dropdown"
+                                                                               aria-haspopup="true"
+                                                                               aria-expanded="false">
+                                                                                <i class="ri-more-fill"></i>
+                                                                            </a>
+                                                                            <div class="dropdown-menu"
+                                                                                 ngbDropdownMenu>
+                                                                                <a class="dropdown-item"
+                                                                                   href="javascript:void(0);">{{
+                                                                                        'chat.messages.dropdown.copy'
+                                                                                            | translate
+                                                                                    }} <i
+                                                                                            class="ri-file-copy-line float-end text-muted"></i></a>
+                                                                                <a class="dropdown-item"
+                                                                                   href="javascript:void(0);">{{
+                                                                                        'chat.messages.dropdown.save'
+                                                                                            | translate
+                                                                                    }} <i
+                                                                                            class="ri-save-line float-end text-muted"></i></a>
+                                                                                <a class="dropdown-item"
+                                                                                   href="javascript:void(0);">{{ 'chat.messages.dropdown.forward' | translate }}
+                                                                                    <i class="ri-chat-forward-line float-end text-muted"></i></a>
+                                                                                <a class="dropdown-item"
+                                                                                   href="javascript:void(0);"
+                                                                                   (click)="deleteMessage($event)">{{ 'chat.messages.dropdown.delete' | translate }}
+                                                                                    <i class="ri-delete-bin-line float-end text-muted"></i></a>
+                                                                            </div>
+                                                                        </li>
+                                                                    </ul>
+                                                                </div>
+                                                            </li>
+                                                        }
+                                                    </ul>
+                                                }
                                                 <!--                                                @if (data.isfile) {-->
                                                 <!--                                                    <div class="card p-2 mb-2">-->
                                                 <!--                                                        <div class="d-flex align-items-center">-->
@@ -424,7 +425,7 @@
                                         <!--                                        }-->
 
                                         <div class="conversation-name">
-                                            <span>{{ msg.userName }}</span>
+                                            <span>{{ msg.fromUser }}</span>
                                         </div>
 
                                     </div>
@@ -446,7 +447,25 @@
             <div class="chat-input-section p-3 p-lg-4 border-top mb-0 send-msg">
                 <form (ngSubmit)="messageSave()" [formGroup]="formData" id="chatinput-form"
                       enctype="multipart/form-data">
-                    <div class="row g-0">
+
+                    <div class="row g-0" *ngIf="!chatStore.memberOfCurrentChat()">
+                        <div class="col-auto">
+                            <div class="chat-input-links ms-md-2 me-md-0">
+                                <ul class="list-inline mb-0">
+                                    <li class="list-inline-item">
+                                        <button (click)="joinCurrentChat()"
+                                                class="btn btn-primary font-size-16 btn-lg chat-send waves-effect waves-light">
+                                            JOIN &nbsp;
+                                            <i class="ri-chat-3-fill"></i>
+                                        </button>
+                                    </li>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row g-0" *ngIf="chatStore.memberOfCurrentChat()">
                         <div class="col">
                             <div>
                                 <input type="text" class="form-control form-control-lg bg-light border-light"

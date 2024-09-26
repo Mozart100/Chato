@@ -1,6 +1,6 @@
 export interface Chat {
     chatName: string
-    messages: { 'userName': string, 'message': string }[],
+    messages: ChatMessage[],
     users: string[]
 }
 
@@ -15,7 +15,10 @@ export interface User {
 }
 
 export interface ChatMessage {
-    userName: string
-    message: string
+    chatName: string
+    fromUser: string
+    textMessage?: string
+    image?: string
     isSelf: boolean
 }
+
