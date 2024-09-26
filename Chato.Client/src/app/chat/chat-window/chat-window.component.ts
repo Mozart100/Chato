@@ -16,6 +16,7 @@ import { Lightbox } from 'ngx-lightbox'
 import { ChatStore } from '../../core/store/chat.store'
 import { AuthenticationService } from '../../core/services/auth.service'
 import { ChattoHubService } from '../../core/services/realtime.service'
+import { IAlbum } from 'ngx-lightbox/lightbox-event.service'
 
 @Component({
     selector: 'chat-window',
@@ -137,11 +138,18 @@ export class ChatWindowComponent implements OnInit {
     /**
      * Open lightbox
      */
-    openImage(src: string): void {
+    openImage(src: string, idx: number): void {
+
+        // create album with images
+        const album: Array<IAlbum> = [{
+            src: src,
+            thumb: src
+        }]
+
         // open lightbox
-        // this.lightbox.open([src], 0, {
-        //     showZoom: true
-        // })
+        this.lightbox.open(album, idx, {
+            showZoom: true
+        })
 
     }
 
@@ -273,8 +281,20 @@ export class ChatWindowComponent implements OnInit {
         let file: File = fileList.files[0]
         const reader = new FileReader()
         reader.onload = () => {
-            this.imageURL = reader.result as string
-            this.img = this.imageURL
+            const imageURL = reader.result as string
+            // this.img = this.imageURL
+
+            const message = {
+                chatName: this.chatStore.selectedChat().chatName,
+                fromUser: this.auth.user().userName,
+                image: imageURL,
+                isSelf: true
+            }
+
+            this.chatStore.selectedChat().messages.push(message)
+
+            this.realtime.sendMessageToOthersInChat(message)
+
         }
         reader.readAsDataURL(file)
     }

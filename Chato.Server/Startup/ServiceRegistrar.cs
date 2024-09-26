@@ -41,7 +41,10 @@ public static class ServiceRegistrar
         services.AddSingleton<ICacheItemDelegateQueue, CacheItemDelegateQueue>();
 
 
-        services.AddSignalR();
+        services.AddSignalR(options =>
+        {
+            options.MaximumReceiveMessageSize = 1048576;
+        });
         services.AddResponseCompression(options =>
         {
             options.MimeTypes = ResponseCompressionDefaults.MimeTypes.Concat(new[] { "application/octet-stream" });
