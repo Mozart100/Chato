@@ -19,6 +19,7 @@ public interface IChatHub
     Task SendTextToChat(MessageInfo messageInfo);
     //Task SendTextToChat(string chat, string fromUser, string message);
     Task SendText(string fromUser, string message);
+    Task SendNotificationn(string chatname, string message);
 }
 
 [Authorize]
@@ -98,7 +99,12 @@ public class ChattoHub : Hub<IChatHub>
     {
         var userName = Context.User.Identity.Name;
         await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName);
+        await NotifyUserJoined(userName, chatName);
+    }
 
+    public async Task NotifyUserJoined(string user, string chatName)
+    {
+        await Clients.OthersInGroup(chatName).SendNotificationn(chatName, $"{user} entered {chatName}.");
     }
 
     public async IAsyncEnumerable<MessageInfo> DownloadHistory(string chatName)

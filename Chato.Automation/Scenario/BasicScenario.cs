@@ -169,6 +169,10 @@ internal class BasicScenario : InstructionScenarioBase
             .Step(users[Olessya_User].JoinOrCreateChat(chat2))
             .Step(users[Nathan_User].JoinOrCreateChat(chat2))
 
+            .Step(users[Olessya_User].NotifyUser(chat2))
+
+
+
             .Step(users[Olessya_User].SendingToRestRoom(message_2, chat2, 1))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_2))
             .Step(users[Anatoliy_User].Is_Not_ReceivedMessage(IChatService.Lobi))
@@ -231,6 +235,8 @@ internal class BasicScenario : InstructionScenarioBase
             .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_2))
 
             .Step(users[Anatoliy_User].JoinOrCreateChat(chat2,1))
+            .Step(users[Olessya_User].NotifyUser(chat2))
+            .Step(users[Nathan_User].NotifyUser(chat2))
 
             .Step(users[Olessya_User].SendingToRestRoom(message_3, chat2, 2))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_3))
