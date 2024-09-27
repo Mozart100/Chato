@@ -83,8 +83,22 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             await _counterSignal.SetThrasholdAsync(1);
             var amountMessages = (int)instruction.Instruction.Tag;
 
+            //var amountMessages = -1;
+            //var amountNotified = -1;
+
+            //if(instruction.Instruction is JoinOrCreateChatInstruction joinOrCreateChatInstruction)
+            //{
+            //    amountMessages = joinOrCreateChatInstruction.AmountMessages;
+            //    amountNotified = joinOrCreateChatInstruction.NotifiedMessages;
+            //}
+
             await userExecuter.JoinOrCreateChat(instruction.ChatName);
             await userExecuter.DownloadHistory(instruction.ChatName, amountMessages);
+
+            //if(amountNotified > 0)
+            //{
+
+            //}
 
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
@@ -106,6 +120,21 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             {
                 throw new Exception("Not all users received their messages");
             }
+
+        });
+
+        _actionMapper.Add(UserInstructions.Notify_User_Instruction, async (userExecuter, instruction) =>
+        {
+            await _counterSignal.SetThrasholdAsync(1);
+
+            await Task.Delay(100);
+
+            //if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
+            //{
+            //    throw new Exception("Not all users received their messages");
+            //}
+
+            await userExecuter.ShouldBeNotofied(instruction.ChatName);
 
         });
 

@@ -69,6 +69,20 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
+    public static InstructionNode NotifyUser(this InstructionNode info, string  chat)
+    {
+        var @new = info with
+        {
+            ChatName = chat,
+            FromArrived = null,
+            Instruction = new NotifyUserInstruction(),
+            Message = null,
+            Children = new(),
+        };
+
+        return @new;
+    }
+
     public static InstructionNode JoinOrCreateChat(this InstructionNode info, string chatName, int amountMessages = -1)
     {
         var @new = info with

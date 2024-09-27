@@ -12,12 +12,16 @@ public static class UserInstructions
 
     public const string Run_Operation_Instruction = "do_operation";//done
     public const string Leave_Room_Instruction = "leave_room";
+    public const string Notify_User_Instruction = "notify_users";
+
 
 
     public const string logout_Chat_Instruction = "logout";
     public const string JoinOrCreate_Chat_Instruction = "join_or_create_chat";
     public const string GetHistory_Chat_Instruction = "get_history_chat";
 }
+
+
 
 
 public abstract class UserInstructionBase
@@ -78,10 +82,27 @@ public class LogoutInstruction : UserInstructionBase
 
 public class JoinOrCreateChatInstruction : UserInstructionBase
 {
+    //public record JoinOrCreateRecod(int amountMessages);kc
+
     public override string InstructionName => UserInstructions.JoinOrCreate_Chat_Instruction;
+
+    //public int AmountMessages { get; set; } = -1;
+
+    //public int NotifiedMessages { get; set; } = -1;
 }
 
 public class GetHistoryChatInstruction : UserInstructionBase
 {
     public override string InstructionName => UserInstructions.GetHistory_Chat_Instruction;
 }
+
+public class NotifyUserInstruction : UserInstructionBase
+{
+    public override string InstructionName => UserInstructions.Notify_User_Instruction;
+}
+
+
+
+
+
+

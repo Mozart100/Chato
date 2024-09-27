@@ -26,7 +26,7 @@ public class UserInstructionExecuter
     private const string Hub_Leave_Group_Topic = nameof(ChattoHub.LeaveGroup);
     private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinOrCreateChat);
     private const string Hub_History_Topic = nameof(ChattoHub.DownloadHistory);
-    //private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinOrCreateGroup);
+    private const string Hub_NotifyUser_Topic = nameof(ChattoHub.NotifyUserJoined);
 
     private const string Hub_RemoveGroupHistory_Topic = nameof(ChattoHub.RemoveChatHistory);
     private const string Hub_OnDisconnectedAsync_Topic = nameof(ChattoHub.UserDisconnectAsync);
@@ -38,6 +38,7 @@ public class UserInstructionExecuter
     private readonly HubConnection _connection;
     //private readonly Queue<HubMessageRecievedBase> _receivedMessages;
     private readonly Queue<HubMessageByteRecieved2222> _receivedMessages;
+    private readonly Stack<string> _receivedNotofiedMessages;
     private readonly HashSet<string> _ignoreUsers;
 
 
@@ -51,6 +52,7 @@ public class UserInstructionExecuter
 
         //_receivedMessages = new Queue<HubMessageRecievedBase>();
         _receivedMessages = new Queue<HubMessageByteRecieved2222>();
+        _receivedNotofiedMessages = new Stack<string>();
 
         _connection = new HubConnectionBuilder()
        .WithUrl(url, options =>
@@ -178,6 +180,18 @@ public class UserInstructionExecuter
             await ExpectedMessagesAsync(messageInfo.ChatName, messageInfo.FromUser , messageInfo.TextMessage);
             await _signal.ReleaseAsync();
         });
+
+        _connection.On<string,string>(nameof(IChatHub.SendNotificationn), async (chatName, message) =>
+        {
+            _logger.LogInformation($" ------------  In {chatName}==>{message}-----------");
+            _receivedNotofiedMessages.Push(chatName);
+            //await _signal.ReleaseAsync();
+
+            //var ptr = Encoding.UTF8.GetBytes(message);
+            //await ExpectedMessagesAsync(IChatService.Lobi, user, message);
+            //await _signal.ReleaseAsync();
+        });
+
     }
 
     private async Task ExpectedMessagesAsync(string chatName, string fromUser, string message)
@@ -197,5 +211,10 @@ public class UserInstructionExecuter
     public async Task KillConnectionAsync()
     {
         await _connection.StopAsync();
+    }
+
+    internal async Task ShouldBeNotofied(string? chatName)
+    {
+        _receivedNotofiedMessages.Pop().Should().Be(chatName);
     }
 }
