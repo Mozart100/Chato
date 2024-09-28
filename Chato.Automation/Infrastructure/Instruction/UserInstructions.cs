@@ -28,17 +28,15 @@ public abstract class UserInstructionBase
 {
     public abstract string InstructionName { get; }
     public object Tag { get; set; } = null;
-    public int AmountAwaits { get; init; } = 1;
 
-    public virtual async Task Execute(Func<Task> callback)
-    {
-        await callback?.Invoke();
-    }
 }
 
 public class UserSendStringMessageRestRoomInstruction : UserInstructionBase
 {
     public override string InstructionName => UserInstructions.Publish_ToRestRoom_Instruction;
+
+    public int AmountAwaits { get; init; } = 1;
+
 }
 
 
@@ -50,6 +48,8 @@ public class UserSendStringMessageRestRoomInstruction : UserInstructionBase
 public class UserRegisterLobiInstruction : UserInstructionBase
 {
     public override string InstructionName => UserInstructions.User_RegisterLobi_Instruction;
+
+    public int AmountMessages { get; set; } = -1;
 }
 
 
@@ -67,6 +67,8 @@ public class UserNotReceivedInstruction : UserInstructionBase
 public class UserRunOperationInstruction : UserInstructionBase
 {
     public override string InstructionName => UserInstructions.Run_Operation_Instruction;
+
+    public Func<IUserInfo, Task> Operation { get; set; }
 }
 
 public class LeaveRoomInstruction : UserInstructionBase
@@ -86,7 +88,7 @@ public class JoinOrCreateChatInstruction : UserInstructionBase
 
     public override string InstructionName => UserInstructions.JoinOrCreate_Chat_Instruction;
 
-    //public int AmountMessages { get; set; } = -1;
+    public int AmountMessages { get; set; } = -1;
 
     //public int NotifiedMessages { get; set; } = -1;
 }
@@ -94,6 +96,7 @@ public class JoinOrCreateChatInstruction : UserInstructionBase
 public class GetHistoryChatInstruction : UserInstructionBase
 {
     public override string InstructionName => UserInstructions.GetHistory_Chat_Instruction;
+    public int AmountMessages { get; set; } = -1;
 }
 
 public class NotifyUserInstruction : UserInstructionBase

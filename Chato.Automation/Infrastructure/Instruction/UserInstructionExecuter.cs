@@ -13,7 +13,7 @@ using System.Text;
 namespace Chato.Automation.Infrastructure.Instruction;
 
 
-public record HubMessageByteRecieved2222(string ChatNAme, string From, string Data);
+public record HubMessageByteRecieved(string ChatNAme, string From, string Data);
 
 
 public class UserInstructionExecuter
@@ -37,7 +37,7 @@ public class UserInstructionExecuter
     private readonly CounterSignal _signal;
     private readonly HubConnection _connection;
     //private readonly Queue<HubMessageRecievedBase> _receivedMessages;
-    private readonly Queue<HubMessageByteRecieved2222> _receivedMessages;
+    private readonly Queue<HubMessageByteRecieved> _receivedMessages;
     private readonly Stack<string> _receivedNotofiedMessages;
     private readonly HashSet<string> _ignoreUsers;
 
@@ -51,7 +51,7 @@ public class UserInstructionExecuter
         _ignoreUsers.Add(Hub_From_Server);
 
         //_receivedMessages = new Queue<HubMessageRecievedBase>();
-        _receivedMessages = new Queue<HubMessageByteRecieved2222>();
+        _receivedMessages = new Queue<HubMessageByteRecieved>();
         _receivedNotofiedMessages = new Stack<string>();
 
         _connection = new HubConnectionBuilder()
@@ -149,7 +149,7 @@ public class UserInstructionExecuter
 
         var messageReceived = _receivedMessages.Dequeue();
 
-        if (messageReceived is HubMessageByteRecieved2222 stringMessage)
+        if (messageReceived is HubMessageByteRecieved stringMessage)
         {
             stringMessage.From.Should().Be(fromArrived);
             stringMessage.Data.Should().Be(message);
@@ -198,7 +198,7 @@ public class UserInstructionExecuter
     {
         _logger.LogWarning($"In {chatName} -- From user {fromUser}  received message [{message}].");
 
-        _receivedMessages.Enqueue(new HubMessageByteRecieved2222(chatName, fromUser, message));
+        _receivedMessages.Enqueue(new HubMessageByteRecieved(chatName, fromUser, message));
     }
 
 

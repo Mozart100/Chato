@@ -80,8 +80,14 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
         _actionMapper.Add(UserInstructions.JoinOrCreate_Chat_Instruction, async (userExecuter, instruction) =>
         {
+            int amountMessage = -1;
+
+            if (instruction.Instruction is JoinOrCreateChatInstruction instance)
+            {
+                amountMessage = instance.AmountMessages;
+            }
+
             await _counterSignal.SetThrasholdAsync(1);
-            var amountMessages = (int)instruction.Instruction.Tag;
 
             //var amountMessages = -1;
             //var amountNotified = -1;
@@ -93,7 +99,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             //}
 
             await userExecuter.JoinOrCreateChat(instruction.ChatName);
-            await userExecuter.DownloadHistory(instruction.ChatName, amountMessages);
+            await userExecuter.DownloadHistory(instruction.ChatName, amountMessage);
 
             //if(amountNotified > 0)
             //{
@@ -110,10 +116,16 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
         _actionMapper.Add(UserInstructions.GetHistory_Chat_Instruction, async (userExecuter, instruction) =>
         {
-            await _counterSignal.SetThrasholdAsync(1);
-            var amountMessages = (int)instruction.Instruction.Tag;
+            int amountMessage = -1;
 
-            await userExecuter.DownloadHistory(instruction.ChatName, amountMessages);
+            if (instruction.Instruction is GetHistoryChatInstruction instance)
+            {
+                amountMessage = instance.AmountMessages;
+            }
+
+            await _counterSignal.SetThrasholdAsync(1);
+
+            await userExecuter.DownloadHistory(instruction.ChatName, amountMessage);
 
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
@@ -141,8 +153,14 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
         _actionMapper.Add(UserInstructions.User_RegisterLobi_Instruction, async (userExecuter, instruction) =>
         {
+            int amountMessages = -1;
+            if (instruction.Instruction is UserRegisterLobiInstruction instance)
+            {
+                amountMessages = instance.AmountMessages;
+            }
+
+
             await _counterSignal.SetThrasholdAsync(1);
-            var amountMessages = (int)instruction.Instruction.Tag;
 
             await StartSignalR(userExecuter: userExecuter,amountMessages:amountMessages);
 
@@ -161,7 +179,12 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
         _actionMapper.Add(UserInstructions.Publish_ToRestRoom_Instruction, async (userExecuter, instruction) =>
         {
-            await _counterSignal.SetThrasholdAsync(instruction.Instruction.AmountAwaits);
+            int awaitAmount = -1;
+            if( instruction.Instruction is UserSendStringMessageRestRoomInstruction instance)
+            {
+                awaitAmount = instance.AmountAwaits;
+            }
+            await _counterSignal.SetThrasholdAsync(awaitAmount);
             await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName: instruction.ChatName, userNameFrom: instruction.UserName, message: instruction.Message);
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
@@ -187,14 +210,15 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             {
                 if (instruction.Instruction.InstructionName.Equals(UserInstructions.Run_Operation_Instruction))
                 {
-                    if (instruction.Instruction.Tag is Func<IUserInfo, Task> callback)
+                    if (instruction.Instruction is UserRunOperationInstruction instance)
                     {
                         var registerInfo = default(RegistrationResponse);
                         if (Users.TryGetValue(instruction.UserName, out var ins))
                         {
                             registerInfo = ins.RegisterResponse;
                         }
-                        await callback(new UserInfo(instruction, registerInfo));
+
+                        await instance.Operation(new UserInfo(instruction, registerInfo));
                     }
 
                     continue;
