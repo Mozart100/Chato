@@ -100,7 +100,7 @@ public class UserInstructionExecuter
 
 
         //var ptr = Encoding.UTF8.GetBytes(message);
-        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, new MessageInfo( chatName, userNameFrom, message,null));
+        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, new MessageInfo( SenderInfoType.Image,  chatName, userNameFrom, message,null));
     }
 
 

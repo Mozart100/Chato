@@ -122,7 +122,7 @@ public class ChattoHub : Hub<IChatHub>
 
             foreach (var senderInfo in list)
             {
-                yield return new MessageInfo(chatName, senderInfo.FromUser, senderInfo.TextMessage, senderInfo.Image);
+                yield return new MessageInfo(senderInfo.SenderInfoType, chatName, senderInfo.FromUser, senderInfo.TextMessage, senderInfo.Image);
                 await Task.Delay(20);
             }
         }

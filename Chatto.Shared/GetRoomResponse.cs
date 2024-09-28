@@ -10,8 +10,16 @@ public class GetRoomResponse
     public ChatRoomDto Chat { get; set; }
 }
 
-public record SenderInfo(string FromUser, string ? TextMessage, string ? Image);
-public record MessageInfo(string ChatName, string FromUser, string? TextMessage, string? Image) : SenderInfo(FromUser,TextMessage,Image);
+public enum SenderInfoType:uint
+{
+    TextMessage = 1,
+    Image = 2,
+    Joined = 3
+}
+
+
+public record SenderInfo( SenderInfoType SenderInfoType, string FromUser, string ? TextMessage, string ? Image);
+public record MessageInfo(SenderInfoType SenderInfoType,string ChatName, string FromUser, string? TextMessage, string? Image) : SenderInfo( SenderInfoType, FromUser,TextMessage,Image);
 
 public class ChatRoomDto
 {
