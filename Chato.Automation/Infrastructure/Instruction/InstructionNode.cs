@@ -38,7 +38,7 @@ public static class InstructionNodeFluentApi
 
     public static InstructionNode RegisterSingleUserInLoLobi(string user)
     {
-        return new InstructionNode(userName: user, groupName: IChatService.Lobi, instruction: new UserRegisterLobiInstruction() { Tag = -1 }, message: null, fromArrived: null);
+        return new InstructionNode(userName: user, groupName: IChatService.Lobi, instruction: new UserRegisterLobiInstruction() { AmountMessages = -1 }, message: null, fromArrived: null);
     }
 
 
@@ -88,7 +88,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             ChatName = chatName,
-            Instruction = new JoinOrCreateChatInstruction() { Tag = amountMessages },
+            Instruction = new JoinOrCreateChatInstruction() { AmountMessages = amountMessages },
             FromArrived = null,
             Message = null,
             Children = new(),
@@ -102,7 +102,7 @@ public static class InstructionNodeFluentApi
         var @new = info with
         {
             ChatName = chatName,
-            Instruction = new GetHistoryChatInstruction() { Tag = amountMessages },
+            Instruction = new GetHistoryChatInstruction() { AmountMessages = amountMessages },
             FromArrived = null,
             Message = null,
             Children = new(),
@@ -141,7 +141,7 @@ public static class InstructionNodeFluentApi
     {
         var @new = info with
         {
-            Instruction = new UserRunOperationInstruction() { Tag = operation },//parameter = token
+            Instruction = new UserRunOperationInstruction() { Operation = operation },//parameter = token
             FromArrived = null,
             Message = null,
             Children = new(),
