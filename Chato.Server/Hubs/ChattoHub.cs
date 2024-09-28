@@ -104,7 +104,7 @@ public class ChattoHub : Hub<IChatHub>
 
     public async Task NotifyUserJoined(string user, string chatName)
     {
-        await Clients.OthersInGroup(chatName).SendNotificationn(chatName, $"{user} entered {chatName}.");
+        await Clients.All.SendNotificationn(chatName, user);
     }
 
     public async IAsyncEnumerable<MessageInfo> DownloadHistory(string chatName)
