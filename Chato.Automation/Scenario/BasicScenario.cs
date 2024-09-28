@@ -170,6 +170,8 @@ internal class BasicScenario : InstructionScenarioBase
             .Step(users[Nathan_User].JoinOrCreateChat(chat2))
 
             .Step(users[Olessya_User].NotifyUser(chat2))
+            .Step(users[Olessya_User].NotifyUser(chat2))
+            .Step(users[Nathan_User].NotifyUser(chat2))
 
 
 
@@ -237,6 +239,7 @@ internal class BasicScenario : InstructionScenarioBase
             .Step(users[Anatoliy_User].JoinOrCreateChat(chat2,1))
             .Step(users[Olessya_User].NotifyUser(chat2))
             .Step(users[Nathan_User].NotifyUser(chat2))
+            .Step(users[Anatoliy_User].NotifyUser(chat2))
 
             .Step(users[Olessya_User].SendingToRestRoom(message_3, chat2, 2))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_3))
