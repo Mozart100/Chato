@@ -54,8 +54,14 @@ public class ChattoHub : Hub<IChatHub>
         await _userService.AssignConnectionId(user.Identity.Name, connectionId);
         await JoinLobiChatInternal();
 
+
+
         await ReplyMessage("server", User_Connected_Message);
+        await NotifyUserJoined(user.Identity.Name, IChatService.Lobi);
+
         await base.OnConnectedAsync();
+
+        //await JoinLobiChatInternal();
     }
 
     public Task ReplyMessage(string fromUser, string message)
