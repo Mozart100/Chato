@@ -50,6 +50,11 @@ export class ChattoHubService {
             })
         })
 
+        this.hubConnection.on('SendNotificationn', (chatName: string, userName: string) => {
+            console.log('SendNotificationn', chatName, userName)
+            this.chatStore.addUserToChat(userName, chatName)
+        })
+
         this.hubConnection.on('SendText', (fromUser, message) => {
             console.log('SendText', fromUser, message)
         })
@@ -89,7 +94,6 @@ export class ChattoHubService {
             .catch(err => console.error(err))
     }
 
-    // ... (Other methods for JoinOrCreateChat, LeaveGroup, etc.)
 
     // helper method to ensure signalR is connected before invoking methods on it
     public async invokeWhenConnected(task: () => void) {
