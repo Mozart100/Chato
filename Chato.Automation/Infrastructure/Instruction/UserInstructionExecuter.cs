@@ -181,15 +181,11 @@ public class UserInstructionExecuter
             await _signal.ReleaseAsync();
         });
 
-        _connection.On<string,string>(nameof(IChatHub.SendNotificationn), async (chatName, message) =>
+        _connection.On<string,string>(nameof(IChatHub.SendNotificationn), async (chatName, user) =>
         {
-            _logger.LogInformation($" ------------  In {chatName}==>{message}-----------");
+            _logger.LogInformation($" ------------  In {chatName}==>{user}-----------");
             _receivedNotofiedMessages.Push(chatName);
-            //await _signal.ReleaseAsync();
-
-            //var ptr = Encoding.UTF8.GetBytes(message);
-            //await ExpectedMessagesAsync(IChatService.Lobi, user, message);
-            //await _signal.ReleaseAsync();
+            
         });
 
     }
