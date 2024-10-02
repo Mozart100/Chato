@@ -188,11 +188,13 @@ public class ChatService : IChatService
             if (room is not null)
             {
                 room.Users.Add(userName);
+                await AddMessage(SenderInfoType.Joined, roomName, userName, null, null);
             }
             else
             {
                 var createRoom = await CreateRoomCoreAsync(roomName);
                 createRoom.Users.Add(userName);
+                await AddMessage(SenderInfoType.Joined, roomName, userName, null, null);
             }
         });
     }

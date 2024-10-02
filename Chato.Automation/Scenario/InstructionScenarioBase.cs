@@ -44,7 +44,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         }
     }
 
-    private async Task StartSignalR(UserInstructionExecuter userExecuter,int amountMessages)
+    private async Task StartSignalR(UserInstructionExecuter userExecuter, int amountMessages)
     {
         //var message2 = Encoding.UTF8.GetString(message);
         await userExecuter.StartSignalRAsync(amountMessages);
@@ -80,6 +80,23 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
         _actionMapper.Add(UserInstructions.JoinOrCreate_Chat_Instruction, async (userExecuter, instruction) =>
         {
+            if (userExecuter.UserName == "nathan")
+            {
+
+            }
+
+            if (userExecuter.UserName == "olessya")
+            {
+
+            }
+
+
+
+            if (userExecuter.UserName == "anatoliy")
+            {
+
+            }
+
             int amountMessage = -1;
 
             if (instruction.Instruction is JoinOrCreateChatInstruction instance)
@@ -162,7 +179,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
             await _counterSignal.SetThrasholdAsync(1);
 
-            await StartSignalR(userExecuter: userExecuter,amountMessages:amountMessages);
+            await StartSignalR(userExecuter: userExecuter, amountMessages: amountMessages);
 
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
@@ -179,8 +196,13 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
         _actionMapper.Add(UserInstructions.Publish_ToRestRoom_Instruction, async (userExecuter, instruction) =>
         {
+            if (userExecuter.UserName == "olessya")
+            {
+
+            }
+
             int awaitAmount = -1;
-            if( instruction.Instruction is UserSendStringMessageRestRoomInstruction instance)
+            if (instruction.Instruction is UserSendStringMessageRestRoomInstruction instance)
             {
                 awaitAmount = instance.AmountAwaits;
             }
@@ -194,7 +216,15 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         });
 
 
-        _actionMapper.Add(UserInstructions.Received_Instruction, async (userExecuter, instruction) => await userExecuter.ReceivedMessage(instruction.ChatName, instruction.UserName, instruction.FromArrived, instruction.Message));
+        _actionMapper.Add(UserInstructions.Received_Instruction, async (userExecuter, instruction) =>
+        {
+            if (userExecuter.UserName == "nathan")
+            {
+
+            }
+
+            await userExecuter.ReceivedMessage(instruction.ChatName, instruction.UserName, instruction.FromArrived, instruction.Message);
+        });
         _actionMapper.Add(UserInstructions.Not_Received_Instruction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync());
         _actionMapper.Add(UserInstructions.Leave_Room_Instruction, async (userExecuter, instruction) => await userExecuter.LeaveChatInfo(instruction.ChatName));
     }

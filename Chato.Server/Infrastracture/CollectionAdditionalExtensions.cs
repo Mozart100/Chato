@@ -11,6 +11,15 @@
 
             return false;
         }
+        public static HashSet<T> SafeToHashSet<T>(this IEnumerable<T> collection)
+        {
+            if (collection.IsNullOrEmpty())
+            {
+                return new HashSet<T>();
+            }
+
+            return new HashSet<T>(collection);
+        }
 
         public static List<T> SafeToList<T>(this IEnumerable<T> collection)
         {
