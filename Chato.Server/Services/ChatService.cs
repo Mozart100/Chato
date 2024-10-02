@@ -153,17 +153,15 @@ public class ChatService : IChatService
         });
     }
 
-    public async Task SendMessageAsync(string roomName, string fromUser, string? textMessage,string ? image)
+    public async Task SendMessageAsync(string chatName, string fromUser, string? textMessage, string? image)
     {
         await _lockerQueue.InvokeAsync(async () =>
         {
-            var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
-            if (room is not null)
-            {
-                room.Messages.Add(new SenderInfo(fromUser, textMessage, Image: image));
-            }
+            await AddMessage(SenderInfoType.TextMessage, chatName, fromUser, textMessage, image);
         });
     }
+
+
 
     public async Task RemoveUserAndRoomFromRoom(string roomName, string username)
     {
@@ -190,11 +188,13 @@ public class ChatService : IChatService
             if (room is not null)
             {
                 room.Users.Add(userName);
+                await AddMessage(SenderInfoType.Joined, roomName, userName, null, null);
             }
             else
             {
                 var createRoom = await CreateRoomCoreAsync(roomName);
                 createRoom.Users.Add(userName);
+                await AddMessage(SenderInfoType.Joined, roomName, userName, null, null);
             }
         });
     }
@@ -224,5 +224,18 @@ public class ChatService : IChatService
         });
 
         return result;
+    }
+
+    //----------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------
+
+    private async Task AddMessage(SenderInfoType senderInfoType, string chatName, string fromUser, string? textMessage, string? image)
+    {
+        var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
+        if (room is not null)
+        {
+            room.Messages.Add(new SenderInfo(senderInfoType, fromUser, textMessage, Image: image));
+        }
     }
 }

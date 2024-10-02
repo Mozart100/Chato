@@ -9,6 +9,9 @@ using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Text;
+using System.Text.Json.Serialization;
+using System.Text.Json;
+
 
 namespace Chato.Automation.Infrastructure.Instruction;
 
@@ -100,7 +103,7 @@ public class UserInstructionExecuter
 
 
         //var ptr = Encoding.UTF8.GetBytes(message);
-        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, new MessageInfo( chatName, userNameFrom, message,null));
+        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, new MessageInfo( SenderInfoType.Image,  chatName, userNameFrom, message,null));
     }
 
 
@@ -119,6 +122,8 @@ public class UserInstructionExecuter
         var isToVerify = amountMessages > 0;
         await foreach (var senderInfo in _connection.StreamAsync<MessageInfo>(Hub_History_Topic, chatName))
         {
+            var json = JsonSerializer.Serialize(senderInfo);
+            _logger.LogInformation($"Downloading message: [{json}] in chat [{chatName}]");
             amountMessages--;
         }
 
