@@ -1,9 +1,6 @@
 ﻿
 using Chato.Server.Infrastracture;
 using Chatto.Shared;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Text.Json.Serialization;
-using static System.Net.Mime.MediaTypeNames;
 
 namespace Chato.Server.DataAccess.Models;
 

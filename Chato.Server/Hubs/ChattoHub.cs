@@ -82,12 +82,13 @@ public class ChattoHub : Hub<IChatHub>
         var isExists = await _roomService.IsChatExists(messageInfo.ChatName);
         if (isExists)
         {
-            await _roomService.SendMessageAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image);
+            var senderInfo = await _roomService.SendMessageAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image);
+            messageInfo = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, senderInfo.TimeStemp);
             await Clients.OthersInGroup(messageInfo.ChatName).SendTextToChat(messageInfo);
         }
         else
         {
-            await JoinOrCreateChatInternal(Context.ConnectionId, messageInfo.FromUser, messageInfo.ChatName);
+           var senderInfo = await JoinOrCreateChatInternal(Context.ConnectionId, messageInfo.FromUser, messageInfo.ChatName);
 
             var toUser = IChatService.GetToUser(messageInfo.ChatName);
             var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
@@ -97,6 +98,7 @@ public class ChattoHub : Hub<IChatHub>
             }
 
             await JoinOrCreateChatInternal(user.ConnectionId, toUser, messageInfo.ChatName);
+            messageInfo = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, senderInfo.TimeStemp);
             await Clients.OthersInGroup(messageInfo.ChatName).SendTextToChat(messageInfo);
         }
     }
@@ -122,7 +124,7 @@ public class ChattoHub : Hub<IChatHub>
 
             foreach (var senderInfo in list)
             {
-                yield return new MessageInfo(senderInfo.SenderInfoType, chatName, senderInfo.FromUser, senderInfo.TextMessage, senderInfo.Image);
+                yield return new MessageInfo(senderInfo.SenderInfoType, chatName, senderInfo.FromUser, senderInfo.TextMessage, senderInfo.Image, senderInfo.TimeStemp);
                 await Task.Delay(20);
             }
         }
@@ -158,10 +160,10 @@ public class ChattoHub : Hub<IChatHub>
         await Groups.AddToGroupAsync(Context.ConnectionId, IChatService.Lobi);
         await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, IChatService.Lobi);
     }
-    private async Task JoinOrCreateChatInternal(string connectionId, string userName, string roomName)
+    private async Task<SenderInfo> JoinOrCreateChatInternal(string connectionId, string userName, string roomName)
     {
         await Groups.AddToGroupAsync(connectionId, roomName);
-        await _assignmentService.JoinOrCreateRoom(userName, roomName);
+        return await _assignmentService.JoinOrCreateRoom(userName, roomName);
     }
 
 
