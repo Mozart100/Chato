@@ -8,7 +8,7 @@ public interface IAssignmentService
 {
 
 
-    Task JoinOrCreateRoom(string nameOrId, string roomName);
+    Task<SenderInfo> JoinOrCreateRoom(string nameOrId, string roomName);
     Task<string> RegisterUserAndAssignToRoom(RegistrationRequest request, string defaultRoom);
     Task RemoveUserByConnectionIdAsync(string connectionId);
     Task RemoveUserByUserNameOrIdAsync(string userNameOrId);
@@ -60,14 +60,18 @@ public class AssignmentService : IAssignmentService
         }
     }
 
-    public async Task JoinOrCreateRoom(string nameOrId, string chatName)
+    public async Task<SenderInfo> JoinOrCreateRoom(string nameOrId, string chatName)
     {
+        var result =default( SenderInfo);
+
         var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(nameOrId);
         if (user is not null)
         {
             await _userService.AssignRoomNameAsync(user.UserName, chatName);
-            await _roomService.JoinOrCreateRoom(chatName, user.UserName);
+           result =  await _roomService.JoinOrCreateRoom(chatName, user.UserName);
         }
+
+        return result;
     }
 
     public async Task CreateLobi()

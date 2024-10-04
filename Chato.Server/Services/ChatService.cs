@@ -14,7 +14,7 @@ public interface IChatService
 {
     public const string Lobi = "lobi";
     public static string GetToUser(string chatName) => chatName.Split("__").LastOrDefault();
-    static string GetChatName(string fromUser, string toUser) => $"{fromUser}__{toUser}";
+    public static string GetChatName(string fromUser, string toUser) => $"{fromUser}__{toUser}";
 
 
     Task AddUserAsync(string roomName, string userName);
