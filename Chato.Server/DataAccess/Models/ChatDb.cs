@@ -1,8 +1,6 @@
 ﻿
 using Chato.Server.Infrastracture;
 using Chatto.Shared;
-using Microsoft.AspNetCore.Mvc.ModelBinding;
-using System.Text.Json.Serialization;
 
 namespace Chato.Server.DataAccess.Models;
 
@@ -28,5 +26,22 @@ public static class ChatRoomDbExtensions
     {
         return new ChatRoomDto(chatRoomDb.RoomName, chatRoomDb.Users.SafeToArray());
     }
+
+
+    public static SenderInfo AddMessage(this ChatDb chatRoom, SenderInfoType senderInfoType, string fromUser, string? textMessage, string? image)
+    {
+        var senderInfo = default(SenderInfo);
+
+        if (chatRoom is not null)
+        {
+            senderInfo =  new SenderInfo(senderInfoType, fromUser, textMessage,  image, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+            chatRoom.Messages.Add(senderInfo);
+        };
+
+        return senderInfo;
+    }
+
+
+
 }
 

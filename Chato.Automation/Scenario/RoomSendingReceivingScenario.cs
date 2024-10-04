@@ -90,11 +90,4 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
         await InstructionExecuter(graph);
 
     }
-
-
-    //private async Task Setup_SendingInsideTheRoom_Step()
-    //{
-    //    await RegisterUsers(Anatoliy_User, Olessya_User, Nathan_User, Max_User);
-    //    await AssignUserToGroupAsync(First_Group, Anatoliy_User, Olessya_User, Nathan_User);
-    //}
 }

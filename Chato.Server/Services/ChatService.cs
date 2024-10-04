@@ -4,6 +4,7 @@ using Chato.Server.Infrastracture;
 using Chato.Server.Infrastracture.QueueDelegates;
 using Chatto.Shared;
 using System.Net.NetworkInformation;
+using System.Net.WebSockets;
 using System.Text;
 
 namespace Chato.Server.Services;
@@ -13,7 +14,7 @@ public interface IChatService
 {
     public const string Lobi = "lobi";
     public static string GetToUser(string chatName) => chatName.Split("__").LastOrDefault();
-    static string GetChatName(string fromUser, string toUser) => $"{fromUser}__{toUser}";
+    public static string GetChatName(string fromUser, string toUser) => $"{fromUser}__{toUser}";
 
 
     Task AddUserAsync(string roomName, string userName);
@@ -21,12 +22,12 @@ public interface IChatService
     Task<ChatRoomDto[]> GetAllRoomAsync();
     Task<IEnumerable<SenderInfo>> GetGroupHistoryAsync(string roomName);
     Task<ChatRoomDto?> GetRoomByNameOrIdAsync(string nameOrId);
-    Task JoinOrCreateRoom(string roomName, string userName);
+    Task<SenderInfo> JoinOrCreateRoom(string roomName, string userName);
     Task CreateLobi();
     Task RemoveRoomByNameOrIdAsync(string nameOrId);
     Task RemoveUserAndRoomFromRoom(string roomName, string username);
     Task RemoveHistoryByRoomNameAsync(string roomName);
-    Task SendMessageAsync(string roomName, string fromUser, string? textMessage, string? image);
+    Task<SenderInfo> SendMessageAsync(string roomName, string fromUser, string? textMessage, string? image);
 
     Task<bool> IsChatExists(string chatName);
 }
@@ -153,12 +154,15 @@ public class ChatService : IChatService
         });
     }
 
-    public async Task SendMessageAsync(string chatName, string fromUser, string? textMessage, string? image)
+    public async Task<SenderInfo> SendMessageAsync(string chatName, string fromUser, string? textMessage, string? image)
     {
+        var result = default(SenderInfo);
         await _lockerQueue.InvokeAsync(async () =>
         {
-            await AddMessage(SenderInfoType.TextMessage, chatName, fromUser, textMessage, image);
+            result = await AddMessage(SenderInfoType.TextMessage, chatName, fromUser, textMessage, image);
         });
+
+        return result;
     }
 
 
@@ -180,23 +184,27 @@ public class ChatService : IChatService
         });
     }
 
-    public async Task JoinOrCreateRoom(string roomName, string userName)
+    public async Task<SenderInfo> JoinOrCreateRoom(string roomName, string userName)
     {
+        var result = default(SenderInfo);
+
         await _lockerQueue.InvokeAsync(async () =>
         {
             var room = await GetRoomByNameOrIdCoreAsync(roomName);
             if (room is not null)
             {
                 room.Users.Add(userName);
-                await AddMessage(SenderInfoType.Joined, roomName, userName, null, null);
+                result = await AddMessage(SenderInfoType.Joined, roomName, userName, null, null);
             }
             else
             {
                 var createRoom = await CreateRoomCoreAsync(roomName);
                 createRoom.Users.Add(userName);
-                await AddMessage(SenderInfoType.Joined, roomName, userName, null, null);
+                result = await AddMessage(SenderInfoType.Joined, roomName, userName, null, null);
             }
         });
+
+        return result;
     }
 
     public async Task CreateLobi()
@@ -230,12 +238,13 @@ public class ChatService : IChatService
     //----------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------
 
-    private async Task AddMessage(SenderInfoType senderInfoType, string chatName, string fromUser, string? textMessage, string? image)
+    private async Task<SenderInfo> AddMessage(SenderInfoType senderInfoType, string chatName, string fromUser, string? textMessage, string? image)
     {
-        var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
-        if (room is not null)
-        {
-            room.Messages.Add(new SenderInfo(senderInfoType, fromUser, textMessage, Image: image));
-        }
+        var result = default(SenderInfo);
+
+        var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
+        result = chatRoom.AddMessage(senderInfoType, fromUser, textMessage, image);
+
+        return result;
     }
 }
