@@ -10,8 +10,8 @@ public interface IAssignmentService
 
     Task<SenderInfo> JoinOrCreateRoom(string nameOrId, string roomName);
     Task<string> RegisterUserAndAssignToRoom(RegistrationRequest request, string defaultRoom);
-    Task RemoveUserByConnectionIdAsync(string connectionId);
-    Task RemoveUserByUserNameOrIdAsync(string userNameOrId);
+    Task LeaveGroupByConnectionIdAsync(string connectionId);
+    Task LeaveGroupByUserNameOrIdAsync(string userNameOrId);
     Task CreateLobi();
 }
 
@@ -33,23 +33,23 @@ public class AssignmentService : IAssignmentService
 
     public string Enterence => IChatService.Lobi;
 
-    public async Task RemoveUserByConnectionIdAsync(string connectionId)
+    public async Task LeaveGroupByConnectionIdAsync(string connectionId)
     {
         var user = await _userService.GetUserByConnectionId(connectionId);
-        await RemoveUserFromRoom(user);
+        await LeaveUserFromRoom(user);
     }
 
-    public async Task RemoveUserByUserNameOrIdAsync(string userNameOrId)
+    public async Task LeaveGroupByUserNameOrIdAsync(string userNameOrId)
     {
         var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(userNameOrId);
         if (user is not null)
         {
-            await RemoveUserFromRoom(user);
+            await LeaveUserFromRoom(user);
             await _userService.RemoveUserByUserNameOrIdAsync(userNameOrId);
         }
     }
 
-    private async Task RemoveUserFromRoom(User user)
+    private async Task LeaveUserFromRoom(User user)
     {
         if (user is not null)
         {
