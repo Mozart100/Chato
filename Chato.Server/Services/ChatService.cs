@@ -193,8 +193,11 @@ public class ChatService : IChatService
             var room = await GetRoomByNameOrIdCoreAsync(roomName);
             if (room is not null)
             {
-                room.Users.Add(userName);
-                result = await AddMessage(SenderInfoType.Joined, roomName, userName, null, null);
+                if (room.ContainUser(userName) == false)
+                {
+                    room.Users.Add(userName);
+                    result = await AddMessage(SenderInfoType.Joined, roomName, userName, null, null);
+                }
             }
             else
             {

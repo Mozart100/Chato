@@ -134,7 +134,7 @@ public class ChattoHub : Hub<IChatHub>
     {
         await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
 
-        await _assignmentService.RemoveUserByUserNameOrIdAsync(Context.User.Identity.Name);
+        await _assignmentService.LeaveGroupByUserNameOrIdAsync(Context.User.Identity.Name);
     }
 
     public async Task UserDisconnectAsync()
@@ -145,7 +145,7 @@ public class ChattoHub : Hub<IChatHub>
     public override async Task OnDisconnectedAsync(Exception? exception)
     {
         await base.OnDisconnectedAsync(exception);
-        await _assignmentService.RemoveUserByUserNameOrIdAsync(Context.User.Identity.Name);
+        await _assignmentService.LeaveGroupByUserNameOrIdAsync(Context.User.Identity.Name);
     }
 
 
