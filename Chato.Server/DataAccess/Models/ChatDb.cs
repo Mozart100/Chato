@@ -41,7 +41,21 @@ public static class ChatRoomDbExtensions
         return senderInfo;
     }
 
+    public static bool ContainUser(this ChatDb chatRoom, string user)
+    {
+        if (chatRoom is not null)
+        {
+            foreach (var item in chatRoom.Users)
+            {
+                if(item.Equals(user,StringComparison.OrdinalIgnoreCase))
+                {
+                    return true;
+                }
+            }
+        };
 
+        return false;
+    }
 
 }
 
