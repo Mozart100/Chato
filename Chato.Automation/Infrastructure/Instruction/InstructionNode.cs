@@ -111,15 +111,15 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode SendingTextToRestRoom(this InstructionNode info, string message, string chatName, int amountAwait2)
+    public static InstructionNode SendingTextToRestRoom(this InstructionNode info, string message, string chatName, int amountAwait , SenderInfoType messageType = SenderInfoType.TextMessage)
     {
         var @new = info with
         {
             ChatName = chatName,
-            Instruction = new UserSendStringMessageRestRoomInstruction { AmountAwaits = amountAwait2 },
+            Instruction = new UserSendStringMessageRestRoomInstruction { AmountAwaits = amountAwait },
             Message = message,
             Children = new(),
-
+            messageType = messageType
         };
 
         return @new;

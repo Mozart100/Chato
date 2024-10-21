@@ -279,7 +279,7 @@ internal class BasicScenario : InstructionScenarioBase
             .Step(users[Anatoliy_User].SendingTextToRestRoom(message_1, chat2, 1))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Anatoliy_User, message_1))
 
-            .Step(users[Nathan_User].SendingTextToRestRoom(message_image_2, chat2, 1))
+            .Step(users[Nathan_User].SendingTextToRestRoom(message_image_2, chat2, 1,SenderInfoType.Image))
             .Step(users[Anatoliy_User].ReceivingMessage(chat2, Nathan_User, message_image_2))
 
             .Step(users[Anatoliy_User].Logout())

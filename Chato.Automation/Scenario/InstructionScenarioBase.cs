@@ -3,6 +3,7 @@ using Chato.Server.Hubs;
 using Chato.Server.Services;
 using Chatto.Shared;
 using Microsoft.Extensions.Logging;
+using System.Net.WebSockets;
 
 namespace Chato.Automation.Scenario;
 
@@ -51,10 +52,10 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
     }
 
-    private async Task SendMessageToOthersInGroup(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, string message)
+    private async Task SendMessageToOthersInGroup(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, string message, SenderInfoType messageType)
     {
         //var message2 = Encoding.UTF8.GetString(message);
-        await userExecuter.SendMessageToOthersInGroup(chatName: groupName, userNameFrom: userNameFrom, message: message);
+        await userExecuter.SendMessageToOthersInGroup(chatName: groupName, userNameFrom: userNameFrom, message: message, messageType:messageType) ;
 
     }
 
@@ -207,7 +208,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
                 awaitAmount = instance.AmountAwaits;
             }
             await _counterSignal.SetThrasholdAsync(awaitAmount);
-            await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName: instruction.ChatName, userNameFrom: instruction.UserName, message: instruction.Message);
+            await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName: instruction.ChatName, userNameFrom: instruction.UserName, message: instruction.Message, messageType:instruction.messageType ) ;
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
             {
