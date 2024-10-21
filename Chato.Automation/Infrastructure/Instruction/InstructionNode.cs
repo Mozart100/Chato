@@ -111,7 +111,7 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode SendingToRestRoom(this InstructionNode info, string message, string chatName, int amountAwait2)
+    public static InstructionNode SendingTextToRestRoom(this InstructionNode info, string message, string chatName, int amountAwait2)
     {
         var @new = info with
         {
