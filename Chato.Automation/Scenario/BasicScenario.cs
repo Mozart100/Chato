@@ -261,4 +261,41 @@ internal class BasicScenario : InstructionScenarioBase
         var graph = new InstructionGraph(users[Anatoliy_User]);
         await InstructionExecuter(graph);
     }
+
+    private async Task SendingImagesOnlyBetweenTwoPeople()
+    {
+        var imagePath = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "test.jpeg");
+        var message_1 = "Shalom";
+        var message_image_2 = ConvertFileToBase64(imagePath);
+
+        var chat2 = IChatService.GetChatName(Anatoliy_User, Nathan_User);
+
+        var activeUsers = new string[] { Anatoliy_User, Nathan_User };
+        await RegisterUsers(activeUsers);
+        var users = InstructionNodeFluentApi.RegisterInLoLobi(Anatoliy_User, Nathan_User);
+
+        users[Anatoliy_User].Step(users[Nathan_User])
+
+            .Step(users[Anatoliy_User].SendingToRestRoom(message_1, chat2, 1))
+            .Step(users[Nathan_User].ReceivingMessage(chat2, Anatoliy_User, message_1))
+
+            .Step(users[Nathan_User].SendingToRestRoom(message_image_2, chat2, 1))
+            .Step(users[Anatoliy_User].ReceivingMessage(chat2, Nathan_User, message_image_2))
+
+            .Step(users[Anatoliy_User].Logout())
+            .Step(users[Nathan_User].Logout())
+
+;
+
+        var graph = new InstructionGraph(users[Anatoliy_User]);
+        await InstructionExecuter(graph);
+    }
+
+    public static string ConvertFileToBase64(string filePath)
+    {
+        byte[] fileBytes = File.ReadAllBytes(filePath);
+        string base64String = Convert.ToBase64String(fileBytes);
+
+        return base64String;
+    }
 }

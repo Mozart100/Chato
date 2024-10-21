@@ -13,11 +13,11 @@ public interface IUserInfo
 
 public record UserInfo(InstructionNode Instruction, RegistrationResponse RegistrationResponse) : IUserInfo;
 
-public record InstructionNode(string UserName, string? ChatName, UserInstructionBase Instruction, byte[] Message, string? FromArrived,
+public record InstructionNode(string UserName, string? ChatName, UserInstructionBase Instruction,string Message,   string? FromArrived, SenderInfoType messageType,
     HashSet<InstructionNode> Children)
 {
-    public InstructionNode(string userName, string? groupName, UserInstructionBase instruction, byte[] message, string? fromArrived)
-        : this(userName, groupName, instruction, message, fromArrived, new HashSet<InstructionNode>())
+    public InstructionNode(string userName, string? groupName, UserInstructionBase instruction, string message, string? fromArrived ,SenderInfoType messageType)
+        : this(userName, groupName, instruction, message, fromArrived, messageType, new HashSet<InstructionNode>())
     {
     }
 }
@@ -38,7 +38,7 @@ public static class InstructionNodeFluentApi
 
     public static InstructionNode RegisterSingleUserInLoLobi(string user)
     {
-        return new InstructionNode(userName: user, groupName: IChatService.Lobi, instruction: new UserRegisterLobiInstruction() { AmountMessages = -1 }, message: null, fromArrived: null);
+        return new InstructionNode(userName: user, groupName: IChatService.Lobi, instruction: new UserRegisterLobiInstruction() { AmountMessages = -1 }, message: null, fromArrived: null , messageType:SenderInfoType.TextMessage);
     }
 
 
@@ -49,7 +49,7 @@ public static class InstructionNodeFluentApi
             ChatName = chatName,
             Instruction = new UserReceivedInstruction(),
             FromArrived = arrivedFrom,
-            Message = Encoding.UTF8.GetBytes(message),
+            Message = message,
             Children = new(),
         };
 
@@ -117,7 +117,7 @@ public static class InstructionNodeFluentApi
         {
             ChatName = chatName,
             Instruction = new UserSendStringMessageRestRoomInstruction { AmountAwaits = amountAwait2 },
-            Message = Encoding.UTF8.GetBytes(message),
+            Message = message,
             Children = new(),
 
         };

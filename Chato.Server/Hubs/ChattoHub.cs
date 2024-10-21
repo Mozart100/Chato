@@ -71,8 +71,6 @@ public class ChattoHub : Hub<IChatHub>
 
     public async Task SendMessageToOthersInChat(MessageInfo messageInfo)
     {
-        //var ptr = Encoding.UTF8.GetBytes(message);
-        //var (chatName, fromUser, message, image) = messageInfo;
 
         if (messageInfo.ChatName.IsNullOrEmpty())
         {

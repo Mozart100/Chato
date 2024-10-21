@@ -96,14 +96,14 @@ public class UserInstructionExecuter
 
     public string UserName => RegisterResponse.UserName;
 
-    public async Task SendMessageToOthersInGroup(string chatName, string userNameFrom, byte[] ptr)
+    public async Task SendMessageToOthersInGroup(string chatName, string userNameFrom, string message)
     {
-        var message = Encoding.UTF8.GetString(ptr);
+        //var message = Encoding.UTF8.GetString(ptr);
         _logger.LogInformation($"{userNameFrom} sending in group [{chatName}] message [{message}].");
 
 
         //var ptr = Encoding.UTF8.GetBytes(message);
-        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, new MessageInfo( SenderInfoType.Image,  chatName, userNameFrom, message,null));
+        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, new MessageInfo( SenderInfoType.TextMessage,  chatName, userNameFrom, message,null));
     }
 
 
@@ -142,9 +142,9 @@ public class UserInstructionExecuter
         await _connection.InvokeAsync(Hub_Leave_Group_Topic, groupName);
     }
 
-    public async Task ReceivedMessage(string chatName, string user, string fromArrived, byte[] ptr)
+    public async Task ReceivedMessage(string chatName, string user, string fromArrived, string message)
     {
-        var message = Encoding.UTF8.GetString(ptr);
+        //var message = Encoding.UTF8.GetString(ptr);
         await ShouldBe(chatName, user, fromArrived, message);
     }
 

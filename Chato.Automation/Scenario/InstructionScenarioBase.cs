@@ -51,10 +51,10 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
     }
 
-    private async Task SendMessageToOthersInGroup(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, byte[] message)
+    private async Task SendMessageToOthersInGroup(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, string message)
     {
         //var message2 = Encoding.UTF8.GetString(message);
-        await userExecuter.SendMessageToOthersInGroup(chatName: groupName, userNameFrom: userNameFrom, ptr: message);
+        await userExecuter.SendMessageToOthersInGroup(chatName: groupName, userNameFrom: userNameFrom, message: message);
 
     }
 
