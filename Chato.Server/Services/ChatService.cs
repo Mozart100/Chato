@@ -27,7 +27,7 @@ public interface IChatService
     Task RemoveRoomByNameOrIdAsync(string nameOrId);
     Task RemoveUserAndRoomFromRoom(string roomName, string username);
     Task RemoveHistoryByRoomNameAsync(string roomName);
-    Task<SenderInfo> SendMessageAsync(string roomName, string fromUser, string? textMessage, string? image);
+    Task<SenderInfo> SendMessageAsync(string roomName, string fromUser, string? textMessage, string? image,SenderInfoType messageType);
 
     Task<bool> IsChatExists(string chatName);
 }
@@ -154,13 +154,24 @@ public class ChatService : IChatService
         });
     }
 
-    public async Task<SenderInfo> SendMessageAsync(string chatName, string fromUser, string? textMessage, string? image)
+    public async Task<SenderInfo> SendMessageAsync(string chatName, string fromUser, string? textMessage, string? image, SenderInfoType messagetype)
     {
         var result = default(SenderInfo);
-        await _lockerQueue.InvokeAsync(async () =>
+
+        if (messagetype == SenderInfoType.TextMessage)
         {
-            result = await AddMessage(SenderInfoType.TextMessage, chatName, fromUser, textMessage, image);
-        });
+            await _lockerQueue.InvokeAsync(async () =>
+            {
+                result = await AddTextMessage(SenderInfoType.TextMessage, chatName, fromUser, textMessage, image);
+            });
+        }
+        else
+        {
+            if( messagetype == SenderInfoType.Image )
+            {
+
+            }
+        }
 
         return result;
     }
@@ -196,14 +207,14 @@ public class ChatService : IChatService
                 if (room.ContainUser(userName) == false)
                 {
                     room.Users.Add(userName);
-                    result = await AddMessage(SenderInfoType.Joined, roomName, userName, null, null);
+                    result = await AddTextMessage(SenderInfoType.Joined, roomName, userName, null, null);
                 }
             }
             else
             {
                 var createRoom = await CreateRoomCoreAsync(roomName);
                 createRoom.Users.Add(userName);
-                result = await AddMessage(SenderInfoType.Joined, roomName, userName, null, null);
+                result = await AddTextMessage(SenderInfoType.Joined, roomName, userName, null, null);
             }
         });
 
@@ -241,12 +252,23 @@ public class ChatService : IChatService
     //----------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------
 
-    private async Task<SenderInfo> AddMessage(SenderInfoType senderInfoType, string chatName, string fromUser, string? textMessage, string? image)
+    private async Task<SenderInfo> AddTextMessage(SenderInfoType senderInfoType, string chatName, string fromUser, string? textMessage, string? image)
     {
         var result = default(SenderInfo);
 
         var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
         result = chatRoom.AddMessage(senderInfoType, fromUser, textMessage, image);
+
+        return result;
+    }
+
+
+    private async Task<SenderInfo> AddImage( string chatName, string fromUser, string? textMessage, string? image)
+    {
+        var result = default(SenderInfo);
+
+        var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
+        result = chatRoom.AddMessage(SenderInfoType.Image, fromUser, textMessage, image);
 
         return result;
     }

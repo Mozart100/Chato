@@ -73,15 +73,15 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
 
             var message = $"{request.UserName} has registered";
             var token = await _assignmentService.RegisterUserAndAssignToRoom(request, chat);
-            await _roomService.SendMessageAsync(chat, request.UserName, message,null);
+            await _roomService.SendMessageAsync(chat, request.UserName, message,null,SenderInfoType.TextMessage);
 
             requests.Add((request.UserName, token));
         }
         var hi = $"{requests[1].UserName} say hi";
-        await _roomService.SendMessageAsync(chat, requests[1].UserName, hi,null);
+        await _roomService.SendMessageAsync(chat, requests[1].UserName, hi,null, SenderInfoType.TextMessage);
 
         hi = $"{requests[2].UserName} say hi back";
-        await _roomService.SendMessageAsync(chat, requests[2].UserName, hi,null);
+        await _roomService.SendMessageAsync(chat, requests[2].UserName, hi,null, SenderInfoType.TextMessage);
 
 
         requests.Clear();
@@ -102,10 +102,10 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
         }
 
         var talk = $"{requests[3].UserName} say hello you";
-        await _roomService.SendMessageAsync(chat, requests[3].UserName, talk,null);
+        await _roomService.SendMessageAsync(chat, requests[3].UserName, talk,null, SenderInfoType.TextMessage);
 
         talk = $"{requests[4].UserName} say whats up";
-        await _roomService.SendMessageAsync(chat, requests[4].UserName, talk,null);
+        await _roomService.SendMessageAsync(chat, requests[4].UserName, talk,null, SenderInfoType.TextMessage);
 
 
 
@@ -127,10 +127,10 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
         }
 
         talk = $"{requests[3].UserName} when school starts";
-        await _roomService.SendMessageAsync(chat, requests[3].UserName, talk,null);
+        await _roomService.SendMessageAsync(chat, requests[3].UserName, talk,null, SenderInfoType.TextMessage);
 
         talk = $"{requests[4].UserName} say tomorrow";
-        await _roomService.SendMessageAsync(chat, requests[4].UserName, talk,null);
+        await _roomService.SendMessageAsync(chat, requests[4].UserName, talk,null, SenderInfoType.TextMessage);
 
 
 

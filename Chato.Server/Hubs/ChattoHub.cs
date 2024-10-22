@@ -36,7 +36,8 @@ public class ChattoHub : Hub<IChatHub>
     public ChattoHub(
         IUserService userService,
         IChatService roomService,
-        IAssignmentService assignmentService)
+        IAssignmentService assignmentService,
+        IHttpContextAccessor httpContextAccessor)
     {
         this._userService = userService;
         this._roomService = roomService;
@@ -80,13 +81,13 @@ public class ChattoHub : Hub<IChatHub>
         var isExists = await _roomService.IsChatExists(messageInfo.ChatName);
         if (isExists)
         {
-            var senderInfo = await _roomService.SendMessageAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image);
+            var senderInfo = await _roomService.SendMessageAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, messageInfo.SenderInfoType);
             messageInfo = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, senderInfo.TimeStemp);
             await Clients.OthersInGroup(messageInfo.ChatName).SendTextToChat(messageInfo);
         }
         else
         {
-           var senderInfo = await JoinOrCreateChatInternal(Context.ConnectionId, messageInfo.FromUser, messageInfo.ChatName);
+            var senderInfo = await JoinOrCreateChatInternal(Context.ConnectionId, messageInfo.FromUser, messageInfo.ChatName);
 
             var toUser = IChatService.GetToUser(messageInfo.ChatName);
             var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
