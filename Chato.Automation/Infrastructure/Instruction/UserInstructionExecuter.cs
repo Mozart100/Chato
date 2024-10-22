@@ -96,7 +96,7 @@ public class UserInstructionExecuter
 
     public string UserName => RegisterResponse.UserName;
 
-    public async Task SendMessageToOthersInGroup(string chatName, string userNameFrom, string message, SenderInfoType messageType)
+    public async Task SendMessageToOthersInGroup(string chatName, string userNameFrom, string message, SenderInfoType messageType , string ? imageName )
     {
         //var message = Encoding.UTF8.GetString(ptr);
         _logger.LogInformation($"{userNameFrom} sending in group [{chatName}] message [{message}].");
@@ -106,7 +106,7 @@ public class UserInstructionExecuter
 
         }
         //var ptr = Encoding.UTF8.GetBytes(message);
-        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, new MessageInfo( messageType,  chatName, userNameFrom, message,null));
+        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, new MessageInfo( messageType,  chatName, userNameFrom, message,imageName));
     }
 
 
