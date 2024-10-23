@@ -41,22 +41,36 @@ public static class ChatRoomDbExtensions
         return senderInfo;
     }
 
-    public static (int AmoutMessages, SenderInfo SenderInfo) AddImageMessage(this ChatDb chatRoom, string fromUser, string? textMessage, string? image)
+    public static SenderInfo  AddImageMessage(this ChatDb chatRoom, string fromUser, string? textMessage, string? image)
     {
         var senderInfo = default(SenderInfo);
-        int amountMessage = -1;
 
 
         if (chatRoom is not null)
         {
             senderInfo = new SenderInfo(SenderInfoType.Image, fromUser, textMessage, image, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
             chatRoom.Messages.Add(senderInfo);
-
-            amountMessage = chatRoom.Messages.Count;
         };
 
-        return (amountMessage, senderInfo);
+        return senderInfo;
     }
+
+    //public static (int AmoutMessages, SenderInfo SenderInfo) AddImageMessageold(this ChatDb chatRoom, string fromUser, string? textMessage, string? image)
+    //{
+    //    var senderInfo = default(SenderInfo);
+    //    int amountMessage = -1;
+
+
+    //    if (chatRoom is not null)
+    //    {
+    //        senderInfo = new SenderInfo(SenderInfoType.Image, fromUser, textMessage, image, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+    //        chatRoom.Messages.Add(senderInfo);
+
+    //        amountMessage = chatRoom.Messages.Count;
+    //    };
+
+    //    return (amountMessage, senderInfo);
+    //}
 
     public static bool ContainUser(this ChatDb chatRoom, string user)
     {

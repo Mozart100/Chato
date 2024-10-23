@@ -6,6 +6,7 @@ using Chatto.Shared;
 using System.Net.NetworkInformation;
 using System.Net.WebSockets;
 using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Chato.Server.Services;
 
@@ -171,48 +172,55 @@ public class ChatService : IChatService
         {
             if (messagetype == SenderInfoType.Image)
             {
-               // var partialWwrootPath = Path.Combine("wwwroot", chatName);
-                int amountMessages = -1;
+
                 await _lockerQueue.InvokeAsync(async () =>
                 {
-                    (amountMessages, result) = await AddImage(chatName, fromUser, textMessage, imageName);
+
+                    var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
+                    if (chatRoom is not null)
+                    {
+
+                        var amountMessages = chatRoom.Messages.Count + 1;
+                        var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", chatName);
+
+                        if (!Directory.Exists(wwwRootPath))
+                        {
+                            Directory.CreateDirectory(wwwRootPath);
+                        }
+
+                        byte[] fileBytes = Convert.FromBase64String(textMessage);
+                        var filePath = Path.Combine(wwwRootPath, $"{amountMessages}{Path.GetExtension(imageName)}");
+
+                        try
+                        {
+
+                            // Write the byte array to the file
+                            File.WriteAllBytes(filePath, fileBytes);
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+
+                        var senderinfo = new SenderInfo(SenderInfoType.Image, fromUser, textMessage, filePath, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+                        chatRoom.Messages.Add(senderinfo);
+
+
+
+                        var imageFilePath = $"{chatName}/{amountMessages}{Path.GetExtension(imageName)}";// Path.Combine(partialWwrootPath,amountMessages.ToString());
+
+
+                        // Return the relative file path (e.g., /images/yourfile.jpg)
+                        //return $"/images/{fileName}";
+                        result = senderinfo with
+                        {
+                            Image = imageFilePath,
+                            TextMessage = null
+                        };
+                    }
+
                 });
 
-                string wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", chatName);
-                var current = Environment.CurrentDirectory;
-
-
-                if (!Directory.Exists(wwwRootPath))
-                {
-                    Directory.CreateDirectory(wwwRootPath);
-                }
-
-               
-
-                byte[] fileBytes = Convert.FromBase64String(textMessage);
-                var filePath = Path.Combine(wwwRootPath,$"{amountMessages}{Path.GetExtension(imageName)}");
-
-                try
-                {
-
-                    // Write the byte array to the file
-                    File.WriteAllBytes(filePath, fileBytes);
-                }
-                catch (Exception ex)
-                {
-
-                }
-
-                var imageFilePath = $"{chatName}/{amountMessages}{Path.GetExtension(imageName)}";// Path.Combine(partialWwrootPath,amountMessages.ToString());
-
-
-                // Return the relative file path (e.g., /images/yourfile.jpg)
-                //return $"/images/{fileName}";
-                result = result with
-                {
-                    Image = imageFilePath
-                };
-                
             }
         }
 
@@ -305,12 +313,12 @@ public class ChatService : IChatService
         return result;
     }
 
-    private async Task<(int AmoutMessages, SenderInfo SenderInfo)> AddImage(string chatName, string fromUser, string? textMessage, string? image)
-    {
+    //private async Task<(int AmoutMessages, SenderInfo SenderInfo)> AddImage(string chatName, string fromUser, string? textMessage, string? image)
+    //{
 
-        var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
-        var (amountMessages, result) = chatRoom.AddImageMessage(fromUser, textMessage, image);
+    //    var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
+    //    var (amountMessages, result) = chatRoom.AddImageMessage(fromUser, textMessage, image);
 
-        return (amountMessages, result);
-    }
+    //    return (amountMessages, result);
+    //}
 }

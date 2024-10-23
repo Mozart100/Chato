@@ -52,10 +52,10 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
     }
 
-    private async Task SendMessageToOthersInGroup(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, string message, SenderInfoType messageType , string ? imageName )
+    private async Task SendMessageToOthersInGroup(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, string message, SenderInfoType messageType, string? imageName)
     {
         //var message2 = Encoding.UTF8.GetString(message);
-        await userExecuter.SendMessageToOthersInGroup(chatName: groupName, userNameFrom: userNameFrom, message: message, messageType:messageType, imageName) ;
+        await userExecuter.SendMessageToOthersInGroup(chatName: groupName, userNameFrom: userNameFrom, message: message, messageType: messageType, imageName);
 
     }
 
@@ -189,7 +189,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             }
 
 
-            await userExecuter.ShouldBe(IChatService.Lobi, instruction.UserName, "server", ChattoHub.User_Connected_Message);
+            await userExecuter.MessageShouldBe(IChatService.Lobi, instruction.UserName, "server", ChattoHub.User_Connected_Message, imagePath: null);
         });
 
 
@@ -208,7 +208,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
                 awaitAmount = instance.AmountAwaits;
             }
             await _counterSignal.SetThrasholdAsync(awaitAmount);
-            await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName: instruction.ChatName, userNameFrom: instruction.UserName, message: instruction.Message, messageType: instruction.messageType, imageName:instruction.ImageName) ;
+            await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName: instruction.ChatName, userNameFrom: instruction.UserName, message: instruction.Message, messageType: instruction.messageType, imageName: instruction.ImageName);
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
             {
@@ -224,7 +224,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
             }
 
-            await userExecuter.ReceivedMessage(instruction.ChatName, instruction.UserName, instruction.FromArrived, instruction.Message);
+            await userExecuter.MessageShouldBe(instruction.ChatName, instruction.UserName, instruction.FromArrived, instruction.Message, instruction.ImageName);
         });
         _actionMapper.Add(UserInstructions.Not_Received_Instruction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync());
         _actionMapper.Add(UserInstructions.Leave_Room_Instruction, async (userExecuter, instruction) => await userExecuter.LeaveChatInfo(instruction.ChatName));
