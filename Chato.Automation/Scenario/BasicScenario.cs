@@ -23,7 +23,9 @@ internal class BasicScenario : InstructionScenarioBase
     public BasicScenario(ILogger<BasicScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
+        BusinessLogicCallbacks.Add(SendingImagesOnlyBetweenTwoPeople);
         BusinessLogicCallbacks.Add(SendingWithinLobi);
+        
         BusinessLogicCallbacks.Add(SendingOnlyBetweenTwoPeople);
         BusinessLogicCallbacks.Add(SendingWithinLobi_UserMovedChat);
         BusinessLogicCallbacks.Add(VerificationStep);
@@ -279,7 +281,7 @@ internal class BasicScenario : InstructionScenarioBase
             .Step(users[Anatoliy_User].SendingTextToRestRoom(message_1, chat2, 1))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Anatoliy_User, message_1))
 
-            .Step(users[Nathan_User].SendingTextToRestRoom(message_image_2, chat2, 1,SenderInfoType.Image))
+            .Step(users[Nathan_User].SendingTextToRestRoom(message_image_2, chat2, 1,SenderInfoType.Image, "test.jpeg"))
             .Step(users[Anatoliy_User].ReceivingMessage(chat2, Nathan_User, message_image_2))
 
             .Step(users[Anatoliy_User].Logout())
