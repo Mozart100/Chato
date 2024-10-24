@@ -14,6 +14,7 @@ namespace Chato.Server.Services;
 public interface IChatService
 {
     public const string Lobi = "lobi";
+    public const string ChatImages = "ChattoImages";
     public static string GetToUser(string chatName) => chatName.Split("__").LastOrDefault();
     public static string GetChatName(string fromUser, string toUser) => $"{fromUser}__{toUser}";
 
@@ -179,9 +180,11 @@ public class ChatService : IChatService
                     var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
                     if (chatRoom is not null)
                     {
-
                         var amountMessages = chatRoom.Messages.Count + 1;
-                        var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", chatName);
+                        var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", IChatService.ChatImages, chatName);
+
+                        var localPath = Path.Combine($"{amountMessages}{Path.GetExtension(imageName)}");
+                        
 
                         if (!Directory.Exists(wwwRootPath))
                         {
@@ -189,7 +192,8 @@ public class ChatService : IChatService
                         }
 
                         byte[] fileBytes = Convert.FromBase64String(textMessage);
-                        var filePath = Path.Combine(wwwRootPath, $"{amountMessages}{Path.GetExtension(imageName)}");
+                        var filePath = Path.Combine(wwwRootPath, localPath);
+                        //var filePath = Path.Combine(wwwRootPath, $"{amountMessages}{Path.GetExtension(imageName)}");
 
                         try
                         {
@@ -206,8 +210,7 @@ public class ChatService : IChatService
                         chatRoom.Messages.Add(senderinfo);
 
 
-
-                        var imageFilePath = $"{chatName}/{amountMessages}{Path.GetExtension(imageName)}";// Path.Combine(partialWwrootPath,amountMessages.ToString());
+                        var imageFilePath = $"{IChatService.ChatImages}/{chatName}/{localPath}";
 
 
                         // Return the relative file path (e.g., /images/yourfile.jpg)
