@@ -42,7 +42,7 @@ public static class InstructionNodeFluentApi
     }
 
 
-    public static InstructionNode ReceivingMessage(this InstructionNode info, string chatName, string arrivedFrom, string message)
+    public static InstructionNode ReceivingMessage(this InstructionNode info, string chatName, string arrivedFrom, string message, SenderInfoType messageType = SenderInfoType.TextMessage, string imageName = null)
     {
         var @new = info with
         {
@@ -51,6 +51,8 @@ public static class InstructionNodeFluentApi
             FromArrived = arrivedFrom,
             Message = message,
             Children = new(),
+            messageType = messageType,
+            ImageName = imageName
         };
 
         return @new;
@@ -111,7 +113,8 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode SendingTextToRestRoom(this InstructionNode info, string message, string chatName, int amountAwait , SenderInfoType messageType = SenderInfoType.TextMessage,string imageName = null)
+    public static InstructionNode SendingTextToRestRoom(this InstructionNode info, string message, string chatName, int amountAwait , 
+        SenderInfoType messageType = SenderInfoType.TextMessage,string imageName = null)
     {
         var @new = info with
         {

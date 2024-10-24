@@ -281,8 +281,9 @@ internal class BasicScenario : InstructionScenarioBase
             .Step(users[Anatoliy_User].SendingTextToRestRoom(message_1, chat2, 1))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Anatoliy_User, message_1))
 
-            .Step(users[Nathan_User].SendingTextToRestRoom(message_image_2, chat2, 1,SenderInfoType.Image, "test.jpeg"))
-            .Step(users[Anatoliy_User].ReceivingMessage(chat2, Nathan_User, message_image_2))
+            //.Step(users[Nathan_User].SendingTextToRestRoom(message_image_2, chat2, 1,SenderInfoType.TextMessage))
+            .Step(users[Nathan_User].SendingTextToRestRoom(message_image_2, chat2, 1, SenderInfoType.Image, "anatoliy__nathan/3.jpeg"))
+            .Step(users[Anatoliy_User].ReceivingMessage(chat2, Nathan_User, null,SenderInfoType.Image, "anatoliy__nathan/3.jpeg"))
 
             .Step(users[Anatoliy_User].Logout())
             .Step(users[Nathan_User].Logout())

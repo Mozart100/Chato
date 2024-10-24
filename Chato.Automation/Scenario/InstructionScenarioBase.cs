@@ -224,6 +224,11 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
             }
 
+            if( instruction.messageType == SenderInfoType.Image)
+            {
+
+            }
+
             await userExecuter.MessageShouldBe(instruction.ChatName, instruction.UserName, instruction.FromArrived, instruction.Message, instruction.ImageName);
         });
         _actionMapper.Add(UserInstructions.Not_Received_Instruction, async (userExecuter, instruction) => await userExecuter.NotReceivedCheckAsync());

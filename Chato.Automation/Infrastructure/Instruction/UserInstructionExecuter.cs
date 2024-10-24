@@ -157,8 +157,14 @@ public class UserInstructionExecuter
             stringMessage.Data.Should().Be(message);
             stringMessage.ChatNAme.Should().Be(chatName);
 
+            if (stringMessage.ImagePath.IsNullOrEmpty() == false)
+            {
 
+            }
             stringMessage.ImagePath.Should().Be(imagePath);
+
+
+
         }
     }
 
@@ -196,12 +202,12 @@ public class UserInstructionExecuter
 
         _connection.On<MessageInfo>(nameof(IChatHub.SendTextToChat), async (messageInfo) =>
         {
-            var ptr = Encoding.UTF8.GetBytes(messageInfo.TextMessage);
+            //var ptr = Encoding.UTF8.GetBytes(messageInfo.TextMessage);
 
-            //if (messageInfo.SenderInfoType == SenderInfoType.Image)
-            //{
+            if (messageInfo.SenderInfoType == SenderInfoType.Image || messageInfo.Image.IsNotEmpty())
+            {
 
-            //}
+            }
             //if (messageInfo.SenderInfoType != SenderInfoType.Image)
             {
                 await ExpectedMessagesAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image);

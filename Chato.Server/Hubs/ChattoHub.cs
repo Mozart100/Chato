@@ -82,7 +82,8 @@ public class ChattoHub : Hub<IChatHub>
         if (isExists)
         {
             var senderInfo = await _roomService.SendMessageAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, messageInfo.SenderInfoType);
-            messageInfo = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, senderInfo.TimeStemp);
+            messageInfo = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, senderInfo.TextMessage,  senderInfo.Image, senderInfo.TimeStemp);
+            //messageInfo = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, senderInfo.TimeStemp);
             await Clients.OthersInGroup(messageInfo.ChatName).SendTextToChat(messageInfo);
         }
         else
