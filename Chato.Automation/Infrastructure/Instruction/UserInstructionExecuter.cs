@@ -16,7 +16,7 @@ using System.Text.Json;
 namespace Chato.Automation.Infrastructure.Instruction;
 
 
-public record HubMessageByteRecieved(string ChatNAme, string From, string Data);
+public record HubMessageByteRecieved(string ChatNAme, string From, string Data, string? ImagePath);
 
 
 public class UserInstructionExecuter
@@ -96,14 +96,17 @@ public class UserInstructionExecuter
 
     public string UserName => RegisterResponse.UserName;
 
-    public async Task SendMessageToOthersInGroup(string chatName, string userNameFrom, byte[] ptr)
+    public async Task SendMessageToOthersInGroup(string chatName, string userNameFrom, string message, SenderInfoType messageType, string? imageName)
     {
-        var message = Encoding.UTF8.GetString(ptr);
+        //var message = Encoding.UTF8.GetString(ptr);
         _logger.LogInformation($"{userNameFrom} sending in group [{chatName}] message [{message}].");
 
+        if (messageType != SenderInfoType.TextMessage)
+        {
 
+        }
         //var ptr = Encoding.UTF8.GetBytes(message);
-        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, new MessageInfo( SenderInfoType.Image,  chatName, userNameFrom, message,null));
+        await _connection.InvokeAsync(Hub_Send_Other_In_Group_Topic, new MessageInfo(messageType, chatName, userNameFrom, message, imageName));
     }
 
 
@@ -125,6 +128,13 @@ public class UserInstructionExecuter
             var json = JsonSerializer.Serialize(senderInfo);
             _logger.LogInformation($"Downloading message: [{json}] in chat [{chatName}]");
             amountMessages--;
+
+            if(senderInfo.SenderInfoType == SenderInfoType.Image)
+            {
+                senderInfo.TextMessage.Should().BeNullOrEmpty();
+                senderInfo.Image.IsNotEmpty().Should().BeTrue();
+                senderInfo.Image.Should().Contain($"{IChatService.ChatImages}");
+            }
         }
 
         if (isToVerify)
@@ -142,13 +152,7 @@ public class UserInstructionExecuter
         await _connection.InvokeAsync(Hub_Leave_Group_Topic, groupName);
     }
 
-    public async Task ReceivedMessage(string chatName, string user, string fromArrived, byte[] ptr)
-    {
-        var message = Encoding.UTF8.GetString(ptr);
-        await ShouldBe(chatName, user, fromArrived, message);
-    }
-
-    public async Task ShouldBe(string chatName, string user, string fromArrived, string message)
+    public async Task MessageShouldBe(string chatName, string user, string fromArrived, string message, string imagePath)
     {
         _logger.LogWarning($"In {chatName} -- From user {user} hould be [{message}].");
 
@@ -159,6 +163,12 @@ public class UserInstructionExecuter
             stringMessage.From.Should().Be(fromArrived);
             stringMessage.Data.Should().Be(message);
             stringMessage.ChatNAme.Should().Be(chatName);
+
+            if (stringMessage.ImagePath.IsNullOrEmpty() == false)
+            {
+
+            }
+            stringMessage.ImagePath.Should().Be(imagePath);
         }
     }
 
@@ -174,32 +184,39 @@ public class UserInstructionExecuter
         _connection.On<string, string>(nameof(IChatHub.SendText), async (user, message) =>
         {
             var ptr = Encoding.UTF8.GetBytes(message);
-            await ExpectedMessagesAsync(IChatService.Lobi, user, message);
+            await ExpectedMessagesAsync(IChatService.Lobi, user, message, null);
             await _signal.ReleaseAsync();
         });
 
 
         _connection.On<MessageInfo>(nameof(IChatHub.SendTextToChat), async (messageInfo) =>
         {
-            var ptr = Encoding.UTF8.GetBytes(messageInfo.TextMessage);
-            await ExpectedMessagesAsync(messageInfo.ChatName, messageInfo.FromUser , messageInfo.TextMessage);
+            //var ptr = Encoding.UTF8.GetBytes(messageInfo.TextMessage);
+
+            if (messageInfo.SenderInfoType == SenderInfoType.Image || messageInfo.Image.IsNotEmpty())
+            {
+
+            }
+
+            await ExpectedMessagesAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image);
+
             await _signal.ReleaseAsync();
         });
 
-        _connection.On<string,string>(nameof(IChatHub.SendNotificationn), async (chatName, user) =>
+        _connection.On<string, string>(nameof(IChatHub.SendNotificationn), async (chatName, user) =>
         {
             _logger.LogInformation($" ------------  In {chatName}==>{user}-----------");
             _receivedNotofiedMessages.Push(chatName);
-            
+
         });
 
     }
 
-    private async Task ExpectedMessagesAsync(string chatName, string fromUser, string message)
+    private async Task ExpectedMessagesAsync(string chatName, string fromUser, string message, string imagePath)
     {
         _logger.LogWarning($"In {chatName} -- From user {fromUser}  received message [{message}].");
 
-        _receivedMessages.Enqueue(new HubMessageByteRecieved(chatName, fromUser, message));
+        _receivedMessages.Enqueue(new HubMessageByteRecieved(chatName, fromUser, message, imagePath));
     }
 
 

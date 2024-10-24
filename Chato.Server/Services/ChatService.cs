@@ -6,6 +6,7 @@ using Chatto.Shared;
 using System.Net.NetworkInformation;
 using System.Net.WebSockets;
 using System.Text;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Chato.Server.Services;
 
@@ -13,6 +14,7 @@ namespace Chato.Server.Services;
 public interface IChatService
 {
     public const string Lobi = "lobi";
+    public const string ChatImages = "ChattoImages";
     public static string GetToUser(string chatName) => chatName.Split("__").LastOrDefault();
     public static string GetChatName(string fromUser, string toUser) => $"{fromUser}__{toUser}";
 
@@ -27,7 +29,7 @@ public interface IChatService
     Task RemoveRoomByNameOrIdAsync(string nameOrId);
     Task RemoveUserAndRoomFromRoom(string roomName, string username);
     Task RemoveHistoryByRoomNameAsync(string roomName);
-    Task<SenderInfo> SendMessageAsync(string roomName, string fromUser, string? textMessage, string? image);
+    Task<SenderInfo> SendMessageAsync(string roomName, string fromUser, string? textMessage, string? image, SenderInfoType messageType);
 
     Task<bool> IsChatExists(string chatName);
 }
@@ -39,7 +41,8 @@ public class ChatService : IChatService
     private readonly ILockerDelegateQueue _lockerQueue;
 
     public ChatService(IChatRepository chatRoomRepository,
-        ILockerDelegateQueue lockerQueue)
+        ILockerDelegateQueue lockerQueue,
+        IHttpContextAccessor httpContextAccessor)
     {
         this._chatRoomRepository = chatRoomRepository;
         this._lockerQueue = lockerQueue;
@@ -154,13 +157,75 @@ public class ChatService : IChatService
         });
     }
 
-    public async Task<SenderInfo> SendMessageAsync(string chatName, string fromUser, string? textMessage, string? image)
+    public async Task<SenderInfo> SendMessageAsync(string chatName, string fromUser, string? textMessage, string? imageName, SenderInfoType messagetype)
     {
         var result = default(SenderInfo);
-        await _lockerQueue.InvokeAsync(async () =>
+
+
+        if (messagetype == SenderInfoType.TextMessage)
         {
-            result = await AddMessage(SenderInfoType.TextMessage, chatName, fromUser, textMessage, image);
-        });
+            await _lockerQueue.InvokeAsync(async () =>
+            {
+                result = await AddTextMessage(SenderInfoType.TextMessage, chatName, fromUser, textMessage, imageName);
+            });
+        }
+        else
+        {
+            if (messagetype == SenderInfoType.Image)
+            {
+
+                await _lockerQueue.InvokeAsync(async () =>
+                {
+
+                    var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
+                    if (chatRoom is not null)
+                    {
+                        var amountMessages = chatRoom.Messages.Count + 1;
+                        var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", IChatService.ChatImages, chatName);
+
+                        var localPath = Path.Combine($"{amountMessages}{Path.GetExtension(imageName)}");
+                        
+
+                        if (!Directory.Exists(wwwRootPath))
+                        {
+                            Directory.CreateDirectory(wwwRootPath);
+                        }
+
+                        byte[] fileBytes = Convert.FromBase64String(textMessage);
+                        var filePath = Path.Combine(wwwRootPath, localPath);
+                        //var filePath = Path.Combine(wwwRootPath, $"{amountMessages}{Path.GetExtension(imageName)}");
+
+                        try
+                        {
+
+                            // Write the byte array to the file
+                            File.WriteAllBytes(filePath, fileBytes);
+                        }
+                        catch (Exception ex)
+                        {
+
+                        }
+
+                        var senderinfo = new SenderInfo(SenderInfoType.Image, fromUser, textMessage, filePath, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+                        chatRoom.Messages.Add(senderinfo);
+
+
+                        var imageFilePath = $"{IChatService.ChatImages}/{chatName}/{localPath}";
+
+
+                        // Return the relative file path (e.g., /images/yourfile.jpg)
+                        //return $"/images/{fileName}";
+                        result = senderinfo with
+                        {
+                            Image = imageFilePath,
+                            TextMessage = null
+                        };
+                    }
+
+                });
+
+            }
+        }
 
         return result;
     }
@@ -196,14 +261,14 @@ public class ChatService : IChatService
                 if (room.ContainUser(userName) == false)
                 {
                     room.Users.Add(userName);
-                    result = await AddMessage(SenderInfoType.Joined, roomName, userName, null, null);
+                    result = await AddTextMessage(SenderInfoType.Joined, roomName, userName, null, null);
                 }
             }
             else
             {
                 var createRoom = await CreateRoomCoreAsync(roomName);
                 createRoom.Users.Add(userName);
-                result = await AddMessage(SenderInfoType.Joined, roomName, userName, null, null);
+                result = await AddTextMessage(SenderInfoType.Joined, roomName, userName, null, null);
             }
         });
 
@@ -241,13 +306,22 @@ public class ChatService : IChatService
     //----------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------
 
-    private async Task<SenderInfo> AddMessage(SenderInfoType senderInfoType, string chatName, string fromUser, string? textMessage, string? image)
+    private async Task<SenderInfo> AddTextMessage(SenderInfoType senderInfoType, string chatName, string fromUser, string? textMessage, string? image)
     {
         var result = default(SenderInfo);
 
         var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
-        result = chatRoom.AddMessage(senderInfoType, fromUser, textMessage, image);
+        result = chatRoom.AddTextMessage(senderInfoType, fromUser, textMessage, image);
 
         return result;
     }
+
+    //private async Task<(int AmoutMessages, SenderInfo SenderInfo)> AddImage(string chatName, string fromUser, string? textMessage, string? image)
+    //{
+
+    //    var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
+    //    var (amountMessages, result) = chatRoom.AddImageMessage(fromUser, textMessage, image);
+
+    //    return (amountMessages, result);
+    //}
 }

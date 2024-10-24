@@ -13,11 +13,11 @@ public interface IUserInfo
 
 public record UserInfo(InstructionNode Instruction, RegistrationResponse RegistrationResponse) : IUserInfo;
 
-public record InstructionNode(string UserName, string? ChatName, UserInstructionBase Instruction, byte[] Message, string? FromArrived,
+public record InstructionNode(string UserName, string? ChatName, UserInstructionBase Instruction,string Message,   string? FromArrived, SenderInfoType messageType,string? ImageName,
     HashSet<InstructionNode> Children)
 {
-    public InstructionNode(string userName, string? groupName, UserInstructionBase instruction, byte[] message, string? fromArrived)
-        : this(userName, groupName, instruction, message, fromArrived, new HashSet<InstructionNode>())
+    public InstructionNode(string userName, string? groupName, UserInstructionBase instruction, string message, string? fromArrived ,SenderInfoType messageType,string? imageName)
+        : this(userName, groupName, instruction, message, fromArrived, messageType, imageName, new HashSet<InstructionNode>())
     {
     }
 }
@@ -38,19 +38,21 @@ public static class InstructionNodeFluentApi
 
     public static InstructionNode RegisterSingleUserInLoLobi(string user)
     {
-        return new InstructionNode(userName: user, groupName: IChatService.Lobi, instruction: new UserRegisterLobiInstruction() { AmountMessages = -1 }, message: null, fromArrived: null);
+        return new InstructionNode(userName: user, groupName: IChatService.Lobi, instruction: new UserRegisterLobiInstruction() { AmountMessages = -1 }, message: null, fromArrived: null , messageType:SenderInfoType.TextMessage , null);
     }
 
 
-    public static InstructionNode ReceivingMessage(this InstructionNode info, string chatName, string arrivedFrom, string message)
+    public static InstructionNode ReceivingMessage(this InstructionNode info, string chatName, string arrivedFrom, string message, SenderInfoType messageType = SenderInfoType.TextMessage, string imageName = null)
     {
         var @new = info with
         {
             ChatName = chatName,
             Instruction = new UserReceivedInstruction(),
             FromArrived = arrivedFrom,
-            Message = Encoding.UTF8.GetBytes(message),
+            Message = message,
             Children = new(),
+            messageType = messageType,
+            ImageName = imageName
         };
 
         return @new;
@@ -111,15 +113,17 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode SendingToRestRoom(this InstructionNode info, string message, string chatName, int amountAwait2)
+    public static InstructionNode SendingTextToRestRoom(this InstructionNode info, string message, string chatName, int amountAwait , 
+        SenderInfoType messageType = SenderInfoType.TextMessage,string imageName = null)
     {
         var @new = info with
         {
             ChatName = chatName,
-            Instruction = new UserSendStringMessageRestRoomInstruction { AmountAwaits = amountAwait2 },
-            Message = Encoding.UTF8.GetBytes(message),
+            Instruction = new UserSendStringMessageRestRoomInstruction { AmountAwaits = amountAwait },
+            Message = message,
             Children = new(),
-
+            messageType = messageType,
+            ImageName = imageName
         };
 
         return @new;

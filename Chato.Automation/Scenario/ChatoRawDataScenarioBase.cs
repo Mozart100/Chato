@@ -1,6 +1,7 @@
 ﻿using Chato.Server.Configuration;
 using Chato.Server.Controllers;
 using Chato.Server.Hubs;
+using Chato.Server.Services;
 using Chatto.Shared;
 using Microsoft.Extensions.Logging;
 
@@ -12,6 +13,8 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
     {
         HubUrl = $"{BaseUrl}{ChattoHub.HubMapUrl}";
         AuthControllerUrl = $"{BaseUrl}/api/auth";
+        GetRawWwwrootUrl = $"{BaseUrl}";
+        GetChattoImagesBaseUrl = $"{BaseUrl}/{IChatService.ChatImages}";
 
 
         RegisterAuthControllerUrl = $"{AuthControllerUrl}/{AuthController.RegistrationUrl}";
@@ -54,16 +57,20 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
     protected string GetAllUsersUrl { get; }
 
 
-
-
     protected string ConfigurationControllerUrl { get; }
     protected string GetEvictionConfigurationUrl { get; }
 
 
+    protected string GetRawWwwrootUrl { get; }
+    protected string GetChattoImagesBaseUrl { get; }
+
+
+    public string ImagePathCOmbine(string relativePath) => $"{GetRawWwwrootUrl}/{relativePath}";
+
 
     public async Task<CacheEvictionRoomConfigDto> GetEvictionConfigurationAsync()
     {
-        var response =  await Get<ResponseWrapper<CacheEvictionRoomConfigDto>>(GetEvictionConfigurationUrl);
+        var response = await Get<ResponseWrapper<CacheEvictionRoomConfigDto>>(GetEvictionConfigurationUrl);
         return response.Body;
     }
 

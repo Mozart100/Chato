@@ -8,6 +8,7 @@ namespace Chato.Server.Middlewares
 {
     using Chato.Server.Controllers;
     using Chato.Server.Hubs;
+    using Chato.Server.Services;
     using Microsoft.AspNetCore.Http;
     using Microsoft.Extensions.Logging;
     using System.Text.Json;
@@ -30,6 +31,14 @@ namespace Chato.Server.Middlewares
             if (context.Request.Path.StartsWithSegments($"{ChattoHub.HubMapUrl}", StringComparison.OrdinalIgnoreCase) ||
                 context.Request.Path.StartsWithSegments("/hub", StringComparison.OrdinalIgnoreCase) || // Assuming "/hub" is your SignalR hub path
                 context.Request.Path.Value.Contains($"/{AuthController.DownloadUrl}"))
+            {
+                await _next(context);
+                return;
+            }
+
+         
+            if (context.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase)
+                &&  context.Request.Path.StartsWithSegments($"/{IChatService.ChatImages}"))
             {
                 await _next(context);
                 return;

@@ -23,13 +23,15 @@ internal class BasicScenario : InstructionScenarioBase
     public BasicScenario(ILogger<BasicScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
+        BusinessLogicCallbacks.Add(SendingImagesOnlyBetweenTwoPeople);
         BusinessLogicCallbacks.Add(SendingWithinLobi);
+
         BusinessLogicCallbacks.Add(SendingOnlyBetweenTwoPeople);
         BusinessLogicCallbacks.Add(SendingWithinLobi_UserMovedChat);
         BusinessLogicCallbacks.Add(VerificationStep);
         BusinessLogicCallbacks.Add(GetHistoryWithoutJoin);
 
-        
+
 
         //SummaryLogicCallback.Add(CheckAllCleaned);
 
@@ -50,7 +52,7 @@ internal class BasicScenario : InstructionScenarioBase
         var users = InstructionNodeFluentApi.RegisterInLoLobi(supervisor, Anatoliy_User, Olessya_User, Nathan_User);
 
         users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
-            .Step(users[Anatoliy_User].SendingToRestRoom(message_1, IChatService.Lobi, 2))
+            .Step(users[Anatoliy_User].SendingTextToRestRoom(message_1, IChatService.Lobi, 2))
             .Step(users[Nathan_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
             .Step(users[Olessya_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
 
@@ -97,10 +99,10 @@ internal class BasicScenario : InstructionScenarioBase
 
         users[Anatoliy_User].Step(users[Nathan_User])
 
-            .Step(users[Anatoliy_User].SendingToRestRoom(message_1, chat2, 1))
+            .Step(users[Anatoliy_User].SendingTextToRestRoom(message_1, chat2, 1))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Anatoliy_User, message_1))
 
-            .Step(users[Nathan_User].SendingToRestRoom(message_2, chat2, 1))
+            .Step(users[Nathan_User].SendingTextToRestRoom(message_2, chat2, 1))
             .Step(users[Anatoliy_User].ReceivingMessage(chat2, Nathan_User, message_2))
 
             .Step(users[Anatoliy_User].Logout())
@@ -125,12 +127,12 @@ internal class BasicScenario : InstructionScenarioBase
 
 
         users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
-            .Step(users[Anatoliy_User].SendingToRestRoom(message_1, IChatService.Lobi, 2))
+            .Step(users[Anatoliy_User].SendingTextToRestRoom(message_1, IChatService.Lobi, 2))
             .Step(users[Nathan_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
             .Step(users[Olessya_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
 
-            .Step(users[Olessya_User].JoinOrCreateChat(chat2,1))
-            .Step(users[Nathan_User].JoinOrCreateChat(chat2,2))
+            .Step(users[Olessya_User].JoinOrCreateChat(chat2, 1))
+            .Step(users[Nathan_User].JoinOrCreateChat(chat2, 2))
 
             .Step(users[Olessya_User].NotifyUser(chat2))
             .Step(users[Olessya_User].NotifyUser(chat2))
@@ -138,7 +140,7 @@ internal class BasicScenario : InstructionScenarioBase
 
 
 
-            .Step(users[Olessya_User].SendingToRestRoom(message_2, chat2, 1))
+            .Step(users[Olessya_User].SendingTextToRestRoom(message_2, chat2, 1))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_2))
             .Step(users[Anatoliy_User].Is_Not_ReceivedMessage(IChatService.Lobi))
 
@@ -189,22 +191,22 @@ internal class BasicScenario : InstructionScenarioBase
 
 
         users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
-            .Step(users[Anatoliy_User].SendingToRestRoom(message_1, IChatService.Lobi, 2))
+            .Step(users[Anatoliy_User].SendingTextToRestRoom(message_1, IChatService.Lobi, 2))
             .Step(users[Nathan_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
             .Step(users[Olessya_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
 
             .Step(users[Olessya_User].JoinOrCreateChat(chat2))
             .Step(users[Nathan_User].JoinOrCreateChat(chat2))
 
-            .Step(users[Olessya_User].SendingToRestRoom(message_2, chat2, 1))
+            .Step(users[Olessya_User].SendingTextToRestRoom(message_2, chat2, 1))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_2))
 
-            .Step(users[Anatoliy_User].JoinOrCreateChat(chat2,4))
+            .Step(users[Anatoliy_User].JoinOrCreateChat(chat2, 4))
             .Step(users[Olessya_User].NotifyUser(chat2))
             .Step(users[Nathan_User].NotifyUser(chat2))
             .Step(users[Anatoliy_User].NotifyUser(chat2))
 
-            .Step(users[Olessya_User].SendingToRestRoom(message_3, chat2, 2))
+            .Step(users[Olessya_User].SendingTextToRestRoom(message_3, chat2, 2))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_3))
             .Step(users[Anatoliy_User].ReceivingMessage(chat2, Olessya_User, message_3))
 
@@ -235,18 +237,18 @@ internal class BasicScenario : InstructionScenarioBase
 
 
         users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
-            .Step(users[Anatoliy_User].SendingToRestRoom(message_1, IChatService.Lobi, 2))
+            .Step(users[Anatoliy_User].SendingTextToRestRoom(message_1, IChatService.Lobi, 2))
             .Step(users[Nathan_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
             .Step(users[Olessya_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
 
             .Step(users[Olessya_User].JoinOrCreateChat(chat2))
             .Step(users[Nathan_User].JoinOrCreateChat(chat2))
 
-            .Step(users[Olessya_User].SendingToRestRoom(message_2, chat2, 1))
+            .Step(users[Olessya_User].SendingTextToRestRoom(message_2, chat2, 1))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_2))
 
 
-            .Step(users[Nathan_User].SendingToRestRoom(message_3, chat2, 1))
+            .Step(users[Nathan_User].SendingTextToRestRoom(message_3, chat2, 1))
             .Step(users[Olessya_User].ReceivingMessage(chat2, Nathan_User, message_3))
 
             .Step(users[Anatoliy_User].GetHistoryChat(chat2, 4))
@@ -261,4 +263,47 @@ internal class BasicScenario : InstructionScenarioBase
         var graph = new InstructionGraph(users[Anatoliy_User]);
         await InstructionExecuter(graph);
     }
+
+    private async Task SendingImagesOnlyBetweenTwoPeople()
+    {
+        var imagepath = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "test.jpeg");
+        var expectedFilePath = $"{IChatService.ChatImages}/anatoliy__nathan/4.jpeg";
+
+        var message_1 = "How do you do?";
+        var message_image_2 = ConvertFileToBase64(imagepath);
+
+        var chat2 = IChatService.GetChatName(Anatoliy_User, Nathan_User);
+
+        var activeUsers = new string[] { Anatoliy_User, Nathan_User };
+        await RegisterUsers(activeUsers);
+        var users = InstructionNodeFluentApi.RegisterInLoLobi(Anatoliy_User, Nathan_User);
+
+        users[Anatoliy_User].Step(users[Nathan_User])
+
+
+            .Step(users[Anatoliy_User].JoinOrCreateChat(chat2))
+            .Step(users[Nathan_User].JoinOrCreateChat(chat2))
+
+            .Step(users[Anatoliy_User].SendingTextToRestRoom(message_1, chat2, 1))
+            .Step(users[Nathan_User].ReceivingMessage(chat2, Anatoliy_User, message_1))
+
+            .Step(users[Nathan_User].SendingTextToRestRoom(message_image_2, chat2, 1, SenderInfoType.Image, expectedFilePath))
+            .Step(users[Anatoliy_User].ReceivingMessage(chat2, Nathan_User, null, SenderInfoType.Image, expectedFilePath))
+
+            .Step(users[Anatoliy_User].GetHistoryChat(chat2, 4))
+
+            .Step(users[Anatoliy_User].Logout())
+            .Step(users[Nathan_User].Logout())
+
+;
+
+        var graph = new InstructionGraph(users[Anatoliy_User]);
+        await InstructionExecuter(graph);
+
+        var ptr = await GetImage(ImagePathCOmbine(expectedFilePath));
+        var downloadFile = Convert.ToBase64String(ptr);
+        downloadFile.Should().Be(message_image_2);
+    }
+
+   
 }

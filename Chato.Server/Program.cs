@@ -86,7 +86,7 @@ app.UseMiddleware<ResponseWrappingMiddleware>();
 
 //app.UseExceptionHandler("/error");
 app.UseExceptionHandler();
-
+app.UseStaticFiles();
 app.MapControllers();
 
 

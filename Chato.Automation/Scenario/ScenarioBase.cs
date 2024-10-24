@@ -179,6 +179,20 @@ public abstract class ScenarioBase
         }
     }
 
+    protected async Task<byte[]> GetImage(string imageUrl, string? token = null) 
+    {
+        using (HttpClient client = new HttpClient())
+        {
+            if (token is not null)
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            var response = await client.GetByteArrayAsync(imageUrl);
+            return response;
+        }
+    }
+
     protected async Task<TDto> Get<TDto>(string url, string? token = null, Dictionary<string, string> parameters = null) where TDto : class
     {
         using (HttpClient client = new HttpClient())
@@ -333,6 +347,14 @@ public abstract class ScenarioBase
         }
 
         return response;
+    }
+
+    protected string ConvertFileToBase64(string filePath)
+    {
+        byte[] fileBytes = File.ReadAllBytes(filePath);
+        string base64String = Convert.ToBase64String(fileBytes);
+
+        return base64String;
     }
 
 }

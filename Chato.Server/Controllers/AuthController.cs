@@ -64,6 +64,37 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
+    //[HttpPost]
+    //[Route("upload")]
+    //public async Task<IActionResult> UploadImage(IFormFile imageFile)
+    //{
+    //    if (imageFile == null || imageFile.Length == 0)
+    //    {
+    //        return BadRequest("No file uploaded.");
+    //    }
+
+    //    // Ensure the directory exists
+    //    if (!Directory.Exists(_imageDirectory))
+    //    {
+    //        Directory.CreateDirectory(_imageDirectory);
+    //    }
+
+    //    // Create a unique file name for the image
+    //    var fileName = Path.GetRandomFileName() + Path.GetExtension(imageFile.FileName);
+    //    var filePath = Path.Combine(_imageDirectory, fileName);
+
+    //    // Save the image to the wwwroot/images directory
+    //    using (var stream = new FileStream(filePath, FileMode.Create))
+    //    {
+    //        await imageFile.CopyToAsync(stream);
+    //    }
+
+    //    // Return the URL of the uploaded image
+    //    var imageUrl = $"{Request.Scheme}://{Request.Host}/images/{fileName}";
+    //    return Ok(new { imageUrl });
+    //}
+
+
     [Route(DownloadUrl)]
     [HttpGet, Authorize]
     public async Task<IActionResult> Download([FromQuery] int num)

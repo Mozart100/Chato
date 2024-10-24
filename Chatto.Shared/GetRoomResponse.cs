@@ -18,7 +18,8 @@ public enum SenderInfoType:uint
 }
 
 public record SenderInfo( SenderInfoType SenderInfoType, string FromUser, string ? TextMessage, string ? Image, long TimeStemp);
-public record MessageInfo(SenderInfoType SenderInfoType,string ChatName, string FromUser, string? TextMessage, string? Image , long TimeStemp = 0) : SenderInfo( SenderInfoType, FromUser,TextMessage,Image,DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+public record MessageInfo(SenderInfoType SenderInfoType,string ChatName, string FromUser, string? TextMessage, string? Image , long TimeStemp = 0) 
+    : SenderInfo( SenderInfoType, FromUser,TextMessage,Image,DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
 public class ChatRoomDto
 {

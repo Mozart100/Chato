@@ -36,7 +36,8 @@ public class ChattoHub : Hub<IChatHub>
     public ChattoHub(
         IUserService userService,
         IChatService roomService,
-        IAssignmentService assignmentService)
+        IAssignmentService assignmentService,
+        IHttpContextAccessor httpContextAccessor)
     {
         this._userService = userService;
         this._roomService = roomService;
@@ -71,24 +72,29 @@ public class ChattoHub : Hub<IChatHub>
 
     public async Task SendMessageToOthersInChat(MessageInfo messageInfo)
     {
-        //var ptr = Encoding.UTF8.GetBytes(message);
-        //var (chatName, fromUser, message, image) = messageInfo;
 
         if (messageInfo.ChatName.IsNullOrEmpty())
         {
             throw new ArgumentNullException("Chat cannot be empty");
         }
 
+        //if (messageInfo.ChatName.Equals("anatoliy__nathan"))
+        //{
+
+        //}
+
+
         var isExists = await _roomService.IsChatExists(messageInfo.ChatName);
         if (isExists)
         {
-            var senderInfo = await _roomService.SendMessageAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image);
-            messageInfo = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, senderInfo.TimeStemp);
+            var senderInfo = await _roomService.SendMessageAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, messageInfo.SenderInfoType);
+            messageInfo = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, senderInfo.TextMessage, senderInfo.Image, senderInfo.TimeStemp);
+            //messageInfo = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, senderInfo.TimeStemp);
             await Clients.OthersInGroup(messageInfo.ChatName).SendTextToChat(messageInfo);
         }
         else
         {
-           var senderInfo = await JoinOrCreateChatInternal(Context.ConnectionId, messageInfo.FromUser, messageInfo.ChatName);
+            var senderInfo = await JoinOrCreateChatInternal(Context.ConnectionId, messageInfo.FromUser, messageInfo.ChatName);
 
             var toUser = IChatService.GetToUser(messageInfo.ChatName);
             var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
@@ -117,6 +123,11 @@ public class ChattoHub : Hub<IChatHub>
 
     public async IAsyncEnumerable<MessageInfo> DownloadHistory(string chatName)
     {
+        //if (chatName.Equals("anatoliy__nathan"))
+        //{
+
+        //}
+
         var isExists = await _roomService.IsChatExists(chatName);
         if (isExists)
         {
@@ -124,7 +135,13 @@ public class ChattoHub : Hub<IChatHub>
 
             foreach (var senderInfo in list)
             {
-                yield return new MessageInfo(senderInfo.SenderInfoType, chatName, senderInfo.FromUser, senderInfo.TextMessage, senderInfo.Image, senderInfo.TimeStemp);
+                string message = null;
+                if (senderInfo.SenderInfoType != SenderInfoType.Image)
+                {
+                    message = senderInfo.TextMessage;
+                }
+
+                yield return new MessageInfo(senderInfo.SenderInfoType, chatName, senderInfo.FromUser, message, senderInfo.Image, senderInfo.TimeStemp);
                 await Task.Delay(20);
             }
         }
