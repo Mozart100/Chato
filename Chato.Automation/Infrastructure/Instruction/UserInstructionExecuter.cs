@@ -128,6 +128,12 @@ public class UserInstructionExecuter
             var json = JsonSerializer.Serialize(senderInfo);
             _logger.LogInformation($"Downloading message: [{json}] in chat [{chatName}]");
             amountMessages--;
+
+            if(senderInfo.SenderInfoType == SenderInfoType.Image)
+            {
+                senderInfo.TextMessage.Should().BeNullOrEmpty();
+                senderInfo.Image.IsNotEmpty().Should().BeTrue();
+            }
         }
 
         if (isToVerify)
