@@ -133,6 +133,7 @@ public class UserInstructionExecuter
             {
                 senderInfo.TextMessage.Should().BeNullOrEmpty();
                 senderInfo.Image.IsNotEmpty().Should().BeTrue();
+                senderInfo.Image.Should().Contain($"{IChatService.ChatImages}");
             }
         }
 

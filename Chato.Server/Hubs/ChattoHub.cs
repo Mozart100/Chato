@@ -78,10 +78,10 @@ public class ChattoHub : Hub<IChatHub>
             throw new ArgumentNullException("Chat cannot be empty");
         }
 
-        if (messageInfo.ChatName.Equals("anatoliy__nathan"))
-        {
+        //if (messageInfo.ChatName.Equals("anatoliy__nathan"))
+        //{
 
-        }
+        //}
 
 
         var isExists = await _roomService.IsChatExists(messageInfo.ChatName);
@@ -123,10 +123,10 @@ public class ChattoHub : Hub<IChatHub>
 
     public async IAsyncEnumerable<MessageInfo> DownloadHistory(string chatName)
     {
-        if (chatName.Equals("anatoliy__nathan"))
-        {
+        //if (chatName.Equals("anatoliy__nathan"))
+        //{
 
-        }
+        //}
 
         var isExists = await _roomService.IsChatExists(chatName);
         if (isExists)
