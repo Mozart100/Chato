@@ -162,26 +162,8 @@ public class UserInstructionExecuter
 
             }
             stringMessage.ImagePath.Should().Be(imagePath);
-
-
-
         }
     }
-
-    //public async Task ImageShouldBe(string chatName, string user, string fromArrived, string message, string image)
-    //{
-    //    _logger.LogWarning($"Image should be in {chatName} -- From user {user} hould be [{message}].");
-
-    //    var messageReceived = _receivedMessages.Dequeue();
-
-    //    if (messageReceived is HubMessageByteRecieved stringMessage)
-    //    {
-    //        stringMessage.From.Should().Be(fromArrived);
-    //        stringMessage.Data.Should().Be(message);
-    //        stringMessage.ChatNAme.Should().Be(chatName);
-    //        stringMessage.ImagePath.Should().Be(image);
-    //    }
-    //}
 
     public async Task NotReceivedCheckAsync()
     {
@@ -208,14 +190,8 @@ public class UserInstructionExecuter
             {
 
             }
-            //if (messageInfo.SenderInfoType != SenderInfoType.Image)
-            {
-                await ExpectedMessagesAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image);
-            }
-            //else
-            //{
-            //    await ExpectedImageAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image);
-            //}
+
+            await ExpectedMessagesAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image);
 
             await _signal.ReleaseAsync();
         });
@@ -228,13 +204,6 @@ public class UserInstructionExecuter
         });
 
     }
-
-    //private async Task ExpectedImageAsync(string chatName, string fromUser, string message, string imagePath)
-    //{
-    //    _logger.LogWarning($"In {chatName} -- From user {fromUser}  received image [{message}].");
-
-    //    _receivedMessages.Enqueue(new HubMessageByteRecieved(chatName, fromUser, message, imagePath));
-    //}
 
     private async Task ExpectedMessagesAsync(string chatName, string fromUser, string message, string imagePath)
     {
