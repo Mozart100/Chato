@@ -267,9 +267,9 @@ internal class BasicScenario : InstructionScenarioBase
     private async Task SendingImagesOnlyBetweenTwoPeople()
     {
         var imagepath = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "test.jpeg");
-        var expectedFilePath = $"{IChatService.ChatImages}/anatoliy__nathan/3.jpeg";
+        var expectedFilePath = $"{IChatService.ChatImages}/anatoliy__nathan/4.jpeg";
 
-        var message_1 = "Shalom";
+        var message_1 = "How do you do?";
         var message_image_2 = ConvertFileToBase64(imagepath);
 
         var chat2 = IChatService.GetChatName(Anatoliy_User, Nathan_User);
@@ -280,12 +280,17 @@ internal class BasicScenario : InstructionScenarioBase
 
         users[Anatoliy_User].Step(users[Nathan_User])
 
+
+            .Step(users[Anatoliy_User].JoinOrCreateChat(chat2))
+            .Step(users[Nathan_User].JoinOrCreateChat(chat2))
+
             .Step(users[Anatoliy_User].SendingTextToRestRoom(message_1, chat2, 1))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Anatoliy_User, message_1))
 
-            //.Step(users[Nathan_User].SendingTextToRestRoom(message_image_2, chat2, 1,SenderInfoType.TextMessage))
             .Step(users[Nathan_User].SendingTextToRestRoom(message_image_2, chat2, 1, SenderInfoType.Image, expectedFilePath))
             .Step(users[Anatoliy_User].ReceivingMessage(chat2, Nathan_User, null, SenderInfoType.Image, expectedFilePath))
+
+            .Step(users[Anatoliy_User].GetHistoryChat(chat2, 4))
 
             .Step(users[Anatoliy_User].Logout())
             .Step(users[Nathan_User].Logout())
@@ -300,11 +305,5 @@ internal class BasicScenario : InstructionScenarioBase
         downloadFile.Should().Be(message_image_2);
     }
 
-    public static string ConvertFileToBase64(string filePath)
-    {
-        byte[] fileBytes = File.ReadAllBytes(filePath);
-        string base64String = Convert.ToBase64String(fileBytes);
-
-        return base64String;
-    }
+   
 }

@@ -349,4 +349,12 @@ public abstract class ScenarioBase
         return response;
     }
 
+    protected string ConvertFileToBase64(string filePath)
+    {
+        byte[] fileBytes = File.ReadAllBytes(filePath);
+        string base64String = Convert.ToBase64String(fileBytes);
+
+        return base64String;
+    }
+
 }
