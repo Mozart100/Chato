@@ -2,9 +2,10 @@ import { Injectable } from '@angular/core'
 import * as signalR from '@microsoft/signalr'
 import { ChatStore } from '../store/chat.store'
 import { SAVED_TOKEN_KEY } from '../helpers/consts'
-import { Chat, ChatMessage } from '../models/chat.models'
+import { Chat, ChatMessage, SenderInfoType } from '../models/chat.models'
 import { AuthenticationService } from './auth.service'
 import { filter, first, firstValueFrom, Subject } from 'rxjs'
+import { TranslateService } from '@ngx-translate/core'
 
 @Injectable({
     providedIn: 'root'
@@ -16,8 +17,20 @@ export class ChattoHubService {
     private isConnected = false
     private isConnectedSubj = new Subject<boolean>()
 
+    private usedJoinedText = ''
+
     constructor(private chatStore: ChatStore,
-                private auth: AuthenticationService) {
+                private auth: AuthenticationService,
+                private translate: TranslateService) {
+
+        this.initTranslatedText()
+    }
+
+    private initTranslatedText() {
+        firstValueFrom(this.translate.get('common.userJoined'))
+            .then(joinedTxt => {
+                this.usedJoinedText = joinedTxt
+            })
     }
 
     public startConnection() {
@@ -77,7 +90,8 @@ export class ChattoHubService {
             next: (messageInfo: ChatMessage) => {
                 chat.messages.push({
                     ...messageInfo,
-                    isSelf: this.auth.user().userName == messageInfo.fromUser
+                    isSelf: this.auth.user().userName == messageInfo.fromUser,
+                    textMessage: messageInfo.senderInfoType == SenderInfoType.Joined ? this.usedJoinedText : messageInfo.textMessage,
                 })
             },
             complete: () => {

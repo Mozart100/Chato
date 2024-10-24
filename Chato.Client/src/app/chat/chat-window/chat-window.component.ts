@@ -17,6 +17,7 @@ import { ChatStore } from '../../core/store/chat.store'
 import { AuthenticationService } from '../../core/services/auth.service'
 import { ChattoHubService } from '../../core/services/realtime.service'
 import { IAlbum } from 'ngx-lightbox/lightbox-event.service'
+import { SenderInfoType } from '../../core/models/chat.models'
 
 @Component({
     selector: 'chat-window',
@@ -193,7 +194,9 @@ export class ChatWindowComponent implements OnInit {
                 chatName: this.chatStore.selectedChat().chatName,
                 fromUser: this.auth.user().userName,
                 textMessage: text,
-                isSelf: true
+                isSelf: true,
+                timeStemp: new Date().getTime(),
+                senderInfoType: SenderInfoType.TextMessage
             }
 
             this.chatStore.selectedChat.update(chat => {
@@ -288,7 +291,9 @@ export class ChatWindowComponent implements OnInit {
                 chatName: this.chatStore.selectedChat().chatName,
                 fromUser: this.auth.user().userName,
                 image: imageURL,
-                isSelf: true
+                isSelf: true,
+                timeStemp: new Date().getTime(),
+                senderInfoType: SenderInfoType.Image
             }
 
             this.chatStore.selectedChat().messages.push(message)

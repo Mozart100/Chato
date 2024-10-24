@@ -17,8 +17,15 @@ export interface User {
 export interface ChatMessage {
     chatName: string
     fromUser: string
+    timeStemp: number
+    senderInfoType: SenderInfoType
     textMessage?: string
     image?: string
     isSelf: boolean
 }
 
+export enum SenderInfoType {
+    TextMessage = 1,
+    Image = 2,
+    Joined = 3
+}

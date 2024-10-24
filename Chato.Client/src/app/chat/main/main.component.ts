@@ -45,6 +45,7 @@ export class MainComponent implements OnInit {
 
     ngOnInit(): void {
         this.realtime.startConnection();
+        this.changeMode('dark')
     }
 
     logout() {

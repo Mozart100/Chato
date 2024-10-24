@@ -44,6 +44,9 @@
         "title": "Rooms",
         "searchRooms": "Search rooms..."
     },
+    "common": {
+        "userJoined": "joined the chat"
+    },
     "signup": {
         "title": "Sign up",
         "message": "Get your Chat account now.",
