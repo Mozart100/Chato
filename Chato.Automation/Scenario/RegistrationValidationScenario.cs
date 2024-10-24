@@ -77,11 +77,13 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
 
 
             var response = await UploadFiles<ResponseWrapper<UploadDocumentsResponse>>(UploadFilesUrl, token, files);
-            response.Body.Document1.Should().BeTrue();
-            response.Body.Document2.Should().BeTrue();
-            response.Body.Document3.Should().BeFalse();
-            response.Body.Document4.Should().BeFalse();
-            response.Body.Document5.Should().BeFalse();
+            //response.Body.Document1.Should().BeTrue();
+            //response.Body.Document2.Should().BeTrue();
+            //response.Body.Document3.Should().BeFalse();
+            //response.Body.Document4.Should().BeFalse();
+            //response.Body.Document5.Should().BeFalse();
+
+            response.Body.Files.Count.Should().Be(2);
 
 
 

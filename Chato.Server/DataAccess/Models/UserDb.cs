@@ -2,7 +2,7 @@
 
 namespace Chato.Server.DataAccess.Models;
 
-public class User : EntityDbBase , IUserEnittyMapper
+public class User : EntityDbBase, IUserEnittyMapper
 {
     public string UserName { get; set; }
     public int Age { get; set; }
@@ -18,7 +18,7 @@ public record UserFileInfo(string FileName, byte[] Content);
 
 public class UserDb : User
 {
-    
+
     public override string Id
     {
         get => UserName;
@@ -27,9 +27,11 @@ public class UserDb : User
 
     //public byte[] PasswordHash { get; init; }
 
-   public UserFileInfo Document1 { get; set; }
-   public UserFileInfo Document2 { get; set; }
-   public UserFileInfo Document3 { get; set; }
-   public UserFileInfo Document4 { get; set; }
-   public UserFileInfo Document5 { get; set; }
+    public List<UserFileInfo> Files { get; set; } = new List<UserFileInfo>();
+
+    //public UserFileInfo Document1 { get; set; }
+    //public UserFileInfo Document2 { get; set; }
+    //public UserFileInfo Document3 { get; set; }
+    //public UserFileInfo Document4 { get; set; }
+    //public UserFileInfo Document5 { get; set; }
 }

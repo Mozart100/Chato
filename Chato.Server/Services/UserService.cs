@@ -120,67 +120,39 @@ public class UserService : IUserService
         {
             await _userRepository.UpdateAsync(user => user.UserName == userName, user =>
             {
-                var content = files.ElementAtOrDefault(0);
-                if(content is not null)
-                {
-                    user.Document1 = content;
-                    response.Document1 = true;
+                var amountOfImages = 1;
+                var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", IUserService.UserChatImage, userName);
 
-                    var amountOfImages = 1;
-                    
-                    var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", IUserService.UserChatImage,userName);
-                    //var localPath = Path.Combine($"{amountOfImages}{Path.GetExtension(content.FileName)}");
-                    var filePath = Path.Combine(wwwRootPath, $"{amountOfImages}{Path.GetExtension(content.FileName)}");
+                if (!Directory.Exists(wwwRootPath))
+                {
+                    Directory.CreateDirectory(wwwRootPath);
+                }
+
+                foreach (var file in files)
+                {
+                    var localFileame = $"{amountOfImages}{Path.GetExtension(file.FileName)}";
+                    var filePath = Path.Combine(wwwRootPath, localFileame);
                     try
                     {
-                        if (!Directory.Exists(wwwRootPath))
-                        {
-                            Directory.CreateDirectory(wwwRootPath);
-                        }
-                        // Write the byte array to the file
-                        File.WriteAllBytes(filePath, content.Content);
+                        File.WriteAllBytes(filePath, file.Content);
                     }
                     catch (Exception ex)
                     {
 
                     }
 
-
-                    content = files.ElementAtOrDefault(1);
-                    if (content is not null)
-                    {
-                        user.Document2 = content;
-                        response.Document2 = true;
-
-                        content = files.ElementAtOrDefault(2);
-                        if (content is not null)
-                        {
-                            user.Document3 = content;
-                            response.Document3 = true;
-
-                            content = files.ElementAtOrDefault(3);
-                            if (content is not null)
-                            {
-                                user.Document4 = content;
-                                response.Document4 = true;
-
-                                content = files.ElementAtOrDefault(4);
-                                if (content is not null)
-                                {
-                                    user.Document5 = content;
-                                    response.Document5 = true;
-                                }
-                            }
-                        }
-                    }
+                    user.Files.Add(new UserFileInfo($"{Path.Combine(IUserService.UserChatImage, userName, localFileame)}", file.Content));
+                    response.Files.Add(localFileame);
+                   
+                    amountOfImages++;
                 }
-
             });
-
         });
 
         return response;
     }
+
+
 
     public async Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName)
     {

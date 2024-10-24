@@ -42,36 +42,13 @@ public class UserRepository : AutoRepositoryBase<UserDb, User>, IUserRepository
 
     public async Task<IEnumerable<UserFileInfo>> DownloadFiles(string userName)
     {
-        var result = new List<UserFileInfo>();
+        UserFileInfo[] result = [];
 
         var model = Models.FirstOrDefault(x=>x.UserName == userName);
 
         if(model is not null)
         {
-            if(model.Document1 is not null)
-            {
-                result.Add(model.Document1);
-            }
-
-            if (model.Document2 is not null)
-            {
-                result.Add(model.Document2);
-            }
-
-            if (model.Document3 is not null)
-            {
-                result.Add(model.Document3);
-            }
-
-            if (model.Document4 is not null)
-            {
-                result.Add(model.Document4);
-            }
-
-            if (model.Document5 is not null)
-            {
-                result.Add(model.Document5);
-            }
+           result=model.Files.ToArray();
         }
 
         return result;
