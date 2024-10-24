@@ -10,6 +10,8 @@ namespace Chato.Server.Services;
 
 public interface IUserService
 {
+    public const string UserChatImage = "ChattoUserImages";
+
     Task AssignConnectionId(string userName, string connectionId);
     Task AssignRoomNameAsync(string userNameOrId, string roomName);
     Task<IEnumerable<User>> GetAllUsersAsync();
@@ -123,6 +125,26 @@ public class UserService : IUserService
                 {
                     user.Document1 = content;
                     response.Document1 = true;
+
+                    var amountOfImages = 1;
+                    
+                    var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", IUserService.UserChatImage,userName);
+                    //var localPath = Path.Combine($"{amountOfImages}{Path.GetExtension(content.FileName)}");
+                    var filePath = Path.Combine(wwwRootPath, $"{amountOfImages}{Path.GetExtension(content.FileName)}");
+                    try
+                    {
+                        if (!Directory.Exists(wwwRootPath))
+                        {
+                            Directory.CreateDirectory(wwwRootPath);
+                        }
+                        // Write the byte array to the file
+                        File.WriteAllBytes(filePath, content.Content);
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+
 
                     content = files.ElementAtOrDefault(1);
                     if (content is not null)
