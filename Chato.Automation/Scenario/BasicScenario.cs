@@ -25,13 +25,13 @@ internal class BasicScenario : InstructionScenarioBase
 
         BusinessLogicCallbacks.Add(SendingImagesOnlyBetweenTwoPeople);
         BusinessLogicCallbacks.Add(SendingWithinLobi);
-        
+
         BusinessLogicCallbacks.Add(SendingOnlyBetweenTwoPeople);
         BusinessLogicCallbacks.Add(SendingWithinLobi_UserMovedChat);
         BusinessLogicCallbacks.Add(VerificationStep);
         BusinessLogicCallbacks.Add(GetHistoryWithoutJoin);
 
-        
+
 
         //SummaryLogicCallback.Add(CheckAllCleaned);
 
@@ -131,8 +131,8 @@ internal class BasicScenario : InstructionScenarioBase
             .Step(users[Nathan_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
             .Step(users[Olessya_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
 
-            .Step(users[Olessya_User].JoinOrCreateChat(chat2,1))
-            .Step(users[Nathan_User].JoinOrCreateChat(chat2,2))
+            .Step(users[Olessya_User].JoinOrCreateChat(chat2, 1))
+            .Step(users[Nathan_User].JoinOrCreateChat(chat2, 2))
 
             .Step(users[Olessya_User].NotifyUser(chat2))
             .Step(users[Olessya_User].NotifyUser(chat2))
@@ -201,7 +201,7 @@ internal class BasicScenario : InstructionScenarioBase
             .Step(users[Olessya_User].SendingTextToRestRoom(message_2, chat2, 1))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_2))
 
-            .Step(users[Anatoliy_User].JoinOrCreateChat(chat2,4))
+            .Step(users[Anatoliy_User].JoinOrCreateChat(chat2, 4))
             .Step(users[Olessya_User].NotifyUser(chat2))
             .Step(users[Nathan_User].NotifyUser(chat2))
             .Step(users[Anatoliy_User].NotifyUser(chat2))
@@ -285,7 +285,7 @@ internal class BasicScenario : InstructionScenarioBase
 
             //.Step(users[Nathan_User].SendingTextToRestRoom(message_image_2, chat2, 1,SenderInfoType.TextMessage))
             .Step(users[Nathan_User].SendingTextToRestRoom(message_image_2, chat2, 1, SenderInfoType.Image, expectedFilePath))
-            .Step(users[Anatoliy_User].ReceivingMessage(chat2, Nathan_User, null,SenderInfoType.Image, expectedFilePath))
+            .Step(users[Anatoliy_User].ReceivingMessage(chat2, Nathan_User, null, SenderInfoType.Image, expectedFilePath))
 
             .Step(users[Anatoliy_User].Logout())
             .Step(users[Nathan_User].Logout())
@@ -294,6 +294,10 @@ internal class BasicScenario : InstructionScenarioBase
 
         var graph = new InstructionGraph(users[Anatoliy_User]);
         await InstructionExecuter(graph);
+
+        var ptr = await GetImage(ImagePathCOmbine(expectedFilePath));
+        var downloadFile = Convert.ToBase64String(ptr);
+        downloadFile.Should().Be(message_image_2);
     }
 
     public static string ConvertFileToBase64(string filePath)

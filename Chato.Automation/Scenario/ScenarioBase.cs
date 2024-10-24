@@ -179,6 +179,20 @@ public abstract class ScenarioBase
         }
     }
 
+    protected async Task<byte[]> GetImage(string imageUrl, string? token = null) 
+    {
+        using (HttpClient client = new HttpClient())
+        {
+            if (token is not null)
+            {
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            var response = await client.GetByteArrayAsync(imageUrl);
+            return response;
+        }
+    }
+
     protected async Task<TDto> Get<TDto>(string url, string? token = null, Dictionary<string, string> parameters = null) where TDto : class
     {
         using (HttpClient client = new HttpClient())
