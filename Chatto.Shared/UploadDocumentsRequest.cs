@@ -13,9 +13,10 @@ public class UploadDocumentsRequest
 
 public class UploadDocumentsResponse
 {
-    public bool Document1 { get; set; } = false;
-    public bool Document2 { get; set; } = false;
-    public bool Document3 { get; set; } = false;
-    public bool Document4 { get; set; } = false;
-    public bool Document5 { get; set; } = false;
+    public List<string> Files { get; set; } = new List<string>();
+    //public bool Document1 { get; set; } = false;
+    //public bool Document2 { get; set; } = false;
+    //public bool Document3 { get; set; } = false;
+    //public bool Document4 { get; set; } = false;
+    //public bool Document5 { get; set; } = false;
 }

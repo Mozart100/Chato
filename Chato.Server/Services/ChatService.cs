@@ -182,8 +182,7 @@ public class ChatService : IChatService
                     {
                         var amountMessages = chatRoom.Messages.Count + 1;
                         var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", IChatService.ChatImages, chatName);
-
-                        var localPath = Path.Combine($"{amountMessages}{Path.GetExtension(imageName)}");
+                        var localPath = $"{amountMessages}{Path.GetExtension(imageName)}";
                         
 
                         if (!Directory.Exists(wwwRootPath))

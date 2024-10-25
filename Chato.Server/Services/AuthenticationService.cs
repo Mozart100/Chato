@@ -50,6 +50,7 @@ public class AuthenticationService : IAuthenticationService
     }
     public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents)
     {
+
         var data = new List<UserFileInfo>(); 
         
         foreach (var document in documents)

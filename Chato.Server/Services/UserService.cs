@@ -10,6 +10,8 @@ namespace Chato.Server.Services;
 
 public interface IUserService
 {
+    public const string UserChatImage = "ChattoUserImages";
+
     Task AssignConnectionId(string userName, string connectionId);
     Task AssignRoomNameAsync(string userNameOrId, string roomName);
     Task<IEnumerable<User>> GetAllUsersAsync();
@@ -118,47 +120,39 @@ public class UserService : IUserService
         {
             await _userRepository.UpdateAsync(user => user.UserName == userName, user =>
             {
-                var content = files.ElementAtOrDefault(0);
-                if(content is not null)
+                var amountOfImages = 1;
+                var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", IUserService.UserChatImage, userName);
+
+                if (!Directory.Exists(wwwRootPath))
                 {
-                    user.Document1 = content;
-                    response.Document1 = true;
-
-                    content = files.ElementAtOrDefault(1);
-                    if (content is not null)
-                    {
-                        user.Document2 = content;
-                        response.Document2 = true;
-
-                        content = files.ElementAtOrDefault(2);
-                        if (content is not null)
-                        {
-                            user.Document3 = content;
-                            response.Document3 = true;
-
-                            content = files.ElementAtOrDefault(3);
-                            if (content is not null)
-                            {
-                                user.Document4 = content;
-                                response.Document4 = true;
-
-                                content = files.ElementAtOrDefault(4);
-                                if (content is not null)
-                                {
-                                    user.Document5 = content;
-                                    response.Document5 = true;
-                                }
-                            }
-                        }
-                    }
+                    Directory.CreateDirectory(wwwRootPath);
                 }
 
-            });
+                foreach (var file in files)
+                {
+                    var localFileame = $"{amountOfImages}{Path.GetExtension(file.FileName)}";
+                    var filePath = Path.Combine(wwwRootPath, localFileame);
+                    try
+                    {
+                        File.WriteAllBytes(filePath, file.Content);
+                    }
+                    catch (Exception ex)
+                    {
 
+                    }
+
+                    user.Files.Add(new UserFileInfo($"{Path.Combine(IUserService.UserChatImage, userName, localFileame)}", file.Content));
+                    response.Files.Add(localFileame);
+                   
+                    amountOfImages++;
+                }
+            });
         });
 
         return response;
     }
+
+
 
     public async Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName)
     {
