@@ -22,6 +22,7 @@ public class AuthController : ControllerBase
     public const string RegistrationUrl = "register";
     public const string UploadUrl = "upload";
     public const string DownloadUrl = "download";
+    public const string GetAllImagesOfUserUrl = "uploadedimages";
 
     private readonly IUserService _userService;
     private readonly IAuthenticationService _authenticationService;
@@ -64,19 +65,29 @@ public class AuthController : ControllerBase
         return Ok(response);
     }
 
-
-
-
-    [Route(DownloadUrl)]
+    [Route(GetAllImagesOfUserUrl)]
     [HttpGet, Authorize]
-    public async Task<IActionResult> Download([FromQuery] int num)
+    public async Task<GetAllUserImagesResponse> GetAllUploadedImageOfUsers()
     {
         var userName = User.Identity.Name;
-        var response = await _authenticationService.DownloadFilesAsync(userName);
-        var firstFile = response.ElementAt(num);
+        var files = await _authenticationService.DownloadFilesAsync(userName);
 
-        return File(firstFile.Content, "application/octet-stream", firstFile.FileName);
+        var response =  new GetAllUserImagesResponse { Files = files.Select(x => x.FileName).ToList() };
+        return response;
     }
+
+
+
+    //[Route(DownloadUrl)]
+    //[HttpGet, Authorize]
+    //public async Task<IActionResult> Download([FromQuery] int num)
+    //{
+    //    var userName = User.Identity.Name;
+    //    var response = await _authenticationService.DownloadFilesAsync(userName);
+    //    var firstFile = response.ElementAt(num);
+
+    //    return File(firstFile.Content, "application/octet-stream", firstFile.FileName);
+    //}
 
     #region Feature  development
 
