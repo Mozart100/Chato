@@ -85,11 +85,21 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
 
             response.Body.Files.Count.Should().Be(2);
 
+            var allImages = await Get<ResponseWrapper<GetAllUserImagesResponse>>(GetAllUserimagesUrl, token);
+
+            foreach (var file in allImages.Body.Files)
+            {
+                file.Should().NotContain("C:");
+                file.Should().Contain(IUserService.UserChatImage);
+                var ptr = await GetImage(ImagePathCombineWithWwwroot(file));
+                ptr.Should().NotBeNull();
+            }
+
+            //var parameters = new Dictionary<string, string> { { "num", "1" } };
+            //var fileContent = await Get<byte[]>(DownloadFileUrl, token, parameters);
+            //fileContent.Should().NotBeNull();
 
 
-            var parameters = new Dictionary<string, string> { { "num", "1" } };
-            var fileContent = await Get<byte[]>(DownloadFileUrl, token, parameters);
-            fileContent.Should().NotBeNull();
 
         }))
             .Step(users[Anatoliy_User].Logout())

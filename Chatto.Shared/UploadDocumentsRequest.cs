@@ -11,12 +11,18 @@ public class UploadDocumentsRequest
     public IFormFile Document5 { get; set; }
 }
 
-public class UploadDocumentsResponse
+
+public abstract class UserImagesResponseBase
 {
     public List<string> Files { get; set; } = new List<string>();
-    //public bool Document1 { get; set; } = false;
-    //public bool Document2 { get; set; } = false;
-    //public bool Document3 { get; set; } = false;
-    //public bool Document4 { get; set; } = false;
-    //public bool Document5 { get; set; } = false;
+
 }
+public class UploadDocumentsResponse : UserImagesResponseBase
+{
+}
+
+public class GetAllUserImagesResponse : UserImagesResponseBase
+{
+}
+
+

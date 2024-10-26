@@ -143,7 +143,7 @@ public class UserService : IUserService
 
                     }
 
-                    user.Files.Add(new UserFileInfo($"{Path.Combine(IUserService.UserChatImage, userName, localFileame)}", file.Content));
+                    user.Files.Add(new UserFileInfo($"{IUserService.UserChatImage}/{userName}/{localFileame}", file.Content));
                     response.Files.Add(localFileame);
                    
                     amountOfImages++;

@@ -300,7 +300,7 @@ internal class BasicScenario : InstructionScenarioBase
         var graph = new InstructionGraph(users[Anatoliy_User]);
         await InstructionExecuter(graph);
 
-        var ptr = await GetImage(ImagePathCOmbine(expectedFilePath));
+        var ptr = await GetImage(ImagePathCombineWithWwwroot(expectedFilePath));
         var downloadFile = Convert.ToBase64String(ptr);
         downloadFile.Should().Be(message_image_2);
     }

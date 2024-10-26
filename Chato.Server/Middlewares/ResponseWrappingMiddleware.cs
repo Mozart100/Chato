@@ -38,7 +38,7 @@ namespace Chato.Server.Middlewares
 
          
             if (context.Request.Method.Equals("GET", StringComparison.OrdinalIgnoreCase)
-                &&  context.Request.Path.StartsWithSegments($"/{IChatService.ChatImages}"))
+                && ( context.Request.Path.StartsWithSegments($"/{IChatService.ChatImages}") || context.Request.Path.StartsWithSegments($"/{IUserService.UserChatImage}")) )
             {
                 await _next(context);
                 return;

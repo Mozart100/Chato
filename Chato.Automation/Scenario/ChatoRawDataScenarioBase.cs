@@ -20,7 +20,9 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
         RegisterAuthControllerUrl = $"{AuthControllerUrl}/{AuthController.RegistrationUrl}";
         UploadFilesUrl = $"{AuthControllerUrl}/{AuthController.UploadUrl}";
         DownloadFileUrl = $"{AuthControllerUrl}/{AuthController.DownloadUrl}";
+        GetAllUserimagesUrl = $"{AuthControllerUrl}/{AuthController.GetAllImagesOfUserUrl}";
 
+        
 
         ChatsControllerUrl = $"{BaseUrl}/api/chat";
         GetAllRoomsUrl = $"{ChatsControllerUrl}/{ChatController.All_Chat_Route}";
@@ -63,9 +65,10 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
 
     protected string GetRawWwwrootUrl { get; }
     protected string GetChattoImagesBaseUrl { get; }
+    protected string GetAllUserimagesUrl { get; }
 
 
-    public string ImagePathCOmbine(string relativePath) => $"{GetRawWwwrootUrl}/{relativePath}";
+    public string ImagePathCombineWithWwwroot(string relativePath) => $"{GetRawWwwrootUrl}/{relativePath}";
 
 
     public async Task<CacheEvictionRoomConfigDto> GetEvictionConfigurationAsync()
