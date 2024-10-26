@@ -30,14 +30,17 @@ public class UserService : IUserService
     private readonly IHttpContextAccessor _httpContextAccessor;
     private readonly IUserRepository _userRepository;
     private readonly ILockerDelegateQueue _delegateQueue;
+    private readonly IWebHostEnvironment _env;
 
     public UserService(IHttpContextAccessor httpContextAccessor,
         IUserRepository userRepository,
-        ILockerDelegateQueue delegateQueue)
+        ILockerDelegateQueue delegateQueue,
+        IWebHostEnvironment env)
     {
         _httpContextAccessor = httpContextAccessor;
         this._userRepository = userRepository;
         this._delegateQueue = delegateQueue;
+        this._env = env;
     }
 
     public string GetMyName()
@@ -121,9 +124,8 @@ public class UserService : IUserService
             await _userRepository.UpdateAsync(user => user.UserName == userName, user =>
             {
                 var amountOfImages = 1;
-                var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", IUserService.UserChatImage, userName);
-
-                if (!Directory.Exists(wwwRootPath))
+                var wwwRootPath = Path.Combine(_env.WebRootPath, IUserService.UserChatImage, userName);
+                if (Directory.Exists(wwwRootPath) == false)
                 {
                     Directory.CreateDirectory(wwwRootPath);
                 }
