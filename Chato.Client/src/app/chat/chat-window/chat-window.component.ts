@@ -285,12 +285,14 @@ export class ChatWindowComponent implements OnInit {
         const reader = new FileReader()
         reader.onload = () => {
             const imageURL = reader.result as string
+            const bytesStr = imageURL.split(',')[1]
             // this.img = this.imageURL
 
             const message = {
                 chatName: this.chatStore.selectedChat().chatName,
                 fromUser: this.auth.user().userName,
-                image: imageURL,
+                image: file.name,
+                textMessage: bytesStr,
                 isSelf: true,
                 timeStemp: new Date().getTime(),
                 senderInfoType: SenderInfoType.Image

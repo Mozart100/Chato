@@ -88,6 +88,11 @@ export class ChattoHubService {
 
         stream.subscribe({
             next: (messageInfo: ChatMessage) => {
+
+                if (messageInfo.senderInfoType == SenderInfoType.Image) {
+                    messageInfo.image = 'https://localhost:7138/' + messageInfo.image
+                }
+
                 chat.messages.push({
                     ...messageInfo,
                     isSelf: this.auth.user().userName == messageInfo.fromUser,
