@@ -39,13 +39,15 @@ public class ChatService : IChatService
 {
     private readonly IChatRepository _chatRoomRepository;
     private readonly ILockerDelegateQueue _lockerQueue;
+    private readonly IWebHostEnvironment _env;
 
     public ChatService(IChatRepository chatRoomRepository,
         ILockerDelegateQueue lockerQueue,
-        IHttpContextAccessor httpContextAccessor)
+        IWebHostEnvironment env)
     {
         this._chatRoomRepository = chatRoomRepository;
         this._lockerQueue = lockerQueue;
+        this._env = env;
     }
 
     public async Task AddUserAsync(string roomName, string userName)
@@ -180,24 +182,28 @@ public class ChatService : IChatService
                     var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
                     if (chatRoom is not null)
                     {
-                        var amountMessages = chatRoom.Messages.Count + 1;
-                        var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", IChatService.ChatImages, chatName);
-                        var localPath = $"{amountMessages}{Path.GetExtension(imageName)}";
                         
+                        var amountMessages = chatRoom.Messages.Count + 1;
+                        //var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", IChatService.ChatImages, chatName);
+                        var localPath = $"{amountMessages}{Path.GetExtension(imageName)}";
 
-                        if (!Directory.Exists(wwwRootPath))
+
+                        //if (!Directory.Exists(wwwRootPath))
+                        //{
+                        //    Directory.CreateDirectory(wwwRootPath);
+                        //}
+
+                        var wwwRootPath = Path.Combine(_env.WebRootPath, IChatService.ChatImages, chatName);
+                        if (Directory.Exists(wwwRootPath) == false)
                         {
                             Directory.CreateDirectory(wwwRootPath);
                         }
 
                         byte[] fileBytes = Convert.FromBase64String(textMessage);
                         var filePath = Path.Combine(wwwRootPath, localPath);
-                        //var filePath = Path.Combine(wwwRootPath, $"{amountMessages}{Path.GetExtension(imageName)}");
-
+                       
                         try
                         {
-
-                            // Write the byte array to the file
                             File.WriteAllBytes(filePath, fileBytes);
                         }
                         catch (Exception ex)
@@ -205,15 +211,10 @@ public class ChatService : IChatService
 
                         }
 
-                        var senderinfo = new SenderInfo(SenderInfoType.Image, fromUser, textMessage, filePath, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+                        var imageFilePath = $"{IChatService.ChatImages}/{chatName}/{localPath}";
+                        var senderinfo = new SenderInfo(SenderInfoType.Image, fromUser, textMessage, imageFilePath, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
                         chatRoom.Messages.Add(senderinfo);
 
-
-                        var imageFilePath = $"{IChatService.ChatImages}/{chatName}/{localPath}";
-
-
-                        // Return the relative file path (e.g., /images/yourfile.jpg)
-                        //return $"/images/{fileName}";
                         result = senderinfo with
                         {
                             Image = imageFilePath,
