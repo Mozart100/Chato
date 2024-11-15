@@ -6,6 +6,7 @@ import { AuthenticationService } from '../../../core/services/auth.service'
 
 import { TranslateService } from '@ngx-translate/core'
 import { firstValueFrom } from 'rxjs'
+import { ImageService } from '../../../core/services/image.service'
 
 @Component({
     selector: 'app-login',
@@ -22,12 +23,14 @@ export class LoginComponent implements OnInit {
     submitted = false
     error = ''
     returnUrl: string
+    private selectedFiles: File[]
 
     constructor(private formBuilder: UntypedFormBuilder,
                 private route: ActivatedRoute,
                 private router: Router,
                 private auth: AuthenticationService,
-                private translate: TranslateService) {
+                private translate: TranslateService,
+                private imageService: ImageService) {
     }
 
 
@@ -69,9 +72,22 @@ export class LoginComponent implements OnInit {
                 Description: this.loginForm.controls.description.value,
                 Gender: this.loginForm.controls.gender.value,
                 UserName: this.loginForm.controls.username.value
-            }).then(() => {
-                this.router.navigate([this.returnUrl])
             })
+                .then(() => {
+                    if (this.selectedFiles?.length > 0) {
+                        return this.imageService.uploadImages(this.selectedFiles)
+                    }
+                })
+                .then(() => {
+                    this.router.navigate([this.returnUrl])
+                })
+        }
+    }
+
+    onFileSelect(evt: Event) {
+        const input = evt.target as HTMLInputElement
+        if (input.files) {
+            this.selectedFiles = Array.from(input.files)
         }
     }
 }

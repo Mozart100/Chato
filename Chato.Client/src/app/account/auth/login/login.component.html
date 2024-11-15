@@ -73,8 +73,7 @@
                                     </div>
                                 </div>
 
-                                <div class="mb-3"></div>
-                                <div class="d-flex gap-4 mb-4">
+                                <div class="d-flex gap-4">
 
                                     <!-- AGE-->
                                     <div>
@@ -118,6 +117,15 @@
                                             </option>
                                         </select>
                                     </div>
+
+
+                                </div>
+
+                                <!-- IMAGES-->
+                                <div class="mb-5">
+                                    <label class="form-label">{{ 'login.form.images.label' | translate }}</label>
+                                    <input type="file" (change)="onFileSelect($event)"
+                                           multiple accept=".png,.jpg,.jpeg" class="form-control bg-light"/>
                                 </div>
 
 

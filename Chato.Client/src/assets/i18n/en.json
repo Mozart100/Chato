@@ -35,6 +35,9 @@
           "invalid": "Minimum 18 years old"
         }
       },
+      "images": {
+        "label": "Images"
+      },
       "button": {
         "text": "Sign up"
       }
