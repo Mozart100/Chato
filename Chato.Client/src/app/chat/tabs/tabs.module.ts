@@ -10,22 +10,24 @@ import { ContactsComponent } from './contacts/contacts.component';
 import { SettingsComponent } from './settings/settings.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { ImageUploadingBlockComponent } from '../components/image-uploading-block/image-uploading-block.component'
 
 
 @NgModule({
   declarations: [ProfileComponent, ContactsComponent, SettingsComponent],
-  imports: [
-    CarouselModule,
-    CommonModule,
-    NgbDropdownModule,
-    NgbAccordionModule,
-    SimplebarAngularModule,
-    NgbTooltipModule,
-    NgbModalModule,
-    NgbCollapseModule,
-    TranslateModule,
-    FormsModule
-  ],
+    imports: [
+        CarouselModule,
+        CommonModule,
+        NgbDropdownModule,
+        NgbAccordionModule,
+        SimplebarAngularModule,
+        NgbTooltipModule,
+        NgbModalModule,
+        NgbCollapseModule,
+        TranslateModule,
+        FormsModule,
+        ImageUploadingBlockComponent
+    ],
   exports: [ProfileComponent, ContactsComponent, SettingsComponent],
   providers: [
 

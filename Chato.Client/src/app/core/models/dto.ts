@@ -5,3 +5,9 @@ export interface ChatsDto {
         rooms: Chat[]
     }
 }
+
+export interface ImagesResponseDto {
+    Body: {
+        files: string[]
+    }
+}

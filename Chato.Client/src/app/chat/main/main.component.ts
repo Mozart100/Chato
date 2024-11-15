@@ -45,7 +45,7 @@ export class MainComponent implements OnInit {
 
     ngOnInit(): void {
         this.realtime.startConnection();
-        this.changeMode('dark')
+        this.changeMode('light')
     }
 
     logout() {
@@ -75,5 +75,9 @@ export class MainComponent implements OnInit {
 
     openRooms() {
         this.router.navigate(['/rooms'])
+    }
+
+    openProfile() {
+        this.router.navigate(['/profile'])
     }
 }

@@ -20,7 +20,7 @@
         <div class="flex-lg-column my-auto">
             <ul class="nav nav-pills side-menu-nav justify-content-center" role="tablist">
                 <li class="nav-item" ngbTooltip="Profile">
-                    <a class="nav-link" id="pills-user-tab" (click)="navStore.selectedTab.set(1)"
+                    <a class="nav-link" id="pills-user-tab" (click)="openProfile()"
                        href="javascript: void(0);"
                        [ngClass]="{'active': navStore.selectedTab() === 1}">
                         <i class="ri-user-2-line"></i>

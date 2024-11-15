@@ -47,6 +47,21 @@
     "common": {
         "userJoined": "joined the chat"
     },
+    "profile": {
+        "title": "My Profile",
+        "status": "Active",
+        "message": "Examine you details and upload images",
+        "about": "About",
+        "name": "Name",
+        "description": "Description",
+        "gender": "Gender",
+        "age": "Age",
+        "images": "Uploaded images"
+    },
+    "imageUploadingBlock": {
+        "uploadButton": "Upload Images",
+        "uploadSuccess": "Image uploaded successfully"
+    },
     "signup": {
         "title": "Sign up",
         "message": "Get your Chat account now.",

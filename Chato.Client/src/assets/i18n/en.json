@@ -47,6 +47,21 @@
   "common": {
     "userJoined": "User joined the Chato"
   },
+  "profile": {
+    "title": "My Profile",
+    "status": "Active",
+    "message": "Examine you details and upload images",
+    "about": "About",
+    "name": "Name",
+    "description": "Description",
+    "gender": "Gender",
+    "age": "Age",
+    "images": "Uploaded images"
+  },
+  "imageUploadingBlock": {
+    "uploadButton": "Upload Images",
+    "uploadSuccess": "Image uploaded successfully"
+  },
   "signup": {
     "title": "Sign up",
     "message": "Get your Chat account now.",
@@ -125,60 +140,6 @@
       "startConversation": "Start or select chat"
     },
     "tabs": {
-      "profile": {
-        "title": "My Profile",
-        "dropdown": {
-          "edit": "Edit",
-          "action": "Action",
-          "another": "Another action"
-        },
-        "user": "Patricia Smith",
-        "status": "Active",
-        "message": "If several languages coalesce, the grammar of the resulting language is more simple and regular than that of the individual.",
-        "about": {
-          "text": "About",
-          "name": {
-            "text": "Name",
-            "value": "Patricia Smith"
-          },
-          "email": {
-            "text": "Email",
-            "value": "abc@123.com"
-          },
-          "time": {
-            "text": "Time",
-            "value": "11:40 AM"
-          },
-          "location": {
-            "text": "Location",
-            "value": "California, USA"
-          }
-        },
-        "attachedfile": {
-          "text": "Attached Files",
-          "file1": {
-            "name": "Admin-A.zip",
-            "size": "12.5 MB"
-          },
-          "file2": {
-            "name": "Image-1.jpg",
-            "size": "4.2 MB"
-          },
-          "file3": {
-            "name": "Image-2.jpg",
-            "size": "3.1 MB"
-          },
-          "file4": {
-            "name": "Landing-A.zip",
-            "size": "6.7 MB"
-          },
-          "dropdown": {
-            "action": "Action",
-            "another": "Another action",
-            "delete": "Delete"
-          }
-        }
-      },
       "chats": {
         "title": "Chats",
         "typing": "typing",

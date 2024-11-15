@@ -1,19 +1,23 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit } from '@angular/core'
 import { AuthenticationService } from '../../../core/services/auth.service'
+import { NavStore } from '../../../core/store/nav.store'
 
 @Component({
-  selector: 'app-profile',
-  templateUrl: './profile.component.html',
-  styleUrls: ['./profile.component.scss']
+    selector: 'app-profile',
+    templateUrl: './profile.component.html',
+    styleUrls: ['./profile.component.scss']
 })
 /**
  * Tabs-Profile component
  */
 export class ProfileComponent implements OnInit {
 
-  constructor(public auth: AuthenticationService) { }
+    constructor(private navStore: NavStore,
+                public auth: AuthenticationService) {
+        this.navStore.selectedTab.set(1)
+    }
 
-  ngOnInit(): void {
-  }
+    ngOnInit(): void {
+    }
 
 }

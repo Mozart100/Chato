@@ -6,6 +6,7 @@ import { Chat, ChatMessage, SenderInfoType } from '../models/chat.models'
 import { AuthenticationService } from './auth.service'
 import { filter, first, firstValueFrom, Subject } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
+import { environment } from '../../../environments/environment'
 
 @Injectable({
     providedIn: 'root'
@@ -90,7 +91,7 @@ export class ChattoHubService {
             next: (messageInfo: ChatMessage) => {
 
                 if (messageInfo.senderInfoType == SenderInfoType.Image) {
-                    messageInfo.image = 'https://localhost:7138/' + messageInfo.image
+                    messageInfo.image = `${environment.apiUrl}/${messageInfo.image}`
                 }
 
                 chat.messages.push({
