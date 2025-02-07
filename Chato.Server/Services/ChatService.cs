@@ -20,11 +20,11 @@ public interface IChatService
 
 
     Task AddUserAsync(string roomName, string userName);
-    Task<ChatRoomDto> CreateRoomAsync(string roomName);
+    Task<ChatRoomDto> CreateRoomAsync(string roomName, ChatType chatType);
     Task<ChatRoomDto[]> GetAllRoomAsync();
     Task<IEnumerable<SenderInfo>> GetGroupHistoryAsync(string roomName);
     Task<ChatRoomDto?> GetRoomByNameOrIdAsync(string nameOrId);
-    Task<SenderInfo> JoinOrCreateRoom(string roomName, string userName);
+    Task<SenderInfo> JoinOrCreateRoom(string roomName, string userName,ChatType chatType);
     Task CreateLobi();
     Task RemoveRoomByNameOrIdAsync(string nameOrId);
     Task RemoveUserAndRoomFromRoom(string roomName, string username);
@@ -69,21 +69,21 @@ public class ChatService : IChatService
         return room;
     }
 
-    public async Task<ChatRoomDto> CreateRoomAsync(string roomName)
+    public async Task<ChatRoomDto> CreateRoomAsync(string roomName, ChatType chatType)
     {
         var result = default(ChatDb);
 
         await _lockerQueue.InvokeAsync(async () =>
         {
-            result = await CreateRoomCoreAsync(roomName);
+            result = await CreateRoomCoreAsync(roomName,chatType);
         });
 
         return result.ToChatRoomDto();
     }
 
-    private async Task<ChatDb> CreateRoomCoreAsync(string roomName)
+    private async Task<ChatDb> CreateRoomCoreAsync(string roomName, ChatType chatType)
     {
-        var result = await _chatRoomRepository.InsertAsync(new ChatDb { Id = roomName });
+        var result = await _chatRoomRepository.InsertAsync(new ChatDb { Id = roomName , ChatType = chatType});
         return result;
     }
 
@@ -249,7 +249,7 @@ public class ChatService : IChatService
         });
     }
 
-    public async Task<SenderInfo> JoinOrCreateRoom(string roomName, string userName)
+    public async Task<SenderInfo> JoinOrCreateRoom(string roomName, string userName, ChatType chatType)
     {
         var result = default(SenderInfo);
 
@@ -266,7 +266,7 @@ public class ChatService : IChatService
             }
             else
             {
-                var createRoom = await CreateRoomCoreAsync(roomName);
+                var createRoom = await CreateRoomCoreAsync(roomName, chatType);
                 createRoom.Users.Add(userName);
                 result = await AddTextMessage(SenderInfoType.Joined, roomName, userName, null, null);
             }
@@ -282,7 +282,7 @@ public class ChatService : IChatService
             var room = await GetRoomByNameOrIdCoreAsync(IChatService.Lobi);
             if (room is null)
             {
-                await CreateRoomCoreAsync(IChatService.Lobi);
+                await CreateRoomCoreAsync(IChatService.Lobi,ChatType.Public);
             }
         });
     }

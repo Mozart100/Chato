@@ -114,7 +114,7 @@ public class UserInstructionExecuter
     {
         _logger.LogInformation($"{UserName} joins or create a chat.");
 
-        await _connection.InvokeAsync(Hub_Join_Group_Topic, chatName);
+        await _connection.InvokeAsync(Hub_Join_Group_Topic, chatName,ChatType.Public);
     }
 
     public async Task DownloadHistory(string chatName, int amountMessages = -1)

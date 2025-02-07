@@ -140,7 +140,13 @@ public abstract class ScenarioBase
                     DisplayDividerLines(4);
                 }
                 Console.WriteLine($"{callback.Method.Name} started.");
+                Console.WriteLine($"{callback.Method.Name} started.");
+                Console.WriteLine($"{callback.Method.Name} started.");
+                Console.WriteLine();
                 await callback.Invoke();
+                Console.WriteLine();
+                Console.WriteLine($"{callback.Method.Name} finished successfully.");
+                Console.WriteLine($"{callback.Method.Name} finished successfully.");
                 Console.WriteLine($"{callback.Method.Name} finished successfully.");
 
                 if (steps + 1 != BusinessLogicCallbacks.Count)

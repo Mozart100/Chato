@@ -1,4 +1,5 @@
 ﻿using Chato.Server.DataAccess.Models;
+using Chato.Server.Hubs;
 using Chato.Server.Infrastracture;
 using Chatto.Shared;
 
@@ -7,8 +8,7 @@ namespace Chato.Server.Services;
 public interface IAssignmentService
 {
 
-
-    Task<SenderInfo> JoinOrCreateRoom(string nameOrId, string roomName);
+    Task<SenderInfo> JoinOrCreateRoom(string nameOrId, string roomName,ChatType chatType);
     Task<string> RegisterUserAndAssignToRoom(RegistrationRequest request, string defaultRoom);
     Task LeaveGroupByConnectionIdAsync(string connectionId);
     Task LeaveGroupByUserNameOrIdAsync(string userNameOrId);
@@ -60,7 +60,7 @@ public class AssignmentService : IAssignmentService
         }
     }
 
-    public async Task<SenderInfo> JoinOrCreateRoom(string nameOrId, string chatName)
+    public async Task<SenderInfo> JoinOrCreateRoom(string nameOrId, string chatName, ChatType chatType)
     {
         var result =default( SenderInfo);
 
@@ -68,7 +68,7 @@ public class AssignmentService : IAssignmentService
         if (user is not null)
         {
             await _userService.AssignRoomNameAsync(user.UserName, chatName);
-           result =  await _roomService.JoinOrCreateRoom(chatName, user.UserName);
+           result =  await _roomService.JoinOrCreateRoom(chatName, user.UserName,chatType);
         }
 
         return result;
@@ -85,7 +85,7 @@ public class AssignmentService : IAssignmentService
     {
         var token = await _authenticationService.RegisterAsync(request);
 
-        await JoinOrCreateRoom(request.UserName, roomName);
+        await JoinOrCreateRoom(request.UserName, roomName,ChatType.Public);
 
         return token;
     }

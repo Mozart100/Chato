@@ -4,6 +4,10 @@ using Chatto.Shared;
 
 namespace Chato.Server.DataAccess.Models;
 
+public enum ChatType
+{
+    Public,Private
+}
 
 public class ChatDb : EntityDbBase
 {
@@ -12,6 +16,7 @@ public class ChatDb : EntityDbBase
         get => RoomName;
         set => RoomName = value;
     }
+    public ChatType ChatType { get; set; }
     public string RoomName { get; private set; }
 
     public List<SenderInfo> Messages { get; set; } = new List<SenderInfo>();
