@@ -88,7 +88,7 @@ public class UserInstructionExecuter
         await _connection.StartAsync();
         await ListenAsync();
 
-        await JoinOrCreateChat(IChatService.Lobi);
+        await JoinOrCreateChat(IChatService.Lobi,ChatType.Public);
         await DownloadHistory(IChatService.Lobi, amountMessages);
     }
 
@@ -110,11 +110,11 @@ public class UserInstructionExecuter
     }
 
 
-    public async Task JoinOrCreateChat(string chatName)
+    public async Task JoinOrCreateChat(string chatName, ChatType  chatType)
     {
         _logger.LogInformation($"{UserName} joins or create a chat.");
 
-        await _connection.InvokeAsync(Hub_Join_Group_Topic, chatName,ChatType.Public);
+        await _connection.InvokeAsync(Hub_Join_Group_Topic, chatName, chatType);
     }
 
     public async Task DownloadHistory(string chatName, int amountMessages = -1)

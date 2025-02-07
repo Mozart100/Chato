@@ -85,12 +85,12 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode JoinOrCreateChat(this InstructionNode info, string chatName, int amountMessages = -1)
+    public static InstructionNode JoinOrCreatePrivateChat(this InstructionNode info, string chatName, int amountMessages = -1)
     {
         var @new = info with
         {
             ChatName = chatName,
-            Instruction = new JoinOrCreateChatInstruction() { AmountMessages = amountMessages },
+            Instruction = new JoinOrCreateChatInstruction() { AmountMessages = amountMessages , ChatType = Server.DataAccess.Models.ChatType.Private },
             FromArrived = null,
             Message = null,
             Children = new(),

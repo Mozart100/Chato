@@ -1,4 +1,5 @@
 ﻿using Chato.Automation.Infrastructure.Instruction;
+using Chato.Server.DataAccess.Models;
 using Chato.Server.Hubs;
 using Chato.Server.Services;
 using Chatto.Shared;
@@ -99,10 +100,12 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             }
 
             int amountMessage = -1;
+            ChatType chatType = ChatType.Public;
 
             if (instruction.Instruction is JoinOrCreateChatInstruction instance)
             {
                 amountMessage = instance.AmountMessages;
+                chatType = instance.ChatType;
             }
 
             await _counterSignal.SetThrasholdAsync(1);
@@ -116,7 +119,8 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             //    amountNotified = joinOrCreateChatInstruction.NotifiedMessages;
             //}
 
-            await userExecuter.JoinOrCreateChat(instruction.ChatName);
+
+            await userExecuter.JoinOrCreateChat(instruction.ChatName,chatType);
             await userExecuter.DownloadHistory(instruction.ChatName, amountMessage);
 
             //if(amountNotified > 0)

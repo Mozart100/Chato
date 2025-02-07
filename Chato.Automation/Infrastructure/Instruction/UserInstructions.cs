@@ -1,4 +1,6 @@
-﻿namespace Chato.Automation.Infrastructure.Instruction;
+﻿using Chato.Server.DataAccess.Models;
+
+namespace Chato.Automation.Infrastructure.Instruction;
 
 public static class UserInstructions
 {
@@ -50,6 +52,8 @@ public class UserRegisterLobiInstruction : UserInstructionBase
     public override string InstructionName => UserInstructions.User_RegisterLobi_Instruction;
 
     public int AmountMessages { get; set; } = -1;
+
+    //public ChatType ChatType { get; set; } = ChatType.Public;
 }
 
 
@@ -90,7 +94,7 @@ public class JoinOrCreateChatInstruction : UserInstructionBase
 
     public int AmountMessages { get; set; } = -1;
 
-    //public int NotifiedMessages { get; set; } = -1;
+    public ChatType ChatType { get; set; } = ChatType.Public;
 }
 
 public class GetHistoryChatInstruction : UserInstructionBase
