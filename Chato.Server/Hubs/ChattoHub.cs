@@ -4,6 +4,8 @@ using Chato.Server.Services;
 using Chatto.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
@@ -12,7 +14,7 @@ using System.Text.Json.Serialization;
 namespace Chato.Server.Hubs;
 
 public record HubDownloadInfo(int Amount);
-public record GetAllChatReponse(string ChatName);
+public record UserChatInfo(string ChatName);
 
 public interface IChatHub
 {
@@ -89,21 +91,20 @@ public class ChattoHub : Hub<IChatHub>
         if (isExists)
         {
             var senderInfo = await _roomService.SendMessageAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, messageInfo.SenderInfoType);
-            messageInfo = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, senderInfo.TextMessage, senderInfo.Image, senderInfo.TimeStemp);
-            //messageInfo = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, senderInfo.TimeStemp);
+            var response = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, senderInfo.TextMessage, senderInfo.Image, senderInfo.TimeStemp);
 
-            if (messageInfo.SenderInfoType == SenderInfoType.Image)
+            if (response.SenderInfoType == SenderInfoType.Image)
             {
-                await Clients.Group(messageInfo.ChatName).SendTextToChat(messageInfo);
+                await Clients.Group(response.ChatName).SendTextToChat(response);
             }
             else
             {
-                await Clients.OthersInGroup(messageInfo.ChatName).SendTextToChat(messageInfo);
+                await Clients.OthersInGroup(response.ChatName).SendTextToChat(response);
             }
         }
         else
         {
-            var senderInfo = await JoinOrCreateChatInternal(Context.ConnectionId, messageInfo.FromUser, messageInfo.ChatName,ChatType.Public);
+            var senderInfo = await JoinOrCreateChatInternal(Context.ConnectionId, messageInfo.FromUser, messageInfo.ChatName, ChatType.Public);
 
             var toUser = IChatService.GetToUser(messageInfo.ChatName);
             var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
@@ -113,8 +114,8 @@ public class ChattoHub : Hub<IChatHub>
             }
 
             await JoinOrCreateChatInternal(user.ConnectionId, toUser, messageInfo.ChatName, ChatType.Public);
-            messageInfo = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, senderInfo.TimeStemp);
-            await Clients.OthersInGroup(messageInfo.ChatName).SendTextToChat(messageInfo);
+            var response = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, senderInfo.TimeStemp);
+            await Clients.OthersInGroup(response.ChatName).SendTextToChat(response);
         }
     }
 
@@ -156,36 +157,51 @@ public class ChattoHub : Hub<IChatHub>
         }
     }
 
-    public async IAsyncEnumerable<GetAllChatReponse> GetAllPublicChats()
+    /// <summary>
+    /// This method provide two options
+    /// 1. Get All Public Chats
+    /// 2. Get All Private chat iin which this current user participating.
+    /// </summary>
+    /// <param name="chatType"></param>
+    /// <returns></returns>
+    public async IAsyncEnumerable<UserChatInfo> GetAllChats(ChatType chatType)
     {
         //if (chatName.Equals("anatoliy__nathan"))
         //{
 
         //}
+        IEnumerable<UserChatInfo> response = null;
 
-        var chats = await _roomService.GetChatsAsync(x=>x.ChatType == ChatType.Public);
-        foreach (var chat in chats)
+        if (chatType == ChatType.Public)
         {
-            yield return new GetAllChatReponse(chat.ChatName);
+            var chats = await _roomService.GetChatsAsync(x => x.ChatType == ChatType.Public);
+            response = chats.Select(x => new UserChatInfo(x.ChatName)).ToArray();
+            
+            //foreach (var chat in chats)
+            //{
+            //    yield return new UserChatInfo(chat.ChatName);
+            //}
+        }
+        else
+        {
+            var userName = Context.User.Identity.Name;
+
+            var chats = await _userService.GetUserChatsAsync(userName);
+            response = chats.Select(x => new UserChatInfo(x.ChatName)).ToArray();
+
+            //foreach (var chat in chats)
+            //{
+            //    if (chat.ChatType == ChatType.Private)
+            //    {
+            //        yield return new UserChatInfo(chat.ChatName);
+            //    }
+            //}
         }
 
-        //var isExists = await _roomService.IsChatExists(chatName);
-        //if (isExists)
-        //{
-        //    var list = await _roomService.GetGroupHistoryAsync(chatName);
-
-        //    foreach (var senderInfo in list)
-        //    {
-        //        string message = null;
-        //        if (senderInfo.SenderInfoType != SenderInfoType.Image)
-        //        {
-        //            message = senderInfo.TextMessage;
-        //        }
-
-        //        yield return new MessageInfo(senderInfo.SenderInfoType, chatName, senderInfo.FromUser, message, senderInfo.Image, senderInfo.TimeStemp);
-        //        await Task.Delay(20);
-        //    }
-        //}
+        foreach (var item in response)
+        {
+            yield return item;
+        }
     }
 
 

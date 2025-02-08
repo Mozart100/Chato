@@ -45,7 +45,7 @@ namespace Chato.Server.Controllers
         [Route(All_Users_Route)]
         public async Task<GetAllUserResponse> GetAllUsers()
         {
-            var result = await _userService.GetAllUsersAsync();
+            var result = await _userService.GetAllUsersAsync(x => true);
 
             return new GetAllUserResponse { Users = result.ToArray() };
         }

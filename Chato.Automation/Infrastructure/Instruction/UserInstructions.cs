@@ -1,4 +1,5 @@
 ﻿using Chato.Server.DataAccess.Models;
+using Chatto.Shared;
 
 namespace Chato.Automation.Infrastructure.Instruction;
 
