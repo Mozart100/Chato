@@ -9,7 +9,7 @@ public interface IAssignmentService
 {
 
     Task<SenderInfo> JoinOrCreateRoom(string nameOrId, string roomName,ChatType chatType);
-    Task<string> RegisterUserAndAssignToRoom(RegistrationRequest request, string defaultRoom);
+    Task<string> RegisterUserAndAssignToRoom(RegistrationRequest request, string defaultRoom, ChatType chatType);
     Task LeaveGroupByConnectionIdAsync(string connectionId);
     Task LeaveGroupByUserNameOrIdAsync(string userNameOrId);
     Task CreateLobi();
@@ -81,11 +81,11 @@ public class AssignmentService : IAssignmentService
         
     }
 
-    public async Task<string> RegisterUserAndAssignToRoom(RegistrationRequest request, string roomName)
+    public async Task<string> RegisterUserAndAssignToRoom(RegistrationRequest request, string roomName, ChatType chatType)
     {
         var token = await _authenticationService.RegisterAsync(request);
 
-        await JoinOrCreateRoom(request.UserName, roomName,ChatType.Public);
+        await JoinOrCreateRoom(request.UserName, roomName,chatType);
 
         return token;
     }
