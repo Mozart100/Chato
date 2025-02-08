@@ -31,8 +31,9 @@ public interface IChatService
     Task RemoveUserAndRoomFromRoom(string roomName, string username);
     Task RemoveHistoryByRoomNameAsync(string roomName);
     Task<SenderInfo> SendMessageAsync(string roomName, string fromUser, string? textMessage, string? image, SenderInfoType messageType);
-
     Task<bool> IsChatExists(string chatName);
+    Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<string> chats);
+
 }
 
 
@@ -143,6 +144,26 @@ public class ChatService : IChatService
         return result?.ToChatRoomDto();
     }
 
+    public async Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<string> chats)
+    {
+        var result = new List<ChatInfoPerUser>();
+
+        await _lockerQueue.InvokeAsync(async () =>
+        {
+            foreach (var chat in chats)
+            {
+                var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chat);
+                if (room is not null)
+                {
+                    result.Add(new ChatInfoPerUser(room.RoomName, room.Users.Count));
+                }
+            }
+        });
+
+        return result;
+    }
+
+
     private async Task<ChatDb> GetRoomByNameOrIdCoreAsync(string nameOrId)
     {
         return await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == nameOrId);
@@ -244,8 +265,6 @@ public class ChatService : IChatService
         return result;
     }
 
-
-
     public async Task RemoveUserAndRoomFromRoom(string roomName, string username)
     {
         await _lockerQueue.InvokeAsync(async () =>
@@ -316,6 +335,7 @@ public class ChatService : IChatService
         return result;
     }
 
+
     //----------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------
@@ -330,12 +350,5 @@ public class ChatService : IChatService
         return result;
     }
 
-    //private async Task<(int AmoutMessages, SenderInfo SenderInfo)> AddImage(string chatName, string fromUser, string? textMessage, string? image)
-    //{
 
-    //    var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
-    //    var (amountMessages, result) = chatRoom.AddImageMessage(fromUser, textMessage, image);
-
-    //    return (amountMessages, result);
-    //}
 }

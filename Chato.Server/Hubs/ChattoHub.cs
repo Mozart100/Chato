@@ -14,7 +14,6 @@ using System.Text.Json.Serialization;
 namespace Chato.Server.Hubs;
 
 public record HubDownloadInfo(int Amount);
-public record UserChatInfo(string ChatName);
 
 public interface IChatHub
 {
@@ -156,55 +155,6 @@ public class ChattoHub : Hub<IChatHub>
             }
         }
     }
-
-    /// <summary>
-    /// This method provide two options
-    /// 1. Get All Public Chats
-    /// 2. Get All Private chat iin which this current user participating.
-    /// </summary>
-    /// <param name="chatType"></param>
-    /// <returns></returns>
-    public async IAsyncEnumerable<UserChatInfo> GetAllChats(ChatType chatType)
-    {
-        //if (chatName.Equals("anatoliy__nathan"))
-        //{
-
-        //}
-        IEnumerable<UserChatInfo> response = null;
-
-        if (chatType == ChatType.Public)
-        {
-            var chats = await _roomService.GetChatsAsync(x => x.ChatType == ChatType.Public);
-            response = chats.Select(x => new UserChatInfo(x.ChatName)).ToArray();
-            
-            //foreach (var chat in chats)
-            //{
-            //    yield return new UserChatInfo(chat.ChatName);
-            //}
-        }
-        else
-        {
-            var userName = Context.User.Identity.Name;
-
-            var chats = await _userService.GetUserChatsAsync(userName);
-            response = chats.Select(x => new UserChatInfo(x.ChatName)).ToArray();
-
-            //foreach (var chat in chats)
-            //{
-            //    if (chat.ChatType == ChatType.Private)
-            //    {
-            //        yield return new UserChatInfo(chat.ChatName);
-            //    }
-            //}
-        }
-
-        foreach (var item in response)
-        {
-            yield return item;
-        }
-    }
-
-
 
     public async Task LeaveGroup(string groupName)
     {
