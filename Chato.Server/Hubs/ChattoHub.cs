@@ -12,6 +12,7 @@ using System.Text.Json.Serialization;
 namespace Chato.Server.Hubs;
 
 public record HubDownloadInfo(int Amount);
+public record GetAllChatReponse(string ChatName);
 
 public interface IChatHub
 {
@@ -154,6 +155,40 @@ public class ChattoHub : Hub<IChatHub>
             }
         }
     }
+
+    public async IAsyncEnumerable<GetAllChatReponse> GetAllPublicChats()
+    {
+        //if (chatName.Equals("anatoliy__nathan"))
+        //{
+
+        //}
+
+        var chats = await _roomService.GetChatsAsync(x=>x.ChatType == ChatType.Public);
+        foreach (var chat in chats)
+        {
+            yield return new GetAllChatReponse(chat.ChatName);
+        }
+
+        //var isExists = await _roomService.IsChatExists(chatName);
+        //if (isExists)
+        //{
+        //    var list = await _roomService.GetGroupHistoryAsync(chatName);
+
+        //    foreach (var senderInfo in list)
+        //    {
+        //        string message = null;
+        //        if (senderInfo.SenderInfoType != SenderInfoType.Image)
+        //        {
+        //            message = senderInfo.TextMessage;
+        //        }
+
+        //        yield return new MessageInfo(senderInfo.SenderInfoType, chatName, senderInfo.FromUser, message, senderInfo.Image, senderInfo.TimeStemp);
+        //        await Task.Delay(20);
+        //    }
+        //}
+    }
+
+
 
     public async Task LeaveGroup(string groupName)
     {

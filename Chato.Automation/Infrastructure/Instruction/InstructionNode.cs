@@ -1,4 +1,5 @@
-﻿using Chato.Server.Services;
+﻿using Chato.Server.DataAccess.Models;
+using Chato.Server.Services;
 using Chatto.Shared;
 using System.Text;
 
@@ -85,12 +86,23 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode JoinOrCreatePrivateChat(this InstructionNode info, string chatName, int amountMessages = -1)
+    public static InstructionNode JoinOrCreatePrivateChatxxx(this InstructionNode info, string chatName, int amountMessages = -1)
+    {
+        return JoinOrCreateChat(info, chatName, ChatType.Private, amountMessages);
+    }
+
+    public static InstructionNode JoinOrCreatePublicChat(this InstructionNode info, string chatName, int amountMessages = -1)
+    {
+
+        return JoinOrCreateChat(info,chatName,ChatType.Public,amountMessages);
+    }
+
+    private static InstructionNode JoinOrCreateChat(this InstructionNode info, string chatName, ChatType chatType , int amountMessages = -1)
     {
         var @new = info with
         {
             ChatName = chatName,
-            Instruction = new JoinOrCreateChatInstruction() { AmountMessages = amountMessages , ChatType = Server.DataAccess.Models.ChatType.Private },
+            Instruction = new JoinOrCreateChatInstruction() { AmountMessages = amountMessages, ChatType = chatType },
             FromArrived = null,
             Message = null,
             Children = new(),

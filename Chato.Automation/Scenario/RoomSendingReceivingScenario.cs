@@ -56,8 +56,8 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
             .Step(users[Nathan_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
             .Step(users[Olessya_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
 
-            .Step(users[Olessya_User].JoinOrCreatePrivateChat(chat2))
-            .Step(users[Nathan_User].JoinOrCreatePrivateChat(chat2))
+            .Step(users[Olessya_User].JoinOrCreatePublicChat(chat2))
+            .Step(users[Nathan_User].JoinOrCreatePublicChat(chat2))
 
             .Step(users[Olessya_User].SendingTextToRestRoom(message_2, chat2,1))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_2))
