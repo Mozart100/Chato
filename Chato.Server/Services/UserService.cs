@@ -13,7 +13,7 @@ public interface IUserService
     public const string UserChatImage = "ChattoUserImages";
 
     Task AssignConnectionId(string userName, string connectionId);
-    Task AssignRoomNameAsync(string userNameOrId, string roomName);
+    Task AssignRoomNameAsync(string userNameOrId, string roomName, ChatType chatType);
     Task<IEnumerable<User>> GetAllUsersAsync();
     string GetMyName();
     Task<User> GetUserByConnectionId(string connectionId);
@@ -59,9 +59,9 @@ public class UserService : IUserService
     }
 
 
-    public async Task AssignRoomNameAsync(string userNameOrId, string roomName)
+    public async Task AssignRoomNameAsync(string userNameOrId, string roomName, ChatType chatType)
     {
-        await _delegateQueue.InvokeAsync(async () => await _userRepository.AddRoomToUser(userNameOrId, roomName));
+        await _delegateQueue.InvokeAsync(async () => await _userRepository.AddRoomToUser(userNameOrId, roomName, chatType));
 
     }
 
@@ -145,7 +145,7 @@ public class UserService : IUserService
 
                     user.Files.Add(new UserFileInfo($"{IUserService.UserChatImage}/{userName}/{localFileame}", file.Content));
                     response.Files.Add(localFileame);
-                   
+
                     amountOfImages++;
                 }
             });

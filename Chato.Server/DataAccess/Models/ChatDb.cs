@@ -4,10 +4,6 @@ using Chatto.Shared;
 
 namespace Chato.Server.DataAccess.Models;
 
-public enum ChatType
-{
-    Public,Private
-}
 
 public class ChatDb : EntityDbBase
 {

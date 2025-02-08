@@ -53,9 +53,9 @@ public class AssignmentService : IAssignmentService
     {
         if (user is not null)
         {
-            foreach (var roomName in user.Chats.SafeToArray())
+            foreach (var chat in user.Chats.SafeToArray())
             {
-                await _roomService.RemoveUserAndRoomFromRoom(roomName, user.UserName);
+                await _roomService.RemoveUserAndRoomFromRoom( chat.ChatName, user.UserName);
             }
         }
     }
@@ -67,7 +67,7 @@ public class AssignmentService : IAssignmentService
         var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(nameOrId);
         if (user is not null)
         {
-            await _userService.AssignRoomNameAsync(user.UserName, chatName);
+            await _userService.AssignRoomNameAsync(user.UserName, chatName,chatType);
            result =  await _roomService.JoinOrCreateRoom(chatName, user.UserName,chatType);
         }
 

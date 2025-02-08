@@ -22,7 +22,6 @@ public interface IPersistentChatAndUsers
     public const string Supervisor = "supervisor";
       
 
-
     public const string ToRemoveRoom = "ToRemove";
 
 
