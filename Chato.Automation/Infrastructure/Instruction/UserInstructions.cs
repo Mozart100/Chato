@@ -96,6 +96,8 @@ public class JoinOrCreateChatInstruction : UserInstructionBase
     public int AmountMessages { get; set; } = -1;
 
     public ChatType ChatType { get; set; } = ChatType.Public;
+
+    public SenderInfoType? ExpectedSenderInfoType { get; set; }
 }
 
 public class GetHistoryChatInstruction : UserInstructionBase

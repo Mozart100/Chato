@@ -53,10 +53,10 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
     }
 
-    private async Task SendMessageToOthersInGroup(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, string message, SenderInfoType messageType, string? imageName)
+    private async Task SendMessageToOthersInGroup(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, string message, SenderInfoType messageType, string? imageName , string ? description)
     {
         //var message2 = Encoding.UTF8.GetString(message);
-        await userExecuter.SendMessageToOthersInGroup(chatName: groupName, userNameFrom: userNameFrom, message: message, messageType: messageType, imageName);
+        await userExecuter.SendMessageToOthersInGroup(chatName: groupName, userNameFrom: userNameFrom, message: message, messageType: messageType, imageName, description);
 
     }
 
@@ -76,7 +76,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
                 throw new Exception("Not all users received their messages");
             }
 
-            await UsersCleanup2222(userExecuter.UserName);
+            await UsersCleanup(userExecuter.UserName);
         });
 
 
@@ -101,6 +101,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
             int amountMessage = -1;
             ChatType chatType = ChatType.Public;
+            SenderInfoType? senderInfoType = null; 
 
             if (instruction.Instruction is JoinOrCreateChatInstruction instance)
             {
@@ -109,15 +110,6 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             }
 
             await _counterSignal.SetThrasholdAsync(1);
-
-            //var amountMessages = -1;
-            //var amountNotified = -1;
-
-            //if(instruction.Instruction is JoinOrCreateChatInstruction joinOrCreateChatInstruction)
-            //{
-            //    amountMessages = joinOrCreateChatInstruction.AmountMessages;
-            //    amountNotified = joinOrCreateChatInstruction.NotifiedMessages;
-            //}
 
 
             await userExecuter.JoinOrCreateChat(instruction.ChatName,chatType);
@@ -212,7 +204,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
                 awaitAmount = instance.AmountAwaits;
             }
             await _counterSignal.SetThrasholdAsync(awaitAmount);
-            await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName: instruction.ChatName, userNameFrom: instruction.UserName, message: instruction.Message, messageType: instruction.messageType, imageName: instruction.ImageName);
+            await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName: instruction.ChatName, userNameFrom: instruction.UserName, message: instruction.Message, messageType: instruction.messageType, imageName: instruction.ImageName,string.Empty);
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
             {
@@ -272,28 +264,6 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         }
     }
 
-    public async Task UsersCleanup2222(params string[] users)
-    {
-        foreach (var user in users)
-        {
-            foreach (var group in _groupUsers.Keys.ToArray())
-            {
-                if (_groupUsers[group].Contains(user))
-                {
-                    _groupUsers[group].Remove(user);
-                    if (_groupUsers[group].Any() == false)
-                    {
-                        _groupUsers[group] = null;
-                        _groupUsers.Remove(group);
-                    }
-                }
-            }
-
-            await Users[user].KillConnectionAsync();
-            Users.Remove(user);
-        }
-    }
-
     public async Task UsersCleanup(params string[] users)
     {
         foreach (var user in users)
@@ -311,10 +281,8 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
                 }
             }
 
-            await Users[user].UserDisconnectingAsync();
             await Users[user].KillConnectionAsync();
             Users.Remove(user);
         }
     }
-
 }

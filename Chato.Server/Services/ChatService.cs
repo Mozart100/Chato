@@ -301,7 +301,7 @@ public class ChatService : IChatService
             {
                 var createRoom = await CreateRoomCoreAsync(roomName, chatType);
                 createRoom.Users.Add(userName);
-                result = await AddTextMessage(SenderInfoType.Joined, roomName, userName, null, null);
+                result = await AddTextMessage(SenderInfoType.Created, roomName, userName, null, null);
             }
         });
 

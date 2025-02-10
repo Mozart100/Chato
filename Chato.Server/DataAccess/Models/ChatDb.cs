@@ -18,6 +18,8 @@ public class ChatDb : EntityDbBase
     public List<SenderInfo> Messages { get; set; } = new List<SenderInfo>();
     public HashSet<string> Users { get; } = new HashSet<string>();
 
+    public string Description { get; set; }
+
 }
 
 
@@ -42,7 +44,7 @@ public static class ChatRoomDbExtensions
         return senderInfo;
     }
 
-    public static SenderInfo  AddImageMessage(this ChatDb chatRoom, string fromUser, string? textMessage, string? image)
+    public static SenderInfo AddImageMessage(this ChatDb chatRoom, string fromUser, string? textMessage, string? image)
     {
         var senderInfo = default(SenderInfo);
 

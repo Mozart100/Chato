@@ -86,23 +86,23 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode JoinOrCreatePrivateChatxxx(this InstructionNode info, string chatName, int amountMessages = -1)
+    public static InstructionNode JoinOrCreatePrivateChatxxx(this InstructionNode info, string chatName, int amountMessages = -1, SenderInfoType? senderInfoType = null)
     {
-        return JoinOrCreateChat(info, chatName, ChatType.Private, amountMessages);
+        return JoinOrCreateChat(info, chatName, ChatType.Private, amountMessages, senderInfoType);
     }
 
-    public static InstructionNode JoinOrCreatePublicChat(this InstructionNode info, string chatName, int amountMessages = -1)
+    public static InstructionNode JoinOrCreatePublicChat(this InstructionNode info, string chatName, int amountMessages = -1 , SenderInfoType ? senderInfoType = null)
     {
 
-        return JoinOrCreateChat(info,chatName,ChatType.Public,amountMessages);
+        return JoinOrCreateChat(info,chatName,ChatType.Public,amountMessages, senderInfoType);
     }
 
-    private static InstructionNode JoinOrCreateChat(this InstructionNode info, string chatName, ChatType chatType , int amountMessages = -1)
+    private static InstructionNode JoinOrCreateChat(this InstructionNode info, string chatName, ChatType chatType , int amountMessages = -1, SenderInfoType? senderInfoType = null)
     {
         var @new = info with
         {
             ChatName = chatName,
-            Instruction = new JoinOrCreateChatInstruction() { AmountMessages = amountMessages, ChatType = chatType },
+            Instruction = new JoinOrCreateChatInstruction() { AmountMessages = amountMessages, ChatType = chatType , ExpectedSenderInfoType = senderInfoType },
             FromArrived = null,
             Message = null,
             Children = new(),
