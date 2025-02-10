@@ -29,7 +29,7 @@ internal class BasicScenario : InstructionScenarioBase
         BusinessLogicCallbacks.Add(SendingImagesOnlyBetweenTwoPeople);
         BusinessLogicCallbacks.Add(SendingWithinLobi);
 
-        BusinessLogicCallbacks.Add(SendingOnlyBetweenTwoPeople);
+        BusinessLogicCallbacks.Add(SendingOnlyBetweenTwoInPrivateChat);
         BusinessLogicCallbacks.Add(SendingWithinLobi_UserMovedChat);
         BusinessLogicCallbacks.Add(GetHistoryWithoutJoin);
 
@@ -66,9 +66,9 @@ internal class BasicScenario : InstructionScenarioBase
             .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_2))
 
             .Step(users[Anatoliy_User].JoinOrCreatePublicChat(chat2, 4))
-            .Step(users[Olessya_User].NotifyUser(chat2))
-            .Step(users[Nathan_User].NotifyUser(chat2))
-            .Step(users[Anatoliy_User].NotifyUser(chat2))
+            //.Step(users[Olessya_User].NotifyUser(chat2))
+            //.Step(users[Nathan_User].NotifyUser(chat2))
+            //.Step(users[Anatoliy_User].NotifyUser(chat2))
 
             .Step(users[Olessya_User].SendingTextToRestRoom(message_3, chat2, 2))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_3))
@@ -132,7 +132,7 @@ internal class BasicScenario : InstructionScenarioBase
 
     }
 
-    private async Task SendingOnlyBetweenTwoPeople()
+    private async Task SendingOnlyBetweenTwoInPrivateChat()
     {
         var message_1 = "Shalom";
         var message_2 = $"message 2";
@@ -147,6 +147,11 @@ internal class BasicScenario : InstructionScenarioBase
 
             .Step(users[Anatoliy_User].SendingTextToRestRoom(message_1, chat2, 1))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Anatoliy_User, message_1))
+
+
+            //.Step(users[Anatoliy_User].NotifyUser(chat2))
+            //.Step(users[Nathan_User].NotifyUser(chat2))
+
 
             .Step(users[Nathan_User].SendingTextToRestRoom(message_2, chat2, 1))
             .Step(users[Anatoliy_User].ReceivingMessage(chat2, Nathan_User, message_2))
@@ -180,9 +185,9 @@ internal class BasicScenario : InstructionScenarioBase
             .Step(users[Olessya_User].JoinOrCreatePublicChat(chat2, 1))
             .Step(users[Nathan_User].JoinOrCreatePublicChat(chat2, 2))
 
-            .Step(users[Olessya_User].NotifyUser(chat2))
-            .Step(users[Olessya_User].NotifyUser(chat2))
-            .Step(users[Nathan_User].NotifyUser(chat2))
+            //.Step(users[Olessya_User].NotifyUser(chat2))
+            //.Step(users[Olessya_User].NotifyUser(chat2))
+            //.Step(users[Nathan_User].NotifyUser(chat2))
 
 
 

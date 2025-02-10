@@ -15,7 +15,7 @@ public static class UserInstructions
 
     public const string Run_Operation_Instruction = "do_operation";//done
     public const string Leave_Room_Instruction = "leave_room";
-    public const string Notify_User_Instruction = "notify_users";
+    //public const string Notify_User_Instruction = "notify_users";
 
 
 
@@ -106,10 +106,13 @@ public class GetHistoryChatInstruction : UserInstructionBase
     public int AmountMessages { get; set; } = -1;
 }
 
-public class NotifyUserInstruction : UserInstructionBase
-{
-    public override string InstructionName => UserInstructions.Notify_User_Instruction;
-}
+//public class NotifyUserInstruction : UserInstructionBase
+//{
+//    public override string InstructionName => UserInstructions.Notify_User_Instruction;
+//    public SenderInfoType? ExpectedSenderInfoType { get; set; } = null;
+
+
+//}
 
 
 

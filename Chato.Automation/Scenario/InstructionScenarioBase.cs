@@ -149,20 +149,27 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
         });
 
-        _actionMapper.Add(UserInstructions.Notify_User_Instruction, async (userExecuter, instruction) =>
-        {
-            await _counterSignal.SetThrasholdAsync(1);
+        //_actionMapper.Add(UserInstructions.Notify_User_Instruction, async (userExecuter, instruction) =>
+        //{
+        //    await _counterSignal.SetThrasholdAsync(1);
 
-            await Task.Delay(100);
+        //    await Task.Delay(100);
 
-            //if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
-            //{
-            //    throw new Exception("Not all users received their messages");
-            //}
+        //    //if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
+        //    //{
+        //    //    throw new Exception("Not all users received their messages");
+        //    //}
 
-            await userExecuter.ShouldBeNotofied(instruction.ChatName);
 
-        });
+        //    SenderInfoType? senderInfoType = null;
+        //    if ( instruction.Instruction is NotifyUserInstruction notifyUserInstruction)
+        //    {
+        //        senderInfoType = notifyUserInstruction.ExpectedSenderInfoType;
+        //    }
+
+        //    await userExecuter.ShouldBeNotified(instruction.ChatName);
+
+        //});
 
 
         _actionMapper.Add(UserInstructions.User_RegisterLobi_Instruction, async (userExecuter, instruction) =>

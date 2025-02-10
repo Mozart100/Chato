@@ -59,7 +59,7 @@ public class ChattoHub : Hub<IChatHub>
 
 
         await ReplyMessage("server", User_Connected_Message);
-        await NotifyUserJoined(user.Identity.Name, IChatService.Lobi);
+        //await NotifyUserJoined(user.Identity.Name, IChatService.Lobi);
 
         await base.OnConnectedAsync();
 
@@ -123,13 +123,13 @@ public class ChattoHub : Hub<IChatHub>
     {
         var userName = Context.User.Identity.Name;
         await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName, chatType,null);
-        await NotifyUserJoined(userName, chatName);
+        //await NotifyUserJoined(userName, chatName);
     }
 
-    public async Task NotifyUserJoined(string user, string chatName)
-    {
-        await Clients.All.SendNotificationn(chatName, user);
-    }
+    //public async Task NotifyUserJoined(string user, string chatName)
+    //{
+    //    await Clients.All.SendNotificationn(chatName, user);
+    //}
 
     public async IAsyncEnumerable<MessageInfo> DownloadHistory(string chatName)
     {

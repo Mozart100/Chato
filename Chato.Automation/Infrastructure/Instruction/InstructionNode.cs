@@ -72,19 +72,19 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode NotifyUser(this InstructionNode info, string  chat)
-    {
-        var @new = info with
-        {
-            ChatName = chat,
-            FromArrived = null,
-            Instruction = new NotifyUserInstruction(),
-            Message = null,
-            Children = new(),
-        };
+    //public static InstructionNode NotifyUser(this InstructionNode info, string  chat)
+    //{
+    //    var @new = info with
+    //    {
+    //        ChatName = chat,
+    //        FromArrived = null,
+    //        Instruction = new NotifyUserInstruction(),
+    //        Message = null,
+    //        Children = new(),
+    //    };
 
-        return @new;
-    }
+    //    return @new;
+    //}
 
     public static InstructionNode JoinOrCreatePrivateChatxxx(this InstructionNode info, string chatName, int amountMessages = -1, SenderInfoType? senderInfoType = null)
     {
