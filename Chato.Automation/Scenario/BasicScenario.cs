@@ -149,8 +149,41 @@ internal class BasicScenario : InstructionScenarioBase
             .Step(users[Nathan_User].ReceivingMessage(chat2, Anatoliy_User, message_1))
 
 
-            //.Step(users[Anatoliy_User].NotifyUser(chat2))
-            //.Step(users[Nathan_User].NotifyUser(chat2))
+               .Step(users[Anatoliy_User].Do(async user =>
+               {
+                   var token = user.RegistrationResponse.Token;
+                   var response = await Get<ResponseWrapper<AllChatsPerUserResponse>>(GetChatsPerUserUrl, token);
+
+                   var isPrivate = false;
+                   foreach (var chat in response.Body.Chats)
+                   {
+                       if (chat.ChatType == ChatType.Private)
+                       {
+                           isPrivate = true;
+                           break;
+                       }
+                   }
+
+                   isPrivate.Should().BeTrue();
+               }))
+
+                  .Step(users[Nathan_User].Do(async user =>
+                  {
+                      var token = user.RegistrationResponse.Token;
+                      var response = await Get<ResponseWrapper<AllChatsPerUserResponse>>(GetChatsPerUserUrl, token);
+
+                      var isPrivate = false;
+                      foreach (var chat in response.Body.Chats)
+                      {
+                          if (chat.ChatType == ChatType.Private)
+                          {
+                              isPrivate = true;
+                              break;
+                          }
+                      }
+
+                      isPrivate.Should().BeTrue();
+                  }))
 
 
             .Step(users[Nathan_User].SendingTextToRestRoom(message_2, chat2, 1))
@@ -310,5 +343,5 @@ internal class BasicScenario : InstructionScenarioBase
         downloadFile.Should().Be(message_image_2);
     }
 
-   
+
 }

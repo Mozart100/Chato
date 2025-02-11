@@ -31,6 +31,7 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
         ///User
         UserControllerUrl = $"{BaseUrl}/api/user";
         GetAllUsersUrl = $"{UserControllerUrl}/all";
+        GetChatsPerUserUrl = $"{UserControllerUrl}/{UserController.Chats_Per_User_Route}";
 
 
         var argument = "{0}";
@@ -57,6 +58,7 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
 
     protected string UserControllerUrl { get; }
     protected string GetAllUsersUrl { get; }
+    protected string GetChatsPerUserUrl { get; }
 
 
     protected string ConfigurationControllerUrl { get; }

@@ -155,7 +155,7 @@ public class ChatService : IChatService
                 var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chat);
                 if (room is not null)
                 {
-                    result.Add(new ChatInfoPerUser(room.RoomName, room.Users.Count));
+                    result.Add(new ChatInfoPerUser(room.RoomName, room.ChatType, room.Users.Count));
                 }
             }
         });
