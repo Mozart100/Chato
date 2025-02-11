@@ -103,7 +103,7 @@ public class ChattoHub : Hub<IChatHub>
         else
         {
             //Sending message to a user.
-            var senderInfo = await JoinOrCreateChatInternal(Context.ConnectionId, messageInfo.FromUser, messageInfo.ChatName, ChatType.Private , messageInfo.DescriptionOfChat);
+            var senderInfo = await JoinOrCreateChatInternal(Context.ConnectionId, messageInfo.FromUser, messageInfo.ChatName, ChatType.Private, messageInfo.DescriptionOfChat);
 
             var toUser = IChatService.GetToUser(messageInfo.ChatName);
             var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
@@ -112,24 +112,22 @@ public class ChattoHub : Hub<IChatHub>
                 throw new ArgumentNullException($"{toUser} doesnt exists.");
             }
 
-            await JoinOrCreateChatInternal(user.ConnectionId, toUser, messageInfo.ChatName, ChatType.Public, messageInfo.DescriptionOfChat);
+            await JoinOrCreateChatInternal(user.ConnectionId, toUser, messageInfo.ChatName, ChatType.Private, messageInfo.DescriptionOfChat);
             var response = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, senderInfo.TimeStemp);
             await Clients.OthersInGroup(response.ChatName).SendTextToChat(response);
         }
     }
 
-    public async Task JoinOrCreateChat(string chatName, ChatType chatType)
-    //public async Task JoinOrCreateChat(string chatName, ChatType chatType, string? description)
+    public async Task JoinOrCreateChat(string chatName, ChatType chatType, string? description)
     {
+        if (chatType == ChatType.Private)
+        {
+
+        }
         var userName = Context.User.Identity.Name;
-        await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName, chatType,null);
-        //await NotifyUserJoined(userName, chatName);
+        await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName, chatType, description);
     }
 
-    //public async Task NotifyUserJoined(string user, string chatName)
-    //{
-    //    await Clients.All.SendNotificationn(chatName, user);
-    //}
 
     public async IAsyncEnumerable<MessageInfo> DownloadHistory(string chatName)
     {

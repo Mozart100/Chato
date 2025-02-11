@@ -88,7 +88,7 @@ public class UserInstructionExecuter
         await _connection.StartAsync();
         await ListenAsync();
 
-        await JoinOrCreateChat(IChatService.Lobi,ChatType.Public);
+        await JoinOrCreateChat(IChatService.Lobi, ChatType.Public, null);
         await DownloadHistory(IChatService.Lobi, amountMessages);
     }
 
@@ -96,7 +96,7 @@ public class UserInstructionExecuter
 
     public string UserName => RegisterResponse.UserName;
 
-    public async Task SendMessageToOthersInGroup(string chatName, string userNameFrom, string message, SenderInfoType messageType, string? imageName,string? description)
+    public async Task SendMessageToOthersInGroup(string chatName, string userNameFrom, string message, SenderInfoType messageType, string? imageName, string? description)
     {
         //var message = Encoding.UTF8.GetString(ptr);
         _logger.LogInformation($"{userNameFrom} sending in group [{chatName}] message [{message}].");
@@ -110,11 +110,11 @@ public class UserInstructionExecuter
     }
 
 
-    public async Task JoinOrCreateChat(string chatName, ChatType  chatType)
+    public async Task JoinOrCreateChat(string chatName, ChatType chatType, string? description)
     {
         _logger.LogInformation($"{UserName} joins or create a chat.");
 
-         await _connection.InvokeAsync(Hub_Join_Group_Topic, chatName, chatType);
+        await _connection.InvokeAsync(Hub_Join_Group_Topic, chatName, chatType, description);
     }
 
     public async Task DownloadHistory(string chatName, int amountMessages = -1)
@@ -129,7 +129,7 @@ public class UserInstructionExecuter
             _logger.LogInformation($"Downloading message: [{json}] in chat [{chatName}]");
             amountMessages--;
 
-            if(senderInfo.SenderInfoType == SenderInfoType.Image)
+            if (senderInfo.SenderInfoType == SenderInfoType.Image)
             {
                 senderInfo.TextMessage.Should().BeNullOrEmpty();
                 senderInfo.Image.IsNotEmpty().Should().BeTrue();

@@ -101,18 +101,20 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
             int amountMessage = -1;
             ChatType chatType = ChatType.Public;
-            SenderInfoType? senderInfoType = null; 
+            SenderInfoType? senderInfoType = null;
+            string? description = null;
 
             if (instruction.Instruction is JoinOrCreateChatInstruction instance)
             {
                 amountMessage = instance.AmountMessages;
                 chatType = instance.ChatType;
+                description = instance.Description;
             }
 
             await _counterSignal.SetThrasholdAsync(1);
 
 
-            await userExecuter.JoinOrCreateChat(instruction.ChatName,chatType);
+            await userExecuter.JoinOrCreateChat(instruction.ChatName,chatType,description);
             await userExecuter.DownloadHistory(instruction.ChatName, amountMessage);
 
             //if(amountNotified > 0)

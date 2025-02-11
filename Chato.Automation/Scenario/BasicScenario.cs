@@ -62,6 +62,42 @@ internal class BasicScenario : InstructionScenarioBase
             .Step(users[Olessya_User].JoinOrCreatePublicChat(chat2))
             .Step(users[Nathan_User].JoinOrCreatePublicChat(chat2))
 
+            .Step(users[Olessya_User].Do(async user =>
+            {
+                var token = user.RegistrationResponse.Token;
+                var response = await Get<ResponseWrapper<AllChatsPerUserResponse>>(GetChatsPerUserUrl, token);
+
+                var isPrivate = false;
+                foreach (var chat in response.Body.Chats)
+                {
+                    if (chat.ChatType == ChatType.Private)
+                    {
+                        isPrivate = true;
+                        break;
+                    }
+                }
+
+                isPrivate.Should().BeFalse();
+            }))
+
+             .Step(users[Nathan_User].Do(async user =>
+             {
+                 var token = user.RegistrationResponse.Token;
+                 var response = await Get<ResponseWrapper<AllChatsPerUserResponse>>(GetChatsPerUserUrl, token);
+
+                 var isPrivate = false;
+                 foreach (var chat in response.Body.Chats)
+                 {
+                     if (chat.ChatType == ChatType.Private)
+                     {
+                         isPrivate = true;
+                         break;
+                     }
+                 }
+
+                 isPrivate.Should().BeFalse();
+             }))
+
             .Step(users[Olessya_User].SendingTextToRestRoom(message_2, chat2, 1))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_2))
 
