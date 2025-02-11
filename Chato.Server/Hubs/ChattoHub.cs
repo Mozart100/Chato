@@ -183,12 +183,12 @@ public class ChattoHub : Hub<IChatHub>
     private async Task JoinLobiChatInternal()
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, IChatService.Lobi);
-        await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, IChatService.Lobi, ChatType.Public);
+        await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, IChatService.Lobi, ChatType.Public, null);
     }
     private async Task<SenderInfo> JoinOrCreateChatInternal(string connectionId, string userName, string roomName, ChatType chatType, string? chatDescription)
     {
         await Groups.AddToGroupAsync(connectionId, roomName);
-        return await _assignmentService.JoinOrCreateRoom(userName, roomName, chatType);
+        return await _assignmentService.JoinOrCreateRoom(userName, roomName, chatType, chatDescription);
     }
 
 

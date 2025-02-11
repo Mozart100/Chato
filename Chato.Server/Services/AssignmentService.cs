@@ -8,7 +8,7 @@ namespace Chato.Server.Services;
 public interface IAssignmentService
 {
 
-    Task<SenderInfo> JoinOrCreateRoom(string nameOrId, string roomName,ChatType chatType);
+    Task<SenderInfo> JoinOrCreateRoom(string nameOrId, string roomName, ChatType chatType, string description);
     Task<string> RegisterUserAndAssignToRoom(RegistrationRequest request, string defaultRoom, ChatType chatType);
     Task LeaveGroupByConnectionIdAsync(string connectionId);
     Task LeaveGroupByUserNameOrIdAsync(string userNameOrId);
@@ -55,20 +55,20 @@ public class AssignmentService : IAssignmentService
         {
             foreach (var chat in user.Chats.SafeToArray())
             {
-                await _roomService.RemoveUserAndRoomFromRoom( chat.ChatName, user.UserName);
+                await _roomService.RemoveUserAndRoomFromRoom(chat.ChatName, user.UserName);
             }
         }
     }
 
-    public async Task<SenderInfo> JoinOrCreateRoom(string nameOrId, string chatName, ChatType chatType)
+    public async Task<SenderInfo> JoinOrCreateRoom(string nameOrId, string chatName, ChatType chatType, string description)
     {
-        var result =default( SenderInfo);
+        var result = default(SenderInfo);
 
         var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(nameOrId);
         if (user is not null)
         {
-            await _userService.AssignRoomNameAsync(user.UserName, chatName,chatType);
-           result =  await _roomService.JoinOrCreateRoom(chatName, user.UserName,chatType);
+            await _userService.AssignRoomNameAsync(user.UserName, chatName, chatType);
+            result = await _roomService.JoinOrCreateRoom(chatName, user.UserName, chatType, description);
         }
 
         return result;
@@ -78,14 +78,14 @@ public class AssignmentService : IAssignmentService
     {
 
         await _roomService.CreateLobi();
-        
+
     }
 
     public async Task<string> RegisterUserAndAssignToRoom(RegistrationRequest request, string roomName, ChatType chatType)
     {
         var token = await _authenticationService.RegisterAsync(request);
 
-        await JoinOrCreateRoom(request.UserName, roomName,chatType);
+        await JoinOrCreateRoom(request.UserName, roomName, chatType, null);
 
         return token;
     }

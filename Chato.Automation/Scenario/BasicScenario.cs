@@ -59,7 +59,7 @@ internal class BasicScenario : InstructionScenarioBase
             .Step(users[Nathan_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
             .Step(users[Olessya_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
 
-            .Step(users[Olessya_User].JoinOrCreatePublicChat(chat2))
+            .Step(users[Olessya_User].JoinOrCreatePublicChat(chat2, description: "XXXX"))
             .Step(users[Nathan_User].JoinOrCreatePublicChat(chat2))
 
             .Step(users[Olessya_User].Do(async user =>
