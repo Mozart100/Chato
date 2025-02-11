@@ -118,6 +118,7 @@ public class AuthenticationService : IAuthenticationService
     }
 
     private async Task<string> RegisterAsync(string userName, string description, string gender, int age)
+    //private async Task<string> RegisterAsync(string userName, string description, string gender, int age, ChatType chatType)
     {
         var token = CreateToken(userName);
 

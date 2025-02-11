@@ -20,18 +20,20 @@ public interface IChatService
 
 
     Task AddUserAsync(string roomName, string userName);
-    Task<ChatRoomDto> CreateRoomAsync(string roomName);
+    Task<ChatRoomDto> CreateRoomAsync(string roomName, ChatType chatType, string description);
     Task<ChatRoomDto[]> GetAllRoomAsync();
+    Task<ChatRoomDto[]> GetChatsAsync(Func<ChatDb, bool> predicate);
     Task<IEnumerable<SenderInfo>> GetGroupHistoryAsync(string roomName);
     Task<ChatRoomDto?> GetRoomByNameOrIdAsync(string nameOrId);
-    Task<SenderInfo> JoinOrCreateRoom(string roomName, string userName);
+    Task<SenderInfo> JoinOrCreateRoom(string roomName, string userName, ChatType chatType, string description);
     Task CreateLobi();
     Task RemoveRoomByNameOrIdAsync(string nameOrId);
     Task RemoveUserAndRoomFromRoom(string roomName, string username);
     Task RemoveHistoryByRoomNameAsync(string roomName);
     Task<SenderInfo> SendMessageAsync(string roomName, string fromUser, string? textMessage, string? image, SenderInfoType messageType);
-
     Task<bool> IsChatExists(string chatName);
+    Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<string> chats);
+
 }
 
 
@@ -69,21 +71,21 @@ public class ChatService : IChatService
         return room;
     }
 
-    public async Task<ChatRoomDto> CreateRoomAsync(string roomName)
+    public async Task<ChatRoomDto> CreateRoomAsync(string roomName, ChatType chatType,string descrion)
     {
         var result = default(ChatDb);
 
         await _lockerQueue.InvokeAsync(async () =>
         {
-            result = await CreateRoomCoreAsync(roomName);
+            result = await CreateRoomCoreAsync(roomName, chatType, descrion);
         });
 
         return result.ToChatRoomDto();
     }
 
-    private async Task<ChatDb> CreateRoomCoreAsync(string roomName)
+    private async Task<ChatDb> CreateRoomCoreAsync(string roomName, ChatType chatType,  string description)
     {
-        var result = await _chatRoomRepository.InsertAsync(new ChatDb { Id = roomName });
+        var result = await _chatRoomRepository.InsertAsync(new ChatDb { Id = roomName, ChatType = chatType , Description = description });
         return result;
     }
 
@@ -99,6 +101,19 @@ public class ChatService : IChatService
         });
         return result.SafeSelect(x => x.ToChatRoomDto()).SafeToArray();
     }
+
+    public async Task<ChatRoomDto[]> GetChatsAsync(Func<ChatDb, bool> predicate)
+    {
+        ChatDb[] result = null;
+
+        await _lockerQueue.InvokeAsync(async () =>
+        {
+            var list = await _chatRoomRepository.GetAllAsync();
+            result = list.Where(x => predicate(x)).ToArray();
+        });
+        return result.SafeSelect(x => x.ToChatRoomDto()).SafeToArray();
+    }
+
 
     public async Task<IEnumerable<SenderInfo>> GetGroupHistoryAsync(string roomName)
     {
@@ -128,6 +143,26 @@ public class ChatService : IChatService
 
         return result?.ToChatRoomDto();
     }
+
+    public async Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<string> chats)
+    {
+        var result = new List<ChatInfoPerUser>();
+
+        await _lockerQueue.InvokeAsync(async () =>
+        {
+            foreach (var chat in chats)
+            {
+                var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chat);
+                if (room is not null)
+                {
+                    result.Add(new ChatInfoPerUser(room.RoomName, room.ChatType, room.Users.Count));
+                }
+            }
+        });
+
+        return result;
+    }
+
 
     private async Task<ChatDb> GetRoomByNameOrIdCoreAsync(string nameOrId)
     {
@@ -182,7 +217,7 @@ public class ChatService : IChatService
                     var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
                     if (chatRoom is not null)
                     {
-                        
+
                         var amountMessages = chatRoom.Messages.Count + 1;
                         //var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", IChatService.ChatImages, chatName);
                         var localPath = $"{amountMessages}{Path.GetExtension(imageName)}";
@@ -201,7 +236,7 @@ public class ChatService : IChatService
 
                         byte[] fileBytes = Convert.FromBase64String(textMessage);
                         var filePath = Path.Combine(wwwRootPath, localPath);
-                       
+
                         try
                         {
                             File.WriteAllBytes(filePath, fileBytes);
@@ -230,8 +265,6 @@ public class ChatService : IChatService
         return result;
     }
 
-
-
     public async Task RemoveUserAndRoomFromRoom(string roomName, string username)
     {
         await _lockerQueue.InvokeAsync(async () =>
@@ -249,7 +282,7 @@ public class ChatService : IChatService
         });
     }
 
-    public async Task<SenderInfo> JoinOrCreateRoom(string roomName, string userName)
+    public async Task<SenderInfo> JoinOrCreateRoom(string roomName, string userName, ChatType chatType, string description)
     {
         var result = default(SenderInfo);
 
@@ -266,9 +299,9 @@ public class ChatService : IChatService
             }
             else
             {
-                var createRoom = await CreateRoomCoreAsync(roomName);
+                var createRoom = await CreateRoomCoreAsync(roomName, chatType,description);
                 createRoom.Users.Add(userName);
-                result = await AddTextMessage(SenderInfoType.Joined, roomName, userName, null, null);
+                result = await AddTextMessage(SenderInfoType.Created, roomName, userName, null, null);
             }
         });
 
@@ -282,7 +315,7 @@ public class ChatService : IChatService
             var room = await GetRoomByNameOrIdCoreAsync(IChatService.Lobi);
             if (room is null)
             {
-                await CreateRoomCoreAsync(IChatService.Lobi);
+                await CreateRoomCoreAsync(IChatService.Lobi, ChatType.Public,null);
             }
         });
     }
@@ -302,6 +335,7 @@ public class ChatService : IChatService
         return result;
     }
 
+
     //----------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------
     //----------------------------------------------------------------------------------------------------
@@ -316,12 +350,5 @@ public class ChatService : IChatService
         return result;
     }
 
-    //private async Task<(int AmoutMessages, SenderInfo SenderInfo)> AddImage(string chatName, string fromUser, string? textMessage, string? image)
-    //{
 
-    //    var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
-    //    var (amountMessages, result) = chatRoom.AddImageMessage(fromUser, textMessage, image);
-
-    //    return (amountMessages, result);
-    //}
 }

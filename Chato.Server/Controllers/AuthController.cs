@@ -1,4 +1,5 @@
-﻿using Chato.Server.FeatureFlags;
+﻿using Chato.Server.DataAccess.Models;
+using Chato.Server.FeatureFlags;
 using Chato.Server.Services;
 using Chatto.Shared;
 using Microsoft.AspNetCore.Authorization;

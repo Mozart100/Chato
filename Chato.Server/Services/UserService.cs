@@ -13,8 +13,8 @@ public interface IUserService
     public const string UserChatImage = "ChattoUserImages";
 
     Task AssignConnectionId(string userName, string connectionId);
-    Task AssignRoomNameAsync(string userNameOrId, string roomName);
-    Task<IEnumerable<User>> GetAllUsersAsync();
+    Task AssignRoomNameAsync(string userNameOrId, string roomName, ChatType chatType);
+    Task<IEnumerable<User>> GetAllUsersAsync(Func<User, bool> predicate);
     string GetMyName();
     Task<User> GetUserByConnectionId(string connectionId);
     Task<User> GetUserByNameOrIdGetOrDefaultAsync(string nameOrId);
@@ -22,6 +22,7 @@ public interface IUserService
     Task<bool> RemoveUserByUserNameOrIdAsync(string userNameOrId);
     Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<UserFileInfo> files);
     Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName);
+    Task<IEnumerable<ParticipantInChat>> GetUserChatsAsync(string userNameOrId);
 
 }
 
@@ -59,9 +60,9 @@ public class UserService : IUserService
     }
 
 
-    public async Task AssignRoomNameAsync(string userNameOrId, string roomName)
+    public async Task AssignRoomNameAsync(string userNameOrId, string roomName, ChatType chatType)
     {
-        await _delegateQueue.InvokeAsync(async () => await _userRepository.AddRoomToUser(userNameOrId, roomName));
+        await _delegateQueue.InvokeAsync(async () => await _userRepository.AddRoomToUser(userNameOrId, roomName, chatType));
 
     }
 
@@ -103,17 +104,35 @@ public class UserService : IUserService
         return result;
     }
 
-    public async Task<IEnumerable<User>> GetAllUsersAsync()
+    public async Task<IEnumerable<User>> GetAllUsersAsync(Func<User, bool> predicate)
     {
         var result = Enumerable.Empty<User>();
 
         await _delegateQueue.InvokeAsync(async () =>
         {
-            result = await _userRepository.GetAllAsync();
+            result = await _userRepository.GetAllAsync(predicate);
         });
 
         return result;
     }
+
+    public async Task<IEnumerable<ParticipantInChat>> GetUserChatsAsync(string userNameOrId)
+    {
+        var result = Enumerable.Empty<ParticipantInChat>();
+
+        await _delegateQueue.InvokeAsync(async () =>
+        {
+            var user = await _userRepository.GetOrDefaultAsync(u=>u.UserName == userNameOrId);
+            if(user is not null)
+            {
+                result = user.Chats.ToArray();  
+            }
+        });
+
+        return result;
+    }
+
+
 
     public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<UserFileInfo> files)
     {
@@ -145,7 +164,7 @@ public class UserService : IUserService
 
                     user.Files.Add(new UserFileInfo($"{IUserService.UserChatImage}/{userName}/{localFileame}", file.Content));
                     response.Files.Add(localFileame);
-                   
+
                     amountOfImages++;
                 }
             });

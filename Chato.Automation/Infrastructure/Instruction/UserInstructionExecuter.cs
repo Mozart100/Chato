@@ -29,7 +29,7 @@ public class UserInstructionExecuter
     private const string Hub_Leave_Group_Topic = nameof(ChattoHub.LeaveGroup);
     private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinOrCreateChat);
     private const string Hub_History_Topic = nameof(ChattoHub.DownloadHistory);
-    private const string Hub_NotifyUser_Topic = nameof(ChattoHub.NotifyUserJoined);
+    //private const string Hub_NotifyUser_Topic = nameof(ChattoHub.NotifyUserJoined);
 
     private const string Hub_RemoveGroupHistory_Topic = nameof(ChattoHub.RemoveChatHistory);
     private const string Hub_OnDisconnectedAsync_Topic = nameof(ChattoHub.UserDisconnectAsync);
@@ -88,7 +88,7 @@ public class UserInstructionExecuter
         await _connection.StartAsync();
         await ListenAsync();
 
-        await JoinOrCreateChat(IChatService.Lobi);
+        await JoinOrCreateChat(IChatService.Lobi, ChatType.Public, null);
         await DownloadHistory(IChatService.Lobi, amountMessages);
     }
 
@@ -96,7 +96,7 @@ public class UserInstructionExecuter
 
     public string UserName => RegisterResponse.UserName;
 
-    public async Task SendMessageToOthersInGroup(string chatName, string userNameFrom, string message, SenderInfoType messageType, string? imageName)
+    public async Task SendMessageToOthersInGroup(string chatName, string userNameFrom, string message, SenderInfoType messageType, string? imageName, string? description)
     {
         //var message = Encoding.UTF8.GetString(ptr);
         _logger.LogInformation($"{userNameFrom} sending in group [{chatName}] message [{message}].");
@@ -110,11 +110,11 @@ public class UserInstructionExecuter
     }
 
 
-    public async Task JoinOrCreateChat(string chatName)
+    public async Task JoinOrCreateChat(string chatName, ChatType chatType, string? description)
     {
         _logger.LogInformation($"{UserName} joins or create a chat.");
 
-        await _connection.InvokeAsync(Hub_Join_Group_Topic, chatName);
+        await _connection.InvokeAsync(Hub_Join_Group_Topic, chatName, chatType, description);
     }
 
     public async Task DownloadHistory(string chatName, int amountMessages = -1)
@@ -129,7 +129,7 @@ public class UserInstructionExecuter
             _logger.LogInformation($"Downloading message: [{json}] in chat [{chatName}]");
             amountMessages--;
 
-            if(senderInfo.SenderInfoType == SenderInfoType.Image)
+            if (senderInfo.SenderInfoType == SenderInfoType.Image)
             {
                 senderInfo.TextMessage.Should().BeNullOrEmpty();
                 senderInfo.Image.IsNotEmpty().Should().BeTrue();
@@ -231,7 +231,7 @@ public class UserInstructionExecuter
         await _connection.StopAsync();
     }
 
-    internal async Task ShouldBeNotofied(string? chatName)
+    internal async Task ShouldBeNotified(string? chatName)
     {
         _receivedNotofiedMessages.Pop().Should().Be(chatName);
     }

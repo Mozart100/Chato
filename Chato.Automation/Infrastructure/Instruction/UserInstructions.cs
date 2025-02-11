@@ -1,4 +1,7 @@
-﻿namespace Chato.Automation.Infrastructure.Instruction;
+﻿using Chato.Server.DataAccess.Models;
+using Chatto.Shared;
+
+namespace Chato.Automation.Infrastructure.Instruction;
 
 public static class UserInstructions
 {
@@ -12,7 +15,7 @@ public static class UserInstructions
 
     public const string Run_Operation_Instruction = "do_operation";//done
     public const string Leave_Room_Instruction = "leave_room";
-    public const string Notify_User_Instruction = "notify_users";
+    //public const string Notify_User_Instruction = "notify_users";
 
 
 
@@ -50,6 +53,8 @@ public class UserRegisterLobiInstruction : UserInstructionBase
     public override string InstructionName => UserInstructions.User_RegisterLobi_Instruction;
 
     public int AmountMessages { get; set; } = -1;
+
+    //public ChatType ChatType { get; set; } = ChatType.Public;
 }
 
 
@@ -90,7 +95,11 @@ public class JoinOrCreateChatInstruction : UserInstructionBase
 
     public int AmountMessages { get; set; } = -1;
 
-    //public int NotifiedMessages { get; set; } = -1;
+    public ChatType ChatType { get; set; } = ChatType.Public;
+
+    public SenderInfoType? ExpectedSenderInfoType { get; set; }
+
+    public string Description { get; set; }
 }
 
 public class GetHistoryChatInstruction : UserInstructionBase
@@ -99,10 +108,13 @@ public class GetHistoryChatInstruction : UserInstructionBase
     public int AmountMessages { get; set; } = -1;
 }
 
-public class NotifyUserInstruction : UserInstructionBase
-{
-    public override string InstructionName => UserInstructions.Notify_User_Instruction;
-}
+//public class NotifyUserInstruction : UserInstructionBase
+//{
+//    public override string InstructionName => UserInstructions.Notify_User_Instruction;
+//    public SenderInfoType? ExpectedSenderInfoType { get; set; } = null;
+
+
+//}
 
 
 

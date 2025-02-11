@@ -4,6 +4,8 @@ using Chato.Server.Services;
 using Chatto.Shared;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
+using System;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Text;
 using System.Text.Json;
@@ -15,7 +17,6 @@ public record HubDownloadInfo(int Amount);
 
 public interface IChatHub
 {
-
     Task SendTextToChat(MessageInfo messageInfo);
     //Task SendTextToChat(string chat, string fromUser, string message);
     Task SendText(string fromUser, string message);
@@ -58,7 +59,7 @@ public class ChattoHub : Hub<IChatHub>
 
 
         await ReplyMessage("server", User_Connected_Message);
-        await NotifyUserJoined(user.Identity.Name, IChatService.Lobi);
+        //await NotifyUserJoined(user.Identity.Name, IChatService.Lobi);
 
         await base.OnConnectedAsync();
 
@@ -88,21 +89,21 @@ public class ChattoHub : Hub<IChatHub>
         if (isExists)
         {
             var senderInfo = await _roomService.SendMessageAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, messageInfo.SenderInfoType);
-            messageInfo = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, senderInfo.TextMessage, senderInfo.Image, senderInfo.TimeStemp);
-            //messageInfo = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, senderInfo.TimeStemp);
-           
-            if(messageInfo.SenderInfoType == SenderInfoType.Image)
+            var response = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, senderInfo.TextMessage, senderInfo.Image, senderInfo.TimeStemp);
+
+            if (response.SenderInfoType == SenderInfoType.Image)
             {
-                await Clients.Group(messageInfo.ChatName).SendTextToChat(messageInfo);
+                await Clients.Group(response.ChatName).SendTextToChat(response);
             }
             else
             {
-                await Clients.OthersInGroup(messageInfo.ChatName).SendTextToChat(messageInfo);
+                await Clients.OthersInGroup(response.ChatName).SendTextToChat(response);
             }
         }
         else
         {
-            var senderInfo = await JoinOrCreateChatInternal(Context.ConnectionId, messageInfo.FromUser, messageInfo.ChatName);
+            //Sending message to a user.
+            var senderInfo = await JoinOrCreateChatInternal(Context.ConnectionId, messageInfo.FromUser, messageInfo.ChatName, ChatType.Private, messageInfo.DescriptionOfChat);
 
             var toUser = IChatService.GetToUser(messageInfo.ChatName);
             var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(toUser);
@@ -111,30 +112,29 @@ public class ChattoHub : Hub<IChatHub>
                 throw new ArgumentNullException($"{toUser} doesnt exists.");
             }
 
-            await JoinOrCreateChatInternal(user.ConnectionId, toUser, messageInfo.ChatName);
-            messageInfo = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, senderInfo.TimeStemp);
-            await Clients.OthersInGroup(messageInfo.ChatName).SendTextToChat(messageInfo);
+            await JoinOrCreateChatInternal(user.ConnectionId, toUser, messageInfo.ChatName, ChatType.Private, messageInfo.DescriptionOfChat);
+            var response = new MessageInfo(senderInfo.SenderInfoType, messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image, senderInfo.TimeStemp);
+            await Clients.OthersInGroup(response.ChatName).SendTextToChat(response);
         }
     }
 
-    public async Task JoinOrCreateChat(string chatName)
+    public async Task JoinOrCreateChat(string chatName, ChatType chatType, string? description)
     {
+        if (chatType == ChatType.Private)
+        {
+
+        }
         var userName = Context.User.Identity.Name;
-        await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName);
-        await NotifyUserJoined(userName, chatName);
+        await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName, chatType, description);
     }
 
-    public async Task NotifyUserJoined(string user, string chatName)
-    {
-        await Clients.All.SendNotificationn(chatName, user);
-    }
 
     public async IAsyncEnumerable<MessageInfo> DownloadHistory(string chatName)
     {
         //if (chatName.Equals("anatoliy__nathan"))
         //{
 
-        //}
+        //}%
 
         var isExists = await _roomService.IsChatExists(chatName);
         if (isExists)
@@ -183,12 +183,12 @@ public class ChattoHub : Hub<IChatHub>
     private async Task JoinLobiChatInternal()
     {
         await Groups.AddToGroupAsync(Context.ConnectionId, IChatService.Lobi);
-        await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, IChatService.Lobi);
+        await _assignmentService.JoinOrCreateRoom(Context.User.Identity.Name, IChatService.Lobi, ChatType.Public, null);
     }
-    private async Task<SenderInfo> JoinOrCreateChatInternal(string connectionId, string userName, string roomName)
+    private async Task<SenderInfo> JoinOrCreateChatInternal(string connectionId, string userName, string roomName, ChatType chatType, string? chatDescription)
     {
         await Groups.AddToGroupAsync(connectionId, roomName);
-        return await _assignmentService.JoinOrCreateRoom(userName, roomName);
+        return await _assignmentService.JoinOrCreateRoom(userName, roomName, chatType, chatDescription);
     }
 
 

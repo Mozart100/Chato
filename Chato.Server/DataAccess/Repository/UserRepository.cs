@@ -1,13 +1,14 @@
 ﻿using AutoMapper;
 using Chato.Server.DataAccess.Models;
 using Chato.Server.Infrastracture;
+using Chatto.Shared;
 
 namespace Chato.Server.DataAccess.Repository;
 
 
 public interface IUserRepository : IRepositoryBase<UserDb, User>
 {
-    Task AddRoomToUser(string userNameOrId, string roomName);
+    Task AddRoomToUser(string userNameOrId, string roomName, ChatType chatType);
     Task AssignConnectionId(string userName, string connectionId);
     Task<IEnumerable<UserFileInfo>> DownloadFiles(string userName);
 
@@ -24,12 +25,12 @@ public class UserRepository : AutoRepositoryBase<UserDb, User>, IUserRepository
         _logger = logger;
     }
 
-    public async Task AddRoomToUser(string userNameOrId, string roomName)
+    public async Task AddRoomToUser(string userNameOrId, string roomName, ChatType chatType)
     {
         await UpdateAsync(u => u.UserName == userNameOrId, user =>
         {
             var rooms = user.Chats.SafeToHashSet();
-            rooms.Add(roomName);
+            rooms.Add(new ParticipantInChat(roomName, chatType));
             user.Chats = rooms.ToArray();
         });
 
@@ -44,11 +45,11 @@ public class UserRepository : AutoRepositoryBase<UserDb, User>, IUserRepository
     {
         UserFileInfo[] result = [];
 
-        var model = Models.FirstOrDefault(x=>x.UserName == userName);
+        var model = Models.FirstOrDefault(x => x.UserName == userName);
 
-        if(model is not null)
+        if (model is not null)
         {
-           result=model.Files.ToArray();
+            result = model.Files.ToArray();
         }
 
         return result;

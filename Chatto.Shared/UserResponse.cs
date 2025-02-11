@@ -1,5 +1,11 @@
 ﻿namespace Chatto.Shared;
 
+public enum ChatType
+{
+    Public, Private
+}
+public record ParticipantInChat(string ChatName, ChatType ChatType);
+
 public interface IAutomapperEntities
 {
 
@@ -11,7 +17,7 @@ public interface IUserEnittyMapper : IAutomapperEntities
     int Age { get; set; }
     string Description { get; set; }
     string Gender { get; set; }
-    string[] Chats { get; set; }
+    ParticipantInChat [] Chats { get; set; }
     string ConnectionId { get; set; }
 }
 
@@ -22,7 +28,7 @@ public class UserDto : IUserEnittyMapper
     public int Age { get; set; }
     public string Description { get; set; }
     public string Gender { get; set; }
-    public string[] Chats { get; set; }
+    public ParticipantInChat[] Chats { get; set; }
     public string ConnectionId { get; set; }
 
 }

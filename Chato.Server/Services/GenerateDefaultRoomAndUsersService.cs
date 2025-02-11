@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 using System.Data.Common;
 using System;
 using System.Text;
+using Chato.Server.DataAccess.Models;
 
 namespace Chato.Server.Services;
 
@@ -20,7 +21,6 @@ public interface IPersistentChatAndUsers
 
     public const string Supervisor = "supervisor";
       
-
 
     public const string ToRemoveRoom = "ToRemove";
 
@@ -72,7 +72,7 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
 
 
             var message = $"{request.UserName} has registered";
-            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, chat);
+            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, chat,ChatType.Public);
             await _roomService.SendMessageAsync(chat, request.UserName, message,null,SenderInfoType.TextMessage);
 
             requests.Add((request.UserName, token));
@@ -97,7 +97,7 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
                 Age = 20,
             };
 
-            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, chat);
+            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, chat,ChatType.Public);
             requests.Add((request.UserName, token));
         }
 
@@ -122,7 +122,7 @@ public class GenerateDefaultRoomAndUsersService : IPreloadDataLoader
                 Age = 20,
             };
 
-            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, chat);
+            var token = await _assignmentService.RegisterUserAndAssignToRoom(request, chat, ChatType.Public);
             requests.Add((request.UserName, token));
         }
 

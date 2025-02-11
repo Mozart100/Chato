@@ -1,4 +1,5 @@
-﻿using Chato.Server.Services;
+﻿using Chato.Server.DataAccess.Models;
+using Chato.Server.Services;
 using Chatto.Shared;
 using System.Text;
 
@@ -13,10 +14,10 @@ public interface IUserInfo
 
 public record UserInfo(InstructionNode Instruction, RegistrationResponse RegistrationResponse) : IUserInfo;
 
-public record InstructionNode(string UserName, string? ChatName, UserInstructionBase Instruction,string Message,   string? FromArrived, SenderInfoType messageType,string? ImageName,
+public record InstructionNode(string UserName, string? ChatName, UserInstructionBase Instruction, string Message, string? FromArrived, SenderInfoType messageType, string? ImageName,
     HashSet<InstructionNode> Children)
 {
-    public InstructionNode(string userName, string? groupName, UserInstructionBase instruction, string message, string? fromArrived ,SenderInfoType messageType,string? imageName)
+    public InstructionNode(string userName, string? groupName, UserInstructionBase instruction, string message, string? fromArrived, SenderInfoType messageType, string? imageName)
         : this(userName, groupName, instruction, message, fromArrived, messageType, imageName, new HashSet<InstructionNode>())
     {
     }
@@ -38,7 +39,7 @@ public static class InstructionNodeFluentApi
 
     public static InstructionNode RegisterSingleUserInLoLobi(string user)
     {
-        return new InstructionNode(userName: user, groupName: IChatService.Lobi, instruction: new UserRegisterLobiInstruction() { AmountMessages = -1 }, message: null, fromArrived: null , messageType:SenderInfoType.TextMessage , null);
+        return new InstructionNode(userName: user, groupName: IChatService.Lobi, instruction: new UserRegisterLobiInstruction() { AmountMessages = -1 }, message: null, fromArrived: null, messageType: SenderInfoType.TextMessage, null);
     }
 
 
@@ -71,26 +72,37 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode NotifyUser(this InstructionNode info, string  chat)
-    {
-        var @new = info with
-        {
-            ChatName = chat,
-            FromArrived = null,
-            Instruction = new NotifyUserInstruction(),
-            Message = null,
-            Children = new(),
-        };
+    //public static InstructionNode NotifyUser(this InstructionNode info, string  chat)
+    //{
+    //    var @new = info with
+    //    {
+    //        ChatName = chat,
+    //        FromArrived = null,
+    //        Instruction = new NotifyUserInstruction(),
+    //        Message = null,
+    //        Children = new(),
+    //    };
 
-        return @new;
+    //    return @new;
+    //}
+
+    public static InstructionNode JoinOrCreatePrivateChatxxx(this InstructionNode info, string chatName, int amountMessages = -1, SenderInfoType? senderInfoType = null, string? description = null)
+    {
+        return JoinOrCreateChat(info, chatName, ChatType.Private, amountMessages, senderInfoType, description);
     }
 
-    public static InstructionNode JoinOrCreateChat(this InstructionNode info, string chatName, int amountMessages = -1)
+    public static InstructionNode JoinOrCreatePublicChat(this InstructionNode info, string chatName, int amountMessages = -1, SenderInfoType? senderInfoType = null, string? description = null)
+    {
+
+        return JoinOrCreateChat(info, chatName, ChatType.Public, amountMessages, senderInfoType, description);
+    }
+
+    private static InstructionNode JoinOrCreateChat(this InstructionNode info, string chatName, ChatType chatType, int amountMessages = -1, SenderInfoType? senderInfoType = null, string? description = null)
     {
         var @new = info with
         {
             ChatName = chatName,
-            Instruction = new JoinOrCreateChatInstruction() { AmountMessages = amountMessages },
+            Instruction = new JoinOrCreateChatInstruction() { AmountMessages = amountMessages, ChatType = chatType, ExpectedSenderInfoType = senderInfoType, Description = description },
             FromArrived = null,
             Message = null,
             Children = new(),
@@ -113,8 +125,8 @@ public static class InstructionNodeFluentApi
         return @new;
     }
 
-    public static InstructionNode SendingTextToRestRoom(this InstructionNode info, string message, string chatName, int amountAwait , 
-        SenderInfoType messageType = SenderInfoType.TextMessage,string imageName = null)
+    public static InstructionNode SendingTextToRestRoom(this InstructionNode info, string message, string chatName, int amountAwait,
+        SenderInfoType messageType = SenderInfoType.TextMessage, string imageName = null)
     {
         var @new = info with
         {
