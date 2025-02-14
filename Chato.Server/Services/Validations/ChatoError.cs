@@ -1,4 +1,7 @@
-﻿namespace Arkovean.Chat.Services.Validations
+﻿using System.Text;
+using Chato.Server.Infrastracture;
+
+namespace Arkovean.Chat.Services.Validations
 {
     public class ChatoError
     {
@@ -22,5 +25,17 @@
         }
 
         public ChatoError[] ChatoErrors { get; }
+
+        //public override string ToString()
+        //{
+        //    var stringBuilder = new StringBuilder();
+        //    stringBuilder.AppendLine("ChatoException Validation:");
+        //    foreach (var item in ChatoErrors.SafeToArray())
+        //    {
+        //        stringBuilder.AppendLine($"{item.PropertyName} - {item.ErrorMessage}.");
+        //    }
+        //    var result = stringBuilder.ToString();
+        //    return result;  
+        //}
     }
 }

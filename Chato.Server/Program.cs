@@ -9,10 +9,14 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using System.Security.Policy;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Host.UseSerilog((context, loggerConfiguration) => loggerConfiguration.ReadFrom.Configuration(context.Configuration));
+
 
 builder.Services.Configure<LoggerFilterOptions>(options =>
 {
@@ -66,9 +70,9 @@ if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
-
-
 }
+
+app.UseSerilogRequestLogging();
 app.UseCors(ServiceRegistrar.CorsPolicy);
 // app.UseHttpsRedirection();
 
