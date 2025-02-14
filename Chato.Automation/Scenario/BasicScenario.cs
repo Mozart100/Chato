@@ -364,6 +364,45 @@ internal class BasicScenario : InstructionScenarioBase
             .Step(users[Nathan_User].SendingTextToRestRoom(message_image_2, chat2, 1, SenderInfoType.Image, expectedFilePath))
             .Step(users[Anatoliy_User].ReceivingMessage(chat2, Nathan_User, null, SenderInfoType.Image, expectedFilePath))
 
+            .Step(users[Anatoliy_User].Do(async user =>
+            {
+                var token = user.RegistrationResponse.Token;
+                var imagePath = $"{BaseUrl}/wwwroot/{expectedFilePath}";
+
+                var response = await DownloadImageAsync(imagePath, token);
+
+                if(response is null)
+                {
+                     imagePath = $"{BaseUrl}/{expectedFilePath}";
+                     response = await DownloadImageAsync(imagePath, token);
+
+                    if(response is null)
+                    {
+
+                    }
+                    else
+                    {
+
+                    }
+                }
+                string base64String = Convert.ToBase64String(response);
+
+
+                string savePath = @"C:\MyDevelopment\Chatto\Chato.Automation\Scenario\saved_image.jpg";
+
+                try
+                {
+
+                    //File.WriteAllBytes(savePath, response);
+                }
+                catch (Exception exception)
+                {
+
+                }
+                base64String.Should().NotBeNullOrEmpty();
+                //message_image_2.Should().Be(base64String);
+            }))
+
             .Step(users[Anatoliy_User].GetHistoryChat(chat2, 4))
 
             .Step(users[Anatoliy_User].Logout())

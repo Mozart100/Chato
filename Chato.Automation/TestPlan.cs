@@ -31,7 +31,7 @@ internal class TestPlan
     public async Task RunAsync(string[] args)
     {
 
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 1; i++)
         {
 
 

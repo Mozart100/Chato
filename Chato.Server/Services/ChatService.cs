@@ -236,6 +236,7 @@ public class ChatService : IChatService
 
                         byte[] fileBytes = Convert.FromBase64String(textMessage);
                         var filePath = Path.Combine(wwwRootPath, localPath);
+                        //string base64String = Convert.ToBase64String(fileBytes);
 
                         try
                         {
