@@ -17,7 +17,7 @@ if (Test-Path $SeqLogsPath) {
 
 # Recreate the Seq container with updated ports
 Write-Host "Starting new Seq container..."
-docker run -d --restart unless-stopped --name $ContainerName -e ACCEPT_EULA=Y -v $SeqLogsPath:/data -p 5341:5341 -p 8081:80 datalust/seq:latest
+docker run -d --restart unless-stopped --name $ContainerName -e ACCEPT_EULA=Y -v "${SeqLogsPath}:/data" -p 5341:5341 -p 8081:80 datalust/seq:latest
 
 Write-Host "Seq container is running at http://localhost:8081"
 Write-Host "Seq ingestion port: 5341"
