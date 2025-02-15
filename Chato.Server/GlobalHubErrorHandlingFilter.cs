@@ -15,7 +15,12 @@ public class GlobalHubErrorHandlingFilter : IHubFilter
     {
         try
         {
-            return await next(invocationContext);
+
+            _logger.LogInformation($"{invocationContext.HubMethod.Name} -- started");
+            var result = await next(invocationContext);
+            _logger.LogInformation($"{invocationContext.HubMethod.Name} -- finished");
+
+            return result;
         }
         catch (Exception ex)
         {

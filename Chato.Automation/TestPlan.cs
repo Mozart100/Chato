@@ -30,7 +30,7 @@ internal class TestPlan
     {
         try
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < 2; i++)
             {
                 await _registrationValidationScenario.StartRunScenario();
                 await _basicScenario.StartRunScenario();

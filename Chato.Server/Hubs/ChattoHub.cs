@@ -27,17 +27,19 @@ public class ChattoHub : Hub<IChatHub>
     public const string HubMapUrl = "/rtxrazgavor";
 
     public const string User_Connected_Message = $"You are connected to {IChatService.Lobi} chat";
-
+    private readonly ILogger<ChattoHub> _logger;
     private readonly IUserService _userService;
     private readonly IChatService _roomService;
     private readonly IAssignmentService _assignmentService;
 
     public ChattoHub(
+        ILogger<ChattoHub>logger,
         IUserService userService,
         IChatService roomService,
         IAssignmentService assignmentService,
         IHttpContextAccessor httpContextAccessor)
     {
+        this._logger = logger;
         this._userService = userService;
         this._roomService = roomService;
         this._assignmentService = assignmentService;
