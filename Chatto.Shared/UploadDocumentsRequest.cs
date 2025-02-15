@@ -2,14 +2,14 @@
 
 namespace Chatto.Shared;
 
-public class UploadDocumentsRequest
-{
-    public IFormFile Document1 { get; set; }
-    public IFormFile Document2 { get; set; }
-    public IFormFile Document3 { get; set; }
-    public IFormFile Document4 { get; set; }
-    public IFormFile Document5 { get; set; }
-}
+//public class UploadDocumentsRequest
+//{
+//    public IFormFile Document1 { get; set; }
+//    public IFormFile Document2 { get; set; }
+//    public IFormFile Document3 { get; set; }
+//    public IFormFile Document4 { get; set; }
+//    public IFormFile Document5 { get; set; }
+//}
 
 
 public abstract class UserImagesResponseBase
