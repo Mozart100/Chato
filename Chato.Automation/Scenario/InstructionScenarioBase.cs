@@ -22,7 +22,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
         Users = new Dictionary<string, UserInstructionExecuter>();
         _groupUsers = new Dictionary<string, HashSet<string>>();
 
-        _counterSignal = new CounterSignal(2);
+        _counterSignal = new CounterSignal(Logger, 2);
 
         _actionMapper = new Dictionary<string, Func<UserInstructionExecuter, InstructionNode, Task>>();
 
@@ -53,7 +53,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
     }
 
-    private async Task SendMessageToOthersInGroup(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, string message, SenderInfoType messageType, string? imageName , string ? description)
+    private async Task SendMessageToOthersInGroup(UserInstructionExecuter userExecuter, string groupName, string userNameFrom, string message, SenderInfoType messageType, string? imageName, string? description)
     {
         //var message2 = Encoding.UTF8.GetString(message);
         await userExecuter.SendMessageToOthersInGroup(chatName: groupName, userNameFrom: userNameFrom, message: message, messageType: messageType, imageName, description);
@@ -114,7 +114,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             await _counterSignal.SetThrasholdAsync(1);
 
 
-            await userExecuter.JoinOrCreateChat(instruction.ChatName,chatType,description);
+            await userExecuter.JoinOrCreateChat(instruction.ChatName, chatType, description);
             await userExecuter.DownloadHistory(instruction.ChatName, amountMessage);
 
             //if(amountNotified > 0)
@@ -183,18 +183,24 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             }
 
 
-            await _counterSignal.SetThrasholdAsync(1);
+            await _counterSignal.SetThrasholdAsync(2);
 
             await StartSignalR(userExecuter: userExecuter, amountMessages: amountMessages);
 
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
             {
-                throw new Exception("Not all users received their messages");
+                var any = await _counterSignal.AnyRelease();
+                if (!any)
+                {
+                    throw new Exception($"{UserInstructions.User_RegisterLobi_Instruction} - Not all users received their messages");
+                }
             }
+            else
+            {
 
-
-            await userExecuter.MessageShouldBe(IChatService.Lobi, instruction.UserName, "server", ChattoHub.User_Connected_Message, imagePath: null);
+                await userExecuter.MessageShouldBe(IChatService.Lobi, instruction.UserName, "server", ChattoHub.User_Connected_Message, imagePath: null);
+            }
         });
 
 
@@ -213,7 +219,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
                 awaitAmount = instance.AmountAwaits;
             }
             await _counterSignal.SetThrasholdAsync(awaitAmount);
-            await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName: instruction.ChatName, userNameFrom: instruction.UserName, message: instruction.Message, messageType: instruction.messageType, imageName: instruction.ImageName,string.Empty);
+            await SendMessageToOthersInGroup(userExecuter: userExecuter, groupName: instruction.ChatName, userNameFrom: instruction.UserName, message: instruction.Message, messageType: instruction.messageType, imageName: instruction.ImageName, string.Empty);
 
             if (await _counterSignal.WaitAsync(timeoutInSecond: 5) == false)
             {
@@ -229,7 +235,7 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
 
             }
 
-            if( instruction.messageType == SenderInfoType.Image)
+            if (instruction.messageType == SenderInfoType.Image)
             {
 
             }

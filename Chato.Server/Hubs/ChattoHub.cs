@@ -18,9 +18,7 @@ public record HubDownloadInfo(int Amount);
 public interface IChatHub
 {
     Task SendTextToChat(MessageInfo messageInfo);
-    //Task SendTextToChat(string chat, string fromUser, string message);
     Task SendText(string fromUser, string message);
-    Task SendNotificationn(string chatname, string message);
 }
 
 [Authorize]
@@ -48,6 +46,8 @@ public class ChattoHub : Hub<IChatHub>
 
     public override async Task OnConnectedAsync()
     {
+        await base.OnConnectedAsync();
+
         var ptr = Encoding.UTF8.GetBytes("Your are connected");
 
         var connectionId = Context.ConnectionId;
@@ -61,7 +61,7 @@ public class ChattoHub : Hub<IChatHub>
         await ReplyMessage("server", User_Connected_Message);
         //await NotifyUserJoined(user.Identity.Name, IChatService.Lobi);
 
-        await base.OnConnectedAsync();
+        //await base.OnConnectedAsync();
 
         //await JoinLobiChatInternal();
     }
