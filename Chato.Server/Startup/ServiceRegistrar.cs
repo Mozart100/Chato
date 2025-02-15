@@ -6,6 +6,7 @@ using Chato.Server.Services;
 using Chato.Server.Services.Validations;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.AspNetCore.ResponseCompression;
+using Microsoft.AspNetCore.SignalR;
 using Microsoft.FeatureManagement;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
@@ -44,6 +45,7 @@ public static class ServiceRegistrar
         services.AddSignalR(options =>
         {
             options.MaximumReceiveMessageSize = 1048576;
+            options.AddFilter<GlobalHubErrorHandlingFilter>();
         });
         services.AddResponseCompression(options =>
         {
