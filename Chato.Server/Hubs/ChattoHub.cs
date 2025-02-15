@@ -18,9 +18,7 @@ public record HubDownloadInfo(int Amount);
 public interface IChatHub
 {
     Task SendTextToChat(MessageInfo messageInfo);
-    //Task SendTextToChat(string chat, string fromUser, string message);
     Task SendText(string fromUser, string message);
-    Task SendNotificationn(string chatname, string message);
 }
 
 [Authorize]
@@ -29,17 +27,19 @@ public class ChattoHub : Hub<IChatHub>
     public const string HubMapUrl = "/rtxrazgavor";
 
     public const string User_Connected_Message = $"You are connected to {IChatService.Lobi} chat";
-
+    private readonly ILogger<ChattoHub> _logger;
     private readonly IUserService _userService;
     private readonly IChatService _roomService;
     private readonly IAssignmentService _assignmentService;
 
     public ChattoHub(
+        ILogger<ChattoHub>logger,
         IUserService userService,
         IChatService roomService,
         IAssignmentService assignmentService,
         IHttpContextAccessor httpContextAccessor)
     {
+        this._logger = logger;
         this._userService = userService;
         this._roomService = roomService;
         this._assignmentService = assignmentService;
@@ -48,6 +48,8 @@ public class ChattoHub : Hub<IChatHub>
 
     public override async Task OnConnectedAsync()
     {
+        await base.OnConnectedAsync();
+
         var ptr = Encoding.UTF8.GetBytes("Your are connected");
 
         var connectionId = Context.ConnectionId;
@@ -61,7 +63,7 @@ public class ChattoHub : Hub<IChatHub>
         await ReplyMessage("server", User_Connected_Message);
         //await NotifyUserJoined(user.Identity.Name, IChatService.Lobi);
 
-        await base.OnConnectedAsync();
+        //await base.OnConnectedAsync();
 
         //await JoinLobiChatInternal();
     }

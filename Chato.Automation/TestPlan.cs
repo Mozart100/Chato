@@ -6,7 +6,6 @@ namespace Chato.Automation;
 internal class TestPlan
 {
     private readonly ILogger<TestPlan> _logger;
-    //private readonly HubStreamScenario _hubStreamScenario;
     private readonly BasicScenario _basicScenario;
     private readonly RegistrationValidationScenario _registrationValidationScenario;
     private readonly RoomSendingReceivingScenario roomSendingReceivingScenario;
@@ -20,7 +19,6 @@ internal class TestPlan
         )
     {
         _logger = logger;
-        //this._hubStreamScenario = hubStreamScenario;
         this._basicScenario = basicScenario;
         this._registrationValidationScenario = registrationValidationScenario;
         this.roomSendingReceivingScenario = roomSendingReceivingScenario;
@@ -30,20 +28,19 @@ internal class TestPlan
 
     public async Task RunAsync(string[] args)
     {
-
-        for (int i = 0; i < 2; i++)
+        try
         {
+            for (int i = 0; i < 2; i++)
+            {
+                await _registrationValidationScenario.StartRunScenario();
+                await _basicScenario.StartRunScenario();
+                await roomSendingReceivingScenario.StartRunScenario();
+            }
 
-
-            await _registrationValidationScenario.StartRunScenario();
-            await _basicScenario.StartRunScenario();
-            await roomSendingReceivingScenario.StartRunScenario();
-
-            //await _cacheScenario.StartRunScenario();
-
-
-            //await _hubStreamScenario.StartRunScenario();
-
+        }
+        catch (Exception ex)
+        {
+            throw;
         }
 
 

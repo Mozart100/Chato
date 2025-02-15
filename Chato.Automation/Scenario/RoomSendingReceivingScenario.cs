@@ -23,22 +23,13 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
 
     public RoomSendingReceivingScenario(ILogger<BasicScenario> logger, ScenarioConfig config) : base(logger, config)
     {
-        BusinessLogicCallbacks.Add(ClosingChat);
-        //BusinessLogicCallbacks.Add(SendingInsideTheRoom);
-        //BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
-
-
-        //BusinessLogicCallbacks.Add(Setup_SendingInsideTheRoom_Step);
-        //BusinessLogicCallbacks.Add(RoomIsRemovedAfterEveryoneLeft);
-        //BusinessLogicCallbacks.Add(async () => await UsersCleanup(Users.Keys.ToArray()));
-
-
+        BusinessLogicCallbacks.Add(Sanity);
     }
 
     public override string ScenarioName => "Room behaviour";
     public override string Description => "Sending and receiving messages in the room";
 
-    private async Task ClosingChat()
+    private async Task Sanity()
     {
         await RegisterUsers(Anatoliy_User, Olessya_User, Nathan_User);
 

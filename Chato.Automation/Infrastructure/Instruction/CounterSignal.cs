@@ -1,4 +1,7 @@
-﻿using Chato.Server.Infrastracture;
+﻿using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using Chato.Server.Infrastracture;
+using Microsoft.Extensions.Logging;
 
 namespace Chato.Automation.Infrastructure.Instruction;
 
@@ -7,7 +10,6 @@ public class CounterSignal
     public class CounterItemSignal
     {
         private readonly SemaphoreSlim _ensureSingleTask;
-
         private int _thrasholdTasks;
         private int _current;
 
@@ -35,6 +37,15 @@ public class CounterSignal
         public async Task SetthrasholdAsync(int thrashold)
         {
             await Executer(() => _current = _thrasholdTasks = thrashold);
+        }
+
+        public async Task<bool> Predicate(Predicate<int> func)
+        {
+            bool result = false;
+
+            await Executer(() => result = func(_current));
+
+            return result;
         }
 
         public async Task<bool> IsReleased()
@@ -81,21 +92,31 @@ public class CounterSignal
     }
 
     private CounterItemSignal _counterSignal;
+    private readonly ILogger _logger;
 
-    public CounterSignal(int thrashold)
+    public CounterSignal(ILogger logger, int thrashold)
     {
         _counterSignal = new CounterItemSignal(thrashold);
+        this._logger = logger;
     }
 
-    public async Task ReleaseAsync()
+    public async Task ReleaseAsync([CallerMemberName] string caller = "")
     {
         await _counterSignal.Decrement();
+        _logger.LogInformation($"{caller} - Released.");
     }
 
     public async Task<bool> WaitAsync(int timeoutInSecond)
     {
         var isPassed = await _counterSignal.IsPollingReleased(timeoutInSecond);
         return isPassed;
+    }
+
+    //Currently only 1 needed only in registration
+    public async Task<bool> AnyRelease()
+    {
+        bool result = await _counterSignal.Predicate(x => x == 1);
+        return result;
     }
 
     public async Task ResetAsync()

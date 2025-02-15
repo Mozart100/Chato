@@ -32,12 +32,13 @@ namespace Chato.Server.Services.Validations
         }
 
 
-        private readonly ILogger<RegistrationValidationService> _logger;
+        //private readonly ILogger<RegistrationValidationService> _logger;
         private readonly IUserService _userService;
 
         public RegistrationValidationService(ILogger<RegistrationValidationService> logger, IUserService userService)
+            :base(logger)
         {
-            _logger = logger;
+            //_logger = logger;
             this._userService = userService;
         }
 

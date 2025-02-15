@@ -316,6 +316,25 @@ public abstract class ScenarioBase
         }
     }
 
+    public async Task<byte[]> DownloadImageAsync(string url, string token)
+    {
+        using (var client = new HttpClient())
+        {
+            client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+            HttpResponseMessage httpResponse = await client.GetAsync(url);
+            var result = default(byte[]);
+
+            if (httpResponse.IsSuccessStatusCode)
+            {
+                byte[] imageBytes = await httpResponse.Content.ReadAsByteArrayAsync();
+                result = imageBytes;
+            }
+
+            return result;
+        }
+    }
+
     private async Task<TResponse> RunPutOrPostCommand<TRequest, TResponse>(string url, TRequest request, bool isPostRequest = true)
     {
         using (HttpClient client = new HttpClient())

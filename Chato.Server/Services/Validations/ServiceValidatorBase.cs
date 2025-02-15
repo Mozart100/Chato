@@ -1,11 +1,18 @@
 ﻿using Arkovean.Chat.Services.Validations;
 using Chato.Server.Infrastracture;
 using FluentValidation.Results;
+using Serilog.Core;
 
 namespace Chato.Server.Services.Validations
 {
     public abstract class ServiceValidatorBase
     {
+        protected ServiceValidatorBase(ILogger logger)
+        {
+            Logger = logger;
+        }
+
+
         protected virtual IList<ChatoError> Dissect(ValidationResult validationResult)
         {
             var errors = new List<ChatoError>();
@@ -19,22 +26,30 @@ namespace Chato.Server.Services.Validations
 
             return errors;
         }
+        public ILogger Logger { get; }
 
         protected void Validate(IEnumerable<ChatoError> errors)
         {
             if (errors.SafeAny())
             {
                 var instance = new ChatoException(errors.ToArray());
-                throw instance;
+                ThrowException(instance);
             }
         }
 
 
-        protected void Validate(string propertyName , string reason )
+        protected void Validate(string propertyName, string reason)
         {
             var error = new ChatoError(propertyName, reason);
             var instance = new ChatoException(error);
-            throw instance;
+            ThrowException(instance);
+        }
+
+        private void ThrowException(ChatoException chatoException)
+        {
+            Logger.LogError(chatoException, "ChatoException {Topic} {@Erros} {@Exception}", "Validation", chatoException.ChatoErrors, chatoException);
+
+            throw chatoException;
         }
 
     }

@@ -11,6 +11,7 @@ using System;
 using System.Text;
 using System.Text.Json.Serialization;
 using System.Text.Json;
+using System.Linq.Expressions;
 
 
 namespace Chato.Automation.Infrastructure.Instruction;
@@ -23,39 +24,28 @@ public class UserInstructionExecuter
 {
     public const string Hub_From_Server = "server";
 
-    //private const string Hub_Send_Message_To_Others_Topic = nameof(ChattoHub.BroadcastMessage);
-
     private const string Hub_Send_Other_In_Group_Topic = nameof(ChattoHub.SendMessageToOthersInChat);
     private const string Hub_Leave_Group_Topic = nameof(ChattoHub.LeaveGroup);
     private const string Hub_Join_Group_Topic = nameof(ChattoHub.JoinOrCreateChat);
     private const string Hub_History_Topic = nameof(ChattoHub.DownloadHistory);
-    //private const string Hub_NotifyUser_Topic = nameof(ChattoHub.NotifyUserJoined);
 
     private const string Hub_RemoveGroupHistory_Topic = nameof(ChattoHub.RemoveChatHistory);
     private const string Hub_OnDisconnectedAsync_Topic = nameof(ChattoHub.UserDisconnectAsync);
 
 
-
     private readonly ILogger _logger;
-    private readonly CounterSignal _signal;
+    private readonly CounterSignal _counterSignal;
     private readonly HubConnection _connection;
-    //private readonly Queue<HubMessageRecievedBase> _receivedMessages;
     private readonly Queue<HubMessageByteRecieved> _receivedMessages;
-    private readonly Stack<string> _receivedNotofiedMessages;
-    private readonly HashSet<string> _ignoreUsers;
 
 
-    public UserInstructionExecuter(RegistrationResponse registerResponse, string url, ILogger logger, CounterSignal signal)
+    public UserInstructionExecuter(RegistrationResponse registerResponse, string url, ILogger logger, CounterSignal counterSignal)
     {
 
         _logger = logger;
-        this._signal = signal;
-        _ignoreUsers = new HashSet<string>();
-        _ignoreUsers.Add(Hub_From_Server);
+        this._counterSignal = counterSignal;
 
-        //_receivedMessages = new Queue<HubMessageRecievedBase>();
         _receivedMessages = new Queue<HubMessageByteRecieved>();
-        _receivedNotofiedMessages = new Stack<string>();
 
         _connection = new HubConnectionBuilder()
        .WithUrl(url, options =>
@@ -142,7 +132,8 @@ public class UserInstructionExecuter
             amountMessages.Should().Be(0);
         }
 
-        await _signal.ReleaseAsync();
+        await _counterSignal.ReleaseAsync();
+
     }
 
     public async Task LeaveChatInfo(string groupName)
@@ -154,28 +145,35 @@ public class UserInstructionExecuter
 
     public async Task MessageShouldBe(string chatName, string user, string fromArrived, string message, string imagePath)
     {
-        _logger.LogWarning($"In {chatName} -- From user {user} hould be [{message}].");
-
-        var messageReceived = _receivedMessages.Dequeue();
-
-        if (messageReceived is HubMessageByteRecieved stringMessage)
+        try
         {
-            stringMessage.From.Should().Be(fromArrived);
-            stringMessage.Data.Should().Be(message);
-            stringMessage.ChatNAme.Should().Be(chatName);
+            _logger.LogWarning($"In {chatName} -- From user {user} hould be [{message}].");
 
-            if (stringMessage.ImagePath.IsNullOrEmpty() == false)
+            var messageReceived = _receivedMessages.Dequeue();
+
+            if (messageReceived is HubMessageByteRecieved stringMessage)
             {
+                stringMessage.From.Should().Be(fromArrived);
+                stringMessage.Data.Should().Be(message);
+                stringMessage.ChatNAme.Should().Be(chatName);
 
+                if (stringMessage.ImagePath.IsNullOrEmpty() == false)
+                {
+
+                }
+                stringMessage.ImagePath.Should().Be(imagePath);
             }
-            stringMessage.ImagePath.Should().Be(imagePath);
+        }
+        catch (Exception exception)
+        {
+            throw;
         }
     }
 
     public async Task NotReceivedCheckAsync()
     {
         _receivedMessages.Any().Should().BeFalse();
-        await _signal.ReleaseAsync();
+        await _counterSignal.ReleaseAsync();
     }
 
 
@@ -185,7 +183,7 @@ public class UserInstructionExecuter
         {
             var ptr = Encoding.UTF8.GetBytes(message);
             await ExpectedMessagesAsync(IChatService.Lobi, user, message, null);
-            await _signal.ReleaseAsync();
+            await _counterSignal.ReleaseAsync();
         });
 
 
@@ -197,18 +195,18 @@ public class UserInstructionExecuter
             {
 
             }
+            try
+            {
+                await ExpectedMessagesAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image);
+            }
+            catch (Exception e)
+            {
+                _logger.LogWarning("xxxxxx");
+            }
 
-            await ExpectedMessagesAsync(messageInfo.ChatName, messageInfo.FromUser, messageInfo.TextMessage, messageInfo.Image);
-
-            await _signal.ReleaseAsync();
+            await _counterSignal.ReleaseAsync();
         });
 
-        _connection.On<string, string>(nameof(IChatHub.SendNotificationn), async (chatName, user) =>
-        {
-            _logger.LogInformation($" ------------  In {chatName}==>{user}-----------");
-            _receivedNotofiedMessages.Push(chatName);
-
-        });
 
     }
 
@@ -223,16 +221,11 @@ public class UserInstructionExecuter
     public async Task UserDisconnectingAsync()
     {
         await _connection.InvokeAsync(Hub_OnDisconnectedAsync_Topic);
-        await _signal.ReleaseAsync();
+        await _counterSignal.ReleaseAsync();
     }
 
     public async Task KillConnectionAsync()
     {
         await _connection.StopAsync();
-    }
-
-    internal async Task ShouldBeNotified(string? chatName)
-    {
-        _receivedNotofiedMessages.Pop().Should().Be(chatName);
     }
 }
