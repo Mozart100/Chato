@@ -71,7 +71,7 @@ public class ChatService : IChatService
         return room;
     }
 
-    public async Task<ChatRoomDto> CreateRoomAsync(string roomName, ChatType chatType,string descrion)
+    public async Task<ChatRoomDto> CreateRoomAsync(string roomName, ChatType chatType, string descrion)
     {
         var result = default(ChatDb);
 
@@ -83,9 +83,9 @@ public class ChatService : IChatService
         return result.ToChatRoomDto();
     }
 
-    private async Task<ChatDb> CreateRoomCoreAsync(string roomName, ChatType chatType,  string description)
+    private async Task<ChatDb> CreateRoomCoreAsync(string roomName, ChatType chatType, string description)
     {
-        var result = await _chatRoomRepository.InsertAsync(new ChatDb { Id = roomName, ChatType = chatType , Description = description });
+        var result = await _chatRoomRepository.InsertAsync(new ChatDb { Id = roomName, ChatType = chatType, Description = description, Expire = DateTime.UtcNow.AddDays(1) });
         return result;
     }
 
@@ -300,7 +300,7 @@ public class ChatService : IChatService
             }
             else
             {
-                var createRoom = await CreateRoomCoreAsync(roomName, chatType,description);
+                var createRoom = await CreateRoomCoreAsync(roomName, chatType, description);
                 createRoom.Users.Add(userName);
                 result = await AddTextMessage(SenderInfoType.Created, roomName, userName, null, null);
             }
@@ -316,7 +316,7 @@ public class ChatService : IChatService
             var room = await GetRoomByNameOrIdCoreAsync(IChatService.Lobi);
             if (room is null)
             {
-                await CreateRoomCoreAsync(IChatService.Lobi, ChatType.Public,null);
+                await CreateRoomCoreAsync(IChatService.Lobi, ChatType.Public, null);
             }
         });
     }

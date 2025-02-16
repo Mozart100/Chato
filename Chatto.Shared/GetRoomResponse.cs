@@ -27,6 +27,8 @@ public class ChatRoomDto
     [JsonPropertyName("chatName")]
     public string ChatName { get; init; }
 
+    [JsonPropertyName("description")]
+    public string Description { get; init; }
     //[JsonPropertyName("messages")]
     //public SenderInfo[] Messages { get; set; }
 
@@ -34,13 +36,13 @@ public class ChatRoomDto
     public string[] Users { get; init; }
 
     [JsonConstructor]
-    public ChatRoomDto(string chatName, string[] users)
+    public ChatRoomDto(string chatName, string description, string[] users)
     {
         ChatName = chatName;
         Users = users;
     }
 
-    public static ChatRoomDto Empty() => new ChatRoomDto("", Array.Empty<string>());
+    public static ChatRoomDto Empty() => new ChatRoomDto("",string.Empty, Array.Empty<string>());
 
     public override int GetHashCode() => ChatName.GetHashCode();
 
