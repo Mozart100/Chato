@@ -20,6 +20,8 @@ public class ChatDb : EntityDbBase
 
     public string Description { get; set; }
 
+    public required DateTime Expire { get; set; }
+
 }
 
 

@@ -20,7 +20,10 @@ public interface IUserService
     Task<User> GetUserByNameOrIdGetOrDefaultAsync(string nameOrId);
     Task RegisterAsync(string username, string description, string gender, int age);
     Task<bool> RemoveUserByUserNameOrIdAsync(string userNameOrId);
-    Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<UserFileInfo> files);
+    //Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<UserFileInfo> files);
+    public Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents);
+
+
     Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName);
     Task<IEnumerable<ParticipantInChat>> GetUserChatsAsync(string userNameOrId);
 
@@ -122,19 +125,48 @@ public class UserService : IUserService
 
         await _delegateQueue.InvokeAsync(async () =>
         {
-            var user = await _userRepository.GetOrDefaultAsync(u=>u.UserName == userNameOrId);
-            if(user is not null)
+            var user = await _userRepository.GetOrDefaultAsync(u => u.UserName == userNameOrId);
+            if (user is not null)
             {
-                result = user.Chats.ToArray();  
+                result = user.Chats.ToArray();
             }
         });
 
         return result;
     }
 
+    public async Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName)
+    {
+        IEnumerable<UserFileInfo> files = null;
+
+        await _delegateQueue.InvokeAsync(async () =>
+        {
+            files = await _userRepository.DownloadFiles(userName);
+        });
+
+        return files;
+    }
+
+    public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents)
+    {
+        var data = new List<UserFileInfo>();
+
+        foreach (var document in documents)
+        {
+            using (var memoryStream = new MemoryStream())
+            {
+                await document.CopyToAsync(memoryStream);
+                var documentBytes = memoryStream.ToArray();
+                data.Add(new UserFileInfo(document.FileName, documentBytes));
+            }
+        }
+
+        var files = await UploadFilesAsync(userName, data);
+        return files;
+    }
 
 
-    public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<UserFileInfo> files)
+    private async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<UserFileInfo> files)
     {
         var response = new UploadDocumentsResponse();
 
@@ -174,16 +206,4 @@ public class UserService : IUserService
     }
 
 
-
-    public async Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName)
-    {
-        IEnumerable<UserFileInfo> files = null;
-
-        await _delegateQueue.InvokeAsync(async () =>
-        {
-            files = await _userRepository.DownloadFiles(userName);
-        });
-
-        return files;
-    }
 }

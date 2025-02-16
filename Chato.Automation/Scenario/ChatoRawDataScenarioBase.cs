@@ -18,7 +18,6 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
 
 
         RegisterAuthControllerUrl = $"{AuthControllerUrl}/{AuthController.RegistrationUrl}";
-        UploadFilesUrl = $"{AuthControllerUrl}/{AuthController.UploadUrl}";
         DownloadFileUrl = $"{AuthControllerUrl}/{AuthController.DownloadUrl}";
         GetAllUserimagesUrl = $"{AuthControllerUrl}/{AuthController.GetAllImagesOfUserUrl}";
 
@@ -32,6 +31,7 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
         UserControllerUrl = $"{BaseUrl}/api/user";
         GetAllUsersUrl = $"{UserControllerUrl}/all";
         GetChatsPerUserUrl = $"{UserControllerUrl}/{UserController.Chats_Per_User_Route}";
+        UserUploadFilesUrl = $"{UserControllerUrl}/{UserController.UserUploadUrl}";
 
 
         var argument = "{0}";
@@ -47,7 +47,7 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
     protected string AuthControllerUrl { get; }
     protected string RegisterAuthControllerUrl { get; }
     protected string DownloadFileUrl { get; }
-    protected string UploadFilesUrl { get; }
+    protected string UserUploadFilesUrl { get; }
 
 
     protected string ChatsControllerUrl { get; }

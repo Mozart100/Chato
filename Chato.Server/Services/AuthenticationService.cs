@@ -17,7 +17,7 @@ public interface IAuthenticationService
     string CreateToken(string user);
     //Task<string> RegisterAsync(string userName, string password, string description, string gender, int age);
     Task<string> RegisterAsync(RegistrationRequest request);
-    Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents);
+    //Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents);
     Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName);
 }
 
@@ -48,23 +48,23 @@ public class AuthenticationService : IAuthenticationService
 
         return files;
     }
-    public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents)
-    {
+    //public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents)
+    //{
 
-        var data = new List<UserFileInfo>(); 
+    //    var data = new List<UserFileInfo>(); 
         
-        foreach (var document in documents)
-        {
-            using (var memoryStream = new MemoryStream())
-            {
-                await document.CopyToAsync(memoryStream);
-                var documentBytes = memoryStream.ToArray();
-                data.Add(new UserFileInfo(document.FileName, documentBytes));
-            }
-        }
+    //    foreach (var document in documents)
+    //    {
+    //        using (var memoryStream = new MemoryStream())
+    //        {
+    //            await document.CopyToAsync(memoryStream);
+    //            var documentBytes = memoryStream.ToArray();
+    //            data.Add(new UserFileInfo(document.FileName, documentBytes));
+    //        }
+    //    }
 
-        return await _userService.UploadFilesAsync(userName, data);
-    }
+    //    return await _userService.UploadFilesAsync(userName, data);
+    //}
 
 
     public string CreateToken(string userName)
