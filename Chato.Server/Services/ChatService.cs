@@ -10,7 +10,6 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Chato.Server.Services;
 
-
 public interface IChatService
 {
     public const string Lobi = "lobi";
@@ -33,6 +32,8 @@ public interface IChatService
     Task<SenderInfo> SendMessageAsync(string roomName, string fromUser, string? textMessage, string? image, SenderInfoType messageType);
     Task<bool> IsChatExists(string chatName);
     Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<string> chats);
+
+    Task<IEnumerable<string>> UploadFilesAsync(string chatName, IEnumerable<IFormFile> documents);
 
 }
 
@@ -219,28 +220,16 @@ public class ChatService : IChatService
                     {
 
                         var amountMessages = chatRoom.Messages.Count + 1;
-                        //var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", IChatService.ChatImages, chatName);
                         var localPath = $"{amountMessages}{Path.GetExtension(imageName)}";
 
 
-                        //if (!Directory.Exists(wwwRootPath))
-                        //{
-                        //    Directory.CreateDirectory(wwwRootPath);
-                        //}
-
-                        var wwwRootPath = Path.Combine(_env.WebRootPath, IChatService.ChatImages, chatName);
-                        if (Directory.Exists(wwwRootPath) == false)
-                        {
-                            Directory.CreateDirectory(wwwRootPath);
-                        }
-
+                        var filePath = Path.Combine(_env.WebRootPath, IChatService.ChatImages, chatName, localPath);
                         byte[] fileBytes = Convert.FromBase64String(textMessage);
-                        var filePath = Path.Combine(wwwRootPath, localPath);
                         //string base64String = Convert.ToBase64String(fileBytes);
 
                         try
                         {
-                            File.WriteAllBytes(filePath, fileBytes);
+                            FileHelper.SaveFile(fileBytes, filePath);
                         }
                         catch (Exception ex)
                         {
@@ -261,6 +250,55 @@ public class ChatService : IChatService
                 });
 
             }
+
+
+            //if (messagetype == SenderInfoType.Image)
+            //{
+
+            //    await _lockerQueue.InvokeAsync(async () =>
+            //    {
+
+            //        var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
+            //        if (chatRoom is not null)
+            //        {
+
+            //            var amountMessages = chatRoom.Messages.Count + 1;
+            //            var localPath = $"{amountMessages}{Path.GetExtension(imageName)}";
+
+
+            //            var wwwRootPath = Path.Combine(_env.WebRootPath, IChatService.ChatImages, chatName);
+            //            if (Directory.Exists(wwwRootPath) == false)
+            //            {
+            //                Directory.CreateDirectory(wwwRootPath);
+            //            }
+
+            //            byte[] fileBytes = Convert.FromBase64String(textMessage);
+            //            var filePath = Path.Combine(wwwRootPath, localPath);
+            //            //string base64String = Convert.ToBase64String(fileBytes);
+
+            //            try
+            //            {
+            //                File.WriteAllBytes(filePath, fileBytes);
+            //            }
+            //            catch (Exception ex)
+            //            {
+
+            //            }
+
+            //            var imageFilePath = $"{IChatService.ChatImages}/{chatName}/{localPath}";
+            //            var senderinfo = new SenderInfo(SenderInfoType.Image, fromUser, textMessage, imageFilePath, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+            //            chatRoom.Messages.Add(senderinfo);
+
+            //            result = senderinfo with
+            //            {
+            //                Image = imageFilePath,
+            //                TextMessage = null
+            //            };
+            //        }
+
+            //    });
+
+            //}
         }
 
         return result;
@@ -334,6 +372,46 @@ public class ChatService : IChatService
         });
 
         return result;
+    }
+
+    public async Task<IEnumerable<string>> UploadFilesAsync(string chatName, IEnumerable<IFormFile> documents)
+    {
+        var data = await FileHelper.DissectAsync(documents);
+
+        //await _lockerQueue.InvokeAsync(async () =>
+        //{
+        //    //await _chatRoomRepository.UpdateImagesAsync(chatName);
+        //    {
+        //        var amountOfImages = 1;
+        //        var wwwRootPath = Path.Combine(_env.WebRootPath, IUserService.UserChatImage, userName);
+        //        if (Directory.Exists(wwwRootPath) == false)
+        //        {
+        //            Directory.CreateDirectory(wwwRootPath);
+        //        }
+
+        //        foreach (var file in files)
+        //        {
+        //            var localFileame = $"{amountOfImages}{Path.GetExtension(file.FileName)}";
+        //            var filePath = Path.Combine(wwwRootPath, localFileame);
+        //            try
+        //            {
+        //                File.WriteAllBytes(filePath, file.Content);
+        //            }
+        //            catch (Exception ex)
+        //            {
+
+        //            }
+
+        //            user.Files.Add($"{IUserService.UserChatImage}/{userName}/{localFileame}");
+        //            //user.Files.Add(new UserFileInfo($"{IUserService.UserChatImage}/{userName}/{localFileame}", file.Content));
+        //            response.Files.Add(localFileame);
+
+        //            amountOfImages++;
+        //        }
+        //    });
+        //});
+
+        return null;
     }
 
 
