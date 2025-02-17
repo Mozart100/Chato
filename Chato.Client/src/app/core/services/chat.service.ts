@@ -6,6 +6,8 @@ import { environment } from '../../../environments/environment'
 import { ChatsDto } from '../models/dto'
 import { ChatStore } from '../store/chat.store'
 import { ChattoHubService } from './realtime.service'
+import { Chat } from '../models/chat.models'
+import { AuthenticationService } from './auth.service'
 
 const LOAD_ROOMS_URL = '/api/Chat/all'
 
@@ -17,7 +19,8 @@ export class ChatService extends BaseApiService {
     constructor(http: HttpClient,
                 alert: ToastrService,
                 private chatStore: ChatStore,
-                private realtime: ChattoHubService) {
+                private realtime: ChattoHubService,
+                private auth: AuthenticationService) {
         super(http, alert)
         this.apiUrl = environment.apiUrl
     }
@@ -34,5 +37,18 @@ export class ChatService extends BaseApiService {
                     this.realtime.invokeWhenConnected(() => this.realtime.downloadHistory(lobby))
                 }
             })
+    }
+
+    addNewChat(chatName: string) {
+        const newChat: Chat = {
+            chatName: chatName,
+            messages: [],
+            users: [this.auth.user().userName]
+        }
+        this.chatStore.allChats.update(chats => {
+            chats.unshift(newChat)
+            return chats
+        })
+        this.chatStore.selectedChat.set(newChat)
     }
 }

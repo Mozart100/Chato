@@ -21,279 +21,50 @@
                     <div class="modal-content">
                         <div class="modal-header">
                             <h5 class="modal-title font-size-16" id="addgroup-exampleModalLabel">
-                                {{ 'chat.tabs.groups.modal.title' | translate }}</h5>
+                                {{ 'rooms.createRoomModal.title' | translate }}</h5>
                             <button type="button" class="btn-close" data-dismiss="modal" aria-label="Close"
                                     (click)="modal.dismiss('Cross click')">
                             </button>
                         </div>
                         <div class="modal-body p-4">
-                            <form>
+                            <form [formGroup]="createRoomForm" (ngSubmit)="createGroup(modal)">
                                 <div class="mb-4">
-                                    <label class="form-label" for="addgroupname-input">{{
-                                            'chat.tabs.groups.modal.form.name.label' |
-                                                translate
-                                        }}</label>
-                                    <input type="text" class="form-control" id="addgroupname-input"
-                                           placeholder="{{'chat.tabs.groups.modal.form.name.placeholder' | translate}}">
-                                </div>
-                                <div class="mb-4">
-                                    <label
-                                            class="form-label">{{ 'chat.tabs.groups.modal.form.members.label' | translate }}</label>
-                                    <div class="mb-3">
-                                        <button class="btn btn-light btn-sm" type="button"
-                                                data-toggle="collapse" (click)="collapse.toggle()"
-                                                [attr.aria-expanded]="!isCollapsed"
-                                                aria-controls="collapseExample">
-                                            {{ 'chat.tabs.groups.modal.form.members.button.text' | translate }}
-                                        </button>
-                                    </div>
-
-                                    <div class="collapse" id="groupmembercollapse" #collapse="ngbCollapse"
-                                         [(ngbCollapse)]="isCollapsed">
-                                        <div class="card border">
-                                            <div class="card-header">
-                                                <h5 class="font-size-15 mb-0">{{ 'chat.tabs.contacts.title' | translate }}</h5>
-                                            </div>
-                                            <div class="card-body p-2">
-                                                <ngx-simplebar data-simplebar style="height: 150px;">
-                                                    <div>
-                                                        <div class="p-3 fw-bold text-primary">
-                                                            {{ 'chat.tabs.contacts.list.A.text' | translate }}
-                                                        </div>
-
-                                                        <ul class="list-unstyled contact-list">
-                                                            <li>
-                                                                <div class="form-check">
-                                                                    <input type="checkbox"
-                                                                           class="form-check-input"
-                                                                           id="memberCheck1" checked="">
-                                                                    <label class="form-check-label"
-                                                                           for="memberCheck1">{{ 'chat.tabs.contacts.list.A.name' | translate }}</label>
-                                                                </div>
-                                                            </li>
-                                                            <li>
-                                                                <div class="form-check">
-                                                                    <input type="checkbox"
-                                                                           class="form-check-input"
-                                                                           id="memberCheck2">
-                                                                    <label class="form-check-label"
-                                                                           for="memberCheck2">{{ 'chat.tabs.contacts.list.A.name2' | translate }}</label>
-                                                                </div>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-
-                                                    <div>
-                                                        <div class="p-3 fw-bold text-primary">
-                                                            {{ 'chat.tabs.contacts.list.C.text' | translate }}
-                                                        </div>
-
-                                                        <ul class="list-unstyled contact-list">
-                                                            <li>
-                                                                <div class="form-check">
-                                                                    <input type="checkbox"
-                                                                           class="form-check-input"
-                                                                           id="memberCheck3">
-                                                                    <label class="form-check-label"
-                                                                           for="memberCheck3">
-                                                                        {{ 'chat.tabs.contacts.list.C.name' | translate }}</label>
-                                                                </div>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-
-                                                    <div>
-                                                        <div class="p-3 fw-bold text-primary">
-                                                            {{ 'chat.tabs.contacts.list.D.text' | translate }}
-                                                        </div>
-
-                                                        <ul class="list-unstyled contact-list">
-                                                            <li>
-                                                                <div class="form-check">
-                                                                    <input type="checkbox"
-                                                                           class="form-check-input"
-                                                                           id="memberCheck4">
-                                                                    <label class="form-check-label"
-                                                                           for="memberCheck4">
-                                                                        {{ 'chat.tabs.contacts.list.D.name' | translate }}</label>
-                                                                </div>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-
-                                                    <div>
-                                                        <div class="p-3 fw-bold text-primary">
-                                                            {{ 'chat.tabs.contacts.list.I.text' | translate }}
-                                                        </div>
-
-                                                        <ul class="list-unstyled contact-list">
-                                                            <li>
-                                                                <div class="form-check">
-                                                                    <input type="checkbox"
-                                                                           class="form-check-input"
-                                                                           id="memberCheck5">
-                                                                    <label class="form-check-label"
-                                                                           for="memberCheck5">
-                                                                        {{ 'chat.tabs.contacts.list.I.name' | translate }}</label>
-                                                                </div>
-                                                            </li>
-
-                                                        </ul>
-                                                    </div>
-
-                                                    <div>
-                                                        <div class="p-3 fw-bold text-primary">
-                                                            {{ 'chat.tabs.contacts.list.J.text' | translate }}
-                                                        </div>
-
-                                                        <ul class="list-unstyled contact-list">
-                                                            <li>
-                                                                <div class="form-check">
-                                                                    <input type="checkbox"
-                                                                           class="form-check-input"
-                                                                           id="memberCheck6">
-                                                                    <label class="form-check-label"
-                                                                           for="memberCheck6">{{ 'chat.tabs.contacts.list.J.name' | translate }}</label>
-                                                                </div>
-                                                            </li>
-
-                                                            <li>
-                                                                <div class="form-check">
-                                                                    <input type="checkbox"
-                                                                           class="form-check-input"
-                                                                           id="memberCheck7">
-                                                                    <label class="form-check-label"
-                                                                           for="memberCheck7">{{ 'chat.tabs.contacts.list.J.name2' | translate }}</label>
-                                                                </div>
-                                                            </li>
-
-                                                            <li>
-                                                                <div class="form-check">
-                                                                    <input type="checkbox"
-                                                                           class="form-check-input"
-                                                                           id="memberCheck8">
-                                                                    <label class="form-check-label"
-                                                                           for="memberCheck8">{{ 'chat.tabs.contacts.list.J.name3' | translate }}</label>
-                                                                </div>
-                                                            </li>
-
-                                                        </ul>
-                                                    </div>
-
-                                                    <div>
-                                                        <div class="p-3 fw-bold text-primary">
-                                                            {{ 'chat.tabs.contacts.list.M.text' | translate }}
-                                                        </div>
-
-                                                        <ul class="list-unstyled contact-list">
-                                                            <li>
-                                                                <div class="form-check">
-                                                                    <input type="checkbox"
-                                                                           class="form-check-input"
-                                                                           id="memberCheck9">
-                                                                    <label class="form-check-label"
-                                                                           for="memberCheck9">{{ 'chat.tabs.contacts.list.M.name' | translate }}</label>
-                                                                </div>
-                                                            </li>
-
-                                                            <li>
-                                                                <div class="form-check">
-                                                                    <input type="checkbox"
-                                                                           class="form-check-input"
-                                                                           id="memberCheck10">
-                                                                    <label class="form-check-label"
-                                                                           for="memberCheck10">{{ 'chat.tabs.contacts.list.M.name2' | translate }}</label>
-                                                                </div>
-                                                            </li>
-
-                                                        </ul>
-                                                    </div>
-
-                                                    <div>
-                                                        <div class="p-3 fw-bold text-primary">
-                                                            {{ 'chat.tabs.contacts.list.P.text' | translate }}
-                                                        </div>
-
-                                                        <ul class="list-unstyled contact-list">
-                                                            <li>
-                                                                <div class="form-check">
-                                                                    <input type="checkbox"
-                                                                           class="form-check-input"
-                                                                           id="memberCheck11">
-                                                                    <label class="form-check-label"
-                                                                           for="memberCheck11">
-                                                                        {{ 'chat.tabs.contacts.list.P.name' | translate }}</label>
-                                                                </div>
-                                                            </li>
-
-                                                        </ul>
-                                                    </div>
-
-                                                    <div>
-                                                        <div class="p-3 fw-bold text-primary">
-                                                            {{ 'chat.tabs.contacts.list.R.text' | translate }}
-                                                        </div>
-
-                                                        <ul class="list-unstyled contact-list">
-                                                            <li>
-                                                                <div class="form-check">
-                                                                    <input type="checkbox"
-                                                                           class="form-check-input"
-                                                                           id="memberCheck12">
-                                                                    <label class="form-check-label"
-                                                                           for="memberCheck12">
-                                                                        {{ 'chat.tabs.contacts.list.R.name' | translate }}</label>
-                                                                </div>
-                                                            </li>
-
-                                                        </ul>
-                                                    </div>
-
-                                                    <div>
-                                                        <div class="p-3 fw-bold text-primary">
-                                                            {{ 'chat.tabs.contacts.list.S.text' | translate }}
-                                                        </div>
-
-                                                        <ul class="list-unstyled contact-list">
-                                                            <li>
-                                                                <div class="form-check">
-                                                                    <input type="checkbox"
-                                                                           class="form-check-input"
-                                                                           id="memberCheck13">
-                                                                    <label class="form-check-label"
-                                                                           for="memberCheck13">{{ 'chat.tabs.contacts.list.S.name' | translate }}</label>
-                                                                </div>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </ngx-simplebar>
-                                            </div>
-
-                                        </div>
+                                    <label class="form-label" for="addgroupname-input">
+                                        {{ 'rooms.createRoomModal.form.groupName.title' | translate }}
+                                    </label>
+                                    <input type="text"
+                                           class="form-control"
+                                           id="addgroupname-input"
+                                           formControlName="groupName"
+                                           placeholder="{{ 'rooms.createRoomModal.form.groupName.placeholder' | translate }}">
+                                    <div class="invalid-feedback" *ngIf="createRoomForm.get('groupName')?.errors?.['required'] &&
+             createRoomForm.get('groupName')?.touched">
+                                        {{ 'rooms.createRoomModal.form.groupName.required' | translate }}
                                     </div>
                                 </div>
                                 <div class="mb-3">
-                                    <label class="form-label" for="addgroupdescription-input">{{
-                                            'chat.tabs.groups.modal.form.description.label' |
-                                                translate
-                                        }}</label>
-                                    <textarea class="form-control" id="addgroupdescription-input" rows="3"
-                                              placeholder="{{'chat.tabs.groups.modal.form.description.placeholder' | translate}}"></textarea>
+                                    <label class="form-label" for="addgroupdescription-input">
+                                        {{ 'rooms.createRoomModal.form.description.title' | translate }}
+                                    </label>
+                                    <textarea class="form-control"
+                                              id="addgroupdescription-input"
+                                              rows="3"
+                                              formControlName="description"
+                                              placeholder="{{ 'rooms.createRoomModal.form.description.placeholder' | translate }}">
+                                    </textarea>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-link" data-dismiss="modal"
+                                            (click)="modal.dismiss('Cross click')">
+                                        {{ 'rooms.createRoomModal.form.cancel' | translate }}
+                                    </button>
+                                    <button type="submit"
+                                            class="btn btn-primary"
+                                            [disabled]="!createRoomForm.valid">
+                                        {{ 'rooms.createRoomModal.form.submit' | translate }}
+                                    </button>
                                 </div>
                             </form>
-                        </div>
-                        <div class="modal-footer">
-                            <button type="button" class="btn btn-link" data-dismiss="modal"
-                                    (click)="modal.dismiss('Cross click')">{{
-                                    'chat.tabs.groups.modal.form.button.close' |
-                                        translate
-                                }}
-                            </button>
-                            <button type="button" class="btn btn-primary">{{
-                                    'chat.tabs.groups.modal.form.button.create' |
-                                        translate
-                                }}
-                            </button>
                         </div>
                     </div>
                 </ng-template>

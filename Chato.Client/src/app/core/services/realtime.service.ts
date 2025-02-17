@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import * as signalR from '@microsoft/signalr'
 import { ChatStore } from '../store/chat.store'
 import { SAVED_TOKEN_KEY } from '../helpers/consts'
-import { Chat, ChatMessage, SenderInfoType } from '../models/chat.models'
+import { Chat, ChatMessage, ChatType, SenderInfoType } from '../models/chat.models'
 import { AuthenticationService } from './auth.service'
 import { filter, first, firstValueFrom, Subject } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
@@ -94,10 +94,23 @@ export class ChattoHubService {
                     messageInfo.image = `${environment.apiUrl}/${messageInfo.image}`
                 }
 
+                let msgText = ""
+                switch (messageInfo.senderInfoType) {
+                    case SenderInfoType.TextMessage:
+                        msgText = messageInfo.textMessage
+                        break;
+                    case SenderInfoType.Joined:
+                        msgText = this.translate.instant('common.userJoined')
+                        break;
+                    case SenderInfoType.Created:
+                        msgText = this.translate.instant('common.userCreatedGroup')
+                        break;
+                }
+
                 chat.messages.push({
                     ...messageInfo,
                     isSelf: this.auth.user().userName == messageInfo.fromUser,
-                    textMessage: messageInfo.senderInfoType == SenderInfoType.Joined ? this.usedJoinedText : messageInfo.textMessage,
+                    textMessage: msgText,
                 })
             },
             complete: () => {
@@ -114,6 +127,11 @@ export class ChattoHubService {
             .catch(err => console.error(err))
     }
 
+    public createPublicGroup(name: string, description: string) {
+        return this.hubConnection?.invoke('JoinOrCreateChat',
+            name, ChatType.Public, description
+        )
+    }
 
     // helper method to ensure signalR is connected before invoking methods on it
     public async invokeWhenConnected(task: () => void) {
