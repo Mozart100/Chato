@@ -14,7 +14,7 @@ namespace Chato.Server.Services;
 public interface IChatService
 {
     public const string Lobi = "lobi";
-    public const string ChatImages = "ChattoImages";
+    public const string ChatImages = "ChatImages";
     public static string GetToUser(string chatName) => chatName.Split("__").LastOrDefault();
     public static string GetChatName(string fromUser, string toUser) => $"{fromUser}__{toUser}";
 

@@ -18,7 +18,7 @@ public interface IAuthenticationService
     //Task<string> RegisterAsync(string userName, string password, string description, string gender, int age);
     Task<string> RegisterAsync(RegistrationRequest request);
     //Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents);
-    Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName);
+    Task<IEnumerable<string>> DownloadFilesAsync(string userName);
 }
 
 public class AuthenticationService : IAuthenticationService
@@ -42,7 +42,7 @@ public class AuthenticationService : IAuthenticationService
         await _registrationValidationService.RegistrationRequestValidateAsync(request);
         return await RegisterAsync(request.UserName,  request.Description, request.Gender, request.Age);
     }
-    public async Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName)
+    public async Task<IEnumerable<string>> DownloadFilesAsync(string userName)
     {
         var files = await _userService.DownloadFilesAsync(userName);
 

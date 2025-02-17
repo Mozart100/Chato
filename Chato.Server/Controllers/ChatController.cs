@@ -13,6 +13,8 @@ public class ChatController : ControllerBase
 {
     public const string All_Chat_Route = "all";
     public const string Chat_Route = "{chat}";
+    public const string UploadChatImagesUrl = "upload";
+
 
     private readonly IChatService _roomService;
 
@@ -41,6 +43,17 @@ public class ChatController : ControllerBase
 
         return new GetRoomResponse { Chat = room };
     }
+
+    //[Route(UploadChatImagesUrl)]
+    //[HttpPost, Authorize]
+    //public async Task<ActionResult<UploadDocumentsResponse>> Upload(IEnumerable<IFormFile> documents)
+    //{
+    //    var userName = User.Identity.Name;
+    //    var response = await _roomService..UploadFilesAsync(userName, documents);
+
+    //    return Ok(response);
+    //}
+
 
 
 }

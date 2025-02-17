@@ -74,7 +74,7 @@ public class AuthController : ControllerBase
         var userName = User.Identity.Name;
         var files = await _authenticationService.DownloadFilesAsync(userName);
 
-        var response =  new GetAllUserImagesResponse { Files = files.Select(x => x.FileName).ToList() };
+        var response =  new GetAllUserImagesResponse { Files = files.ToList() };
         return response;
     }
 

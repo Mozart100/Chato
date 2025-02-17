@@ -22,6 +22,7 @@ public class ChatDb : EntityDbBase
 
     public required DateTime Expire { get; set; }
 
+    public List<string> Files { get; set; } = new List<string>();
 }
 
 

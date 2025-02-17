@@ -10,7 +10,7 @@ namespace Chato.Server.Services;
 
 public interface IUserService
 {
-    public const string UserChatImage = "ChattoUserImages";
+    public const string UserChatImage = "UserImages";
 
     Task AssignConnectionId(string userName, string connectionId);
     Task AssignRoomNameAsync(string userNameOrId, string roomName, ChatType chatType);
@@ -24,7 +24,7 @@ public interface IUserService
     public Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents);
 
 
-    Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName);
+    Task<IEnumerable<string>> DownloadFilesAsync(string userName);
     Task<IEnumerable<ParticipantInChat>> GetUserChatsAsync(string userNameOrId);
 
 }
@@ -135,9 +135,9 @@ public class UserService : IUserService
         return result;
     }
 
-    public async Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName)
+    public async Task<IEnumerable<string>> DownloadFilesAsync(string userName)
     {
-        IEnumerable<UserFileInfo> files = null;
+        IEnumerable<string> files = null;
 
         await _delegateQueue.InvokeAsync(async () =>
         {
@@ -149,7 +149,7 @@ public class UserService : IUserService
 
     public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents)
     {
-        var data = new List<UserFileInfo>();
+        var data = new List<(string FileName, byte[] Content)>();
 
         foreach (var document in documents)
         {
@@ -157,7 +157,7 @@ public class UserService : IUserService
             {
                 await document.CopyToAsync(memoryStream);
                 var documentBytes = memoryStream.ToArray();
-                data.Add(new UserFileInfo(document.FileName, documentBytes));
+                data.Add((document.FileName, documentBytes));
             }
         }
 
@@ -166,7 +166,7 @@ public class UserService : IUserService
     }
 
 
-    private async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<UserFileInfo> files)
+    private async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<(string FileName, byte[] Content)> files)
     {
         var response = new UploadDocumentsResponse();
 
@@ -194,7 +194,8 @@ public class UserService : IUserService
 
                     }
 
-                    user.Files.Add(new UserFileInfo($"{IUserService.UserChatImage}/{userName}/{localFileame}", file.Content));
+                    user.Files.Add($"{IUserService.UserChatImage}/{userName}/{localFileame}");
+                    //user.Files.Add(new UserFileInfo($"{IUserService.UserChatImage}/{userName}/{localFileame}", file.Content));
                     response.Files.Add(localFileame);
 
                     amountOfImages++;

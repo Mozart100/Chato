@@ -14,7 +14,7 @@ public class User : EntityDbBase, IUserEnittyMapper
 }
 
 
-public record UserFileInfo(string FileName, byte[] Content);
+//public record UserFileInfo(string FileName, byte[] Content);
 
 public class UserDb : User
 {
@@ -27,11 +27,13 @@ public class UserDb : User
 
     //public byte[] PasswordHash { get; init; }
 
-    public List<UserFileInfo> Files { get; set; } = new List<UserFileInfo>();
+    public List<string> Files { get; set; } = new List<string>();
+    //public List<UserFileInfo> Files { get; set; } = new List<UserFileInfo>();
 
     //public UserFileInfo Document1 { get; set; }
     //public UserFileInfo Document2 { get; set; }
     //public UserFileInfo Document3 { get; set; }
     //public UserFileInfo Document4 { get; set; }
     //public UserFileInfo Document5 { get; set; }
+    //public UserFileInfo Document6 { get; set; }
 }
