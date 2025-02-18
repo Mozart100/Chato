@@ -14,6 +14,7 @@ public interface IChatService
 {
     public const string Lobi = "lobi";
     public const string ChatImages = "ChatImages";
+    public const string ChatploadedImages = $"{ChatImages}/uploaded";
     public static string GetToUser(string chatName) => chatName.Split("__").LastOrDefault();
     public static string GetChatName(string fromUser, string toUser) => $"{fromUser}__{toUser}";
 
@@ -376,40 +377,36 @@ public class ChatService : IChatService
 
     public async Task<IEnumerable<string>> UploadFilesAsync(string chatName, IEnumerable<IFormFile> documents)
     {
-        var data = await FileHelper.DissectAsync(documents);
+        var fileInfoes = await FileHelper.DissectAsync(documents);
 
-        //await _lockerQueue.InvokeAsync(async () =>
-        //{
-        //    //await _chatRoomRepository.UpdateImagesAsync(chatName);
-        //    {
-        //        var amountOfImages = 1;
-        //        var wwwRootPath = Path.Combine(_env.WebRootPath, IUserService.UserChatImage, userName);
-        //        if (Directory.Exists(wwwRootPath) == false)
-        //        {
-        //            Directory.CreateDirectory(wwwRootPath);
-        //        }
+        await _lockerQueue.InvokeAsync(async () =>
+        {
+            var chat = await _chatRoomRepository.GetOrDefaultAsync(x => x.RoomName == chatName);
+            if (chat is not null)
+            {
+                //await _chatRoomRepository.UpdateImagesAsync(chatName);
+                var amountOfImages = 1;
+                var wwwRootPath = Path.Combine(_env.WebRootPath, IChatService.ChatploadedImages, chatName);
+                var files = new List<string>();
+                foreach (var fileInfo in fileInfoes)
+                {
+                    var localFileame = $"{amountOfImages}{Path.GetExtension(fileInfo.FileName)}";
+                    var filePath = Path.Combine(wwwRootPath, localFileame);
+                    try
+                    {
+                        FileHelper.SaveFile(fileInfo.Content, filePath);
+                    }
+                    catch (Exception ex)
+                    {
 
-        //        foreach (var file in files)
-        //        {
-        //            var localFileame = $"{amountOfImages}{Path.GetExtension(file.FileName)}";
-        //            var filePath = Path.Combine(wwwRootPath, localFileame);
-        //            try
-        //            {
-        //                File.WriteAllBytes(filePath, file.Content);
-        //            }
-        //            catch (Exception ex)
-        //            {
+                    }
+                    files.Add(filePath);
+                    //chat.Files.Add(filePath);
+                }
 
-        //            }
-
-        //            user.Files.Add($"{IUserService.UserChatImage}/{userName}/{localFileame}");
-        //            //user.Files.Add(new UserFileInfo($"{IUserService.UserChatImage}/{userName}/{localFileame}", file.Content));
-        //            response.Files.Add(localFileame);
-
-        //            amountOfImages++;
-        //        }
-        //    });
-        //});
+                await _chatRoomRepository.UpdateImagesAsync(x => x.RoomName == chatName, files);
+            }
+        });
 
         return null;
     }

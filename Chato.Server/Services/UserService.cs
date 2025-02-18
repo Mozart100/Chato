@@ -150,17 +150,6 @@ public class UserService : IUserService
 
     public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents)
     {
-        //var data = new List<(string FileName, byte[] Content)>();
-
-        //foreach (var document in documents)
-        //{
-        //    using (var memoryStream = new MemoryStream())
-        //    {
-        //        await document.CopyToAsync(memoryStream);
-        //        var documentBytes = memoryStream.ToArray();
-        //        data.Add((document.FileName, documentBytes));
-        //    }
-        //}
 
         var data = await FileHelper.DissectAsync(documents);
         var files = await UploadFilesAsync(userName, data);
