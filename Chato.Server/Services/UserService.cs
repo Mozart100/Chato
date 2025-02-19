@@ -186,9 +186,9 @@ public class UserService : IUserService
 
                     }
 
-                    user.Files.Add($"{IUserService.UserChatImage}/{userName}/{localFileame}");
-                    //user.Files.Add(new UserFileInfo($"{IUserService.UserChatImage}/{userName}/{localFileame}", file.Content));
-                    response.Files.Add(localFileame);
+                    var webPath = $"{IUserService.UserChatImage}/{userName}/{localFileame}";
+                    user.Files.Add(webPath);
+                    response.Files.Add(webPath);
 
                     amountOfImages++;
                 }
