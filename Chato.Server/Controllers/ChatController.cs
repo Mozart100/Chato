@@ -11,10 +11,13 @@ namespace Chato.Server.Controllers;
 [ApiController]
 public class ChatController : ControllerBase
 {
+    public const string Chat_Name = "chatName";
     public const string All_Chat_Route = "all";
     public const string Chat_Route = "{chat}";
-    public const string UploadChatImagesUrl = "upload";
+    public const string UploadChatImagesUrl = $"upload/{{{Chat_Name}}}";
 
+    //[Route(UploadChatImagesUrl)]
+    //[HttpPost, Authorize]
 
     private readonly IChatService _roomService;
 
@@ -44,15 +47,20 @@ public class ChatController : ControllerBase
         return new GetRoomResponse { Chat = room };
     }
 
-    //[Route(UploadChatImagesUrl)]
-    //[HttpPost, Authorize]
-    //public async Task<ActionResult<UploadDocumentsResponse>> Upload(IEnumerable<IFormFile> documents)
-    //{
-    //    var userName = User.Identity.Name;
-    //    var response = await _roomService..UploadFilesAsync(userName, documents);
 
-    //    return Ok(response);
-    //}
+    [HttpPost]
+    //[Route("upload/{chatName}")]
+    [Route(UploadChatImagesUrl)]
+    //[HttpPost(UploadChatImagesUrl), Authorize]
+    public async Task<UploadDocumentsResponse> Upload([FromRoute] string chatName, IEnumerable<IFormFile> documents)
+    {
+        //var userName = User.Identity.Name;
+        var files = await _roomService.UploadFilesAsync(chatName, documents);
+        var response = new UploadDocumentsResponse();
+        response.Files.AddRange(files);
+        //return Ok(response);
+        return response;
+    }
 
 
 

@@ -12,9 +12,10 @@ namespace Chato.Server.Services;
 
 public interface IChatService
 {
+    public const string ChatName = "chatName";
     public const string Lobi = "lobi";
     public const string ChatImages = "ChatImages";
-    public const string ChatploadedImages = $"{ChatImages}/uploaded";
+    public const string ChatUploadedImagesTemplate = $"{ChatImages}"+"\\{0}\\uploaded";
     public static string GetToUser(string chatName) => chatName.Split("__").LastOrDefault();
     public static string GetChatName(string fromUser, string toUser) => $"{fromUser}__{toUser}";
 
@@ -377,6 +378,8 @@ public class ChatService : IChatService
 
     public async Task<IEnumerable<string>> UploadFilesAsync(string chatName, IEnumerable<IFormFile> documents)
     {
+        IEnumerable<string> response = null;
+
         var fileInfoes = await FileHelper.DissectAsync(documents);
 
         await _lockerQueue.InvokeAsync(async () =>
@@ -386,7 +389,8 @@ public class ChatService : IChatService
             {
                 //await _chatRoomRepository.UpdateImagesAsync(chatName);
                 var amountOfImages = 1;
-                var wwwRootPath = Path.Combine(_env.WebRootPath, IChatService.ChatploadedImages, chatName);
+                var template = string.Format(IChatService.ChatUploadedImagesTemplate, chatName); 
+                var wwwRootPath = Path.Combine(_env.WebRootPath, template);
                 var files = new List<string>();
                 foreach (var fileInfo in fileInfoes)
                 {
@@ -405,10 +409,11 @@ public class ChatService : IChatService
                 }
 
                 await _chatRoomRepository.UpdateImagesAsync(x => x.RoomName == chatName, files);
+                response = files;
             }
         });
 
-        return null;
+        return response;
     }
 
 

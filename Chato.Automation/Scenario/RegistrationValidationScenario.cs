@@ -76,6 +76,7 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
             var token = Users[Anatoliy_User].RegisterResponse.Token;
 
 
+
             var response = await UploadFiles<ResponseWrapper<UploadDocumentsResponse>>(UserUploadFilesUrl, token, files);
             //response.Body.Document1.Should().BeTrue();
             //response.Body.Document2.Should().BeTrue();

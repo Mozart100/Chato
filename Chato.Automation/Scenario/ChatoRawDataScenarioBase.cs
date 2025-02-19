@@ -36,6 +36,8 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
 
         var argument = "{0}";
         SpecificRoomTemplatesUrl = $"{ChatsControllerUrl}/{argument}";
+        var tmp = $"{ChatsControllerUrl}/{ChatController.UploadChatImagesUrl}";
+        UploadChatImagesTemplateUrl = tmp.Replace($"{{{ChatController.Chat_Name}}}", "{0}");
 
 
         ConfigurationControllerUrl = $"{BaseUrl}/api/configuration";
@@ -52,6 +54,7 @@ public abstract class ChatoRawDataScenarioBase : ScenarioBase
 
     protected string ChatsControllerUrl { get; }
     protected string SpecificRoomTemplatesUrl { get; }
+    protected string UploadChatImagesTemplateUrl { get; }
     protected string GetAllRoomsUrl { get; }
 
 

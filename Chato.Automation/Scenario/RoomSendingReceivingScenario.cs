@@ -43,14 +43,33 @@ internal class RoomSendingReceivingScenario : InstructionScenarioBase
         var url = string.Format(SpecificRoomTemplatesUrl, chat2);
 
         users[Anatoliy_User].Step(users[Nathan_User]).Step(users[Olessya_User])
-            .Step(users[Anatoliy_User].SendingTextToRestRoom(message_1, IChatService.Lobi,2))
+            .Step(users[Anatoliy_User].SendingTextToRestRoom(message_1, IChatService.Lobi, 2))
             .Step(users[Nathan_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
             .Step(users[Olessya_User].ReceivingMessage(IChatService.Lobi, Anatoliy_User, message_1))
 
             .Step(users[Olessya_User].JoinOrCreatePublicChat(chat2))
+            .Step(users[Olessya_User].Do(async user =>
+            {
+                var token = Users[Olessya_User].RegisterResponse.Token;
+                var uploadUrl = string.Format(UploadChatImagesTemplateUrl, chat2);
+
+                var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "test.jpeg");
+                var files = new[] { path, path };
+
+
+                var response = await UploadFiles<ResponseWrapper<UploadDocumentsResponse>>(uploadUrl, token, files);
+                //response.Body.Document1.Should().BeTrue();
+                //response.Body.Document2.Should().BeTrue();
+                //response.Body.Document3.Should().BeFalse();
+                //response.Body.Document4.Should().BeFalse();
+                //response.Body.Document5.Should().BeFalse();
+
+                response.Body.Files.Count.Should().Be(files.Length);
+
+            }))
             .Step(users[Nathan_User].JoinOrCreatePublicChat(chat2))
 
-            .Step(users[Olessya_User].SendingTextToRestRoom(message_2, chat2,1))
+            .Step(users[Olessya_User].SendingTextToRestRoom(message_2, chat2, 1))
             .Step(users[Nathan_User].ReceivingMessage(chat2, Olessya_User, message_2))
             .Step(users[Anatoliy_User].Do(async user =>
             {
