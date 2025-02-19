@@ -310,8 +310,6 @@ public abstract class ScenarioBase
                 content.Add(fileContent, $"documents", Path.GetFileName(filePaths[i]));
             }
 
-            var ptr = "https://localhost:7138/api/Chat/upload/toli";
-            //var response = await client.PostAsync(ptr, content);
             var response = await client.PostAsync(url, content);
             return await EnsureSuccess<TResponse>(response) ?? throw new Exception($"Failed Populate in {url}");
 

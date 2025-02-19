@@ -252,55 +252,6 @@ public class ChatService : IChatService
                 });
 
             }
-
-
-            //if (messagetype == SenderInfoType.Image)
-            //{
-
-            //    await _lockerQueue.InvokeAsync(async () =>
-            //    {
-
-            //        var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
-            //        if (chatRoom is not null)
-            //        {
-
-            //            var amountMessages = chatRoom.Messages.Count + 1;
-            //            var localPath = $"{amountMessages}{Path.GetExtension(imageName)}";
-
-
-            //            var wwwRootPath = Path.Combine(_env.WebRootPath, IChatService.ChatImages, chatName);
-            //            if (Directory.Exists(wwwRootPath) == false)
-            //            {
-            //                Directory.CreateDirectory(wwwRootPath);
-            //            }
-
-            //            byte[] fileBytes = Convert.FromBase64String(textMessage);
-            //            var filePath = Path.Combine(wwwRootPath, localPath);
-            //            //string base64String = Convert.ToBase64String(fileBytes);
-
-            //            try
-            //            {
-            //                File.WriteAllBytes(filePath, fileBytes);
-            //            }
-            //            catch (Exception ex)
-            //            {
-
-            //            }
-
-            //            var imageFilePath = $"{IChatService.ChatImages}/{chatName}/{localPath}";
-            //            var senderinfo = new SenderInfo(SenderInfoType.Image, fromUser, textMessage, imageFilePath, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            //            chatRoom.Messages.Add(senderinfo);
-
-            //            result = senderinfo with
-            //            {
-            //                Image = imageFilePath,
-            //                TextMessage = null
-            //            };
-            //        }
-
-            //    });
-
-            //}
         }
 
         return result;
@@ -404,8 +355,9 @@ public class ChatService : IChatService
                     {
 
                     }
-                    files.Add(filePath);
-                    //chat.Files.Add(filePath);
+
+                    var webUrl = Path.Combine(template, localFileame);
+                    files.Add(webUrl);
                 }
 
                 await _chatRoomRepository.UpdateImagesAsync(x => x.RoomName == chatName, files);
