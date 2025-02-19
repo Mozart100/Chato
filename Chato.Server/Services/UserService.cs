@@ -1,5 +1,6 @@
 ﻿using Chato.Server.DataAccess.Models;
 using Chato.Server.DataAccess.Repository;
+using Chato.Server.Infrastracture;
 using Chato.Server.Infrastracture.QueueDelegates;
 using Chatto.Shared;
 using System.Diagnostics.CodeAnalysis;
@@ -10,7 +11,7 @@ namespace Chato.Server.Services;
 
 public interface IUserService
 {
-    public const string UserChatImage = "ChattoUserImages";
+    public const string UserChatImage = "UserImages";
 
     Task AssignConnectionId(string userName, string connectionId);
     Task AssignRoomNameAsync(string userNameOrId, string roomName, ChatType chatType);
@@ -20,8 +21,11 @@ public interface IUserService
     Task<User> GetUserByNameOrIdGetOrDefaultAsync(string nameOrId);
     Task RegisterAsync(string username, string description, string gender, int age);
     Task<bool> RemoveUserByUserNameOrIdAsync(string userNameOrId);
-    Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<UserFileInfo> files);
-    Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName);
+    //Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<UserFileInfo> files);
+    public Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents);
+
+
+    Task<IEnumerable<string>> DownloadFilesAsync(string userName);
     Task<IEnumerable<ParticipantInChat>> GetUserChatsAsync(string userNameOrId);
 
 }
@@ -122,19 +126,39 @@ public class UserService : IUserService
 
         await _delegateQueue.InvokeAsync(async () =>
         {
-            var user = await _userRepository.GetOrDefaultAsync(u=>u.UserName == userNameOrId);
-            if(user is not null)
+            var user = await _userRepository.GetOrDefaultAsync(u => u.UserName == userNameOrId);
+            if (user is not null)
             {
-                result = user.Chats.ToArray();  
+                result = user.Chats.ToArray();
             }
         });
 
         return result;
     }
 
+    public async Task<IEnumerable<string>> DownloadFilesAsync(string userName)
+    {
+        IEnumerable<string> files = null;
+
+        await _delegateQueue.InvokeAsync(async () =>
+        {
+            files = await _userRepository.DownloadFiles(userName);
+        });
+
+        return files;
+    }
+
+    public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents)
+    {
+
+        var data = await FileHelper.DissectAsync(documents);
+        var files = await UploadFilesAsync(userName, data);
+
+        return files;
+    }
 
 
-    public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<UserFileInfo> files)
+    private async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<(string FileName, byte[] Content)> files)
     {
         var response = new UploadDocumentsResponse();
 
@@ -162,8 +186,9 @@ public class UserService : IUserService
 
                     }
 
-                    user.Files.Add(new UserFileInfo($"{IUserService.UserChatImage}/{userName}/{localFileame}", file.Content));
-                    response.Files.Add(localFileame);
+                    var webPath = $"{IUserService.UserChatImage}/{userName}/{localFileame}";
+                    user.Files.Add(webPath);
+                    response.Files.Add(webPath);
 
                     amountOfImages++;
                 }
@@ -174,16 +199,4 @@ public class UserService : IUserService
     }
 
 
-
-    public async Task<IEnumerable<UserFileInfo>> DownloadFilesAsync(string userName)
-    {
-        IEnumerable<UserFileInfo> files = null;
-
-        await _delegateQueue.InvokeAsync(async () =>
-        {
-            files = await _userRepository.DownloadFiles(userName);
-        });
-
-        return files;
-    }
 }

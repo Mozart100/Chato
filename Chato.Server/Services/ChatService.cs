@@ -10,11 +10,12 @@ using static System.Net.Mime.MediaTypeNames;
 
 namespace Chato.Server.Services;
 
-
 public interface IChatService
 {
+    public const string ChatName = "chatName";
     public const string Lobi = "lobi";
-    public const string ChatImages = "ChattoImages";
+    public const string ChatImages = "ChatImages";
+    public const string ChatUploadedImagesTemplate = $"{ChatImages}"+"\\{0}\\uploaded";
     public static string GetToUser(string chatName) => chatName.Split("__").LastOrDefault();
     public static string GetChatName(string fromUser, string toUser) => $"{fromUser}__{toUser}";
 
@@ -33,6 +34,8 @@ public interface IChatService
     Task<SenderInfo> SendMessageAsync(string roomName, string fromUser, string? textMessage, string? image, SenderInfoType messageType);
     Task<bool> IsChatExists(string chatName);
     Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<string> chats);
+
+    Task<IEnumerable<string>> UploadFilesAsync(string chatName, IEnumerable<IFormFile> documents);
 
 }
 
@@ -71,7 +74,7 @@ public class ChatService : IChatService
         return room;
     }
 
-    public async Task<ChatRoomDto> CreateRoomAsync(string roomName, ChatType chatType,string descrion)
+    public async Task<ChatRoomDto> CreateRoomAsync(string roomName, ChatType chatType, string descrion)
     {
         var result = default(ChatDb);
 
@@ -83,9 +86,9 @@ public class ChatService : IChatService
         return result.ToChatRoomDto();
     }
 
-    private async Task<ChatDb> CreateRoomCoreAsync(string roomName, ChatType chatType,  string description)
+    private async Task<ChatDb> CreateRoomCoreAsync(string roomName, ChatType chatType, string description)
     {
-        var result = await _chatRoomRepository.InsertAsync(new ChatDb { Id = roomName, ChatType = chatType , Description = description });
+        var result = await _chatRoomRepository.InsertAsync(new ChatDb { Id = roomName, ChatType = chatType, Description = description, Expire = DateTime.UtcNow.AddDays(1) });
         return result;
     }
 
@@ -219,28 +222,16 @@ public class ChatService : IChatService
                     {
 
                         var amountMessages = chatRoom.Messages.Count + 1;
-                        //var wwwRootPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", IChatService.ChatImages, chatName);
                         var localPath = $"{amountMessages}{Path.GetExtension(imageName)}";
 
 
-                        //if (!Directory.Exists(wwwRootPath))
-                        //{
-                        //    Directory.CreateDirectory(wwwRootPath);
-                        //}
-
-                        var wwwRootPath = Path.Combine(_env.WebRootPath, IChatService.ChatImages, chatName);
-                        if (Directory.Exists(wwwRootPath) == false)
-                        {
-                            Directory.CreateDirectory(wwwRootPath);
-                        }
-
+                        var filePath = Path.Combine(_env.WebRootPath, IChatService.ChatImages, chatName, localPath);
                         byte[] fileBytes = Convert.FromBase64String(textMessage);
-                        var filePath = Path.Combine(wwwRootPath, localPath);
                         //string base64String = Convert.ToBase64String(fileBytes);
 
                         try
                         {
-                            File.WriteAllBytes(filePath, fileBytes);
+                            FileHelper.SaveFile(fileBytes, filePath);
                         }
                         catch (Exception ex)
                         {
@@ -300,7 +291,7 @@ public class ChatService : IChatService
             }
             else
             {
-                var createRoom = await CreateRoomCoreAsync(roomName, chatType,description);
+                var createRoom = await CreateRoomCoreAsync(roomName, chatType, description);
                 createRoom.Users.Add(userName);
                 result = await AddTextMessage(SenderInfoType.Created, roomName, userName, null, null);
             }
@@ -316,7 +307,7 @@ public class ChatService : IChatService
             var room = await GetRoomByNameOrIdCoreAsync(IChatService.Lobi);
             if (room is null)
             {
-                await CreateRoomCoreAsync(IChatService.Lobi, ChatType.Public,null);
+                await CreateRoomCoreAsync(IChatService.Lobi, ChatType.Public, null);
             }
         });
     }
@@ -334,6 +325,47 @@ public class ChatService : IChatService
         });
 
         return result;
+    }
+
+    public async Task<IEnumerable<string>> UploadFilesAsync(string chatName, IEnumerable<IFormFile> documents)
+    {
+        IEnumerable<string> response = null;
+
+        var fileInfoes = await FileHelper.DissectAsync(documents);
+
+        await _lockerQueue.InvokeAsync(async () =>
+        {
+            var chat = await _chatRoomRepository.GetOrDefaultAsync(x => x.RoomName == chatName);
+            if (chat is not null)
+            {
+                //await _chatRoomRepository.UpdateImagesAsync(chatName);
+                var amountOfImages = 1;
+                var template = string.Format(IChatService.ChatUploadedImagesTemplate, chatName); 
+                var wwwRootPath = Path.Combine(_env.WebRootPath, template);
+                var files = new List<string>();
+                foreach (var fileInfo in fileInfoes)
+                {
+                    var localFileame = $"{amountOfImages}{Path.GetExtension(fileInfo.FileName)}";
+                    var filePath = Path.Combine(wwwRootPath, localFileame);
+                    try
+                    {
+                        FileHelper.SaveFile(fileInfo.Content, filePath);
+                    }
+                    catch (Exception ex)
+                    {
+
+                    }
+
+                    var webUrl = Path.Combine(template, localFileame);
+                    files.Add(webUrl);
+                }
+
+                await _chatRoomRepository.UpdateImagesAsync(x => x.RoomName == chatName, files);
+                response = files;
+            }
+        });
+
+        return response;
     }
 
 

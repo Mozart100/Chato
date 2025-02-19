@@ -10,7 +10,7 @@ public interface IUserRepository : IRepositoryBase<UserDb, User>
 {
     Task AddRoomToUser(string userNameOrId, string roomName, ChatType chatType);
     Task AssignConnectionId(string userName, string connectionId);
-    Task<IEnumerable<UserFileInfo>> DownloadFiles(string userName);
+    Task<IEnumerable<string>> DownloadFiles(string userName);
 
 }
 
@@ -41,9 +41,9 @@ public class UserRepository : AutoRepositoryBase<UserDb, User>, IUserRepository
         await UpdateAsync(u => u.UserName == userName, user => user.ConnectionId = conectionId);
     }
 
-    public async Task<IEnumerable<UserFileInfo>> DownloadFiles(string userName)
+    public async Task<IEnumerable<string>> DownloadFiles(string userName)
     {
-        UserFileInfo[] result = [];
+        string[] result = [];
 
         var model = Models.FirstOrDefault(x => x.UserName == userName);
 

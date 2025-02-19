@@ -21,7 +21,7 @@ public class AuthorizeRoleConsts
 public class AuthController : ControllerBase
 {
     public const string RegistrationUrl = "register";
-    public const string UploadUrl = "upload";
+    //public const string UploadUrl = "upload";
     public const string DownloadUrl = "download";
     public const string GetAllImagesOfUserUrl = "uploadedimages";
 
@@ -56,15 +56,16 @@ public class AuthController : ControllerBase
 
 
 
-    [Route(UploadUrl)]
-    [HttpPost, Authorize]
-    public async Task<ActionResult<UploadDocumentsResponse>> Upload(IEnumerable<IFormFile> documents)
-    {
-        var userName = User.Identity.Name;
-        var response = await _authenticationService.UploadFilesAsync(userName, documents);
+    //[Route(UploadUrl)]
+    //[HttpPost, Authorize]
+    //public async Task<ActionResult<UploadDocumentsResponse>> Upload(IEnumerable<IFormFile> documents)
+    //{
+    //    var userName = User.Identity.Name;
+    //    var response = await _authenticationService.UploadFilesAsync(userName, documents);
 
-        return Ok(response);
-    }
+    //    return Ok(response);
+    //}
+
 
     [Route(GetAllImagesOfUserUrl)]
     [HttpGet, Authorize]
@@ -73,7 +74,7 @@ public class AuthController : ControllerBase
         var userName = User.Identity.Name;
         var files = await _authenticationService.DownloadFilesAsync(userName);
 
-        var response =  new GetAllUserImagesResponse { Files = files.Select(x => x.FileName).ToList() };
+        var response =  new GetAllUserImagesResponse { Files = files.ToList() };
         return response;
     }
 

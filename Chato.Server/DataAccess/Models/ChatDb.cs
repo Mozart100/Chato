@@ -20,6 +20,9 @@ public class ChatDb : EntityDbBase
 
     public string Description { get; set; }
 
+    public required DateTime Expire { get; set; }
+
+    public List<string> Files { get; set; } = new List<string>();
 }
 
 
@@ -27,7 +30,7 @@ public static class ChatRoomDbExtensions
 {
     public static ChatRoomDto ToChatRoomDto(this ChatDb chatRoomDb)
     {
-        return new ChatRoomDto(chatRoomDb.RoomName, chatRoomDb.Users.SafeToArray());
+        return new ChatRoomDto(chatRoomDb.RoomName, chatRoomDb.Description, chatRoomDb.Users.SafeToArray());
     }
 
 

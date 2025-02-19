@@ -1,6 +1,7 @@
 ﻿using Chato.Server.DataAccess.Models;
 using Chato.Server.Services;
 using Chatto.Shared;
+using System;
 using System.Reflection;
 using System.Text;
 
@@ -8,6 +9,7 @@ namespace Chato.Server.DataAccess.Repository;
 
 public interface IChatRepository : IRepositoryBase<ChatDb>
 {
+   Task<bool> UpdateImagesAsync(Predicate<ChatDb> selector, IEnumerable<string> images);
 }
 
 public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
@@ -74,6 +76,20 @@ public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
         }
 
         return result;
+    }
+
+    public async Task<bool> UpdateImagesAsync(Predicate<ChatDb> selector, IEnumerable<string> images)
+    {
+        foreach (var model in Models)
+        {
+            if (selector(model))
+            {
+                model.Files.AddRange(images);
+                return true;
+            }
+        }
+
+        return false;
     }
 }
 

@@ -15,6 +15,7 @@ namespace Chato.Server.Controllers
     {
         public const string All_Users_Route = "all";
         public const string Chats_Per_User_Route = "chatperuser";
+        public const string UserUploadUrl = "upload";
 
         private readonly IMapper _mapper;
         public readonly IUserService _userService;
@@ -66,6 +67,17 @@ namespace Chato.Server.Controllers
             var result = new AllChatsPerUserResponse(data);
 
             return result;
+        }
+
+
+        [Route(UserUploadUrl)]
+        [HttpPost, Authorize]
+        public async Task<ActionResult<UploadDocumentsResponse>> Upload(IEnumerable<IFormFile> documents)
+        {
+            var userName = User.Identity.Name;
+            var response = await _userService.UploadFilesAsync(userName, documents);
+
+            return Ok(response);
         }
     }
 }
