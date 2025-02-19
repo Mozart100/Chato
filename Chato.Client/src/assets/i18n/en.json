@@ -45,10 +45,26 @@
   },
   "rooms": {
     "title": "Rooms",
-    "searchRooms": "Search rooms..."
+    "searchRooms": "Search rooms...",
+    "createRoomModal": {
+      "title": "Create New Group",
+      "form": {
+        "groupName": {
+          "title": "Group Name",
+          "placeholder": "Enter Group Name"
+        },
+        "description": {
+          "title": "Group Description",
+          "placeholder": "Enter Group Description"
+        },
+        "submit": "Create Group",
+        "cancel": "Close"
+      }
+    }
   },
   "common": {
-    "userJoined": "User joined the Chato"
+    "userJoined": "User joined the Chato",
+    "userCreatedGroup": "User created group"
   },
   "profile": {
     "title": "My Profile",

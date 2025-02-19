@@ -27,5 +27,11 @@ export interface ChatMessage {
 export enum SenderInfoType {
     TextMessage = 1,
     Image = 2,
-    Joined = 3
+    Joined = 3,
+    Created = 4
+}
+
+export enum ChatType {
+    Public = 0,
+    Private = 1
 }

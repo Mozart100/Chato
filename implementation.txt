@@ -1,0 +1,34 @@
+CHATTING
+
+Public and Private chat
+Add to Chat
+	- privacy type - public/private/protected
+	- description
+	- images
+
+ENDPOINTS
+
+Create chat
+
+RECEIVING LIST OF CHATS
+
+- public chats
+- private - where user is a participant
+
+
+
+BIDDING
+
+MODELS
+
+1. Types of Chat (type, name, images, participants, history):
+	- chat
+	- bidding (bidding data - privacy: public/private, password, bidding name, bidding description, minimum bid, minimum step, current bid)
+	
+2. Type of Message (type, sender, text, image)
+	- text
+	- image
+	- joined -> userJoined
+	- bid (amount)
+	
+

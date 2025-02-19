@@ -48,7 +48,8 @@
         "searchRooms": "Search rooms..."
     },
     "common": {
-        "userJoined": "joined the chat"
+        "userJoined": "User joined the chat",
+        "userCreatedGroup": "User created group"
     },
     "profile": {
         "title": "My Profile",

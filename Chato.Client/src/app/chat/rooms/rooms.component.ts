@@ -11,15 +11,16 @@ import {
 } from '@ng-bootstrap/ng-bootstrap'
 import { groups } from '../index/data'
 import { SimplebarAngularModule } from 'simplebar-angular'
-import { FormsModule, ReactiveFormsModule } from '@angular/forms'
+import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms'
 import { PickerComponent } from '@ctrl/ngx-emoji-mart'
 import { ChatService } from '../../core/services/chat.service'
 import { ChatStore } from '../../core/store/chat.store'
 import { Chat } from '../../core/models/chat.models'
 import { ChatWindowComponent } from '../chat-window/chat-window.component'
 import { AuthenticationService } from '../../core/services/auth.service'
-import { NgClass } from '@angular/common'
+import { NgClass, NgIf } from '@angular/common'
 import { ChattoHubService } from '../../core/services/realtime.service'
+import { ToastrService } from 'ngx-toastr'
 
 @Component({
     selector: 'app-rooms',
@@ -40,7 +41,8 @@ import { ChattoHubService } from '../../core/services/realtime.service'
         PickerComponent,
         ReactiveFormsModule,
         ChatWindowComponent,
-        NgClass
+        NgClass,
+        NgIf
     ],
     templateUrl: './rooms.component.html',
     styleUrl: './rooms.component.scss'
@@ -49,13 +51,24 @@ export class RoomsComponent implements OnInit {
 
     public isCollapsed = true
 
+    createRoomForm: FormGroup
+
+
     constructor(private navStore: NavStore,
                 private modalService: NgbModal,
                 private roomsService: ChatService,
                 public chatStore: ChatStore,
-                public authService: AuthenticationService,
-                private realtime: ChattoHubService) {
+                private chatService: ChatService,
+                private realtime: ChattoHubService,
+                private fb: FormBuilder,
+                private toastr: ToastrService) {
+
         this.navStore.selectedTab.set(3)
+
+        this.createRoomForm = this.fb.group({
+            groupName: ['', Validators.required],
+            description: ['']
+        })
     }
 
     ngOnInit() {
@@ -71,39 +84,24 @@ export class RoomsComponent implements OnInit {
         this.chatStore.selectedChat.set(room)
 
         if (!room.messages || room.messages.length == 0) {
-
             this.realtime.downloadHistory(this.chatStore.selectedChat())
-
         }
 
         document.querySelector('.user-chat').classList.add('user-chat-show')
-        // document.querySelector('.chat-welcome-section').classList.add('d-none')
-        // document.querySelector('.user-chat').classList.remove('d-none')
-        // event.target.closest('li').classList.add('active')
-        // var data = this.groups.filter((group: any) => {
-        //     return group.id === id
-        // })
-        // this.userName = data[0].name
-        // this.userProfile = ''
-        // this.message = data[0].messages
     }
 
     GroupSearch() {
-        /*        var input: any, filter: any, ul: any, li: any, a: any | undefined, i: any, txtValue: any
-                input = document.getElementById('searchGroup') as HTMLAreaElement
-                filter = input.value.toUpperCase()
-                ul = document.querySelectorAll('.group-list')
-                ul.forEach((item: any) => {
-                    li = item.getElementsByTagName('li')
-                    for (i = 0; i < li.length; i++) {
-                        a = li[i].getElementsByTagName('h5')[0]
-                        txtValue = a?.innerText
-                        if (txtValue?.toUpperCase().indexOf(filter) > -1) {
-                            li[i].style.display = ''
-                        } else {
-                            li[i].style.display = 'none'
-                        }
-                    }
-                })*/
+    }
+
+    createGroup(modal: any) {
+        const name = this.createRoomForm.get('groupName').value
+        const description = this.createRoomForm.get('description').value
+
+        this.realtime.createPublicGroup(name, description)
+            .then(() => {
+                modal.dismiss('Group Created')
+                this.chatService.addNewChat(name)
+            })
+            .catch(err => this.toastr.error(err.error || err.message, 'Failed to create group'))
     }
 }
