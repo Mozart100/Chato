@@ -49,16 +49,12 @@ public class ChatController : ControllerBase
 
 
     [HttpPost]
-    //[Route("upload/{chatName}")]
     [Route(UploadChatImagesUrl)]
-    //[HttpPost(UploadChatImagesUrl), Authorize]
     public async Task<UploadDocumentsResponse> Upload([FromRoute] string chatName, IEnumerable<IFormFile> documents)
     {
-        //var userName = User.Identity.Name;
         var files = await _roomService.UploadFilesAsync(chatName, documents);
         var response = new UploadDocumentsResponse();
         response.Files.AddRange(files);
-        //return Ok(response);
         return response;
     }
 
