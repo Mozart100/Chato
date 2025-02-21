@@ -33,7 +33,7 @@ public interface IChatService
     Task RemoveHistoryByRoomNameAsync(string roomName);
     Task<SenderInfo> SendMessageAsync(string roomName, string fromUser, string? textMessage, string? image, SenderInfoType messageType);
     Task<bool> IsChatExists(string chatName);
-    Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<string> chats);
+    Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<ParticipantInChat> chats);
 
     Task<IEnumerable<string>> UploadFilesAsync(string chatName, IEnumerable<IFormFile> documents);
 
@@ -147,7 +147,7 @@ public class ChatService : IChatService
         return result?.ToChatRoomDto();
     }
 
-    public async Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<string> chats)
+    public async Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<ParticipantInChat> chats)
     {
         var result = new List<ChatInfoPerUser>();
 
@@ -155,10 +155,10 @@ public class ChatService : IChatService
         {
             foreach (var chat in chats)
             {
-                var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chat);
+                var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chat.ChatName);
                 if (room is not null)
                 {
-                    result.Add(new ChatInfoPerUser(room.RoomName, room.ChatType, room.Users.Count));
+                    result.Add(new ChatInfoPerUser(room.RoomName, room.ChatType, room.Users.Count, chat.IsOwner));
                 }
             }
         });
