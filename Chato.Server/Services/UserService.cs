@@ -15,7 +15,7 @@ public interface IUserService
     public const string UserChatImage = "UserImages";
 
     Task AssignConnectionId(string userName, string connectionId);
-    Task AssignRoomNameAsync(string userNameOrId, string roomName, ChatType chatType);
+    Task AssignRoomNameAsync(string userNameOrId, string roomName, ChatType chatType, bool isOwner);
     Task<IEnumerable<User>> GetAllUsersAsync(Func<User, bool> predicate);
     string GetMyName();
     Task<User> GetUserByConnectionId(string connectionId);
@@ -68,9 +68,9 @@ public class UserService : IUserService
     }
 
 
-    public async Task AssignRoomNameAsync(string userNameOrId, string roomName, ChatType chatType)
+    public async Task AssignRoomNameAsync(string userNameOrId, string roomName, ChatType chatType, bool isOwner)
     {
-        await _delegateQueue.InvokeAsync(async () => await _userRepository.AddRoomToUser(userNameOrId, roomName, chatType));
+        await _delegateQueue.InvokeAsync(async () => await _userRepository.AddRoomToUser(userNameOrId, roomName, chatType,isOwner));
 
     }
 

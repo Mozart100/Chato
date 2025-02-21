@@ -67,8 +67,10 @@ public class AssignmentService : IAssignmentService
         var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(nameOrId);
         if (user is not null)
         {
-            await _userService.AssignRoomNameAsync(user.UserName, chatName, chatType);
             result = await _roomService.JoinOrCreateRoom(chatName, user.UserName, chatType, description);
+
+            var isOwner = result.SenderInfoType == SenderInfoType.Created;
+            await _userService.AssignRoomNameAsync(user.UserName, chatName, chatType,isOwner);
         }
 
         return result;
