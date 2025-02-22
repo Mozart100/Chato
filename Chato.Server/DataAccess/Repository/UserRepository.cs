@@ -49,13 +49,13 @@ public class UserRepository : AutoRepositoryBase<UserDb, User>, IUserRepository
 
     public async Task<IEnumerable<string>> DownloadFiles(string userName)
     {
-        string[] result = [];
+        IEnumerable<string> result = [];
 
         var model = Models.FirstOrDefault(x => x.UserName == userName);
 
         if (model is not null)
         {
-            result = model.Files.ToArray();
+            result = model.FileSegment.GetImages();
         }
 
         return result;

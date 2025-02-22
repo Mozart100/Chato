@@ -192,7 +192,7 @@ public class UserService : IUserService
                     }
 
                     var webPath = $"{IUserService.UserChatImage}/{userName}/{localFileame}";
-                    user.Files.Add(webPath);
+                    user.FileSegment.Add(webPath);
                     response.Files.Add(webPath);
 
                     amountOfImages++;
