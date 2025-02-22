@@ -2,6 +2,7 @@
 using Chato.Server.DataAccess.Repository;
 using Chato.Server.Infrastracture;
 using Chato.Server.Infrastracture.QueueDelegates;
+using Chato.Server.Services.Validations;
 using Chatto.Shared;
 using System.Net.NetworkInformation;
 using System.Net.WebSockets;
@@ -35,7 +36,8 @@ public interface IChatService
     Task<bool> IsChatExists(string chatName);
     Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<ParticipantInChat> chats);
 
-    Task<IEnumerable<string>> UploadFilesAsync(string chatName, IEnumerable<IFormFile> documents);
+    Task<IEnumerable<string>> UploadFilesAsync(User user, string chatName, IEnumerable<IFormFile> documents);
+    //Task<IEnumerable<string>> UploadFilesAsync(string chatName, string chatName1, IEnumerable<IFormFile> documents);
 
 }
 
@@ -43,14 +45,17 @@ public interface IChatService
 public class ChatService : IChatService
 {
     private readonly IChatRepository _chatRoomRepository;
+    private readonly IChatValidationService _chatValidationService;
     private readonly ILockerDelegateQueue _lockerQueue;
     private readonly IWebHostEnvironment _env;
 
     public ChatService(IChatRepository chatRoomRepository,
+        IChatValidationService chatValidationService,
         ILockerDelegateQueue lockerQueue,
         IWebHostEnvironment env)
     {
         this._chatRoomRepository = chatRoomRepository;
+        this._chatValidationService = chatValidationService;
         this._lockerQueue = lockerQueue;
         this._env = env;
     }
@@ -324,8 +329,11 @@ public class ChatService : IChatService
         return result;
     }
 
-    public async Task<IEnumerable<string>> UploadFilesAsync(string chatName, IEnumerable<IFormFile> documents)
+    public async Task<IEnumerable<string>> UploadFilesAsync(User user, string chatName, IEnumerable<IFormFile> documents)
     {
+
+        await _chatValidationService.UploadDocumentsValidationAsync(user, chatName, documents);
+
         IEnumerable<string> response = null;
 
         var fileInfoes = await FileHelper.DissectAsync(documents);
@@ -364,6 +372,47 @@ public class ChatService : IChatService
 
         return response;
     }
+
+    //public async Task<IEnumerable<string>> UploadFilesAsync(string chatName, string chatName1, IEnumerable<IFormFile> documents)
+    //{
+    //    IEnumerable<string> response = null;
+
+    //    var fileInfoes = await FileHelper.DissectAsync(documents);
+
+    //    await _lockerQueue.InvokeAsync(async () =>
+    //    {
+    //        var chat = await _chatRoomRepository.GetOrDefaultAsync(x => x.RoomName == chatName);
+    //        if (chat is not null)
+    //        {
+    //            //await _chatRoomRepository.UpdateImagesAsync(chatName);
+    //            var amountOfImages = 1;
+    //            var template = string.Format(IChatService.ChatUploadedImagesTemplate, chatName);
+    //            var wwwRootPath = Path.Combine(_env.WebRootPath, template);
+    //            var files = new List<string>();
+    //            foreach (var fileInfo in fileInfoes)
+    //            {
+    //                var localFileame = $"{amountOfImages}{Path.GetExtension(fileInfo.FileName)}";
+    //                var filePath = Path.Combine(wwwRootPath, localFileame);
+    //                try
+    //                {
+    //                    FileHelper.SaveFile(fileInfo.Content, filePath);
+    //                }
+    //                catch (Exception ex)
+    //                {
+
+    //                }
+
+    //                var webUrl = Path.Combine(template, localFileame);
+    //                files.Add(webUrl);
+    //            }
+
+    //            await _chatRoomRepository.UpdateImagesAsync(x => x.RoomName == chatName, files);
+    //            response = files;
+    //        }
+    //    });
+
+    //    return response;
+    //}
 
 
     //----------------------------------------------------------------------------------------------------

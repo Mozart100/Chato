@@ -14,9 +14,6 @@ public class User : EntityDbBase, IUserEnittyMapper
 
 }
 
-
-//public record UserFileInfo(string FileName, byte[] Content);
-
 public class UserDb : User
 {
 
@@ -26,11 +23,7 @@ public class UserDb : User
         set => UserName = value;
     }
 
-    //public byte[] PasswordHash { get; init; }
-
-    //public List<string> Files { get; set; } = new List<string>();
     public FilesSegment FileSegment { get; set; } = new FilesSegment();
-
 }
 
 public class FilesSegment
