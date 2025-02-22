@@ -62,8 +62,8 @@ namespace Chato.Server.Controllers
         {
             var userName = User.Identity.Name;
 
-            var chats = await _userService.GetUserChatsAsync(userName);
-            var data = await _chatService.GetChatInfoPerChatName(chats.Select(x => x.ChatName));
+            var chatInfoes = await _userService.GetUserChatsAsync(userName);
+            var data = await _chatService.GetChatInfoPerChatName(chatInfoes);
             var result = new AllChatsPerUserResponse(data);
 
             return result;

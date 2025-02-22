@@ -4,7 +4,16 @@ public enum ChatType
 {
     Public, Private
 }
-public record ParticipantInChat(string ChatName, ChatType ChatType);
+public record ParticipantInChat(string ChatName, ChatType ChatType,bool IsOwner)
+{
+    public virtual bool Equals(ParticipantInChat? other)
+    {
+        if (other is null) return false;
+        return ChatName == other.ChatName; // Compare only by ChatName
+    }
+
+    public override int GetHashCode() => ChatName.GetHashCode();
+}
 
 public interface IAutomapperEntities
 {

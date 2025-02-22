@@ -2,6 +2,7 @@
 using Chato.Server.DataAccess.Repository;
 using Chato.Server.Infrastracture;
 using Chato.Server.Infrastracture.QueueDelegates;
+using Chato.Server.Services.Validations;
 using Chatto.Shared;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
@@ -14,7 +15,7 @@ public interface IUserService
     public const string UserChatImage = "UserImages";
 
     Task AssignConnectionId(string userName, string connectionId);
-    Task AssignRoomNameAsync(string userNameOrId, string roomName, ChatType chatType);
+    Task AssignRoomNameAsync(string userNameOrId, string roomName, ChatType chatType, bool isOwner);
     Task<IEnumerable<User>> GetAllUsersAsync(Func<User, bool> predicate);
     string GetMyName();
     Task<User> GetUserByConnectionId(string connectionId);
@@ -33,16 +34,19 @@ public interface IUserService
 public class UserService : IUserService
 {
     private readonly IHttpContextAccessor _httpContextAccessor;
+    private readonly IUserValidationService _userValidationService;
     private readonly IUserRepository _userRepository;
     private readonly ILockerDelegateQueue _delegateQueue;
     private readonly IWebHostEnvironment _env;
 
     public UserService(IHttpContextAccessor httpContextAccessor,
+        IUserValidationService userValidationService,
         IUserRepository userRepository,
         ILockerDelegateQueue delegateQueue,
         IWebHostEnvironment env)
     {
         _httpContextAccessor = httpContextAccessor;
+        this._userValidationService = userValidationService;
         this._userRepository = userRepository;
         this._delegateQueue = delegateQueue;
         this._env = env;
@@ -64,9 +68,9 @@ public class UserService : IUserService
     }
 
 
-    public async Task AssignRoomNameAsync(string userNameOrId, string roomName, ChatType chatType)
+    public async Task AssignRoomNameAsync(string userNameOrId, string roomName, ChatType chatType, bool isOwner)
     {
-        await _delegateQueue.InvokeAsync(async () => await _userRepository.AddRoomToUser(userNameOrId, roomName, chatType));
+        await _delegateQueue.InvokeAsync(async () => await _userRepository.AddRoomToUser(userNameOrId, roomName, chatType,isOwner));
 
     }
 
@@ -150,7 +154,8 @@ public class UserService : IUserService
 
     public async Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<IFormFile> documents)
     {
-
+        await _userValidationService.UploadDocumentsValidationAsync(documents);
+        
         var data = await FileHelper.DissectAsync(documents);
         var files = await UploadFilesAsync(userName, data);
 
@@ -187,7 +192,7 @@ public class UserService : IUserService
                     }
 
                     var webPath = $"{IUserService.UserChatImage}/{userName}/{localFileame}";
-                    user.Files.Add(webPath);
+                    user.FileSegment.Add(webPath);
                     response.Files.Add(webPath);
 
                     amountOfImages++;

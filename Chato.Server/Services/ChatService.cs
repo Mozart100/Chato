@@ -2,6 +2,7 @@
 using Chato.Server.DataAccess.Repository;
 using Chato.Server.Infrastracture;
 using Chato.Server.Infrastracture.QueueDelegates;
+using Chato.Server.Services.Validations;
 using Chatto.Shared;
 using System.Net.NetworkInformation;
 using System.Net.WebSockets;
@@ -15,7 +16,7 @@ public interface IChatService
     public const string ChatName = "chatName";
     public const string Lobi = "lobi";
     public const string ChatImages = "ChatImages";
-    public const string ChatUploadedImagesTemplate = $"{ChatImages}"+"\\{0}\\uploaded";
+    public const string ChatUploadedImagesTemplate = $"{ChatImages}" + "\\{0}\\uploaded";
     public static string GetToUser(string chatName) => chatName.Split("__").LastOrDefault();
     public static string GetChatName(string fromUser, string toUser) => $"{fromUser}__{toUser}";
 
@@ -33,9 +34,10 @@ public interface IChatService
     Task RemoveHistoryByRoomNameAsync(string roomName);
     Task<SenderInfo> SendMessageAsync(string roomName, string fromUser, string? textMessage, string? image, SenderInfoType messageType);
     Task<bool> IsChatExists(string chatName);
-    Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<string> chats);
+    Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<ParticipantInChat> chats);
 
-    Task<IEnumerable<string>> UploadFilesAsync(string chatName, IEnumerable<IFormFile> documents);
+    Task<IEnumerable<string>> UploadFilesAsync(User user, string chatName, IEnumerable<IFormFile> documents);
+    //Task<IEnumerable<string>> UploadFilesAsync(string chatName, string chatName1, IEnumerable<IFormFile> documents);
 
 }
 
@@ -43,14 +45,17 @@ public interface IChatService
 public class ChatService : IChatService
 {
     private readonly IChatRepository _chatRoomRepository;
+    private readonly IChatValidationService _chatValidationService;
     private readonly ILockerDelegateQueue _lockerQueue;
     private readonly IWebHostEnvironment _env;
 
     public ChatService(IChatRepository chatRoomRepository,
+        IChatValidationService chatValidationService,
         ILockerDelegateQueue lockerQueue,
         IWebHostEnvironment env)
     {
         this._chatRoomRepository = chatRoomRepository;
+        this._chatValidationService = chatValidationService;
         this._lockerQueue = lockerQueue;
         this._env = env;
     }
@@ -147,7 +152,7 @@ public class ChatService : IChatService
         return result?.ToChatRoomDto();
     }
 
-    public async Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<string> chats)
+    public async Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<ParticipantInChat> chats)
     {
         var result = new List<ChatInfoPerUser>();
 
@@ -155,10 +160,10 @@ public class ChatService : IChatService
         {
             foreach (var chat in chats)
             {
-                var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chat);
+                var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chat.ChatName);
                 if (room is not null)
                 {
-                    result.Add(new ChatInfoPerUser(room.RoomName, room.ChatType, room.Users.Count));
+                    result.Add(new ChatInfoPerUser(room.RoomName, room.ChatType, room.Users.Count, chat.IsOwner));
                 }
             }
         });
@@ -283,11 +288,8 @@ public class ChatService : IChatService
             var room = await GetRoomByNameOrIdCoreAsync(roomName);
             if (room is not null)
             {
-                if (room.ContainUser(userName) == false)
-                {
-                    room.Users.Add(userName);
-                    result = await AddTextMessage(SenderInfoType.Joined, roomName, userName, null, null);
-                }
+                room.Users.Add(userName);
+                result = await AddTextMessage(SenderInfoType.Joined, roomName, userName, null, null);
             }
             else
             {
@@ -327,8 +329,11 @@ public class ChatService : IChatService
         return result;
     }
 
-    public async Task<IEnumerable<string>> UploadFilesAsync(string chatName, IEnumerable<IFormFile> documents)
+    public async Task<IEnumerable<string>> UploadFilesAsync(User user, string chatName, IEnumerable<IFormFile> documents)
     {
+
+        await _chatValidationService.UploadDocumentsValidationAsync(user, chatName, documents);
+
         IEnumerable<string> response = null;
 
         var fileInfoes = await FileHelper.DissectAsync(documents);
@@ -340,7 +345,7 @@ public class ChatService : IChatService
             {
                 //await _chatRoomRepository.UpdateImagesAsync(chatName);
                 var amountOfImages = 1;
-                var template = string.Format(IChatService.ChatUploadedImagesTemplate, chatName); 
+                var template = string.Format(IChatService.ChatUploadedImagesTemplate, chatName);
                 var wwwRootPath = Path.Combine(_env.WebRootPath, template);
                 var files = new List<string>();
                 foreach (var fileInfo in fileInfoes)
@@ -367,6 +372,47 @@ public class ChatService : IChatService
 
         return response;
     }
+
+    //public async Task<IEnumerable<string>> UploadFilesAsync(string chatName, string chatName1, IEnumerable<IFormFile> documents)
+    //{
+    //    IEnumerable<string> response = null;
+
+    //    var fileInfoes = await FileHelper.DissectAsync(documents);
+
+    //    await _lockerQueue.InvokeAsync(async () =>
+    //    {
+    //        var chat = await _chatRoomRepository.GetOrDefaultAsync(x => x.RoomName == chatName);
+    //        if (chat is not null)
+    //        {
+    //            //await _chatRoomRepository.UpdateImagesAsync(chatName);
+    //            var amountOfImages = 1;
+    //            var template = string.Format(IChatService.ChatUploadedImagesTemplate, chatName);
+    //            var wwwRootPath = Path.Combine(_env.WebRootPath, template);
+    //            var files = new List<string>();
+    //            foreach (var fileInfo in fileInfoes)
+    //            {
+    //                var localFileame = $"{amountOfImages}{Path.GetExtension(fileInfo.FileName)}";
+    //                var filePath = Path.Combine(wwwRootPath, localFileame);
+    //                try
+    //                {
+    //                    FileHelper.SaveFile(fileInfo.Content, filePath);
+    //                }
+    //                catch (Exception ex)
+    //                {
+
+    //                }
+
+    //                var webUrl = Path.Combine(template, localFileame);
+    //                files.Add(webUrl);
+    //            }
+
+    //            await _chatRoomRepository.UpdateImagesAsync(x => x.RoomName == chatName, files);
+    //            response = files;
+    //        }
+    //    });
+
+    //    return response;
+    //}
 
 
     //----------------------------------------------------------------------------------------------------

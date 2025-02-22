@@ -68,22 +68,35 @@ internal class BasicScenario : InstructionScenarioBase
                 var response = await Get<ResponseWrapper<AllChatsPerUserResponse>>(GetChatsPerUserUrl, token);
 
                 var isPrivate = false;
-                foreach (var chat in response.Body.Chats)
-                {
-                    if (chat.ChatType == ChatType.Private)
-                    {
-                        isPrivate = true;
-                        break;
-                    }
-                }
+                var chats = response.Body.Chats;
 
-                isPrivate.Should().BeFalse();
+                var isInPrivateChat = chats.FirstOrDefault(x => x.ChatType == ChatType.Private) != null;
+                isInPrivateChat.Should().BeFalse();
+
+                var isOwner = chats.FirstOrDefault(x => x.IsOwner == true) != null;
+                isOwner.Should().BeTrue();
+
+                //foreach (var chat in response.Body.Chats)
+                //{
+                //    if (chat.ChatType == ChatType.Private)
+                //    {
+                //        isPrivate = true;
+                //        isOwner = chat.IsOwner;
+                //        break;
+                //    }
+                //}
+
+                //isPrivate.Should().BeFalse();
             }))
 
              .Step(users[Nathan_User].Do(async user =>
              {
                  var token = user.RegistrationResponse.Token;
                  var response = await Get<ResponseWrapper<AllChatsPerUserResponse>>(GetChatsPerUserUrl, token);
+
+                 var chats = response.Body.Chats;
+                 var isOwner = chats.FirstOrDefault(x => x.IsOwner == true) != null;
+                 isOwner.Should().BeFalse();
 
                  var isPrivate = false;
                  foreach (var chat in response.Body.Chats)
@@ -371,12 +384,12 @@ internal class BasicScenario : InstructionScenarioBase
 
                 var response = await DownloadImageAsync(imagePath, token);
 
-                if(response is null)
+                if (response is null)
                 {
-                     imagePath = $"{BaseUrl}/{expectedFilePath}";
-                     response = await DownloadImageAsync(imagePath, token);
+                    imagePath = $"{BaseUrl}/{expectedFilePath}";
+                    response = await DownloadImageAsync(imagePath, token);
 
-                    if(response is null)
+                    if (response is null)
                     {
 
                     }

@@ -1,4 +1,5 @@
-﻿using Chatto.Shared;
+﻿using Chato.Server.Infrastracture;
+using Chatto.Shared;
 
 namespace Chato.Server.DataAccess.Models;
 
@@ -13,9 +14,6 @@ public class User : EntityDbBase, IUserEnittyMapper
 
 }
 
-
-//public record UserFileInfo(string FileName, byte[] Content);
-
 public class UserDb : User
 {
 
@@ -25,15 +23,22 @@ public class UserDb : User
         set => UserName = value;
     }
 
-    //public byte[] PasswordHash { get; init; }
+    public FilesSegment FileSegment { get; set; } = new FilesSegment();
+}
 
-    public List<string> Files { get; set; } = new List<string>();
-    //public List<UserFileInfo> Files { get; set; } = new List<UserFileInfo>();
+public class FilesSegment
+{
+    public const int Max_Files = 5;
+    private int _current = 0;
+    private string[] _files = new string[Max_Files];
 
-    //public UserFileInfo Document1 { get; set; }
-    //public UserFileInfo Document2 { get; set; }
-    //public UserFileInfo Document3 { get; set; }
-    //public UserFileInfo Document4 { get; set; }
-    //public UserFileInfo Document5 { get; set; }
-    //public UserFileInfo Document6 { get; set; }
+
+    public void Add(string filePath)
+    {
+        _files[_current] = filePath;
+        _current = _current % Max_Files;
+    }
+
+    public IEnumerable<string> GetImages() => _files.Take(_current).Where(x => x.IsNotEmpty() == false).ToArray();
+
 }

@@ -20,10 +20,13 @@ public class ChatController : ControllerBase
     //[HttpPost, Authorize]
 
     private readonly IChatService _roomService;
+    private readonly IAssignmentService _assignmentService;
 
-    public ChatController(IChatService roomService)
+    public ChatController(IChatService roomService,
+        IAssignmentService assignmentService)
     {
         this._roomService = roomService;
+        this._assignmentService = assignmentService;
     }
 
 
@@ -32,14 +35,14 @@ public class ChatController : ControllerBase
     public async Task<GetAllRoomResponse> GetAllRooms()
     {
         var result = await _roomService.GetAllRoomAsync();
-        var response =  new GetAllRoomResponse { Rooms = result.SafeToArray() };
-    
-          return response;
+        var response = new GetAllRoomResponse { Rooms = result.SafeToArray() };
+
+        return response;
     }
 
 
     [HttpGet]
-    [Route("{chatName}"),Authorize]
+    [Route("{chatName}"), Authorize]
     public async Task<GetRoomResponse> GetRoom(string chatName)
     {
         var room = await _roomService.GetRoomByNameOrIdAsync(chatName);
@@ -49,16 +52,18 @@ public class ChatController : ControllerBase
 
 
     [HttpPost]
-    //[Route("upload/{chatName}")]
     [Route(UploadChatImagesUrl)]
-    //[HttpPost(UploadChatImagesUrl), Authorize]
     public async Task<UploadDocumentsResponse> Upload([FromRoute] string chatName, IEnumerable<IFormFile> documents)
     {
-        //var userName = User.Identity.Name;
-        var files = await _roomService.UploadFilesAsync(chatName, documents);
         var response = new UploadDocumentsResponse();
-        response.Files.AddRange(files);
-        //return Ok(response);
+        var userName = User.Identity.Name;
+
+        var files = await _assignmentService.UploadFilesToChatAsync(chatName, userName, documents);
+        if (files.IsNullOrEmpty() == false)
+        {
+            response.Files.AddRange(files);
+        }
+
         return response;
     }
 

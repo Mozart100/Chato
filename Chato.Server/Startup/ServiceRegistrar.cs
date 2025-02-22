@@ -98,6 +98,8 @@ public static class ServiceRegistrar
         services.AddScoped<IAssignmentService, AssignmentService>();
         services.AddScoped<IAuthenticationService, AuthenticationService>();
         services.AddScoped<IRegistrationValidationService, RegistrationValidationService>();
+        services.AddScoped<IUserValidationService, UserValidationService>();
+        services.AddScoped<IChatValidationService, ChatValidationService>();
 
 
         services.AddExceptionHandler<GlobalExceptionHandler>();

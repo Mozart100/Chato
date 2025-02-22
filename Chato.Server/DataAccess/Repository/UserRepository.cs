@@ -8,7 +8,7 @@ namespace Chato.Server.DataAccess.Repository;
 
 public interface IUserRepository : IRepositoryBase<UserDb, User>
 {
-    Task AddRoomToUser(string userNameOrId, string roomName, ChatType chatType);
+    Task<bool> AddRoomToUser(string userNameOrId, string roomName, ChatType chatType, bool isOwner);
     Task AssignConnectionId(string userName, string connectionId);
     Task<IEnumerable<string>> DownloadFiles(string userName);
 
@@ -25,15 +25,21 @@ public class UserRepository : AutoRepositoryBase<UserDb, User>, IUserRepository
         _logger = logger;
     }
 
-    public async Task AddRoomToUser(string userNameOrId, string roomName, ChatType chatType)
+    public async Task<bool> AddRoomToUser(string userNameOrId, string roomName, ChatType chatType, bool isOwner)
     {
+        var result = false;
         await UpdateAsync(u => u.UserName == userNameOrId, user =>
         {
             var rooms = user.Chats.SafeToHashSet();
-            rooms.Add(new ParticipantInChat(roomName, chatType));
-            user.Chats = rooms.ToArray();
+            result = rooms.Add(new ParticipantInChat(roomName, chatType, isOwner));
+
+            if (result)
+            {
+                user.Chats = rooms.ToArray();
+            }
         });
 
+        return result;
     }
 
     public virtual async Task AssignConnectionId(string userName, string conectionId)
@@ -43,13 +49,13 @@ public class UserRepository : AutoRepositoryBase<UserDb, User>, IUserRepository
 
     public async Task<IEnumerable<string>> DownloadFiles(string userName)
     {
-        string[] result = [];
+        IEnumerable<string> result = [];
 
         var model = Models.FirstOrDefault(x => x.UserName == userName);
 
         if (model is not null)
         {
-            result = model.Files.ToArray();
+            result = model.FileSegment.GetImages();
         }
 
         return result;
