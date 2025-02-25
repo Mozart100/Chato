@@ -12,11 +12,8 @@ public class ChatController : ChattoBaseController
 {
     public const string Chat_Name = "chatName";
     public const string All_Chat_Route = "all";
-    public const string Chat_Route = "{chat}";
+    //public const string Chat_Route = "{chat}";
     public const string UploadChatImagesUrl = $"upload/{{{Chat_Name}}}";
-
-    //[Route(UploadChatImagesUrl)]
-    //[HttpPost, Authorize]
 
     private readonly IChatService _roomService;
     private readonly IAssignmentService _assignmentService;
