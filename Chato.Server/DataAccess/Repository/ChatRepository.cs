@@ -7,12 +7,12 @@ using System.Text;
 
 namespace Chato.Server.DataAccess.Repository;
 
-public interface IChatRepository : IRepositoryBase<ChatDb>
+public interface IChatRepository : IRepositoryBase<Chat>
 {
-   Task<bool> UpdateImagesAsync(Predicate<ChatDb> selector, IEnumerable<string> images);
+   Task<bool> UpdateImagesAsync(Predicate<Chat> selector, IEnumerable<string> images);
 }
 
-public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
+public class ChatRepository : RepositoryBase<Chat>, IChatRepository
 {
     private readonly ILogger<ChatRepository> _logger;
     private readonly IRoomIndexerRepository _roomIndexerRepository;
@@ -23,7 +23,7 @@ public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
         this._roomIndexerRepository = roomIndexerRepository;
     }
 
-    public override IEnumerable<ChatDb> GetAll()
+    public override IEnumerable<Chat> GetAll()
     {
         var rooms = base.GetAll();
         foreach (var item in rooms)
@@ -35,7 +35,7 @@ public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
         return rooms;
     }
 
-    public override ChatDb Insert(ChatDb instance)
+    public override Chat Insert(Chat instance)
     {
         if (Models.Add(instance) == true)
         {
@@ -47,7 +47,7 @@ public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
 
     }
 
-    protected override ChatDb CoreGet(Predicate<ChatDb> selector)
+    protected override Chat CoreGet(Predicate<Chat> selector)
     {
         var result =  base.CoreGet(selector);
     
@@ -60,7 +60,7 @@ public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
     }
 
 
-    public async override Task<bool> RemoveAsync(Predicate<ChatDb> selector)
+    public async override Task<bool> RemoveAsync(Predicate<Chat> selector)
     {
         var result = false;
         foreach (var model in Models)
@@ -78,13 +78,14 @@ public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
         return result;
     }
 
-    public async Task<bool> UpdateImagesAsync(Predicate<ChatDb> selector, IEnumerable<string> images)
+    public async Task<bool> UpdateImagesAsync(Predicate<Chat> selector, IEnumerable<string> images)
     {
         foreach (var model in Models)
         {
             if (selector(model))
             {
-                model.Files.AddRange(images);
+                model.FileSegment.AddRange(images);
+                //model.Files.AddRange(images);
                 return true;
             }
         }

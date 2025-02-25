@@ -5,49 +5,54 @@ using Chatto.Shared;
 namespace Chato.Server.DataAccess.Models;
 
 
-public class ChatDb : EntityDbBase
+public class Chat : EntityDbBase, IChatEnittyMapper
 {
     public override string Id
     {
         get => RoomName;
         set => RoomName = value;
     }
+
     public ChatType ChatType { get; set; }
     public string RoomName { get; private set; }
-
-    public List<SenderInfo> Messages { get; set; } = new List<SenderInfo>();
-    public HashSet<string> Users { get; } = new HashSet<string>();
-
     public string Description { get; set; }
-
     public required DateTime Expire { get; set; }
+    public IEnumerable<string> Files => FileSegment.GetImages();
 
-    public List<string> Files { get; set; } = new List<string>();
+
+    public IEnumerable<SenderInfo> Messages => UserMessages;
+    public IEnumerable<string> Users => ActiveUsers;
+
+    //--------------------------------------------------------------------------------------
+
+    public HashSet<string> ActiveUsers { get; } = new HashSet<string>();
+    public List<SenderInfo> UserMessages { get; set; } = new List<SenderInfo>();
+    public FilesSegment FileSegment { get; set; } = new FilesSegment();
 }
 
 
 public static class ChatRoomDbExtensions
 {
-    public static ChatRoomDto ToChatRoomDto(this ChatDb chatRoomDb)
+    public static ChatRoomDto ToChatRoomDto(this Chat chatRoomDb)
     {
-        return new ChatRoomDto(chatRoomDb.RoomName, chatRoomDb.Description, chatRoomDb.Users.SafeToArray());
+        return new ChatRoomDto(chatRoomDb.RoomName, chatRoomDb.Description, chatRoomDb.ActiveUsers.SafeToArray());
     }
 
 
-    public static SenderInfo AddTextMessage(this ChatDb chatRoom, SenderInfoType senderInfoType, string fromUser, string? textMessage, string? image)
+    public static SenderInfo AddTextMessage(this Chat chatRoom, SenderInfoType senderInfoType, string fromUser, string? textMessage, string? image)
     {
         var senderInfo = default(SenderInfo);
 
         if (chatRoom is not null)
         {
             senderInfo = new SenderInfo(senderInfoType, fromUser, textMessage, image, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            chatRoom.Messages.Add(senderInfo);
+            chatRoom.UserMessages.Add(senderInfo);
         };
 
         return senderInfo;
     }
 
-    public static SenderInfo AddImageMessage(this ChatDb chatRoom, string fromUser, string? textMessage, string? image)
+    public static SenderInfo AddImageMessage(this Chat chatRoom, string fromUser, string? textMessage, string? image)
     {
         var senderInfo = default(SenderInfo);
 
@@ -55,7 +60,7 @@ public static class ChatRoomDbExtensions
         if (chatRoom is not null)
         {
             senderInfo = new SenderInfo(SenderInfoType.Image, fromUser, textMessage, image, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            chatRoom.Messages.Add(senderInfo);
+            chatRoom.UserMessages.Add(senderInfo);
         };
 
         return senderInfo;
@@ -78,11 +83,11 @@ public static class ChatRoomDbExtensions
     //    return (amountMessage, senderInfo);
     //}
 
-    public static bool ContainUser(this ChatDb chatRoom, string user)
+    public static bool ContainUser(this Chat chatRoom, string user)
     {
         if (chatRoom is not null)
         {
-            foreach (var item in chatRoom.Users)
+            foreach (var item in chatRoom.ActiveUsers)
             {
                 if (item.Equals(user, StringComparison.OrdinalIgnoreCase))
                 {

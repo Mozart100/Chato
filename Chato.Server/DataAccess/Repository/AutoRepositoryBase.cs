@@ -6,9 +6,9 @@ namespace Chato.Server.DataAccess.Repository
 {
     public interface IRepositoryBase<TModel, TModelDto> where TModel : IAutomapperEntities where TModelDto : IAutomapperEntities
     {
-        TModel Insert(TModel instance);
+        TModelDto Insert(TModel instance);
 
-        Task<TModel> InsertAsync(TModel instance);
+        Task<TModelDto> InsertAsync(TModel instance);
 
 
         TModelDto Get(Predicate<TModel> selector);
@@ -45,7 +45,7 @@ namespace Chato.Server.DataAccess.Repository
             this._mapper = mapper;
         }
 
-        public async Task<bool> RemoveAsync(Predicate<TModel> selector)
+        public async virtual Task<bool> RemoveAsync(Predicate<TModel> selector)
         {
             var result = false;
             foreach (var model in Models)
@@ -67,9 +67,9 @@ namespace Chato.Server.DataAccess.Repository
         public async Task<TModelDto> GetOrDefaultAsync(Predicate<TModel> selector)
         {
             var result = default(TModelDto);
-            
+
             var model = CoreGet(selector);
-            if(model is null)
+            if (model is null)
             {
                 return result;
             }
@@ -108,7 +108,7 @@ namespace Chato.Server.DataAccess.Repository
             return Get(selector);
         }
 
-        public virtual async Task<TModel> InsertAsync(TModel model)
+        public virtual async Task<TModelDto> InsertAsync(TModel model)
         {
             return Insert(model);
         }
@@ -122,7 +122,7 @@ namespace Chato.Server.DataAccess.Repository
         /// </summary>
         /// <param name="instance"></param>
         /// <returns></returns>
-        public virtual TModel Insert(TModel instance)
+        public virtual TModelDto Insert(TModel instance)
         {
 
             if (Models.Add(instance) == false)
@@ -130,10 +130,10 @@ namespace Chato.Server.DataAccess.Repository
                 throw new Exception("Key already present.");
             }
 
-            return instance;
+            return _mapper.Map<TModelDto>(instance);
         }
 
-        public IEnumerable<TModelDto> GetAll()
+        public virtual IEnumerable<TModelDto> GetAll()
         {
             return Models.Select(x => _mapper.Map<TModelDto>(x)).ToArray();
         }

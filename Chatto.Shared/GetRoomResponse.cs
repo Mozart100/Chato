@@ -10,7 +10,7 @@ public class GetRoomResponse
     public ChatRoomDto Chat { get; set; }
 }
 
-public enum SenderInfoType:uint
+public enum SenderInfoType : uint
 {
     TextMessage = 1,
     Image = 2,
@@ -18,9 +18,37 @@ public enum SenderInfoType:uint
     Created = 4
 }
 
-public record SenderInfo( SenderInfoType SenderInfoType, string FromUser, string ? TextMessage, string ? Image, long TimeStemp);
-public record MessageInfo(SenderInfoType SenderInfoType,string ChatName, string FromUser, string? TextMessage ,  string? Image , long TimeStemp = 0, string? DescriptionOfChat = null) 
-    : SenderInfo( SenderInfoType, FromUser,TextMessage,Image,DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+public record SenderInfo(SenderInfoType SenderInfoType, string FromUser, string? TextMessage, string? Image, long TimeStemp);
+public record MessageInfo(SenderInfoType SenderInfoType, string ChatName, string FromUser, string? TextMessage, string? Image, long TimeStemp = 0, string? DescriptionOfChat = null)
+    : SenderInfo(SenderInfoType, FromUser, TextMessage, Image, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+
+public interface IChatEnittyMapper : IAutomapperEntities
+{
+    ChatType ChatType { get; set; }
+    string RoomName { get; }
+
+    IEnumerable<SenderInfo> Messages { get; }
+    IEnumerable<string> Users { get; } 
+
+    string Description { get; set; }
+
+    DateTime Expire { get; set; }
+
+    IEnumerable<string> Files { get;  }
+}
+
+public class ChatDto : IChatEnittyMapper
+{
+    public ChatType ChatType { get; set; }
+    public string RoomName { get; }
+    public IEnumerable<SenderInfo> Messages { get; }
+
+    public IEnumerable<string> Users { get; }
+
+    public string Description { get;set; }
+    public DateTime Expire { get;set; }
+    public IEnumerable<string> Files { get; }
+}
 
 public class ChatRoomDto
 {
@@ -42,7 +70,7 @@ public class ChatRoomDto
         Users = users;
     }
 
-    public static ChatRoomDto Empty() => new ChatRoomDto("",string.Empty, Array.Empty<string>());
+    public static ChatRoomDto Empty() => new ChatRoomDto("", string.Empty, Array.Empty<string>());
 
     public override int GetHashCode() => ChatName.GetHashCode();
 
