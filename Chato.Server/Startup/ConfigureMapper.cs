@@ -9,7 +9,6 @@ public class ConfigureMapper : Profile
 {
     public ConfigureMapper()
     {
-        CreateMap<UserDb,User>();
         CreateMap< User,UserDto>();
 
 

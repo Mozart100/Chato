@@ -64,7 +64,7 @@ public class UserService : IUserService
 
     public async Task RegisterAsync(string username, string description, string gender, int age)
     {
-        await _delegateQueue.InvokeAsync(async () => await _userRepository.InsertAsync(new UserDb { Id = username, Description = description, Gender = gender, Age = age }));
+        await _delegateQueue.InvokeAsync(async () => await _userRepository.InsertAsync(new User { Id = username, Description = description, Gender = gender, Age = age }));
     }
 
 
