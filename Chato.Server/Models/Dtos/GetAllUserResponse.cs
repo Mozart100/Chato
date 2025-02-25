@@ -1,6 +1,6 @@
-﻿using Chato.Server.DataAccess.Models;
+﻿using Chatto.Shared;
 
 public class GetAllUserResponse
 {
-    public User[] Users { get; set; }
+    public UserDto[] Users { get; set; }
 }

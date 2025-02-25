@@ -50,7 +50,7 @@ public class AssignmentService : IAssignmentService
         }
     }
 
-    private async Task LeaveUserFromRoom(User user)
+    private async Task LeaveUserFromRoom(UserDto user)
     {
         if (user is not null)
         {

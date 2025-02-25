@@ -1,27 +1,28 @@
 ﻿using AutoMapper;
 using Chato.Server.Infrastracture.Exceptions;
+using Chatto.Shared;
 
 namespace Chato.Server.DataAccess.Repository
 {
-    public interface IRepositoryBase<TModel, TModelSlim> where TModel : TModelSlim
+    public interface IRepositoryBase<TModel, TModelDto> where TModel : IAutomapperEntities where TModelDto : IAutomapperEntities
     {
         TModel Insert(TModel instance);
 
         Task<TModel> InsertAsync(TModel instance);
 
 
-        TModelSlim Get(Predicate<TModel> selector);
-        Task<TModelSlim> GetAsync(Predicate<TModel> selector);
+        TModelDto Get(Predicate<TModel> selector);
+        Task<TModelDto> GetAsync(Predicate<TModel> selector);
 
-        IEnumerable<TModelSlim> GetAll();
+        IEnumerable<TModelDto> GetAll();
 
-        Task<TModelSlim> GetOrDefaultAsync(Predicate<TModel> selector);
+        Task<TModelDto> GetOrDefaultAsync(Predicate<TModel> selector);
 
 
-        Task<TModelSlim> GetFirstAsync(Predicate<TModel> selector);
-        Task<IEnumerable<TModelSlim>> GetAllAsync(Func<TModel, bool> selector);
+        Task<TModelDto> GetFirstAsync(Predicate<TModel> selector);
+        Task<IEnumerable<TModelDto>> GetAllAsync(Func<TModel, bool> selector);
 
-        Task<IEnumerable<TModelSlim>> GetAllAsync();
+        Task<IEnumerable<TModelDto>> GetAllAsync();
 
         Task<bool> RemoveAsync(Predicate<TModel> selector);
 
@@ -32,7 +33,7 @@ namespace Chato.Server.DataAccess.Repository
 
 
 
-    public abstract class AutoRepositoryBase<TModel, TModelSlim> : IRepositoryBase<TModel, TModelSlim> where TModel : TModelSlim
+    public abstract class AutoRepositoryBase<TModel, TModelDto> : IRepositoryBase<TModel, TModelDto> where TModel : IAutomapperEntities where TModelDto : IAutomapperEntities
     {
         private readonly IMapper _mapper;
 
@@ -58,22 +59,22 @@ namespace Chato.Server.DataAccess.Repository
             return result;
         }
 
-        public async Task<TModelSlim> GetFirstAsync(Predicate<TModel> selector)
+        public async Task<TModelDto> GetFirstAsync(Predicate<TModel> selector)
         {
-            return _mapper.Map<TModelSlim>(Get(selector));
+            return _mapper.Map<TModelDto>(Get(selector));
         }
 
-        public async Task<TModelSlim> GetOrDefaultAsync(Predicate<TModel> selector)
+        public async Task<TModelDto> GetOrDefaultAsync(Predicate<TModel> selector)
         {
-            var result = default(TModelSlim);
+            var result = default(TModelDto);
             
-            result = CoreGet(selector);
-            if(result is null)
+            var model = CoreGet(selector);
+            if(model is null)
             {
                 return result;
             }
 
-            return _mapper.Map<TModelSlim>(result);
+            return _mapper.Map<TModelDto>(model);
         }
 
 
@@ -90,7 +91,7 @@ namespace Chato.Server.DataAccess.Repository
 
             return result;
         }
-        public virtual TModelSlim Get(Predicate<TModel> selector)
+        public virtual TModelDto Get(Predicate<TModel> selector)
         {
             var model = CoreGet(selector);
 
@@ -99,10 +100,10 @@ namespace Chato.Server.DataAccess.Repository
                 throw new NoUserFoundException("no such user");
             }
 
-            return _mapper.Map<TModelSlim>(model);
+            return _mapper.Map<TModelDto>(model);
         }
 
-        public virtual async Task<TModelSlim> GetAsync(Predicate<TModel> selector)
+        public virtual async Task<TModelDto> GetAsync(Predicate<TModel> selector)
         {
             return Get(selector);
         }
@@ -112,9 +113,9 @@ namespace Chato.Server.DataAccess.Repository
             return Insert(model);
         }
 
-        public async Task<IEnumerable<TModelSlim>> GetAllAsync()
+        public async Task<IEnumerable<TModelDto>> GetAllAsync()
         {
-            return Models.Select(item => _mapper.Map<TModelSlim>(item)).ToArray();
+            return Models.Select(item => _mapper.Map<TModelDto>(item)).ToArray();
         }
         /// <summary>
         /// Auto Id Generator
@@ -132,14 +133,14 @@ namespace Chato.Server.DataAccess.Repository
             return instance;
         }
 
-        public IEnumerable<TModelSlim> GetAll()
+        public IEnumerable<TModelDto> GetAll()
         {
-            return Models.Select(x => _mapper.Map<TModelSlim>(x)).ToArray();
+            return Models.Select(x => _mapper.Map<TModelDto>(x)).ToArray();
         }
 
-        public async Task<IEnumerable<TModelSlim>> GetAllAsync(Func<TModel, bool> selector)
+        public async Task<IEnumerable<TModelDto>> GetAllAsync(Func<TModel, bool> selector)
         {
-            return Models.Where(x => selector(x)).Select(item => _mapper.Map<TModelSlim>(item)).ToArray();
+            return Models.Where(x => selector(x)).Select(item => _mapper.Map<TModelDto>(item)).ToArray();
         }
 
         public async Task UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback)

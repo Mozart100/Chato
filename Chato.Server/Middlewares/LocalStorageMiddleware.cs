@@ -44,11 +44,10 @@ public class LocalStorageMiddleware
                 var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
                 var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
 
-                User user = await userService.GetUserByNameOrIdGetOrDefaultAsync(userName);
+                var user = await userService.GetUserByNameOrIdGetOrDefaultAsync(userName);
                 if (user is not null)
                 {
-                    var dto = mapper.Map<UserDto>(user);
-                    context.Items[User.User_Key] = dto;
+                    context.Items[User.User_Key] = user;
                 }
 
                 _logger.LogInformation($"User = {userName}");

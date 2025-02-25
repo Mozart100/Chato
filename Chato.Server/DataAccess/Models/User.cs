@@ -22,6 +22,10 @@ public class User : EntityDbBase, IUserEnittyMapper
     public ParticipantInChat[] Chats { get; set; }
     public string ConnectionId { get; set; }
 
+
+    public IEnumerable<string> Files => FileSegment.GetImages();
+
+    //--------------------------------------------------------------------------------------
     public FilesSegment FileSegment { get; set; } = new FilesSegment();
 }
 

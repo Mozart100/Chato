@@ -28,6 +28,8 @@ public interface IUserEnittyMapper : IAutomapperEntities
     string Gender { get; set; }
     ParticipantInChat [] Chats { get; set; }
     string ConnectionId { get; set; }
+
+    IEnumerable<string> Files { get;  }
 }
 
 
@@ -40,6 +42,7 @@ public class UserDto : IUserEnittyMapper
     public ParticipantInChat[] Chats { get; set; }
     public string ConnectionId { get; set; }
 
+    public IEnumerable<string> Files { get; set; }
 }
 public class UserResponse
 {
