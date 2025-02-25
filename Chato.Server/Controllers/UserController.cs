@@ -10,8 +10,7 @@ namespace Chato.Server.Controllers
 {
 
     [Route("api/[controller]")]
-    [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : ChattoBaseController
     {
         public const string All_Users_Route = "all";
         public const string Chats_Per_User_Route = "chatperuser";

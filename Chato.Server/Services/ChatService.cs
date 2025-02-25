@@ -36,7 +36,7 @@ public interface IChatService
     Task<bool> IsChatExists(string chatName);
     Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<ParticipantInChat> chats);
 
-    Task<IEnumerable<string>> UploadFilesAsync(User user, string chatName, IEnumerable<IFormFile> documents);
+    Task<IEnumerable<string>> UploadFilesAsync(UserDto user, string chatName, IEnumerable<IFormFile> documents);
     //Task<IEnumerable<string>> UploadFilesAsync(string chatName, string chatName1, IEnumerable<IFormFile> documents);
 
 }
@@ -329,7 +329,7 @@ public class ChatService : IChatService
         return result;
     }
 
-    public async Task<IEnumerable<string>> UploadFilesAsync(User user, string chatName, IEnumerable<IFormFile> documents)
+    public async Task<IEnumerable<string>> UploadFilesAsync(UserDto user, string chatName, IEnumerable<IFormFile> documents)
     {
 
         await _chatValidationService.UploadDocumentsValidationAsync(user, chatName, documents);

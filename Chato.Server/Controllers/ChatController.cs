@@ -7,27 +7,8 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Chato.Server.Controllers;
 
-
-
-[ApiController]
-public abstract class BaseController : ControllerBase
-{
-    protected UserDto CurrentUser
-    {
-        get
-        {
-            if (HttpContext.Items.TryGetValue(Chato.Server.DataAccess.Models.User.User_Key, out var userObj) && userObj is UserDto userDto)
-            {
-                return userDto;
-            }
-
-            throw new Exception("xxx");
-        }
-    }
-}
-
 [Route("api/[controller]")]
-public class ChatController : BaseController
+public class ChatController : ChattoBaseController
 {
     public const string Chat_Name = "chatName";
     public const string All_Chat_Route = "all";
@@ -76,7 +57,7 @@ public class ChatController : BaseController
         var response = new UploadDocumentsResponse();
         var userName = User.Identity.Name;
 
-        var files = await _assignmentService.UploadFilesToChatAsync(chatName, userName, documents);
+        var files = await _assignmentService.UploadFilesToChatAsync(chatName, CurrentUser, documents);
         if (files.IsNullOrEmpty() == false)
         {
             response.Files.AddRange(files);
