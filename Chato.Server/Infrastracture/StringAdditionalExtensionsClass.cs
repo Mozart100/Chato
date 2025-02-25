@@ -1,7 +1,14 @@
-﻿namespace Chato.Server.Infrastracture
+﻿using System.Net.Http.Headers;
+
+namespace Chato.Server.Infrastracture
 {
     public static class StringAdditionalExtensionsClass
     {
+        public static bool IsWithValue(this string str)
+        {
+            return !str.IsNotEmpty();
+        }
+
         public static bool IsEmpty(this string str)
         {
             if (string.IsNullOrEmpty(str))

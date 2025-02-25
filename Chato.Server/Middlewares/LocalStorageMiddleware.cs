@@ -1,9 +1,14 @@
 ﻿using AutoMapper;
 using Chato.Server.DataAccess.Models;
 using Chato.Server.Hubs;
-using Chato.Server.Infrastracture;
 using Chato.Server.Services;
 using Chatto.Shared;
+using Microsoft.AspNetCore.Http;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using System;
+using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace Chato.Server.Middlewares;
 
@@ -11,22 +16,13 @@ public class LocalStorageMiddleware
 {
     private readonly RequestDelegate _next;
     private readonly ILogger<LocalStorageMiddleware> _logger;
-    private readonly IUserService _userService;
-    private readonly IMapper _mapper;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
 
-    //private readonly ILocalStorage _localStorage;
-
-    public LocalStorageMiddleware(RequestDelegate next, ILogger<LocalStorageMiddleware> logger, 
-        IUserService userService,
-        IMapper mapper
-        //, ILocalStorage localStorage
-        )
+    public LocalStorageMiddleware(RequestDelegate next, ILogger<LocalStorageMiddleware> logger, IServiceScopeFactory serviceScopeFactory)
     {
         _next = next;
         _logger = logger;
-        this._userService = userService;
-        this._mapper = mapper;
-        //this._localStorage = localStorage;
+        _serviceScopeFactory = serviceScopeFactory;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -39,29 +35,24 @@ public class LocalStorageMiddleware
             return;
         }
 
-        //context.Items.Add()
         var userName = context.User?.Identity?.Name;
 
-        if (userName.IsNotEmpty())
+        if (!string.IsNullOrEmpty(userName))
         {
-            User user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(userName);
-            if (user is not null)
+            using (var scope = _serviceScopeFactory.CreateScope())
             {
-                var dto = _mapper.Map<UserDto>(user);
-                context.Items[User.User_Key] = dto;
+                var userService = scope.ServiceProvider.GetRequiredService<IUserService>();
+                var mapper = scope.ServiceProvider.GetRequiredService<IMapper>();
+
+                User user = await userService.GetUserByNameOrIdGetOrDefaultAsync(userName);
+                if (user is not null)
+                {
+                    var dto = mapper.Map<UserDto>(user);
+                    context.Items[User.User_Key] = dto;
+                }
+
+                _logger.LogInformation($"User = {userName}");
             }
-
-            _logger.LogInformation("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
-            _logger.LogInformation("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
-            _logger.LogInformation("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
-            _logger.LogInformation("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
-
-            _logger.LogInformation($"User = {userName}");
-
-            _logger.LogInformation("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
-            _logger.LogInformation("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
-            _logger.LogInformation("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
-            _logger.LogInformation("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz");
         }
 
         await _next(context);

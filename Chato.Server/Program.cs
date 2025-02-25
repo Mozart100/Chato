@@ -85,6 +85,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseMiddleware<ResponseWrappingMiddleware>();
+app.UseMiddleware<LocalStorageMiddleware>();
 //app.UseMiddleware<ChattoExceptionMiddleware>();
 
 

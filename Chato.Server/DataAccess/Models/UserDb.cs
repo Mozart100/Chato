@@ -5,6 +5,8 @@ namespace Chato.Server.DataAccess.Models;
 
 public class User : EntityDbBase, IUserEnittyMapper
 {
+    public const string User_Key= $"{nameof(User_Key)}";
+
     public string UserName { get; set; }
     public int Age { get; set; }
     public string Description { get; set; }
