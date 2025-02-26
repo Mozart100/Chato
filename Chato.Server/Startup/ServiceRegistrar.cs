@@ -39,7 +39,7 @@ public static class ServiceRegistrar
 
 
         services.AddSingleton<ILockerDelegateQueue, LockerDelegateQueue>();
-        services.AddSingleton<ICacheItemDelegateQueue, CacheItemDelegateQueue>();
+        //services.AddSingleton<ICacheItemDelegateQueue, CacheItemDelegateQueue>();
 
 
         services.AddSignalR(options =>
