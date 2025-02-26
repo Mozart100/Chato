@@ -39,83 +39,17 @@ public static class ChatRoomDbExtensions
     }
 
 
-    public static SenderInfo AddTextMessage(this Chat chatRoom, SenderInfoType senderInfoType, string fromUser, string? textMessage, string? image)
-    {
-        var senderInfo = default(SenderInfo);
-
-        if (chatRoom is not null)
-        {
-            senderInfo = new SenderInfo(senderInfoType, fromUser, textMessage, image, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            chatRoom.UserMessages.Add(senderInfo);
-        };
-
-        return senderInfo;
-    }
-
-    public static SenderInfo AddImageMessage(this Chat chatRoom, string fromUser, string? textMessage, string? image)
-    {
-        var senderInfo = default(SenderInfo);
-
-
-        if (chatRoom is not null)
-        {
-            senderInfo = new SenderInfo(SenderInfoType.Image, fromUser, textMessage, image, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            chatRoom.UserMessages.Add(senderInfo);
-        };
-
-        return senderInfo;
-    }
-
-    //public static (int AmoutMessages, SenderInfo SenderInfo) AddImageMessageold(this ChatDb chatRoom, string fromUser, string? textMessage, string? image)
+    //public static SenderInfo AddTextMessage(this Chat chatRoom, SenderInfoType senderInfoType, string fromUser, string? textMessage, string? image)
     //{
     //    var senderInfo = default(SenderInfo);
-    //    int amountMessage = -1;
-
 
     //    if (chatRoom is not null)
     //    {
-    //        senderInfo = new SenderInfo(SenderInfoType.Image, fromUser, textMessage, image, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-    //        chatRoom.Messages.Add(senderInfo);
-
-    //        amountMessage = chatRoom.Messages.Count;
+    //        senderInfo = new SenderInfo(senderInfoType, fromUser, textMessage, image, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+    //        chatRoom.UserMessages.Add(senderInfo);
     //    };
 
-    //    return (amountMessage, senderInfo);
+    //    return senderInfo;
     //}
-
-    public static bool ContainUser(this Chat chatRoom, string user)
-    {
-        if (chatRoom is not null)
-        {
-            foreach (var item in chatRoom.ActiveUsers)
-            {
-                if (item.Equals(user, StringComparison.OrdinalIgnoreCase))
-                {
-                    return true;
-                }
-            }
-        };
-
-        return false;
-    }
-
-
-    //public static bool RemoveUser(this ChatDb chatRoom, string user)
-    //{
-    //    if (chatRoom is not null)
-    //    {
-    //        foreach (var item in chatRoom.Users)
-    //        {
-    //            if (item.Equals(user, StringComparison.OrdinalIgnoreCase))
-    //            {
-    //                return true;
-    //            }
-    //        }
-    //    };
-
-    //    return false;
-    //}
-
-
 }
 

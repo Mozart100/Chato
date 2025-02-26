@@ -26,7 +26,7 @@ namespace Chato.Server.DataAccess.Repository
         Task<IEnumerable<TModel>> GetAllAsync();
 
         Task<bool> RemoveAsync(Predicate<TModel> selector);
-        Task UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback);
+        Task<bool> UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback);
     }
 
 
@@ -130,15 +130,17 @@ namespace Chato.Server.DataAccess.Repository
             return GetAll().Where(x => selector(x)).SafeToArray();
         }
 
-        public async Task UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback)
+        public async Task<bool> UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback)
         {
             var model = CoreGet(selector);
 
             if (model is not null)
             {
                 updateCallback(model);
+                return true;
             }
 
+            return false;
         }
     }
 }

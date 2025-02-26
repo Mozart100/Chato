@@ -224,7 +224,10 @@ public class ChatService : IChatService
 
                         var imageFilePath = $"{IChatService.ChatImages}/{chatName}/{localPath}";
                         var senderinfo = new SenderInfo(SenderInfoType.Image, fromUser, textMessage, imageFilePath, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-                        chatRoom.UserMessages.Add(senderinfo);
+
+                        //chatRoom.UserMessages.Add(senderinfo);
+                        await _chatRoomRepository.UpdateAsync(x => x.RoomName == chatName, x => x.UserMessages.Add(senderinfo));
+
 
                         result = senderinfo with
                         {
@@ -245,15 +248,17 @@ public class ChatService : IChatService
     {
         await _lockerQueue.InvokeAsync(async () =>
         {
-            var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
-            if (room is not null)
+            var anyActiveUsers = false;
+            var isUpdated = await _chatRoomRepository.UpdateAsync(x => x.Id == roomName, x =>
             {
-                room.ActiveUsers.Remove(username);
+                x.ActiveUsers.Remove(username);
+                anyActiveUsers = x.ActiveUsers.Any();
+            });
 
-                if (room.ActiveUsers.Any() == false)
-                {
-                    await RemoveRoomByNameOrIdCoreAsync(roomName);
-                }
+
+            if (!anyActiveUsers)
+            {
+                await RemoveRoomByNameOrIdCoreAsync(roomName);
             }
         });
     }
@@ -265,17 +270,38 @@ public class ChatService : IChatService
         await _lockerQueue.InvokeAsync(async () =>
         {
             var room = await GetRoomByNameOrIdCoreAsync(roomName);
-            if (room is not null)
+            var senderInfoType = SenderInfoType.Joined;
+
+            if (room is null)
             {
-                room.ActiveUsers.Add(userName);
-                result = await AddTextMessage(SenderInfoType.Joined, roomName, userName, null, null);
+                room = await CreateRoomCoreAsync(roomName, chatType, description);
+                senderInfoType = SenderInfoType.Created;
             }
-            else
+
+            result = new SenderInfo(senderInfoType, userName, null,null, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+            var isUpdated = await _chatRoomRepository.UpdateAsync(x => x.RoomName == roomName, x =>
             {
-                var createRoom = await CreateRoomCoreAsync(roomName, chatType, description);
-                createRoom.ActiveUsers.Add(userName);
-                result = await AddTextMessage(SenderInfoType.Created, roomName, userName, null, null);
-            }
+                x.ActiveUsers.Add(userName);
+                x.UserMessages.Add(result);
+            });
+
+
+            //room.ActiveUsers.Add(userName);
+            //result = await AddTextMessage(senderInfoType, roomName, userName, null, null);
+
+
+            //var room = await GetRoomByNameOrIdCoreAsync(roomName);
+            //if (room is not null)
+            //{
+            //    room.ActiveUsers.Add(userName);
+            //    result = await AddTextMessage(SenderInfoType.Joined, roomName, userName, null, null);
+            //}
+            //else
+            //{
+            //    var createRoom = await CreateRoomCoreAsync(roomName, chatType, description);
+            //    createRoom.ActiveUsers.Add(userName);
+            //    result = await AddTextMessage(SenderInfoType.Created, roomName, userName, null, null);
+            //}
         });
 
         return result;
@@ -359,13 +385,11 @@ public class ChatService : IChatService
 
     private async Task<SenderInfo> AddTextMessage(SenderInfoType senderInfoType, string chatName, string fromUser, string? textMessage, string? image)
     {
-        var result = default(SenderInfo);
 
-        var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
-        result = chatRoom.AddTextMessage(senderInfoType, fromUser, textMessage, image);
+        var senderInfo = new SenderInfo(senderInfoType, fromUser, textMessage, image, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+        var isUpdated = await _chatRoomRepository.UpdateAsync(x => x.RoomName == chatName, x => x.UserMessages.Add(senderInfo));
 
+        var result = isUpdated ? senderInfo : null;
         return result;
     }
-
-
 }
