@@ -1,12 +1,13 @@
 ﻿using Arkovean.Chat.Services.Validations;
 using Chato.Server.DataAccess.Models;
 using Chato.Server.Infrastracture;
+using Chatto.Shared;
 
 namespace Chato.Server.Services.Validations
 {
     public interface IChatValidationService
     {
-        Task UploadDocumentsValidationAsync(User user, string chatName , IEnumerable<IFormFile> documents);
+        Task UploadDocumentsValidationAsync(UserDto user, string chatName , IEnumerable<IFormFile> documents);
     }
 
     public class ChatValidationService : ServiceValidatorBase, IChatValidationService
@@ -19,7 +20,7 @@ namespace Chato.Server.Services.Validations
         }
 
 
-        public async Task UploadDocumentsValidationAsync(User user, string chatName ,IEnumerable<IFormFile> documents)
+        public async Task UploadDocumentsValidationAsync(UserDto user, string chatName ,IEnumerable<IFormFile> documents)
         {
             if (documents.IsNullOrEmpty())
             {

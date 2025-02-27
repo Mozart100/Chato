@@ -13,7 +13,7 @@ public interface IAssignmentService
     Task LeaveGroupByConnectionIdAsync(string connectionId);
     Task LeaveGroupByUserNameOrIdAsync(string userNameOrId);
     Task CreateLobi();
-    Task<IEnumerable<string>> UploadFilesToChatAsync(string chatName, string userNameOrId, IEnumerable<IFormFile> documents);
+    Task<IEnumerable<string>> UploadFilesToChatAsync(string chatName, UserDto user, IEnumerable<IFormFile> documents);
 }
 
 public class AssignmentService : IAssignmentService
@@ -50,7 +50,7 @@ public class AssignmentService : IAssignmentService
         }
     }
 
-    private async Task LeaveUserFromRoom(User user)
+    private async Task LeaveUserFromRoom(UserDto user)
     {
         if (user is not null)
         {
@@ -93,20 +93,9 @@ public class AssignmentService : IAssignmentService
         return token;
     }
 
-    public async Task<IEnumerable<string>> UploadFilesToChatAsync(string chatName, string userNameOrId, IEnumerable<IFormFile> documents)
+    public async Task<IEnumerable<string>> UploadFilesToChatAsync(string chatName, UserDto user, IEnumerable<IFormFile> documents)
     {
-        IEnumerable<string> response = [];
-
-        var user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(userNameOrId);
-        if (user is not null)
-        {
-            response = await _roomService.UploadFilesAsync(user, chatName, documents);
-
-            //var participatedChat = user.Chats.FirstOrDefault(x => x.ChatName == chatName);
-            //if (participatedChat is not null)
-            //{
-            //}
-        }
+        IEnumerable<string> response = await _roomService.UploadFilesAsync(user, chatName, documents);
 
         return response;
     }

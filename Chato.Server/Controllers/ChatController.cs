@@ -8,16 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 namespace Chato.Server.Controllers;
 
 [Route("api/[controller]")]
-[ApiController]
-public class ChatController : ControllerBase
+public class ChatController : ChattoBaseController
 {
     public const string Chat_Name = "chatName";
     public const string All_Chat_Route = "all";
-    public const string Chat_Route = "{chat}";
+    //public const string Chat_Route = "{chat}";
     public const string UploadChatImagesUrl = $"upload/{{{Chat_Name}}}";
-
-    //[Route(UploadChatImagesUrl)]
-    //[HttpPost, Authorize]
 
     private readonly IChatService _roomService;
     private readonly IAssignmentService _assignmentService;
@@ -35,7 +31,7 @@ public class ChatController : ControllerBase
     public async Task<GetAllRoomResponse> GetAllRooms()
     {
         var result = await _roomService.GetAllRoomAsync();
-        var response = new GetAllRoomResponse { Rooms = result.SafeToArray() };
+        var response = new GetAllRoomResponse { Rooms = result};
 
         return response;
     }
@@ -58,7 +54,7 @@ public class ChatController : ControllerBase
         var response = new UploadDocumentsResponse();
         var userName = User.Identity.Name;
 
-        var files = await _assignmentService.UploadFilesToChatAsync(chatName, userName, documents);
+        var files = await _assignmentService.UploadFilesToChatAsync(chatName, CurrentUser, documents);
         if (files.IsNullOrEmpty() == false)
         {
             response.Files.AddRange(files);

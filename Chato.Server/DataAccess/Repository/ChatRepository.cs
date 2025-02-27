@@ -1,4 +1,5 @@
-﻿using Chato.Server.DataAccess.Models;
+﻿using AutoMapper;
+using Chato.Server.DataAccess.Models;
 using Chato.Server.Services;
 using Chatto.Shared;
 using System;
@@ -7,51 +8,51 @@ using System.Text;
 
 namespace Chato.Server.DataAccess.Repository;
 
-public interface IChatRepository : IRepositoryBase<ChatDb>
+public interface IChatRepository : IRepositoryBase<Chat, ChatDto>
 {
-   Task<bool> UpdateImagesAsync(Predicate<ChatDb> selector, IEnumerable<string> images);
+    Task<bool> UpdateImagesAsync(Predicate<Chat> selector, IEnumerable<string> images);
 }
 
-public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
+public class ChatRepository : AutoRepositoryBase<Chat, ChatDto>, IChatRepository
 {
     private readonly ILogger<ChatRepository> _logger;
     private readonly IRoomIndexerRepository _roomIndexerRepository;
 
-    public ChatRepository(ILogger<ChatRepository> logger, IRoomIndexerRepository roomIndexerRepository)
+    public ChatRepository(ILogger<ChatRepository> logger, IMapper mapper, IRoomIndexerRepository roomIndexerRepository)
+    : base(mapper)
     {
         _logger = logger;
         this._roomIndexerRepository = roomIndexerRepository;
     }
 
-    public override IEnumerable<ChatDb> GetAll()
+    public override IEnumerable<ChatDto> GetAll()
     {
         var rooms = base.GetAll();
         foreach (var item in rooms)
         {
             _roomIndexerRepository.AddToCache(item.RoomName);
-            
+
         };
 
         return rooms;
     }
 
-    public override ChatDb Insert(ChatDb instance)
+    public override ChatDto Insert(Chat instance)
     {
-        if (Models.Add(instance) == true)
+        var dto = base.Insert(instance);
+        if (dto is not null)
         {
             _roomIndexerRepository.AddToCache(instance.RoomName);
-            return instance;
         }
 
-        throw new Exception("Key already present.");
-
+        return dto;
     }
 
-    protected override ChatDb CoreGet(Predicate<ChatDb> selector)
+    protected override Chat CoreGet(Predicate<Chat> selector)
     {
-        var result =  base.CoreGet(selector);
-    
-        if(result is not null)
+        var result = base.CoreGet(selector);
+
+        if (result is not null)
         {
             _roomIndexerRepository.AddToCache(result.RoomName);
         }
@@ -60,31 +61,31 @@ public class ChatRepository : RepositoryBase<ChatDb>, IChatRepository
     }
 
 
-    public async override Task<bool> RemoveAsync(Predicate<ChatDb> selector)
+    public async override Task<bool> RemoveAsync(Predicate<Chat> selector)
     {
-        var result = false;
         foreach (var model in Models)
         {
             if (selector(model))
             {
-                result = Models.Remove(model);
-                if(result == true)
+                if (Models.Remove(model) == true)
                 {
                     _roomIndexerRepository.Remove(model.RoomName);
+                    return true;
                 }
             }
         }
 
-        return result;
+        return false;
     }
 
-    public async Task<bool> UpdateImagesAsync(Predicate<ChatDb> selector, IEnumerable<string> images)
+    public async Task<bool> UpdateImagesAsync(Predicate<Chat> selector, IEnumerable<string> images)
     {
         foreach (var model in Models)
         {
             if (selector(model))
             {
-                model.Files.AddRange(images);
+                model.FileSegment.AddRange(images);
+                //model.Files.AddRange(images);
                 return true;
             }
         }

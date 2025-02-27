@@ -16,10 +16,10 @@ public interface IUserService
 
     Task AssignConnectionId(string userName, string connectionId);
     Task AssignRoomNameAsync(string userNameOrId, string roomName, ChatType chatType, bool isOwner);
-    Task<IEnumerable<User>> GetAllUsersAsync(Func<User, bool> predicate);
+    Task<IEnumerable<UserDto>> GetAllUsersAsync(Func<User, bool> predicate);
     string GetMyName();
-    Task<User> GetUserByConnectionId(string connectionId);
-    Task<User> GetUserByNameOrIdGetOrDefaultAsync(string nameOrId);
+    Task<UserDto> GetUserByConnectionId(string connectionId);
+    Task<UserDto> GetUserByNameOrIdGetOrDefaultAsync(string nameOrId);
     Task RegisterAsync(string username, string description, string gender, int age);
     Task<bool> RemoveUserByUserNameOrIdAsync(string userNameOrId);
     //Task<UploadDocumentsResponse> UploadFilesAsync(string userName, IEnumerable<UserFileInfo> files);
@@ -64,7 +64,7 @@ public class UserService : IUserService
 
     public async Task RegisterAsync(string username, string description, string gender, int age)
     {
-        await _delegateQueue.InvokeAsync(async () => await _userRepository.InsertAsync(new UserDb { Id = username, Description = description, Gender = gender, Age = age }));
+        await _delegateQueue.InvokeAsync(async () => await _userRepository.InsertAsync(new User { Id = username, Description = description, Gender = gender, Age = age }));
     }
 
 
@@ -79,9 +79,9 @@ public class UserService : IUserService
         await _delegateQueue.InvokeAsync(async () => await _userRepository.AssignConnectionId(userName, connectionId));
     }
 
-    public async Task<User> GetUserByConnectionId(string connectionId)
+    public async Task<UserDto> GetUserByConnectionId(string connectionId)
     {
-        var result = default(User);
+        var result = default(UserDto);
 
         await _delegateQueue.InvokeAsync(async () =>
         {
@@ -101,9 +101,9 @@ public class UserService : IUserService
         return result;
     }
 
-    public async Task<User> GetUserByNameOrIdGetOrDefaultAsync(string nameOrId)
+    public async Task<UserDto> GetUserByNameOrIdGetOrDefaultAsync(string nameOrId)
     {
-        var result = default(User);
+        var result = default(UserDto);
 
         await _delegateQueue.InvokeAsync(async () =>
         {
@@ -112,9 +112,9 @@ public class UserService : IUserService
         return result;
     }
 
-    public async Task<IEnumerable<User>> GetAllUsersAsync(Func<User, bool> predicate)
+    public async Task<IEnumerable<UserDto>> GetAllUsersAsync(Func<User, bool> predicate)
     {
-        var result = Enumerable.Empty<User>();
+        var result = Enumerable.Empty<UserDto>();
 
         await _delegateQueue.InvokeAsync(async () =>
         {

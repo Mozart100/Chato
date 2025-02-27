@@ -1,38 +1,40 @@
-﻿using AutoMapper;
+﻿using System.Reflection;
+using AutoMapper;
 using Chato.Server.Infrastracture.Exceptions;
+using Chatto.Shared;
 
 namespace Chato.Server.DataAccess.Repository
 {
-    public interface IRepositoryBase<TModel, TModelSlim> where TModel : TModelSlim
+    public interface IRepositoryBase<TModel, TModelDto> where TModel : IAutomapperEntities where TModelDto : IAutomapperEntities
     {
-        TModel Insert(TModel instance);
+        TModelDto Insert(TModel instance);
 
-        Task<TModel> InsertAsync(TModel instance);
-
-
-        TModelSlim Get(Predicate<TModel> selector);
-        Task<TModelSlim> GetAsync(Predicate<TModel> selector);
-
-        IEnumerable<TModelSlim> GetAll();
-
-        Task<TModelSlim> GetOrDefaultAsync(Predicate<TModel> selector);
+        Task<TModelDto> InsertAsync(TModel instance);
 
 
-        Task<TModelSlim> GetFirstAsync(Predicate<TModel> selector);
-        Task<IEnumerable<TModelSlim>> GetAllAsync(Func<TModel, bool> selector);
+        TModelDto Get(Predicate<TModel> selector);
+        Task<TModelDto> GetAsync(Predicate<TModel> selector);
 
-        Task<IEnumerable<TModelSlim>> GetAllAsync();
+        IEnumerable<TModelDto> GetAll();
+
+        Task<TModelDto> GetOrDefaultAsync(Predicate<TModel> selector);
+
+
+        Task<TModelDto> GetFirstAsync(Predicate<TModel> selector);
+        Task<IEnumerable<TModelDto>> GetAllAsync(Func<TModel, bool> selector);
+
+        Task<IEnumerable<TModelDto>> GetAllAsync();
 
         Task<bool> RemoveAsync(Predicate<TModel> selector);
 
 
-        Task UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback);
+        Task<bool> UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback);
 
     }
 
 
 
-    public abstract class AutoRepositoryBase<TModel, TModelSlim> : IRepositoryBase<TModel, TModelSlim> where TModel : TModelSlim
+    public abstract class AutoRepositoryBase<TModel, TModelDto> : IRepositoryBase<TModel, TModelDto> where TModel : IAutomapperEntities where TModelDto : IAutomapperEntities
     {
         private readonly IMapper _mapper;
 
@@ -44,7 +46,7 @@ namespace Chato.Server.DataAccess.Repository
             this._mapper = mapper;
         }
 
-        public async Task<bool> RemoveAsync(Predicate<TModel> selector)
+        public async virtual Task<bool> RemoveAsync(Predicate<TModel> selector)
         {
             var result = false;
             foreach (var model in Models)
@@ -58,22 +60,22 @@ namespace Chato.Server.DataAccess.Repository
             return result;
         }
 
-        public async Task<TModelSlim> GetFirstAsync(Predicate<TModel> selector)
+        public async Task<TModelDto> GetFirstAsync(Predicate<TModel> selector)
         {
-            return _mapper.Map<TModelSlim>(Get(selector));
+            return _mapper.Map<TModelDto>(Get(selector));
         }
 
-        public async Task<TModelSlim> GetOrDefaultAsync(Predicate<TModel> selector)
+        public async Task<TModelDto> GetOrDefaultAsync(Predicate<TModel> selector)
         {
-            var result = default(TModelSlim);
-            
-            result = CoreGet(selector);
-            if(result is null)
+            var result = default(TModelDto);
+
+            var model = CoreGet(selector);
+            if (model is null)
             {
                 return result;
             }
 
-            return _mapper.Map<TModelSlim>(result);
+            return _mapper.Map<TModelDto>(model);
         }
 
 
@@ -90,7 +92,7 @@ namespace Chato.Server.DataAccess.Repository
 
             return result;
         }
-        public virtual TModelSlim Get(Predicate<TModel> selector)
+        public virtual TModelDto Get(Predicate<TModel> selector)
         {
             var model = CoreGet(selector);
 
@@ -99,29 +101,29 @@ namespace Chato.Server.DataAccess.Repository
                 throw new NoUserFoundException("no such user");
             }
 
-            return _mapper.Map<TModelSlim>(model);
+            return _mapper.Map<TModelDto>(model);
         }
 
-        public virtual async Task<TModelSlim> GetAsync(Predicate<TModel> selector)
+        public virtual async Task<TModelDto> GetAsync(Predicate<TModel> selector)
         {
             return Get(selector);
         }
 
-        public virtual async Task<TModel> InsertAsync(TModel model)
+        public virtual async Task<TModelDto> InsertAsync(TModel model)
         {
             return Insert(model);
         }
 
-        public async Task<IEnumerable<TModelSlim>> GetAllAsync()
+        public async Task<IEnumerable<TModelDto>> GetAllAsync()
         {
-            return Models.Select(item => _mapper.Map<TModelSlim>(item)).ToArray();
+            return Models.Select(item => _mapper.Map<TModelDto>(item)).ToArray();
         }
         /// <summary>
         /// Auto Id Generator
         /// </summary>
         /// <param name="instance"></param>
         /// <returns></returns>
-        public virtual TModel Insert(TModel instance)
+        public virtual TModelDto Insert(TModel instance)
         {
 
             if (Models.Add(instance) == false)
@@ -129,28 +131,43 @@ namespace Chato.Server.DataAccess.Repository
                 throw new Exception("Key already present.");
             }
 
-            return instance;
+
+            try
+            {
+                var tmp = _mapper.Map<TModelDto>(instance);
+
+            }
+
+            catch (Exception ex)
+            {
+                int x = 0;
+            }
+
+
+            return _mapper.Map<TModelDto>(instance);
         }
 
-        public IEnumerable<TModelSlim> GetAll()
+        public virtual IEnumerable<TModelDto> GetAll()
         {
-            return Models.Select(x => _mapper.Map<TModelSlim>(x)).ToArray();
+            return Models.Select(x => _mapper.Map<TModelDto>(x)).ToArray();
         }
 
-        public async Task<IEnumerable<TModelSlim>> GetAllAsync(Func<TModel, bool> selector)
+        public async Task<IEnumerable<TModelDto>> GetAllAsync(Func<TModel, bool> selector)
         {
-            return Models.Where(x => selector(x)).Select(item => _mapper.Map<TModelSlim>(item)).ToArray();
+            return Models.Where(x => selector(x)).Select(item => _mapper.Map<TModelDto>(item)).ToArray();
         }
 
-        public async Task UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback)
+        public async Task<bool> UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback)
         {
             var model = CoreGet(selector);
 
             if (model is not null)
             {
                 updateCallback(model);
+                return true;
             }
 
+            return false;
         }
     }
 }

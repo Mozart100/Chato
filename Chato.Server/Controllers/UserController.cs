@@ -10,8 +10,7 @@ namespace Chato.Server.Controllers
 {
 
     [Route("api/[controller]")]
-    [ApiController]
-    public class UserController : ControllerBase
+    public class UserController : ChattoBaseController
     {
         public const string All_Users_Route = "all";
         public const string Chats_Per_User_Route = "chatperuser";
@@ -34,17 +33,18 @@ namespace Chato.Server.Controllers
         [HttpGet, Authorize]
         public async Task<UserResponse> GetSelf()
         {
-            var result = default(UserResponse);
+            //var result = default(UserResponse);
 
-            var userName = User.Identity.Name;
-            User user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(userName);
-            if (user is not null)
-            {
-                var dto = _mapper.Map<UserDto>(user);
-                result = new Chatto.Shared.UserResponse { User = dto };
-            }
+            //var userName = User.Identity.Name;
+            //User user = await _userService.GetUserByNameOrIdGetOrDefaultAsync(userName);
+            //if (user is not null)
+            //{
+            //    var dto = _mapper.Map<UserDto>(user);
+            //    result = new Chatto.Shared.UserResponse { User = dto };
+            //}
 
-            return result;
+
+            return new UserResponse { User = CurrentUser };
         }
 
         [HttpGet]

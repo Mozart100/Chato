@@ -9,8 +9,9 @@ public class ConfigureMapper : Profile
 {
     public ConfigureMapper()
     {
-        CreateMap<UserDb,User>();
         CreateMap< User,UserDto>();
+        CreateMap<Chat, ChatDto>();
+             //.ForMember(dest => dest.Messages, opt => opt.MapFrom(src => src.UserMessages));
 
 
 

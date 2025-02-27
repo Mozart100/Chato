@@ -8,5 +8,5 @@ public class GetAllRoomResponse
 {
 
     [JsonPropertyName("rooms")]
-    public ChatRoomDto[] Rooms { get; set; }
+    public ChatDto[] Rooms { get; set; }
 }

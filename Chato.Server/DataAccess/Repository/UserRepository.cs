@@ -6,7 +6,7 @@ using Chatto.Shared;
 namespace Chato.Server.DataAccess.Repository;
 
 
-public interface IUserRepository : IRepositoryBase<UserDb, User>
+public interface IUserRepository : IRepositoryBase<User, UserDto>
 {
     Task<bool> AddRoomToUser(string userNameOrId, string roomName, ChatType chatType, bool isOwner);
     Task AssignConnectionId(string userName, string connectionId);
@@ -15,7 +15,7 @@ public interface IUserRepository : IRepositoryBase<UserDb, User>
 }
 
 
-public class UserRepository : AutoRepositoryBase<UserDb, User>, IUserRepository
+public class UserRepository : AutoRepositoryBase<User, UserDto>, IUserRepository
 {
     private readonly ILogger<UserRepository> _logger;
 
