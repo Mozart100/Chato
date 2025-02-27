@@ -20,11 +20,11 @@ public interface IChatService
     public static string GetToUser(string chatName) => chatName.Split("__").LastOrDefault();
     public static string GetChatName(string fromUser, string toUser) => $"{fromUser}__{toUser}";
 
-    Task<ChatRoomDto> CreateRoomAsync(string roomName, ChatType chatType, string description);
-    Task<ChatRoomDto[]> GetAllRoomAsync();
-    Task<ChatRoomDto[]> GetChatsAsync(Func<Chat, bool> predicate);
+    Task<ChatDto> CreateRoomAsync(string roomName, ChatType chatType, string description);
+    Task<ChatDto[]> GetAllRoomAsync();
+    //Task<ChatDto[]> GetChatsAsync(Func<Chat, bool> predicate);
     Task<IEnumerable<SenderInfo>> GetGroupHistoryAsync(string roomName);
-    Task<ChatRoomDto?> GetRoomByNameOrIdAsync(string nameOrId);
+    Task<ChatDto?> GetRoomByNameOrIdAsync(string nameOrId);
     Task<SenderInfo> JoinOrCreateRoom(string roomName, string userName, ChatType chatType, string description);
     Task CreateLobi();
     Task RemoveRoomByNameOrIdAsync(string nameOrId);
@@ -58,48 +58,48 @@ public class ChatService : IChatService
     }
 
 
-    public async Task<ChatRoomDto> CreateRoomAsync(string roomName, ChatType chatType, string descrion)
+    public async Task<ChatDto> CreateRoomAsync(string roomName, ChatType chatType, string descrion)
     {
-        var result = default(Chat);
+        var result = default(ChatDto);
 
         await _lockerQueue.InvokeAsync(async () =>
         {
             result = await CreateRoomCoreAsync(roomName, chatType, descrion);
         });
 
-        return result.ToChatRoomDto();
+        return result;
     }
 
-    private async Task<Chat> CreateRoomCoreAsync(string roomName, ChatType chatType, string description)
+    private async Task<ChatDto> CreateRoomCoreAsync(string roomName, ChatType chatType, string description)
     {
         var result = await _chatRoomRepository.InsertAsync(new Chat { Id = roomName, ChatType = chatType, Description = description, Expire = DateTime.UtcNow.AddDays(1) });
         return result;
     }
 
 
-    public async Task<ChatRoomDto[]> GetAllRoomAsync()
+    public async Task<ChatDto[]> GetAllRoomAsync()
     {
-        Chat[] result = null;
+        ChatDto[] result = null;
 
         await _lockerQueue.InvokeAsync(async () =>
         {
             var list = await _chatRoomRepository.GetAllAsync();
             result = list.ToArray();
         });
-        return result.SafeSelect(x => x.ToChatRoomDto()).SafeToArray();
+        return result;
     }
 
-    public async Task<ChatRoomDto[]> GetChatsAsync(Func<Chat, bool> predicate)
-    {
-        Chat[] result = null;
+    //public async Task<ChatDto[]> GetChatsAsync(Func<Chat, bool> predicate)
+    //{
+    //    ChatDto[] result = null;
 
-        await _lockerQueue.InvokeAsync(async () =>
-        {
-            var list = await _chatRoomRepository.GetAllAsync();
-            result = list.Where(x => predicate(x)).ToArray();
-        });
-        return result.SafeSelect(x => x.ToChatRoomDto()).SafeToArray();
-    }
+    //    await _lockerQueue.InvokeAsync(async () =>
+    //    {
+    //        var list = await _chatRoomRepository.GetAllAsync();
+    //        result = list.Where(x => predicate(x)).ToArray();
+    //    });
+    //    return result;
+    //}
 
 
     public async Task<IEnumerable<SenderInfo>> GetGroupHistoryAsync(string roomName)
@@ -111,16 +111,16 @@ public class ChatService : IChatService
             var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
             if (room is not null)
             {
-                result = room.UserMessages.SafeToArray();
+                result = room.Messages;
             }
         });
 
         return result;
     }
 
-    public async Task<ChatRoomDto> GetRoomByNameOrIdAsync(string nameOrId)
+    public async Task<ChatDto> GetRoomByNameOrIdAsync(string nameOrId)
     {
-        var result = default(Chat);
+        var result = default(ChatDto);
 
         await _lockerQueue.InvokeAsync(async () =>
         {
@@ -128,7 +128,7 @@ public class ChatService : IChatService
 
         });
 
-        return result?.ToChatRoomDto();
+        return result;
     }
 
     public async Task<IEnumerable<ChatInfoPerUser>> GetChatInfoPerChatName(IEnumerable<ParticipantInChat> chats)
@@ -142,7 +142,7 @@ public class ChatService : IChatService
                 var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chat.ChatName);
                 if (room is not null)
                 {
-                    result.Add(new ChatInfoPerUser(room.RoomName, room.ChatType, room.ActiveUsers.Count, chat.IsOwner));
+                    result.Add(new ChatInfoPerUser(room.RoomName, room.ChatType, room.Users.Count(), chat.IsOwner));
                 }
             }
         });
@@ -151,7 +151,7 @@ public class ChatService : IChatService
     }
 
 
-    private async Task<Chat> GetRoomByNameOrIdCoreAsync(string nameOrId)
+    private async Task<ChatDto> GetRoomByNameOrIdCoreAsync(string nameOrId)
     {
         return await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == nameOrId);
     }
@@ -173,11 +173,12 @@ public class ChatService : IChatService
     {
         await _lockerQueue.InvokeAsync(async () =>
         {
-            var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
-            if (room is not null)
-            {
-                room.UserMessages.Clear();
-            }
+            await _chatRoomRepository.UpdateAsync(x => x.Id == roomName, x => x.UserMessages.Clear());
+            //var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
+            //if (room is not null)
+            //{
+            //    room.UserMessages.Clear();
+            //}
         });
     }
 
@@ -205,7 +206,7 @@ public class ChatService : IChatService
                     if (chatRoom is not null)
                     {
 
-                        var amountMessages = chatRoom.UserMessages.Count + 1;
+                        var amountMessages = chatRoom.Messages.Count() + 1;
                         var localPath = $"{amountMessages}{Path.GetExtension(imageName)}";
 
 

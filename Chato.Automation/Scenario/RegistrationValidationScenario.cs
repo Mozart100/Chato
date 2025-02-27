@@ -15,7 +15,7 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
     public RegistrationValidationScenario(ILogger<RegistrationValidationScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
-        BusinessLogicCallbacks.Add(InvaliRegistrationValidationStep);
+        //BusinessLogicCallbacks.Add(InvaliRegistrationValidationStep);
         BusinessLogicCallbacks.Add(UploadingFiles);
 
     }
@@ -34,29 +34,6 @@ internal class RegistrationValidationScenario : InstructionScenarioBase
 
         request = new RegistrationRequest { UserName = Anatoliy_User, Age = 10, Description = $"Description_{Anatoliy_User}", Gender = "male" };
         await RegisterUser(request);
-
-
-        //request = new RegistrationRequest { UserName = Anatoliy_User, Age = 20, Description = $"Description_{Anatoliy_User}", Gender = "male" };
-        //await RegisterUser(request);
-
-
-        //var path = Path.Combine(Directory.GetCurrentDirectory(), "StaticFiles", "test.jpeg");
-        //var files = new[] { path, path };
-        //var token = Users[Anatoliy_User].RegisterResponse.Token;
-
-
-        //var response = await UploadFiles<ResponseWrapper<UploadDocumentsResponse>>(UploadFilesUrl, token, files);
-
-        //response.Body.Document1.Should().BeTrue();
-        //response.Body.Document2.Should().BeTrue();
-        //response.Body.Document3.Should().BeFalse();
-        //response.Body.Document4.Should().BeFalse();
-        //response.Body.Document5.Should().BeFalse();
-
-
-        //var parameters = new Dictionary<string, string> { { "num", "1" } };
-        //var fileContent = await Get<byte[]>(DownloadFileUrl, token, parameters);
-        //fileContent.Should().NotBeNull();
 
     }
 

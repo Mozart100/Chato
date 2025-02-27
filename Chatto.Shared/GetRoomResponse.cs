@@ -5,9 +5,8 @@ namespace Chatto.Shared;
 
 public class GetRoomResponse
 {
-    [JsonPropertyName("room")]
 
-    public ChatRoomDto Chat { get; set; }
+    public ChatDto Chat { get; set; }
 }
 
 public enum SenderInfoType : uint
@@ -41,41 +40,41 @@ public class ChatDto : IChatEnittyMapper
 {
     public ChatType ChatType { get; set; }
     public string RoomName { get; }
-    public IEnumerable<SenderInfo> Messages { get; }
+    public IEnumerable<SenderInfo> Messages { get; set; }
 
-    public IEnumerable<string> Users { get; }
+    public IEnumerable<string> Users { get; set; }
 
     public string Description { get;set; }
     public DateTime Expire { get;set; }
-    public IEnumerable<string> Files { get; }
+    public IEnumerable<string> Files { get; set; }
 }
 
-public class ChatRoomDto
-{
-    [JsonPropertyName("chatName")]
-    public string ChatName { get; init; }
+//public class ChatRoomDto
+//{
+//    [JsonPropertyName("chatName")]
+//    public string ChatName { get; init; }
 
-    [JsonPropertyName("description")]
-    public string Description { get; init; }
-    //[JsonPropertyName("messages")]
-    //public SenderInfo[] Messages { get; set; }
+//    [JsonPropertyName("description")]
+//    public string Description { get; init; }
+//    //[JsonPropertyName("messages")]
+//    //public SenderInfo[] Messages { get; set; }
 
-    [JsonPropertyName("users")]
-    public string[] Users { get; init; }
+//    [JsonPropertyName("users")]
+//    public string[] Users { get; init; }
 
-    [JsonConstructor]
-    public ChatRoomDto(string chatName, string description, string[] users)
-    {
-        ChatName = chatName;
-        Users = users;
-    }
+//    [JsonConstructor]
+//    public ChatRoomDto(string chatName, string description, string[] users)
+//    {
+//        ChatName = chatName;
+//        Users = users;
+//    }
 
-    public static ChatRoomDto Empty() => new ChatRoomDto("", string.Empty, Array.Empty<string>());
+//    public static ChatRoomDto Empty() => new ChatRoomDto("", string.Empty, Array.Empty<string>());
 
-    public override int GetHashCode() => ChatName.GetHashCode();
+//    public override int GetHashCode() => ChatName.GetHashCode();
 
-    public override bool Equals(object? obj) => obj is ChatRoomDto room && ChatName.Equals(room.ChatName);
-}
+//    public override bool Equals(object? obj) => obj is ChatRoomDto room && ChatName.Equals(room.ChatName);
+//}
 
 
 

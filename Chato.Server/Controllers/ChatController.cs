@@ -31,7 +31,7 @@ public class ChatController : ChattoBaseController
     public async Task<GetAllRoomResponse> GetAllRooms()
     {
         var result = await _roomService.GetAllRoomAsync();
-        var response = new GetAllRoomResponse { Rooms = result.SafeToArray() };
+        var response = new GetAllRoomResponse { Rooms = result};
 
         return response;
     }

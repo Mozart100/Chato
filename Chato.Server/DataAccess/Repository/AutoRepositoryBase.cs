@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Reflection;
+using AutoMapper;
 using Chato.Server.Infrastracture.Exceptions;
 using Chatto.Shared;
 
@@ -27,7 +28,7 @@ namespace Chato.Server.DataAccess.Repository
         Task<bool> RemoveAsync(Predicate<TModel> selector);
 
 
-        Task UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback);
+        Task<bool> UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback);
 
     }
 
@@ -130,6 +131,19 @@ namespace Chato.Server.DataAccess.Repository
                 throw new Exception("Key already present.");
             }
 
+
+            try
+            {
+                var tmp = _mapper.Map<TModelDto>(instance);
+
+            }
+
+            catch (Exception ex)
+            {
+                int x = 0;
+            }
+
+
             return _mapper.Map<TModelDto>(instance);
         }
 
@@ -143,15 +157,17 @@ namespace Chato.Server.DataAccess.Repository
             return Models.Where(x => selector(x)).Select(item => _mapper.Map<TModelDto>(item)).ToArray();
         }
 
-        public async Task UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback)
+        public async Task<bool> UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback)
         {
             var model = CoreGet(selector);
 
             if (model is not null)
             {
                 updateCallback(model);
+                return true;
             }
 
+            return false;
         }
     }
 }
