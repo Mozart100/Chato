@@ -30,26 +30,3 @@ public class Chat : EntityDbBase, IChatEnittyMapper
     public FilesSegment FileSegment { get; set; } = new FilesSegment();
 }
 
-
-//public static class ChatRoomDbExtensions
-//{
-//    public static ChatRoomDto ToChatRoomDto(this Chat chatRoomDb)
-//    {
-//        return new ChatRoomDto(chatRoomDb.RoomName, chatRoomDb.Description, chatRoomDb.ActiveUsers.SafeToArray());
-//    }
-
-
-//    //public static SenderInfo AddTextMessage(this Chat chatRoom, SenderInfoType senderInfoType, string fromUser, string? textMessage, string? image)
-//    //{
-//    //    var senderInfo = default(SenderInfo);
-
-//    //    if (chatRoom is not null)
-//    //    {
-//    //        senderInfo = new SenderInfo(senderInfoType, fromUser, textMessage, image, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-//    //        chatRoom.UserMessages.Add(senderInfo);
-//    //    };
-
-//    //    return senderInfo;
-//    //}
-//}
-

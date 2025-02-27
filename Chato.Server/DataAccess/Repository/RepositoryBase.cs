@@ -1,146 +1,146 @@
-﻿using Chato.Server.DataAccess.Models;
-using Chato.Server.Infrastracture;
-using Chato.Server.Infrastracture.Exceptions;
-using Microsoft.AspNetCore.Http.HttpResults;
+﻿//using Chato.Server.DataAccess.Models;
+//using Chato.Server.Infrastracture;
+//using Chato.Server.Infrastracture.Exceptions;
+//using Microsoft.AspNetCore.Http.HttpResults;
 
-namespace Chato.Server.DataAccess.Repository
-{
+//namespace Chato.Server.DataAccess.Repository
+//{
 
-    public interface IRepositoryBase<TModel> where TModel : class
-    {
-        TModel Get(Predicate<TModel> selector);
-        Task<TModel> GetAsync(Predicate<TModel> selector);
+//    public interface IRepositoryBase<TModel> where TModel : class
+//    {
+//        TModel Get(Predicate<TModel> selector);
+//        Task<TModel> GetAsync(Predicate<TModel> selector);
 
-        TModel Insert(TModel instance);
-        IEnumerable<TModel> GetAll();
+//        TModel Insert(TModel instance);
+//        IEnumerable<TModel> GetAll();
 
-        Task<TModel> GetOrDefaultAsync(Predicate<TModel> selector);
-
-
-
-
-        Task<TModel> GetFirstAsync(Predicate<TModel> selector);
-        Task<IEnumerable<TModel>> GetAllAsync(Func<TModel, bool> selector);
-
-        Task<TModel> InsertAsync(TModel instance);
-        Task<IEnumerable<TModel>> GetAllAsync();
-
-        Task<bool> RemoveAsync(Predicate<TModel> selector);
-        Task<bool> UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback);
-    }
+//        Task<TModel> GetOrDefaultAsync(Predicate<TModel> selector);
 
 
 
-    public abstract class RepositoryBase<TModel> where TModel : EntityDbBase
-    {
+
+//        Task<TModel> GetFirstAsync(Predicate<TModel> selector);
+//        Task<IEnumerable<TModel>> GetAllAsync(Func<TModel, bool> selector);
+
+//        Task<TModel> InsertAsync(TModel instance);
+//        Task<IEnumerable<TModel>> GetAllAsync();
+
+//        Task<bool> RemoveAsync(Predicate<TModel> selector);
+//        Task<bool> UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback);
+//    }
+
+
+
+//    public abstract class RepositoryBase<TModel> where TModel : EntityDbBase
+//    {
         
-        protected HashSet<TModel> Models;
+//        protected HashSet<TModel> Models;
 
-        public RepositoryBase()
-        {
-            Models = new HashSet<TModel>();
-        }
+//        public RepositoryBase()
+//        {
+//            Models = new HashSet<TModel>();
+//        }
 
-        public async virtual Task<bool> RemoveAsync(Predicate<TModel> selector)
-        {
-            var result = false;
-            foreach (var model in Models)
-            {
-                if(selector(model))
-                {
-                    result = Models.Remove(model);
-                }
-            }
+//        public async virtual Task<bool> RemoveAsync(Predicate<TModel> selector)
+//        {
+//            var result = false;
+//            foreach (var model in Models)
+//            {
+//                if(selector(model))
+//                {
+//                    result = Models.Remove(model);
+//                }
+//            }
 
-            return result;
-        }
+//            return result;
+//        }
 
-        public async Task<TModel> GetFirstAsync(Predicate<TModel> selector)
-        {
-            return Get(selector);
-        }
+//        public async Task<TModel> GetFirstAsync(Predicate<TModel> selector)
+//        {
+//            return Get(selector);
+//        }
 
-        public async Task<TModel> GetOrDefaultAsync(Predicate<TModel> selector)
-        {
-            return CoreGet(selector);
-        }
+//        public async Task<TModel> GetOrDefaultAsync(Predicate<TModel> selector)
+//        {
+//            return CoreGet(selector);
+//        }
 
 
-        protected virtual TModel CoreGet(Predicate<TModel> selector )
-        {
-            var result = default(TModel);
-            foreach (var model in Models)
-            {
-                if (selector(model))
-                {
-                    result = model;
-                }
-            }
+//        protected virtual TModel CoreGet(Predicate<TModel> selector )
+//        {
+//            var result = default(TModel);
+//            foreach (var model in Models)
+//            {
+//                if (selector(model))
+//                {
+//                    result = model;
+//                }
+//            }
 
-            return result;
-        }
-        public virtual TModel Get(Predicate<TModel> selector)
-        {
-            var result = CoreGet(selector);
+//            return result;
+//        }
+//        public virtual TModel Get(Predicate<TModel> selector)
+//        {
+//            var result = CoreGet(selector);
 
-            if(result is null)
-            {
-                throw new NoUserFoundException("no such user");
-            }
+//            if(result is null)
+//            {
+//                throw new NoUserFoundException("no such user");
+//            }
 
-            return result;
-        }
+//            return result;
+//        }
 
-        public virtual async Task<TModel> GetAsync(Predicate<TModel> selector)
-        {
-            return Get(selector);
-        }
+//        public virtual async Task<TModel> GetAsync(Predicate<TModel> selector)
+//        {
+//            return Get(selector);
+//        }
 
-        public virtual async Task<TModel> InsertAsync(TModel model)
-        {
-            return Insert(model);
-        }
+//        public virtual async Task<TModel> InsertAsync(TModel model)
+//        {
+//            return Insert(model);
+//        }
 
-        public async Task<IEnumerable<TModel>> GetAllAsync()
-        {
-            return GetAll();
-        }
-        /// <summary>
-        /// Auto Id Generator
-        /// </summary>
-        /// <param name="instance"></param>
-        /// <returns></returns>
-        public virtual TModel Insert(TModel instance)
-        {
+//        public async Task<IEnumerable<TModel>> GetAllAsync()
+//        {
+//            return GetAll();
+//        }
+//        /// <summary>
+//        /// Auto Id Generator
+//        /// </summary>
+//        /// <param name="instance"></param>
+//        /// <returns></returns>
+//        public virtual TModel Insert(TModel instance)
+//        {
            
-            if (Models.Add(instance) == false)
-            {
-                throw new Exception("Key already present.");
-            }
+//            if (Models.Add(instance) == false)
+//            {
+//                throw new Exception("Key already present.");
+//            }
             
-            return instance;
-        }
-        public virtual IEnumerable<TModel> GetAll()
-        {
-            return Models.SafeToArray();
-        }
+//            return instance;
+//        }
+//        public virtual IEnumerable<TModel> GetAll()
+//        {
+//            return Models.SafeToArray();
+//        }
 
-        public async Task<IEnumerable<TModel>> GetAllAsync(Func<TModel, bool> selector)
-        {
-            return GetAll().Where(x => selector(x)).SafeToArray();
-        }
+//        public async Task<IEnumerable<TModel>> GetAllAsync(Func<TModel, bool> selector)
+//        {
+//            return GetAll().Where(x => selector(x)).SafeToArray();
+//        }
 
-        public async Task<bool> UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback)
-        {
-            var model = CoreGet(selector);
+//        public async Task<bool> UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback)
+//        {
+//            var model = CoreGet(selector);
 
-            if (model is not null)
-            {
-                updateCallback(model);
-                return true;
-            }
+//            if (model is not null)
+//            {
+//                updateCallback(model);
+//                return true;
+//            }
 
-            return false;
-        }
-    }
-}
+//            return false;
+//        }
+//    }
+//}
