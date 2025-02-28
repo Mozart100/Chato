@@ -85,7 +85,7 @@ public class UserService : IUserService
 
         await _delegateQueue.InvokeAsync(async () =>
         {
-            result = await _userRepository.GetOrDefaultAsync(x => x.ConnectionId == connectionId);
+            result = _userRepository.FirstOrDefualt(x => x.ConnectionId == connectionId);
         });
         return result;
     }
@@ -96,7 +96,7 @@ public class UserService : IUserService
 
         await _delegateQueue.InvokeAsync(async () =>
         {
-            result = await _userRepository.RemoveAsync(x => x.UserName == userNameOrId);
+            result = _userRepository.Remove(x => x.UserName == userNameOrId);
         });
         return result;
     }
@@ -107,7 +107,7 @@ public class UserService : IUserService
 
         await _delegateQueue.InvokeAsync(async () =>
         {
-            result = await _userRepository.GetOrDefaultAsync(x => x.UserName == nameOrId);
+            result = _userRepository.FirstOrDefualt(x => x.UserName == nameOrId);
         });
         return result;
     }
@@ -118,7 +118,7 @@ public class UserService : IUserService
 
         await _delegateQueue.InvokeAsync(async () =>
         {
-            result = await _userRepository.GetAllAsync(predicate);
+            result = _userRepository.GetAll(predicate);
         });
 
         return result;
@@ -130,7 +130,7 @@ public class UserService : IUserService
 
         await _delegateQueue.InvokeAsync(async () =>
         {
-            var user = await _userRepository.GetOrDefaultAsync(u => u.UserName == userNameOrId);
+            var user = _userRepository.FirstOrDefualt(u => u.UserName == userNameOrId);
             if (user is not null)
             {
                 result = user.Chats.ToArray();
@@ -169,7 +169,7 @@ public class UserService : IUserService
 
         await _delegateQueue.InvokeAsync(async () =>
         {
-            await _userRepository.UpdateAsync(user => user.UserName == userName, user =>
+            _userRepository.Update(user => user.UserName == userName, user =>
             {
                 var amountOfImages = 1;
                 var wwwRootPath = Path.Combine(_env.WebRootPath, IUserService.UserChatImage, userName);
