@@ -108,7 +108,7 @@ public class ChatService : IChatService
 
         await _lockerQueue.InvokeAsync(async () =>
         {
-            var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
+            var room = _chatRoomRepository.FirstOrDefualt(x => x.Id == roomName);
             if (room is not null)
             {
                 result = room.Messages;
@@ -139,7 +139,7 @@ public class ChatService : IChatService
         {
             foreach (var chat in chats)
             {
-                var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chat.ChatName);
+                var room = _chatRoomRepository.FirstOrDefualt(x => x.Id == chat.ChatName);
                 if (room is not null)
                 {
                     result.Add(new ChatInfoPerUser(room.RoomName, room.ChatType, room.Users.Count(), chat.IsOwner));
@@ -153,7 +153,7 @@ public class ChatService : IChatService
 
     private async Task<ChatDto> GetRoomByNameOrIdCoreAsync(string nameOrId)
     {
-        return await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == nameOrId);
+        return _chatRoomRepository.FirstOrDefualt(x => x.Id == nameOrId);
     }
 
     public async Task RemoveRoomByNameOrIdAsync(string nameOrId)
@@ -166,14 +166,14 @@ public class ChatService : IChatService
 
     private async Task RemoveRoomByNameOrIdCoreAsync(string nameOrId)
     {
-        await _chatRoomRepository.RemoveAsync(x => x.RoomName == nameOrId);
+        _chatRoomRepository.Remove(x => x.RoomName == nameOrId);
     }
 
     public async Task RemoveHistoryByRoomNameAsync(string roomName)
     {
         await _lockerQueue.InvokeAsync(async () =>
         {
-            await _chatRoomRepository.UpdateAsync(x => x.Id == roomName, x => x.UserMessages.Clear());
+            _chatRoomRepository.Update(x => x.Id == roomName, x => x.UserMessages.Clear());
             //var room = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == roomName);
             //if (room is not null)
             //{
@@ -202,7 +202,7 @@ public class ChatService : IChatService
                 await _lockerQueue.InvokeAsync(async () =>
                 {
 
-                    var chatRoom = await _chatRoomRepository.GetOrDefaultAsync(x => x.Id == chatName);
+                    var chatRoom = _chatRoomRepository.FirstOrDefualt(x => x.Id == chatName);
                     if (chatRoom is not null)
                     {
 
@@ -226,8 +226,7 @@ public class ChatService : IChatService
                         var imageFilePath = $"{IChatService.ChatImages}/{chatName}/{localPath}";
                         var senderinfo = new SenderInfo(SenderInfoType.Image, fromUser, textMessage, imageFilePath, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
 
-                        //chatRoom.UserMessages.Add(senderinfo);
-                        await _chatRoomRepository.UpdateAsync(x => x.RoomName == chatName, x => x.UserMessages.Add(senderinfo));
+                        _chatRoomRepository.Update(x => x.RoomName == chatName, x => x.UserMessages.Add(senderinfo));
 
 
                         result = senderinfo with
@@ -250,7 +249,7 @@ public class ChatService : IChatService
         await _lockerQueue.InvokeAsync(async () =>
         {
             var anyActiveUsers = false;
-            var isUpdated = await _chatRoomRepository.UpdateAsync(x => x.Id == roomName, x =>
+            var isUpdated = _chatRoomRepository.Update(x => x.Id == roomName, x =>
             {
                 x.ActiveUsers.Remove(username);
                 anyActiveUsers = x.ActiveUsers.Any();
@@ -279,8 +278,8 @@ public class ChatService : IChatService
                 senderInfoType = SenderInfoType.Created;
             }
 
-            result = new SenderInfo(senderInfoType, userName, null,null, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-            var isUpdated = await _chatRoomRepository.UpdateAsync(x => x.RoomName == roomName, x =>
+            result = new SenderInfo(senderInfoType, userName, null, null, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
+            var isUpdated = _chatRoomRepository.Update(x => x.RoomName == roomName, x =>
             {
                 x.ActiveUsers.Add(userName);
                 x.UserMessages.Add(result);
@@ -346,7 +345,7 @@ public class ChatService : IChatService
 
         await _lockerQueue.InvokeAsync(async () =>
         {
-            var chat = await _chatRoomRepository.GetOrDefaultAsync(x => x.RoomName == chatName);
+            var chat = _chatRoomRepository.FirstOrDefualt(x => x.RoomName == chatName);
             if (chat is not null)
             {
                 //await _chatRoomRepository.UpdateImagesAsync(chatName);
@@ -388,7 +387,7 @@ public class ChatService : IChatService
     {
 
         var senderInfo = new SenderInfo(senderInfoType, fromUser, textMessage, image, DateTimeOffset.UtcNow.ToUnixTimeSeconds());
-        var isUpdated = await _chatRoomRepository.UpdateAsync(x => x.RoomName == chatName, x => x.UserMessages.Add(senderInfo));
+        var isUpdated = _chatRoomRepository.Update(x => x.RoomName == chatName, x => x.UserMessages.Add(senderInfo));
 
         var result = isUpdated ? senderInfo : null;
         return result;
