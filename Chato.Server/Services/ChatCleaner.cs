@@ -13,13 +13,14 @@ namespace Chato.Server.Services
 
     public class ChatCleaner : IChatCleaner, IDisposable
     {
-        private readonly Queue<ChatDto> _queue;
+        private readonly Queue<ChatDto> _queue = new Queue<ChatDto>();
         private bool _disposed;
         private readonly object _lock = new();
+        private readonly ILogger<ChatCleaner> _logger;
 
-        public ChatCleaner()
+        public ChatCleaner(ILogger<ChatCleaner> logger)
         {
-            _queue = new Queue<ChatDto>();
+            this._logger = logger;
         }
 
         public void Enqueue(ChatDto result)
@@ -59,7 +60,7 @@ namespace Chato.Server.Services
                 _disposed = true;
                 _queue.Clear(); // Ensure all items are removed.
 
-                Console.WriteLine("ChatCleaner disposed, queue cleared.");
+                _logger.LogInformation($"{nameof(ChatCleaner)} disposed, queue cleared.");
             }
         }
     }
