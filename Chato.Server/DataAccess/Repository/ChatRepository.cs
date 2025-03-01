@@ -42,7 +42,7 @@ public class ChatRepository : AutoRepositoryBase<Chat, ChatDto>, IChatRepository
     }
 
 
-    public async override Task<bool> RemoveAsync(Predicate<Chat> selector)
+    public override bool Remove(Predicate<Chat> selector)
     {
         foreach (var model in Models)
         {

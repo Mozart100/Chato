@@ -28,7 +28,7 @@ public class UserRepository : AutoRepositoryBase<User, UserDto>, IUserRepository
     public async Task<bool> AddRoomToUser(string userNameOrId, string roomName, ChatType chatType, bool isOwner)
     {
         var result = false;
-        await UpdateAsync(u => u.UserName == userNameOrId, user =>
+        Update(u => u.UserName == userNameOrId, user =>
         {
             var rooms = user.Chats.SafeToHashSet();
             result = rooms.Add(new ParticipantInChat(roomName, chatType, isOwner));

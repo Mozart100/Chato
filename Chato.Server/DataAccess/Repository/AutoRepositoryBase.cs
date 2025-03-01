@@ -12,24 +12,24 @@ namespace Chato.Server.DataAccess.Repository
         Task<TModelDto> InsertAsync(TModel instance);
 
 
-        TModelDto Get(Predicate<TModel> selector);
-        Task<TModelDto> GetAsync(Predicate<TModel> selector);
 
         IEnumerable<TModelDto> GetAll();
 
-        Task<TModelDto> GetOrDefaultAsync(Predicate<TModel> selector);
+        Task<TModelDto> FirstOrDefualtAsync(Predicate<TModel> selector);
 
 
-        Task<TModelDto> GetFirstAsync(Predicate<TModel> selector);
         Task<IEnumerable<TModelDto>> GetAllAsync(Func<TModel, bool> selector);
 
         Task<IEnumerable<TModelDto>> GetAllAsync();
 
-        Task<bool> RemoveAsync(Predicate<TModel> selector);
 
 
         Task<bool> UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback);
-
+        Task<bool> RemoveAsync(Predicate<TModel> selector);
+        bool Remove(Predicate<TModel> selector);
+        TModelDto FirstOrDefualt(Predicate<TModel> selector);
+        IEnumerable<TModelDto> GetAll(Func<TModel, bool> selector);
+        bool Update(Predicate<TModel> selector, Action<TModel> updateCallback);
     }
 
 
@@ -60,12 +60,45 @@ namespace Chato.Server.DataAccess.Repository
             return result;
         }
 
-        public async Task<TModelDto> GetFirstAsync(Predicate<TModel> selector)
+        public virtual bool Remove(Predicate<TModel> selector)
         {
-            return _mapper.Map<TModelDto>(Get(selector));
+            var result = false;
+            foreach (var model in Models)
+            {
+                if (selector(model))
+                {
+                    result = Models.Remove(model);
+                }
+            }
+
+            return result;
         }
 
-        public async Task<TModelDto> GetOrDefaultAsync(Predicate<TModel> selector)
+        //public async Task<TModelDto> FirstAsync(Predicate<TModel> selector)
+        //{
+        //    return _mapper.Map<TModelDto>(Get(selector));
+        //}
+
+        //public TModelDto First(Predicate<TModel> selector)
+        //{
+        //    return _mapper.Map<TModelDto>(Get(selector));
+        //}
+
+
+        public async Task<TModelDto> FirstOrDefualtAsync(Predicate<TModel> selector)
+        {
+            var result = default(TModelDto);
+
+            var model = CoreGet(selector);
+            if (model is null)
+            {
+                return result;
+            }
+
+            return _mapper.Map<TModelDto>(model);
+        }
+
+        public TModelDto FirstOrDefualt(Predicate<TModel> selector)
         {
             var result = default(TModelDto);
 
@@ -92,22 +125,6 @@ namespace Chato.Server.DataAccess.Repository
 
             return result;
         }
-        public virtual TModelDto Get(Predicate<TModel> selector)
-        {
-            var model = CoreGet(selector);
-
-            if (model is null)
-            {
-                throw new NoUserFoundException("no such user");
-            }
-
-            return _mapper.Map<TModelDto>(model);
-        }
-
-        public virtual async Task<TModelDto> GetAsync(Predicate<TModel> selector)
-        {
-            return Get(selector);
-        }
 
         public virtual async Task<TModelDto> InsertAsync(TModel model)
         {
@@ -131,19 +148,6 @@ namespace Chato.Server.DataAccess.Repository
                 throw new Exception("Key already present.");
             }
 
-
-            try
-            {
-                var tmp = _mapper.Map<TModelDto>(instance);
-
-            }
-
-            catch (Exception ex)
-            {
-                int x = 0;
-            }
-
-
             return _mapper.Map<TModelDto>(instance);
         }
 
@@ -157,7 +161,25 @@ namespace Chato.Server.DataAccess.Repository
             return Models.Where(x => selector(x)).Select(item => _mapper.Map<TModelDto>(item)).ToArray();
         }
 
+        public IEnumerable<TModelDto> GetAll(Func<TModel, bool> selector)
+        {
+            return Models.Where(x => selector(x)).Select(item => _mapper.Map<TModelDto>(item)).ToArray();
+        }
+
         public async Task<bool> UpdateAsync(Predicate<TModel> selector, Action<TModel> updateCallback)
+        {
+            var model = CoreGet(selector);
+
+            if (model is not null)
+            {
+                updateCallback(model);
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool Update(Predicate<TModel> selector, Action<TModel> updateCallback)
         {
             var model = CoreGet(selector);
 
