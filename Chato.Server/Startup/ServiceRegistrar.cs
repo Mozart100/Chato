@@ -29,6 +29,9 @@ public static class ServiceRegistrar
 
         services.AddSingleton<IChatRepository, ChatRepository>();
         services.AddSingleton<IUserRepository, UserRepository>();
+        services.AddSingleton<IChatCleaner, ChatCleaner>();
+
+
         //services.AddSingleton<IRoomIndexerRepository, RoomIndexerRepository>();
         //services.AddSingleton<IPreloadDataLoader, GenerateDefaultRoomAndUsersService>();
 

@@ -38,23 +38,26 @@ public interface IChatService
 
 }
 
-
 public class ChatService : IChatService
 {
     private readonly IChatRepository _chatRoomRepository;
     private readonly IChatValidationService _chatValidationService;
     private readonly ILockerDelegateQueue _lockerQueue;
     private readonly IWebHostEnvironment _env;
+    private readonly IChatCleaner _chatCleaner;
 
     public ChatService(IChatRepository chatRoomRepository,
         IChatValidationService chatValidationService,
         ILockerDelegateQueue lockerQueue,
-        IWebHostEnvironment env)
+        IWebHostEnvironment env,
+        IChatCleaner chatCleaner
+        )
     {
         this._chatRoomRepository = chatRoomRepository;
         this._chatValidationService = chatValidationService;
         this._lockerQueue = lockerQueue;
         this._env = env;
+        this._chatCleaner = chatCleaner;
     }
 
 
@@ -72,7 +75,10 @@ public class ChatService : IChatService
 
     private async Task<ChatDto> CreateRoomCoreAsync(string roomName, ChatType chatType, string description)
     {
-        var result = await _chatRoomRepository.InsertAsync(new Chat { Id = roomName, ChatType = chatType, Description = description, Expire = DateTime.UtcNow.AddDays(1) });
+        var result = _chatRoomRepository.Insert(new Chat { Id = roomName, ChatType = chatType, Description = description, Expire = DateTime.UtcNow.AddDays(1) });
+        _chatCleaner.Enqueue(result);
+
+
         return result;
     }
 
@@ -88,19 +94,6 @@ public class ChatService : IChatService
         });
         return result;
     }
-
-    //public async Task<ChatDto[]> GetChatsAsync(Func<Chat, bool> predicate)
-    //{
-    //    ChatDto[] result = null;
-
-    //    await _lockerQueue.InvokeAsync(async () =>
-    //    {
-    //        var list = await _chatRoomRepository.GetAllAsync();
-    //        result = list.Where(x => predicate(x)).ToArray();
-    //    });
-    //    return result;
-    //}
-
 
     public async Task<IEnumerable<SenderInfo>> GetGroupHistoryAsync(string roomName)
     {
