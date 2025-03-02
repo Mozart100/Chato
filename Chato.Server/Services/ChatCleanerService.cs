@@ -5,20 +5,20 @@ using System.Threading;
 
 namespace Chato.Server.Services
 {
-    public interface IChatCleaner
+    public interface IChatCleanerService
     {
         ChatDto Dequeue();
         void Enqueue(ChatDto chatDto);
     }
 
-    public class ChatCleaner : IChatCleaner, IDisposable
+    public class ChatCleanerService : IChatCleanerService, IDisposable
     {
         private readonly Queue<ChatDto> _queue = new Queue<ChatDto>();
         private bool _disposed;
         private readonly object _lock = new();
-        private readonly ILogger<ChatCleaner> _logger;
+        private readonly ILogger<ChatCleanerService> _logger;
 
-        public ChatCleaner(ILogger<ChatCleaner> logger)
+        public ChatCleanerService(ILogger<ChatCleanerService> logger)
         {
             this._logger = logger;
         }
@@ -40,8 +40,11 @@ namespace Chato.Server.Services
             {
                 if (!_disposed)
                 {
-
-                    return _queue.Count > 0 ? _queue.Dequeue() : null;
+                    if (_queue.Count > 0)
+                    {
+                        var chat = _queue.Dequeue();
+                        return chat;
+                    }
                 }
             }
 
@@ -60,7 +63,7 @@ namespace Chato.Server.Services
                 _disposed = true;
                 _queue.Clear(); // Ensure all items are removed.
 
-                _logger.LogInformation($"{nameof(ChatCleaner)} disposed, queue cleared.");
+                _logger.LogInformation($"{nameof(ChatCleanerService)} disposed, queue cleared.");
             }
         }
     }

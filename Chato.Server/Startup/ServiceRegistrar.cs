@@ -29,7 +29,7 @@ public static class ServiceRegistrar
 
         services.AddSingleton<IChatRepository, ChatRepository>();
         services.AddSingleton<IUserRepository, UserRepository>();
-        services.AddSingleton<IChatCleaner, ChatCleaner>();
+        services.AddSingleton<IChatCleanerService, ChatCleanerService>();
 
 
         //services.AddSingleton<IRoomIndexerRepository, RoomIndexerRepository>();

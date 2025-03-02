@@ -148,7 +148,9 @@ namespace Chato.Server.DataAccess.Repository
                 throw new Exception("Key already present.");
             }
 
-            return _mapper.Map<TModelDto>(instance);
+
+            var model = _mapper.Map<TModelDto>(instance);
+            return model;
         }
 
         public virtual IEnumerable<TModelDto> GetAll()

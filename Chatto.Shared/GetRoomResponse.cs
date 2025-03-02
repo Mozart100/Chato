@@ -39,7 +39,7 @@ public interface IChatEnittyMapper : IAutomapperEntities
 public class ChatDto : IChatEnittyMapper
 {
     public ChatType ChatType { get; set; }
-    public string RoomName { get; }
+    public string RoomName { get; set; }
     public IEnumerable<SenderInfo> Messages { get; set; }
 
     public IEnumerable<string> Users { get; set; }

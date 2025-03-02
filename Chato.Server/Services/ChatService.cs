@@ -44,13 +44,13 @@ public class ChatService : IChatService
     private readonly IChatValidationService _chatValidationService;
     private readonly ILockerDelegateQueue _lockerQueue;
     private readonly IWebHostEnvironment _env;
-    private readonly IChatCleaner _chatCleaner;
+    private readonly IChatCleanerService _chatCleaner;
 
     public ChatService(IChatRepository chatRoomRepository,
         IChatValidationService chatValidationService,
         ILockerDelegateQueue lockerQueue,
         IWebHostEnvironment env,
-        IChatCleaner chatCleaner
+        IChatCleanerService chatCleaner
         )
     {
         this._chatRoomRepository = chatRoomRepository;
