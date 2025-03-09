@@ -85,10 +85,12 @@ export class ChattoHubService {
             chat.messages = []
         }
 
-        const stream = this.hubConnection.stream('DownloadHistory', chat.chatName)
+        const stream = this.hubConnection.stream('DownloadHistory', chat.roomName)
 
         stream.subscribe({
             next: (messageInfo: ChatMessage) => {
+
+                console.log('HISTORY MSESA', messageInfo)
 
                 if (messageInfo.senderInfoType == SenderInfoType.Image) {
                     messageInfo.image = `${environment.apiUrl}/${messageInfo.image}`
@@ -106,6 +108,8 @@ export class ChattoHubService {
                         msgText = this.translate.instant('common.userCreatedGroup')
                         break;
                 }
+
+                console.log('PUSH')
 
                 chat.messages.push({
                     ...messageInfo,

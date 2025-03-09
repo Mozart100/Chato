@@ -31,7 +31,7 @@ export class ChatService extends BaseApiService {
                 console.log('Chats response', data.Body.rooms)
                 this.chatStore.allChats.set(data.Body.rooms)
 
-                const lobby = data.Body.rooms.find(chat => chat.chatName == 'lobi')
+                const lobby = data.Body.rooms.find(chat => chat.roomName == 'lobi')
                 if (lobby) {
                     this.chatStore.selectedChat.set(lobby)
                     this.realtime.invokeWhenConnected(() => this.realtime.downloadHistory(lobby))
@@ -41,7 +41,7 @@ export class ChatService extends BaseApiService {
 
     addNewChat(chatName: string) {
         const newChat: Chat = {
-            chatName: chatName,
+            roomName: chatName,
             messages: [],
             users: [this.auth.user().userName]
         }

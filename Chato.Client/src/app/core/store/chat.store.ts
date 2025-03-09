@@ -20,7 +20,7 @@ export class ChatStore {
 
     addUserToChat(userName: string, chatName: string) {
         this.allChats.update(chats => {
-            const chat = chats.find(c => c.chatName == chatName)
+            const chat = chats.find(c => c.roomName == chatName)
             if (chat && !chat.users.includes(userName)) {
                 chat.users = [...chat.users, userName]
             }

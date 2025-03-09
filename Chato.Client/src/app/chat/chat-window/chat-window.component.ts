@@ -191,7 +191,7 @@ export class ChatWindowComponent implements OnInit {
         if (text) {
 
             const message = {
-                chatName: this.chatStore.selectedChat().chatName,
+                chatName: this.chatStore.selectedChat().roomName,
                 fromUser: this.auth.user().userName,
                 textMessage: text,
                 isSelf: true,
@@ -258,7 +258,7 @@ export class ChatWindowComponent implements OnInit {
     }
 
     joinCurrentChat() {
-        this.realtime.joinOnCreateChat(this.chatStore.selectedChat().chatName)
+        this.realtime.joinOnCreateChat(this.chatStore.selectedChat().roomName)
     }
 
     onBlur() {
@@ -289,7 +289,7 @@ export class ChatWindowComponent implements OnInit {
             // this.img = this.imageURL
 
             const message = {
-                chatName: this.chatStore.selectedChat().chatName,
+                chatName: this.chatStore.selectedChat().roomName,
                 fromUser: this.auth.user().userName,
                 image: file.name,
                 textMessage: bytesStr,
