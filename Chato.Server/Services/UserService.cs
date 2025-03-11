@@ -14,7 +14,7 @@ public interface IUserService
 {
     public const string UserChatImage = "UserImages";
 
-    Task AssignConnectionId(string userName, string connectionId);
+    Task<bool> AssignConnectionId(string userName, string connectionId);
     Task AssignRoomNameAsync(string userNameOrId, string roomName, ChatType chatType, bool isOwner);
     Task<IEnumerable<UserDto>> GetAllUsersAsync(Func<User, bool> predicate);
     string GetMyName();
@@ -74,9 +74,13 @@ public class UserService : IUserService
 
     }
 
-    public async Task AssignConnectionId(string userName, string connectionId)
+    public async Task<bool> AssignConnectionId(string userName, string connectionId)
     {
-        await _delegateQueue.InvokeAsync(async () => await _userRepository.AssignConnectionId(userName, connectionId));
+        var result = false;
+
+        await _delegateQueue.InvokeAsync(async () => result = await _userRepository.AssignConnectionId(userName, connectionId));
+
+        return result;
     }
 
     public async Task<UserDto> GetUserByConnectionId(string connectionId)
