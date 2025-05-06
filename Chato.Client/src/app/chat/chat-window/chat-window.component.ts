@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core'
+import { Component, effect, OnInit, ViewChild } from '@angular/core'
 import {
     NgbAccordionCollapse,
     NgbAccordionDirective,
@@ -74,6 +74,11 @@ export class ChatWindowComponent implements OnInit {
                 public chatStore: ChatStore,
                 public auth: AuthenticationService,
                 private realtime: ChattoHubService) {
+
+        effect(() => {
+            this.chatStore.selectedChat()
+            this.onListScroll()
+        })
     }
 
     ngOnInit() {

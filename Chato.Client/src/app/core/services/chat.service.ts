@@ -29,7 +29,12 @@ export class ChatService extends BaseApiService {
         this.sendGet<ChatsDto>(this.apiUrl + LOAD_ROOMS_URL)
             .then(data => {
                 console.log('Chats response', data.Body.rooms)
-                this.chatStore.allChats.set(data.Body.rooms)
+                const rooms = data.Body.rooms.map(chat => ({
+                    ...chat,
+                    messages: []
+                }))
+                console.log('Filtered rooms', rooms)
+                this.chatStore.allChats.set(rooms)
 
                 const lobby = data.Body.rooms.find(chat => chat.roomName == 'lobi')
                 if (lobby) {

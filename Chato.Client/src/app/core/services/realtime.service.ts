@@ -52,16 +52,21 @@ export class ChattoHubService {
         this.hubConnection.on('SendTextToChat', (message: ChatMessage) => {
             console.log('SendTextToChat', message)
 
-            const chat = this.chatStore.selectedChat()
+            this.chatStore.selectedChat.update(chat => {
 
-            if (!chat.messages) {
-                chat.messages = []
-            }
+                if (!chat.messages) {
+                    chat.messages = []
+                }
 
-            chat.messages.push({
-                ...message,
-                isSelf: this.auth.user().userName == message.fromUser
+                chat.messages.push({
+                    ...message,
+                    isSelf: this.auth.user().userName == message.fromUser
+                })
+
+                return JSON.parse(JSON.stringify(chat))
             })
+
+
         })
 
         this.hubConnection.on('SendNotificationn', (chatName: string, userName: string) => {
@@ -90,26 +95,29 @@ export class ChattoHubService {
         stream.subscribe({
             next: (messageInfo: ChatMessage) => {
 
-                console.log('HISTORY MSESA', messageInfo)
+                console.log('Received history item:', messageInfo)
+
+                if (messageInfo.senderInfoType == SenderInfoType.TextMessage && !messageInfo.textMessage) {
+                    console.log('empty message', messageInfo)
+                    return
+                }
 
                 if (messageInfo.senderInfoType == SenderInfoType.Image) {
                     messageInfo.image = `${environment.apiUrl}/${messageInfo.image}`
                 }
 
-                let msgText = ""
+                let msgText = ''
                 switch (messageInfo.senderInfoType) {
                     case SenderInfoType.TextMessage:
                         msgText = messageInfo.textMessage
-                        break;
+                        break
                     case SenderInfoType.Joined:
                         msgText = this.translate.instant('common.userJoined')
-                        break;
+                        break
                     case SenderInfoType.Created:
                         msgText = this.translate.instant('common.userCreatedGroup')
-                        break;
+                        break
                 }
-
-                console.log('PUSH')
 
                 chat.messages.push({
                     ...messageInfo,
