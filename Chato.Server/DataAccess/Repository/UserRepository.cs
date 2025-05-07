@@ -9,7 +9,7 @@ namespace Chato.Server.DataAccess.Repository;
 public interface IUserRepository : IRepositoryBase<User, UserDto>
 {
     Task<bool> AddRoomToUser(string userNameOrId, string roomName, ChatType chatType, bool isOwner);
-    Task AssignConnectionId(string userName, string connectionId);
+    Task<bool> AssignConnectionId(string userName, string connectionId);
     Task<IEnumerable<string>> DownloadFiles(string userName);
 
 }
@@ -42,9 +42,25 @@ public class UserRepository : AutoRepositoryBase<User, UserDto>, IUserRepository
         return result;
     }
 
-    public virtual async Task AssignConnectionId(string userName, string conectionId)
+    public virtual async Task<bool> AssignConnectionId(string userName, string conectionId)
     {
-        await UpdateAsync(u => u.UserName == userName, user => user.ConnectionId = conectionId);
+        var result = false;
+
+        var user = FirstOrDefualt(x => x.UserName == userName);
+        if(user is not null)
+        {
+            if(user.ConnectionId is null)
+            {
+                await UpdateAsync(u => u.UserName == userName, user =>
+                {
+                    user.ConnectionId = conectionId;
+                });
+
+                result = true;
+            }
+        }
+        
+        return result;
     }
 
     public async Task<IEnumerable<string>> DownloadFiles(string userName)

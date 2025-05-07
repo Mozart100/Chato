@@ -33,7 +33,7 @@ public class ChattoHub : Hub<IChatHub>
     private readonly IAssignmentService _assignmentService;
 
     public ChattoHub(
-        ILogger<ChattoHub>logger,
+        ILogger<ChattoHub> logger,
         IUserService userService,
         IChatService roomService,
         IAssignmentService assignmentService,
@@ -55,17 +55,14 @@ public class ChattoHub : Hub<IChatHub>
         var connectionId = Context.ConnectionId;
         var user = Context.User;
 
-        await _userService.AssignConnectionId(user.Identity.Name, connectionId);
-        await JoinLobiChatInternal();
 
+        var isAssigned = await _userService.AssignConnectionId(user.Identity.Name, connectionId);
 
-
-        await ReplyMessage("server", User_Connected_Message);
-        //await NotifyUserJoined(user.Identity.Name, IChatService.Lobi);
-
-        //await base.OnConnectedAsync();
-
-        //await JoinLobiChatInternal();
+        if (isAssigned)
+        {
+            await JoinLobiChatInternal();
+            await ReplyMessage("server", User_Connected_Message);
+        }
     }
 
     public Task ReplyMessage(string fromUser, string message)

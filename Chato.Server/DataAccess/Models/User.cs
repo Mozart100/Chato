@@ -19,7 +19,7 @@ public class User : EntityDbBase, IUserEnittyMapper
     public string Description { get; set; }
     public string Gender { get; set; }
     public ParticipantInChat[] Chats { get; set; }
-    public string ConnectionId { get; set; }
+    public string? ConnectionId { get; set; } = null;
 
 
     public IEnumerable<string> Files => FileSegment.GetImages();
