@@ -23,11 +23,11 @@ internal class BasicScenario : InstructionScenarioBase
     public BasicScenario(ILogger<BasicScenario> logger, ScenarioConfig config) : base(logger, config)
     {
 
+        BusinessLogicCallbacks.Add(SendingWithinLobi);
         BusinessLogicCallbacks.Add(VerificationStep);
 
 
         BusinessLogicCallbacks.Add(SendingImagesOnlyBetweenTwoPeople);
-        BusinessLogicCallbacks.Add(SendingWithinLobi);
 
         BusinessLogicCallbacks.Add(SendingOnlyBetweenTwoInPrivateChat);
         BusinessLogicCallbacks.Add(SendingWithinLobi_UserMovedChat);

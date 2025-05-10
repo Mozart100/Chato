@@ -198,8 +198,8 @@ public abstract class InstructionScenarioBase : ChatoRawDataScenarioBase
             }
             else
             {
-
-                await userExecuter.MessageShouldBe(IChatService.Lobi, instruction.UserName, "server", ChattoHub.User_Connected_Message, imagePath: null);
+                var message = string.Format(ChattoHub.User_Connected_Message_Template, "lobi");
+                await userExecuter.MessageShouldBe(IChatService.Lobi, instruction.UserName, "server", message, imagePath: null);
             }
         });
 

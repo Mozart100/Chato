@@ -14,8 +14,10 @@ export class ChatStore {
     selectedChat: WritableSignal<Chat | null> = signal(null)
 
     memberOfCurrentChat = computed(() => {
-        this.forceUpdate()
-        return this.selectedChat().users.includes(this.auth.user().userName)
+        this.forceUpdate();
+        const chat = this.selectedChat();
+        const res = chat.users.includes(this.auth.user().userName);
+        return res;
     })
 
     addUserToChat(userName: string, chatName: string) {
@@ -32,5 +34,13 @@ export class ChatStore {
 
     private forceUpdateComputed() {
         this.forceUpdate.set(new Date().getTime())
+    }
+
+    selectChat(chatName : string) {
+        var chats = this.allChats();
+        const chat = chats.find(chat => chat.roomName == chatName)
+        if (chat) {
+            this.selectedChat.set(chat);
+        }
     }
 }

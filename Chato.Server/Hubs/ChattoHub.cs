@@ -18,15 +18,19 @@ public record HubDownloadInfo(int Amount);
 public interface IChatHub
 {
     Task SendTextToChat(MessageInfo messageInfo);
-    Task SendText(string fromUser, string message);
+    //Task SendText(string fromUser, string message);
+    Task ChatConnectionNotification(ChatNotification chatNotification);
 }
+
+
 
 [Authorize]
 public class ChattoHub : Hub<IChatHub>
 {
     public const string HubMapUrl = "/rtxrazgavor";
 
-    public const string User_Connected_Message = $"You are connected to {IChatService.Lobi} chat";
+    public const string User_Connected_Message_Template = "You are connected to {0} chat";
+    //public const string User_Connected_Message = $"You are connected to {IChatService.Lobi} chat";
     private readonly ILogger<ChattoHub> _logger;
     private readonly IUserService _userService;
     private readonly IChatService _roomService;
@@ -61,13 +65,15 @@ public class ChattoHub : Hub<IChatHub>
         if (isAssigned)
         {
             await JoinLobiChatInternal();
-            await ReplyMessage("server", User_Connected_Message);
+            //var message = string.Format(User_Connected_Message_Template, "lobi");
+            await ChatNotification(IChatService.Lobi, ChatConnectionType.Joined);
         }
     }
 
-    public Task ReplyMessage(string fromUser, string message)
+    public Task ChatNotification(string chatName , ChatConnectionType chatConnectionType)
     {
-        return Clients.Caller.SendText(fromUser, message);
+        var response = new ChatNotification( chatName, chatConnectionType);
+        return Clients.Caller.ChatConnectionNotification(response);
     }
 
     public async Task SendMessageToOthersInChat(MessageInfo messageInfo)
@@ -124,7 +130,13 @@ public class ChattoHub : Hub<IChatHub>
 
         }
         var userName = Context.User.Identity.Name;
-        await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName, chatType, description);
+        var joinOrCerateResponse = await JoinOrCreateChatInternal(Context.ConnectionId, userName, chatName, chatType, description);
+
+        if (joinOrCerateResponse.SenderInfoType == SenderInfoType.Joined)
+        {
+            //var message = string.Format(User_Connected_Message_Template, chatName);
+            await ChatNotification( chatName, ChatConnectionType.Joined);
+        }
     }
 
 

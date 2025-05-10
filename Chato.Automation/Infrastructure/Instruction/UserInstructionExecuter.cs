@@ -179,17 +179,16 @@ public class UserInstructionExecuter
 
     protected async Task ListenAsync()
     {
-        _connection.On<string, string>(nameof(IChatHub.SendText), async (user, message) =>
-        {
-            var ptr = Encoding.UTF8.GetBytes(message);
-            await ExpectedMessagesAsync(IChatService.Lobi, user, message, null);
-            await _counterSignal.ReleaseAsync();
-        });
+        //_connection.On<string, string>(nameof(IChatHub.SendText), async (user, message) =>
+        //{
+        //    var ptr = Encoding.UTF8.GetBytes(message);
+        //    await ExpectedMessagesAsync(IChatService.Lobi, user, message, null);
+        //    await _counterSignal.ReleaseAsync();
+        //});
 
 
         _connection.On<MessageInfo>(nameof(IChatHub.SendTextToChat), async (messageInfo) =>
         {
-            //var ptr = Encoding.UTF8.GetBytes(messageInfo.TextMessage);
 
             if (messageInfo.SenderInfoType == SenderInfoType.Image || messageInfo.Image.IsNotEmpty())
             {

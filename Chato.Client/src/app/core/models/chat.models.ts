@@ -35,3 +35,16 @@ export enum ChatType {
     Public = 0,
     Private = 1
 }
+
+
+export enum ChatConnectionType {
+    Joined,
+    Created,
+    Denied
+}
+
+export interface ChatNotification {
+    chatName: string;
+    chatConnectionType: ChatConnectionType;
+
+}

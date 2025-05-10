@@ -3,9 +3,22 @@ using System.Text.Json.Serialization;
 
 namespace Chatto.Shared;
 
+
+
+public enum ChatConnectionType
+{
+    Joined,
+    Created,
+    Denied
+}
+
+
+
+public record ChatNotification(string ChatName,ChatConnectionType ChatConnectionType);
+
+
 public class GetRoomResponse
 {
-
     public ChatDto Chat { get; set; }
 }
 

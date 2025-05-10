@@ -13,6 +13,8 @@ const REGISTER_URL = '/api/Auth/Register'
 const CHECK_AUTH_URL = '/api/Auth/status'
 const LOAD_USER_URL = '/api/User'
 
+type userType = User | null;
+
 @Injectable({ providedIn: 'root' })
 export class AuthenticationService extends BaseApiService {
 
@@ -28,6 +30,11 @@ export class AuthenticationService extends BaseApiService {
                 private router: Router) {
         super(http, alert)
         this.apiUrl = environment.apiUrl
+    }
+
+    get userInfo() : userType
+    {
+        return this.user();
     }
 
     /**

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import * as signalR from '@microsoft/signalr'
 import { ChatStore } from '../store/chat.store'
 import { SAVED_TOKEN_KEY } from '../helpers/consts'
-import { Chat, ChatMessage, ChatType, SenderInfoType } from '../models/chat.models'
+import { Chat, ChatMessage, ChatNotification, ChatType, SenderInfoType } from '../models/chat.models'
 import { AuthenticationService } from './auth.service'
 import { filter, first, firstValueFrom, Subject } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
@@ -21,8 +21,8 @@ export class ChattoHubService {
     private usedJoinedText = ''
 
     constructor(private chatStore: ChatStore,
-                private auth: AuthenticationService,
-                private translate: TranslateService) {
+        private auth: AuthenticationService,
+        private translate: TranslateService) {
 
         this.initTranslatedText()
     }
@@ -38,8 +38,13 @@ export class ChattoHubService {
         this.hubConnection = new signalR.HubConnectionBuilder()
             .withUrl('https://localhost:7138/rtxrazgavor', {
                 withCredentials: true,
-                accessTokenFactory: () => sessionStorage.getItem(SAVED_TOKEN_KEY)
-            }).build()
+                accessTokenFactory: () => {
+
+                    const token = sessionStorage.getItem(SAVED_TOKEN_KEY);
+                    return token;
+                }
+            }).withAutomaticReconnect()
+            .build()
 
         this.hubConnection
             .start()
@@ -47,7 +52,9 @@ export class ChattoHubService {
                 console.log('Connected to rtxrazgavor')
                 this.isConnectedSubj.next(true)
             })
-            .catch(err => console.log('Error while starting connection: ' + err))
+            .catch(err => {
+                console.log('Error while starting connection: ' + err);
+            })
 
         this.hubConnection.on('SendTextToChat', (message: ChatMessage) => {
             console.log('SendTextToChat', message)
@@ -69,15 +76,28 @@ export class ChattoHubService {
 
         })
 
-        this.hubConnection.on('SendNotificationn', (chatName: string, userName: string) => {
-            console.log('SendNotificationn', chatName, userName)
-            this.chatStore.addUserToChat(userName, chatName)
-        })
+        // this.hubConnection.on('SendNotificationn', (chatName: string, userName: string) => {
+        //     console.log('SendNotificationn', chatName, userName)
+        //     this.chatStore.addUserToChat(userName, chatName)
+        // })
 
-        this.hubConnection.on('SendText', (fromUser, message) => {
-            console.log('SendText', fromUser, message)
+        this.hubConnection.on('ChatConnectionNotification', ( message: ChatNotification) => {
+            const chatName = message.chatName;
+
+            console.log(`chatName = ${chatName}`);
+            const user = this.auth.userInfo;
+
+            this.chatStore.addUserToChat(user.userName, chatName)
+            this.chatStore.selectChat(chatName);
         })
     }
+
+    // private getChatName(message: string): string {
+
+    //     const match = message.match(/connected to (.+?) chat/i);
+    //     return match[1];
+    // }
+
 
     public sendMessageToOthersInChat(message: ChatMessage) {
         this.hubConnection?.invoke('SendMessageToOthersInChat', message)
@@ -135,7 +155,7 @@ export class ChattoHubService {
     }
 
     public joinOnCreateChat(chatName: string) {
-        this.hubConnection?.invoke('JoinOrCreateChat', chatName)
+        this.hubConnection?.invoke('JoinOrCreateChat', chatName, ChatType.Public, '')
             .catch(err => console.error(err))
     }
 

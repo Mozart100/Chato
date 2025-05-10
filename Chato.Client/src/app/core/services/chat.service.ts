@@ -36,11 +36,11 @@ export class ChatService extends BaseApiService {
                 console.log('Filtered rooms', rooms)
                 this.chatStore.allChats.set(rooms)
 
-                const lobby = data.Body.rooms.find(chat => chat.roomName == 'lobi')
-                if (lobby) {
-                    this.chatStore.selectedChat.set(lobby)
-                    this.realtime.invokeWhenConnected(() => this.realtime.downloadHistory(lobby))
-                }
+                // const lobby = data.Body.rooms.find(chat => chat.roomName == 'lobi')
+                // if (lobby) {
+                //     this.chatStore.selectedChat.set(lobby)
+                //     this.realtime.invokeWhenConnected(() => this.realtime.downloadHistory(lobby))
+                // }
             })
     }
 
