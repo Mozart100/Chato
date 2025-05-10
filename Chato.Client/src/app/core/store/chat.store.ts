@@ -36,11 +36,13 @@ export class ChatStore {
         this.forceUpdate.set(new Date().getTime())
     }
 
-    selectChat(chatName : string) {
+    selectChat(chatName : string):Chat {
         var chats = this.allChats();
         const chat = chats.find(chat => chat.roomName == chatName)
         if (chat) {
             this.selectedChat.set(chat);
         }
+
+        return chat;
     }
 }

@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core'
 import * as signalR from '@microsoft/signalr'
 import { ChatStore } from '../store/chat.store'
 import { SAVED_TOKEN_KEY } from '../helpers/consts'
-import { Chat, ChatMessage, ChatNotification, ChatType, SenderInfoType } from '../models/chat.models'
+import { Chat, ChatConnectionType, ChatMessage, ChatNotification, ChatType, SenderInfoType } from '../models/chat.models'
 import { AuthenticationService } from './auth.service'
 import { filter, first, firstValueFrom, Subject } from 'rxjs'
 import { TranslateService } from '@ngx-translate/core'
@@ -76,11 +76,6 @@ export class ChattoHubService {
 
         })
 
-        // this.hubConnection.on('SendNotificationn', (chatName: string, userName: string) => {
-        //     console.log('SendNotificationn', chatName, userName)
-        //     this.chatStore.addUserToChat(userName, chatName)
-        // })
-
         this.hubConnection.on('ChatConnectionNotification', ( message: ChatNotification) => {
             const chatName = message.chatName;
 
@@ -88,16 +83,17 @@ export class ChattoHubService {
             const user = this.auth.userInfo;
 
             this.chatStore.addUserToChat(user.userName, chatName)
-            this.chatStore.selectChat(chatName);
+            const chat = this.chatStore.selectChat(chatName);
+
+            if(message.chatConnectionType === ChatConnectionType.Joined)
+            {
+                if(chat)
+                {
+                    this.downloadHistory(chat);
+                }
+            }
         })
     }
-
-    // private getChatName(message: string): string {
-
-    //     const match = message.match(/connected to (.+?) chat/i);
-    //     return match[1];
-    // }
-
 
     public sendMessageToOthersInChat(message: ChatMessage) {
         this.hubConnection?.invoke('SendMessageToOthersInChat', message)
