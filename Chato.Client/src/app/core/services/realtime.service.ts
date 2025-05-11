@@ -1,4 +1,4 @@
-import { Injectable } from '@angular/core'
+import { Injectable, WritableSignal } from '@angular/core'
 import * as signalR from '@microsoft/signalr'
 import { ChatStore } from '../store/chat.store'
 import { SAVED_TOKEN_KEY } from '../helpers/consts'
@@ -20,12 +20,23 @@ export class ChattoHubService {
 
     private usedJoinedText = ''
 
+    private readonly apiUrl: string
+    private readonly rzgavorUrl: string
+
     constructor(private chatStore: ChatStore,
         private auth: AuthenticationService,
         private translate: TranslateService) {
 
         this.initTranslatedText()
+        
+        this.apiUrl = environment.apiUrl;
+        this.rzgavorUrl = this.apiUrl + '/rtxrazgavor';
     }
+
+    get selectedChat(): WritableSignal<Chat | null> {
+        return this.chatStore.selectedChat;
+    }
+
 
     private initTranslatedText() {
         firstValueFrom(this.translate.get('common.userJoined'))
@@ -36,7 +47,8 @@ export class ChattoHubService {
 
     public startConnection() {
         this.hubConnection = new signalR.HubConnectionBuilder()
-            .withUrl('https://localhost:7138/rtxrazgavor', {
+            .withUrl(this.rzgavorUrl, {
+            // .withUrl('https://localhost:7138/rtxrazgavor', {
                 withCredentials: true,
                 accessTokenFactory: () => {
 
@@ -65,6 +77,11 @@ export class ChattoHubService {
                     chat.messages = []
                 }
 
+                if (message.image) {
+                    message.image = this.apiUrl + `/${message.image}`;
+                    // message.image =  "https://localhost:7138/" + message.image;
+                }
+
                 chat.messages.push({
                     ...message,
                     isSelf: this.auth.user().userName == message.fromUser
@@ -76,7 +93,7 @@ export class ChattoHubService {
 
         })
 
-        this.hubConnection.on('ChatConnectionNotification', ( message: ChatNotification) => {
+        this.hubConnection.on('ChatConnectionNotification', (message: ChatNotification) => {
             const chatName = message.chatName;
 
             console.log(`chatName = ${chatName}`);
@@ -85,10 +102,8 @@ export class ChattoHubService {
             this.chatStore.addUserToChat(user.userName, chatName)
             const chat = this.chatStore.selectChat(chatName);
 
-            if(message.chatConnectionType === ChatConnectionType.Joined)
-            {
-                if(chat)
-                {
+            if (message.chatConnectionType === ChatConnectionType.Joined) {
+                if (chat) {
                     this.downloadHistory(chat);
                 }
             }
